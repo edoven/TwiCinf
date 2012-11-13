@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/gson/google-gson-2.2.2/gson-2.2.2.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/gson/google-gson-2.2.2/gson-2.2.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/jdbc/mysql-connector-java-5.1.22-bin.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/blueprints/blueprints-core-2.1.0.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/blueprints/blueprints-neo4j-graph-2.1.0.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/geronimo-jta_1.1_spec-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/lucene-core-3.5.0.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/neo4j-cypher-1.9.M01.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/neo4j-graph-algo-1.9.M01.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/neo4j-graph-matching-1.9.M01.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/neo4j-jmx-1.9.M01.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/neo4j-kernel-1.9.M01.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/neo4j-lucene-index-1.9.M01.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/neo4j-shell-1.9.M01.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/neo4j-udc-1.9.M01.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/org.apache.servicemix.bundles.jline-0.9.94_1.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/scala-library-2.9.1-1.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/neo4j/server-api-1.9.M01.jar"/>
+	<classpathentry kind="lib" path="/home/godzy/Dropbox/universita/tesi/lib/twitter4j/twitter4j-core-2.2.6.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
