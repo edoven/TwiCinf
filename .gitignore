@@ -19,6 +19,8 @@
 *.rar
 *.tar
 *.zip
+*.war
+*.ear
 
 # Logs and databases #
 ######################
@@ -26,9 +28,10 @@
 *.sql
 *.sqlite
 
-# target folders are ignored #
+# target and binary folders are ignored #
 ######################
-*/target/**
+target/**
+bin/**
 
 # TODO: move next sections to global .gitignore #
 
