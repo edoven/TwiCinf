@@ -1,1 +1,80 @@
-{"createdAt":"Oct 19, 2012 1:02:39 PM","id":259248190040178689,"text":"@cristianotoni @rapierpa @SAPItalia @jessyb86 Se venite in Umbria da oggi Eurochocolate,sul nostro blog c\u0027è scritto come muoversi meglio:-)","source":"web","isTruncated":false,"inReplyToStatusId":-1,"inReplyToUserId":18632224,"isFavorited":false,"inReplyToScreenName":"cristianotoni","retweetCount":0,"wasRetweetedByMe":false,"userMentionEntities":[{"start":0,"end":14,"name":"Cristiano Toni","screenName":"cristianotoni","id":18632224},{"start":15,"end":24,"name":"Raffaella Pierpaoli","screenName":"rapierpa","id":18032603},{"start":25,"end":35,"name":"SAP Italia","screenName":"SAPItalia","id":552681849},{"start":36,"end":45,"name":"Jessica Bonaiti","screenName":"jessyb86","id":223104473}],"urlEntities":[],"hashtagEntities":[],"user":{"id":293373251,"name":"Paola Gigante","screenName":"PaolaGigante62","location":"inguaribilmente fuori tempo","description":"nonostante l\u0027età ... sono giovanissima:-) tanto entusiasmo, curiosità, voglia di imparare e di conoscere! ","isContributorsEnabled":false,"profileImageUrl":"http://a0.twimg.com/profile_images/1719219694/salento_2011_paola_normal.JPG","profileImageUrlHttps":"https://si0.twimg.com/profile_images/1719219694/salento_2011_paola_normal.JPG","url":"http://blog.aspasiel.it","isProtected":false,"followersCount":98,"profileBackgroundColor":"C0DEED","profileTextColor":"333333","profileLinkColor":"0084B4","profileSidebarFillColor":"DDEEF6","profileSidebarBorderColor":"C0DEED","profileUseBackgroundImage":true,"showAllInlineMedia":false,"friendsCount":193,"createdAt":"May 5, 2011 9:19:00 AM","favouritesCount":81,"utcOffset":-36000,"timeZone":"Hawaii","profileBackgroundImageUrl":"http://a0.twimg.com/images/themes/theme1/bg.png","profileBackgroundImageUrlHttps":"https://si0.twimg.com/images/themes/theme1/bg.png","profileBackgroundTiled":false,"lang":"it","statusesCount":1171,"isGeoEnabled":false,"isVerified":false,"translator":false,"listedCount":1,"isFollowRequestSent":false}}
+{
+    "createdAt": "Oct 19, 2012 1:02:39 PM",
+    "id": 259248190040178700,
+    "text": "@cristianotoni @rapierpa @SAPItalia @jessyb86 Se venite in Umbria da oggi Eurochocolate,sul nostro blog c'è scritto come muoversi meglio:-)",
+    "source": "web",
+    "isTruncated": false,
+    "inReplyToStatusId": -1,
+    "inReplyToUserId": 18632224,
+    "isFavorited": false,
+    "inReplyToScreenName": "cristianotoni",
+    "retweetCount": 0,
+    "wasRetweetedByMe": false,
+    "userMentionEntities": [
+        {
+            "start": 0,
+            "end": 14,
+            "name": "Cristiano Toni",
+            "screenName": "cristianotoni",
+            "id": 18632224
+        },
+        {
+            "start": 15,
+            "end": 24,
+            "name": "Raffaella Pierpaoli",
+            "screenName": "rapierpa",
+            "id": 18032603
+        },
+        {
+            "start": 25,
+            "end": 35,
+            "name": "SAP Italia",
+            "screenName": "SAPItalia",
+            "id": 552681849
+        },
+        {
+            "start": 36,
+            "end": 45,
+            "name": "Jessica Bonaiti",
+            "screenName": "jessyb86",
+            "id": 223104473
+        }
+    ],
+    "urlEntities": [],
+    "hashtagEntities": [],
+    "user": {
+        "id": 293373251,
+        "name": "Paola Gigante",
+        "screenName": "PaolaGigante62",
+        "location": "inguaribilmente fuori tempo",
+        "description": "nonostante l'età ... sono giovanissima:-) tanto entusiasmo, curiosità, voglia di imparare e di conoscere! ",
+        "isContributorsEnabled": false,
+        "profileImageUrl": "http://a0.twimg.com/profile_images/1719219694/salento_2011_paola_normal.JPG",
+        "profileImageUrlHttps": "https://si0.twimg.com/profile_images/1719219694/salento_2011_paola_normal.JPG",
+        "url": "http://blog.aspasiel.it",
+        "isProtected": false,
+        "followersCount": 98,
+        "profileBackgroundColor": "C0DEED",
+        "profileTextColor": "333333",
+        "profileLinkColor": "0084B4",
+        "profileSidebarFillColor": "DDEEF6",
+        "profileSidebarBorderColor": "C0DEED",
+        "profileUseBackgroundImage": true,
+        "showAllInlineMedia": false,
+        "friendsCount": 193,
+        "createdAt": "May 5, 2011 9:19:00 AM",
+        "favouritesCount": 81,
+        "utcOffset": -36000,
+        "timeZone": "Hawaii",
+        "profileBackgroundImageUrl": "http://a0.twimg.com/images/themes/theme1/bg.png",
+        "profileBackgroundImageUrlHttps": "https://si0.twimg.com/images/themes/theme1/bg.png",
+        "profileBackgroundTiled": false,
+        "lang": "it",
+        "statusesCount": 1171,
+        "isGeoEnabled": false,
+        "isVerified": false,
+        "translator": false,
+        "listedCount": 1,
+        "isFollowRequestSent": false
+    }
+}

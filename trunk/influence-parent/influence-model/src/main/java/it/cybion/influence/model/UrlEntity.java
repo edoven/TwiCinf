@@ -47,4 +47,43 @@ public class UrlEntity {
 		this.displayURL = displayURL;
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UrlEntity urlEntity = (UrlEntity) o;
+
+        if (end != urlEntity.end) return false;
+        if (start != urlEntity.start) return false;
+        if (displayURL != null ? !displayURL.equals(urlEntity.displayURL) : urlEntity.displayURL != null)
+            return false;
+        if (expandedURL != null ? !expandedURL.equals(urlEntity.expandedURL) : urlEntity.expandedURL != null)
+            return false;
+        if (url != null ? !url.equals(urlEntity.url) : urlEntity.url != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = start;
+        result = 31 * result + end;
+        result = 31 * result + (url != null ? url.hashCode() : 0);
+        result = 31 * result + (expandedURL != null ? expandedURL.hashCode() : 0);
+        result = 31 * result + (displayURL != null ? displayURL.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "UrlEntity{" +
+                "start=" + start +
+                ", end=" + end +
+                ", url=" + url +
+                ", expandedURL=" + expandedURL +
+                ", displayURL='" + displayURL + '\'' +
+                '}';
+    }
 }
