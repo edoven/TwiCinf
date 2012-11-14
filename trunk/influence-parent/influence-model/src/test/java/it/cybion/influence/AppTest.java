@@ -12,4 +12,12 @@ public class AppTest {
     public void shouldRunASimpleTest() {
         assertTrue(true);
     }
+
+    @Test
+    public void shouldDeserializeJsonToObject() {
+        //take some json examples from db, save them as files in test/resources;
+        //do a test for each file, deserializing the json in an object
+        //do asserts.
+
+    }
 }
