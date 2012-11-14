@@ -14,15 +14,10 @@
 
 	<name>Cybion Twitter Influence Calculator - Model</name>
 
-	<properties>
-		<log4j.version>1.2.16</log4j.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>6.8</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
