@@ -1,26 +1,46 @@
 package it.cybion.influence.model;
 
-import org.joda.time.DateTime;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+//import org.joda.time.DateTime;
 
 
 public class Tweet {
 	
-	//private DateTime createdAt;
+	private String createdAt;
 	private String id;
 	private String text;
-//	private String source;
-//	private boolean isTruncated;
-//	private long inResponseTo;
+	private String source;
+	private boolean isTruncated;
+	private String inReplyToStatusId;
+	private String inReplyToUserId;
+	private boolean isFavorited;
+	private int retweetCount;
+	private boolean wasRetweetedByMe; //the getter method is wasRetweetedByMe (not isWasRetweetedByMe)
+//	List<T> userMentionEntities
+	List<UrlEntity> urlEntities;
+	List<HashtagEntity> hashtagEntities;
 	private User user;
-//	
+
 	
 	
-	public User getUser() {
-		return user;
+	public long getCreatedAt() {
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a", Locale.US);
+		Date date = null;
+		try {
+			date = sdf.parse(createdAt);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}		
+		return date.getTime();
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public String getId()
@@ -42,6 +62,92 @@ public class Tweet {
 	{
 		this.text = text;
 	}
+
+	
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+	
+	public boolean isTruncated() {
+		return isTruncated;
+	}
+
+	public void setTruncated(boolean isTruncated) {
+		this.isTruncated = isTruncated;
+	}
+
+	public String getInReplyToStatusId() {
+		return inReplyToStatusId;
+	}
+
+	public void setInReplyToStatusId(String inReplyToStatusId) {
+		this.inReplyToStatusId = inReplyToStatusId;
+	}
+
+	public String getInReplyToUserId() {
+		return inReplyToUserId;
+	}
+
+	public void setInReplyToUserId(String inReplyToUserId) {
+		this.inReplyToUserId = inReplyToUserId;
+	}
+
+	public boolean isFavorited() {
+		return isFavorited;
+	}
+
+	public void setFavorited(boolean isFavorited) {
+		this.isFavorited = isFavorited;
+	}
+
+	public int getRetweetCount() {
+		return retweetCount;
+	}
+
+	public void setRetweetCount(int retweetCount) {
+		this.retweetCount = retweetCount;
+	}
+
+	public boolean wasRetweetedByMe() {
+		return wasRetweetedByMe;
+	}
+
+	public void setWasRetweetedByMe(boolean wasRetweetedByMe) {
+		this.wasRetweetedByMe = wasRetweetedByMe;
+	}
+	
+	public List<UrlEntity> getUrlEntities() {
+		return urlEntities;
+	}
+
+	public void setUrlEntities(List<UrlEntity> urlEntities) {
+		this.urlEntities = urlEntities;
+	}
+	
+	public List<HashtagEntity> getHashtagEntities() {
+		return hashtagEntities;
+	}
+
+	public void setHashtagEntities(List<HashtagEntity> hashtagEntities) {
+		this.hashtagEntities = hashtagEntities;
+	}
+	
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+	
+	
+	
 
 	public String toString()
 	{
