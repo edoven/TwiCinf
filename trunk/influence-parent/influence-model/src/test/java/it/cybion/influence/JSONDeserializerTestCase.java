@@ -46,7 +46,8 @@ public class JSONDeserializerTestCase
 	public void setup() throws IOException
 	{
 		gson = new GsonBuilder().create();
-		
+
+        //TODO why it loads always the same file?
 		json01 = readFile("src/test/resources/tweet01.json");
 		json02 = readFile("src/test/resources/tweet01.json");
 		json03 = readFile("src/test/resources/tweet01.json");
@@ -95,7 +96,6 @@ public class JSONDeserializerTestCase
         assertEquals(hashtagEntity.getStart(), 0);
         assertEquals(hashtagEntity.getEnd(), 7);
         assertEquals(hashtagEntity.getText(), "basket");
-
 
         User user = tweet.getUser();
         assertEquals(user.getId(), 425699035);
