@@ -26,10 +26,22 @@
 *.sql
 *.sqlite
 
+# target folders are ignored #
+######################
+*/target/**
+
+# TODO: move next sections to global .gitignore #
+
 # IDEA files #
 *.ipr
 *.iml
 *.iws
+.idea/
+
+# eclipse files #
+.classpath
+.project
+.settings/
 
 # OS generated files #
 ######################
@@ -38,6 +50,3 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-# target folders are ignored #
-######################
-target/*
