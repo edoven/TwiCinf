@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+
 //import org.joda.time.DateTime;
 
 
@@ -36,8 +37,12 @@ public class Tweet {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}		
-		return date.getTime();
+		if (date==null)
+			return -1;
+		else
+			return date.getTime();		
 	}
+	
 
 	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
