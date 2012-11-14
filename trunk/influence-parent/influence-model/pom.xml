@@ -15,7 +15,7 @@
 	<name>Cybion Twitter Influence Calculator - Model</name>
 
 	<properties>
-	<log4j.version>1.2.16</log4j.version>
+		<log4j.version>1.2.16</log4j.version>
 	</properties>
 
 	<dependencies>
@@ -34,6 +34,11 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2.2</version>
 		</dependency>
 	</dependencies>
 </project>
