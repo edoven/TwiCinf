@@ -1,13 +1,8 @@
 package it.cybion.influence.model;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import it.cybion.influence.util.DataParser;
+
 import java.util.List;
-import java.util.Locale;
-
-
-//import org.joda.time.DateTime;
 
 
 public class Tweet {
@@ -21,26 +16,17 @@ public class Tweet {
 	private String inReplyToUserId;
 	private boolean isFavorited;
 	private int retweetCount;
-	private boolean wasRetweetedByMe; //the getter method is wasRetweetedByMe (not isWasRetweetedByMe)
-//	List<T> userMentionEntities
-	List<UrlEntity> urlEntities;
-	List<HashtagEntity> hashtagEntities;
+	// private boolean wasRetweetedByMe;  --> Removed, cause: useless
+	private Tweet retweetedStatus;
+	private List<UserMentionEntity> userMentionEntities;
+	private List<UrlEntity> urlEntities;
+	private List<HashtagEntity> hashtagEntities;
 	private User user;
 
 	
 	
-	public long getCreatedAt() {
-		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a", Locale.US);
-		Date date = null;
-		try {
-			date = sdf.parse(createdAt);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}		
-		if (date==null)
-			return -1;
-		else
-			return date.getTime();		
+	public long getCreatedAt() {	
+		return DataParser.parseTwitterData(createdAt);
 	}
 	
 
@@ -118,6 +104,9 @@ public class Tweet {
 		this.retweetCount = retweetCount;
 	}
 
+	/*
+	 * REMOVED
+	 *
 	public boolean wasRetweetedByMe() {
 		return wasRetweetedByMe;
 	}
@@ -125,7 +114,28 @@ public class Tweet {
 	public void setWasRetweetedByMe(boolean wasRetweetedByMe) {
 		this.wasRetweetedByMe = wasRetweetedByMe;
 	}
+	*/
 	
+	public Tweet getRetweetedStatus() {
+		return retweetedStatus;
+	}
+
+
+	public void setRetweetedStatus(Tweet retweetedStatus) {
+		this.retweetedStatus = retweetedStatus;
+	}
+
+
+	public List<UserMentionEntity> getUserMentionEntities() {
+		return userMentionEntities;
+	}
+
+
+	public void setUserMentionEntities(List<UserMentionEntity> userMentionEntities) {
+		this.userMentionEntities = userMentionEntities;
+	}
+
+
 	public List<UrlEntity> getUrlEntities() {
 		return urlEntities;
 	}
@@ -160,7 +170,7 @@ public class Tweet {
         if (isFavorited != tweet.isFavorited) return false;
         if (isTruncated != tweet.isTruncated) return false;
         if (retweetCount != tweet.retweetCount) return false;
-        if (wasRetweetedByMe != tweet.wasRetweetedByMe) return false;
+        //if (wasRetweetedByMe != tweet.wasRetweetedByMe) return false;
         if (createdAt != null ? !createdAt.equals(tweet.createdAt) : tweet.createdAt != null)
             return false;
         if (hashtagEntities != null ? !hashtagEntities.equals(tweet.hashtagEntities) : tweet.hashtagEntities != null)
@@ -193,7 +203,7 @@ public class Tweet {
         result = 31 * result + (inReplyToUserId != null ? inReplyToUserId.hashCode() : 0);
         result = 31 * result + (isFavorited ? 1 : 0);
         result = 31 * result + retweetCount;
-        result = 31 * result + (wasRetweetedByMe ? 1 : 0);
+        //result = 31 * result + (wasRetweetedByMe ? 1 : 0);
         result = 31 * result + (urlEntities != null ? urlEntities.hashCode() : 0);
         result = 31 * result + (hashtagEntities != null ? hashtagEntities.hashCode() : 0);
         result = 31 * result + (user != null ? user.hashCode() : 0);
@@ -212,7 +222,7 @@ public class Tweet {
                 ", inReplyToUserId='" + inReplyToUserId + '\'' +
                 ", isFavorited=" + isFavorited +
                 ", retweetCount=" + retweetCount +
-                ", wasRetweetedByMe=" + wasRetweetedByMe +
+                //", wasRetweetedByMe=" + wasRetweetedByMe +
                 ", urlEntities=" + urlEntities +
                 ", hashtagEntities=" + hashtagEntities +
                 ", user=" + user +

@@ -1,5 +1,7 @@
 package it.cybion.influence.model;
 
+import it.cybion.influence.util.DataParser;
+
 import java.net.URL;
 import java.util.List;
 
@@ -53,7 +55,7 @@ public class User {
 	private boolean isProtected;
 	private int followersCount;
 	private int friendsCount;
-//	date createdAt
+	private String createdAt; //BEWARE! getCreatedAt returns a long
 	private int favouritesCount;
 	private String lang;
 	private int statusesCount;
@@ -121,6 +123,12 @@ public class User {
 	}
 	public void setFriendsCount(int friendsCount) {
 		this.friendsCount = friendsCount;
+	}
+	public long getCreatedAt() {
+		return DataParser.parseTwitterData(createdAt);
+	}
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
 	}
 	public int getFavouritesCount() {
 		return favouritesCount;
