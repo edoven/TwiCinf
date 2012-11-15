@@ -160,72 +160,125 @@ public class Tweet {
 		this.user = user;
 	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        Tweet tweet = (Tweet) o;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((createdAt == null) ? 0 : createdAt.hashCode());
+		result = prime * result
+				+ ((hashtagEntities == null) ? 0 : hashtagEntities.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime
+				* result
+				+ ((inReplyToStatusId == null) ? 0 : inReplyToStatusId
+						.hashCode());
+		result = prime * result
+				+ ((inReplyToUserId == null) ? 0 : inReplyToUserId.hashCode());
+		result = prime * result + (isFavorited ? 1231 : 1237);
+		result = prime * result + (isTruncated ? 1231 : 1237);
+		result = prime * result + retweetCount;
+		result = prime * result
+				+ ((retweetedStatus == null) ? 0 : retweetedStatus.hashCode());
+		result = prime * result + ((source == null) ? 0 : source.hashCode());
+		result = prime * result + ((text == null) ? 0 : text.hashCode());
+		result = prime * result
+				+ ((urlEntities == null) ? 0 : urlEntities.hashCode());
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		result = prime
+				* result
+				+ ((userMentionEntities == null) ? 0 : userMentionEntities
+						.hashCode());
+		return result;
+	}
 
-        if (isFavorited != tweet.isFavorited) return false;
-        if (isTruncated != tweet.isTruncated) return false;
-        if (retweetCount != tweet.retweetCount) return false;
-        //if (wasRetweetedByMe != tweet.wasRetweetedByMe) return false;
-        if (createdAt != null ? !createdAt.equals(tweet.createdAt) : tweet.createdAt != null)
-            return false;
-        if (hashtagEntities != null ? !hashtagEntities.equals(tweet.hashtagEntities) : tweet.hashtagEntities != null)
-            return false;
-        if (id != null ? !id.equals(tweet.id) : tweet.id != null) return false;
-        if (inReplyToStatusId != null ? !inReplyToStatusId.equals(tweet.inReplyToStatusId) : tweet.inReplyToStatusId != null)
-            return false;
-        if (inReplyToUserId != null ? !inReplyToUserId.equals(tweet.inReplyToUserId) : tweet.inReplyToUserId != null)
-            return false;
-        if (source != null ? !source.equals(tweet.source) : tweet.source != null)
-            return false;
-        if (text != null ? !text.equals(tweet.text) : tweet.text != null)
-            return false;
-        if (urlEntities != null ? !urlEntities.equals(tweet.urlEntities) : tweet.urlEntities != null)
-            return false;
-        if (user != null ? !user.equals(tweet.user) : tweet.user != null)
-            return false;
 
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tweet other = (Tweet) obj;
+		if (createdAt == null) {
+			if (other.createdAt != null)
+				return false;
+		} else if (!createdAt.equals(other.createdAt))
+			return false;
+		if (hashtagEntities == null) {
+			if (other.hashtagEntities != null)
+				return false;
+		} else if (!hashtagEntities.equals(other.hashtagEntities))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (inReplyToStatusId == null) {
+			if (other.inReplyToStatusId != null)
+				return false;
+		} else if (!inReplyToStatusId.equals(other.inReplyToStatusId))
+			return false;
+		if (inReplyToUserId == null) {
+			if (other.inReplyToUserId != null)
+				return false;
+		} else if (!inReplyToUserId.equals(other.inReplyToUserId))
+			return false;
+		if (isFavorited != other.isFavorited)
+			return false;
+		if (isTruncated != other.isTruncated)
+			return false;
+		if (retweetCount != other.retweetCount)
+			return false;
+		if (retweetedStatus == null) {
+			if (other.retweetedStatus != null)
+				return false;
+		} else if (!retweetedStatus.equals(other.retweetedStatus))
+			return false;
+		if (source == null) {
+			if (other.source != null)
+				return false;
+		} else if (!source.equals(other.source))
+			return false;
+		if (text == null) {
+			if (other.text != null)
+				return false;
+		} else if (!text.equals(other.text))
+			return false;
+		if (urlEntities == null) {
+			if (other.urlEntities != null)
+				return false;
+		} else if (!urlEntities.equals(other.urlEntities))
+			return false;
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
+			return false;
+		if (userMentionEntities == null) {
+			if (other.userMentionEntities != null)
+				return false;
+		} else if (!userMentionEntities.equals(other.userMentionEntities))
+			return false;
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        int result = createdAt != null ? createdAt.hashCode() : 0;
-        result = 31 * result + (id != null ? id.hashCode() : 0);
-        result = 31 * result + (text != null ? text.hashCode() : 0);
-        result = 31 * result + (source != null ? source.hashCode() : 0);
-        result = 31 * result + (isTruncated ? 1 : 0);
-        result = 31 * result + (inReplyToStatusId != null ? inReplyToStatusId.hashCode() : 0);
-        result = 31 * result + (inReplyToUserId != null ? inReplyToUserId.hashCode() : 0);
-        result = 31 * result + (isFavorited ? 1 : 0);
-        result = 31 * result + retweetCount;
-        //result = 31 * result + (wasRetweetedByMe ? 1 : 0);
-        result = 31 * result + (urlEntities != null ? urlEntities.hashCode() : 0);
-        result = 31 * result + (hashtagEntities != null ? hashtagEntities.hashCode() : 0);
-        result = 31 * result + (user != null ? user.hashCode() : 0);
-        return result;
-    }
 
-    @Override
-    public String toString() {
-        return "Tweet{" +
-                "createdAt='" + createdAt + '\'' +
-                ", id='" + id + '\'' +
-                ", text='" + text + '\'' +
-                ", source='" + source + '\'' +
-                ", isTruncated=" + isTruncated +
-                ", inReplyToStatusId='" + inReplyToStatusId + '\'' +
-                ", inReplyToUserId='" + inReplyToUserId + '\'' +
-                ", isFavorited=" + isFavorited +
-                ", retweetCount=" + retweetCount +
-                //", wasRetweetedByMe=" + wasRetweetedByMe +
-                ", urlEntities=" + urlEntities +
-                ", hashtagEntities=" + hashtagEntities +
-                ", user=" + user +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Tweet [createdAt=" + createdAt + ", id=" + id + ", text="
+				+ text + ", source=" + source + ", isTruncated=" + isTruncated
+				+ ", inReplyToStatusId=" + inReplyToStatusId
+				+ ", inReplyToUserId=" + inReplyToUserId + ", isFavorited="
+				+ isFavorited + ", retweetCount=" + retweetCount
+				+ ", retweetedStatus=" + retweetedStatus
+				+ ", userMentionEntities=" + userMentionEntities
+				+ ", urlEntities=" + urlEntities + ", hashtagEntities="
+				+ hashtagEntities + ", user=" + user + "]";
+	}
+	
 }
