@@ -158,7 +158,82 @@ public class User {
 	public void setFriends(List<User> friends) {
 		this.friends = friends;
 	}
-	
-	
-	
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (favouritesCount != user.favouritesCount) return false;
+        if (followersCount != user.followersCount) return false;
+        if (friendsCount != user.friendsCount) return false;
+        if (id != user.id) return false;
+        if (isContributorsEnabled != user.isContributorsEnabled) return false;
+        if (isProtected != user.isProtected) return false;
+        if (listedCount != user.listedCount) return false;
+        if (statusesCount != user.statusesCount) return false;
+        if (description != null ? !description.equals(user.description) : user.description != null)
+            return false;
+        if (followers != null ? !followers.equals(user.followers) : user.followers != null)
+            return false;
+        if (friends != null ? !friends.equals(user.friends) : user.friends != null)
+            return false;
+        if (lang != null ? !lang.equals(user.lang) : user.lang != null)
+            return false;
+        if (location != null ? !location.equals(user.location) : user.location != null)
+            return false;
+        if (name != null ? !name.equals(user.name) : user.name != null)
+            return false;
+        if (screenName != null ? !screenName.equals(user.screenName) : user.screenName != null)
+            return false;
+        if (url != null ? !url.equals(user.url) : user.url != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (screenName != null ? screenName.hashCode() : 0);
+        result = 31 * result + (location != null ? location.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (isContributorsEnabled ? 1 : 0);
+        result = 31 * result + (url != null ? url.hashCode() : 0);
+        result = 31 * result + (isProtected ? 1 : 0);
+        result = 31 * result + followersCount;
+        result = 31 * result + friendsCount;
+        result = 31 * result + favouritesCount;
+        result = 31 * result + (lang != null ? lang.hashCode() : 0);
+        result = 31 * result + statusesCount;
+        result = 31 * result + listedCount;
+        result = 31 * result + (followers != null ? followers.hashCode() : 0);
+        result = 31 * result + (friends != null ? friends.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", screenName='" + screenName + '\'' +
+                ", location='" + location + '\'' +
+                ", description='" + description + '\'' +
+                ", isContributorsEnabled=" + isContributorsEnabled +
+                ", url=" + url +
+                ", isProtected=" + isProtected +
+                ", followersCount=" + followersCount +
+                ", friendsCount=" + friendsCount +
+                ", favouritesCount=" + favouritesCount +
+                ", lang='" + lang + '\'' +
+                ", statusesCount=" + statusesCount +
+                ", listedCount=" + listedCount +
+                ", followers=" + followers +
+                ", friends=" + friends +
+                '}';
+    }
 }
