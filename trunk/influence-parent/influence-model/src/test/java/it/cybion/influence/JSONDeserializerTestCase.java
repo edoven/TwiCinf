@@ -8,23 +8,15 @@ import it.cybion.influence.model.UserMentionEntity;
 import it.cybion.influence.util.DataParser;
 import it.cybion.influence.util.InputReader;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Date;
+
 import java.util.List;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,8 +25,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 
-/**
- */
+
 public class JSONDeserializerTestCase
 {
 
@@ -43,7 +34,7 @@ public class JSONDeserializerTestCase
 	String json03;
 	Gson gson;
 
-    private static final Logger logger = Logger.getLogger(JSONDeserializerTestCase.class);
+    //private static final Logger logger = Logger.getLogger(JSONDeserializerTestCase.class);
 
 	
 	@BeforeClass
@@ -51,7 +42,6 @@ public class JSONDeserializerTestCase
 	{
 		gson = new GsonBuilder().create();
 
-        //TODO why it loads always the same file?
 		json01 = InputReader.readJsonFile("src/test/resources/tweet01.json");
 		json02 = InputReader.readJsonFile("src/test/resources/tweet02.json");
 		json03 = InputReader.readJsonFile("src/test/resources/tweet03.json");

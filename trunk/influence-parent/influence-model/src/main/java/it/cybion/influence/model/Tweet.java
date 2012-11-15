@@ -16,7 +16,6 @@ public class Tweet {
 	private String inReplyToUserId;
 	private boolean isFavorited;
 	private int retweetCount;
-	// private boolean wasRetweetedByMe;  --> Removed, cause: useless
 	private Tweet retweetedStatus;
 	private List<UserMentionEntity> userMentionEntities;
 	private List<UrlEntity> urlEntities;

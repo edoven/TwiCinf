@@ -40,6 +40,11 @@
             <artifactId>joda-time</artifactId>
             <version>1.6.2</version>
         </dependency>
+        <dependency>
+        	<groupId>it.cybion.monitoring</groupId>
+    		<artifactId>persistence</artifactId>
+        	<version>1.0-SNAPSHOT</version>
+        </dependency>
 	</dependencies>
 	<build>
         <plugins>

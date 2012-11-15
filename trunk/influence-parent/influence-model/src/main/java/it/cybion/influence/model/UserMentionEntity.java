@@ -15,6 +15,7 @@ public class UserMentionEntity {
 	private String name;
 	private String screenName;
 	private String id;
+	
 	public int getStart() {
 		return start;
 	}
