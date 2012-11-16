@@ -17,18 +17,22 @@ import java.text.ParseException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+
 
 
 
 public class JSONDeserializerTestCase
 {
 
+	String json01path = "src/test/resources/tweet01.json";
+	String json02path = "src/test/resources/tweet02.json";
+	String json03path = "src/test/resources/tweet03.json";
 	String json01;
 	String json02;
 	String json03;
@@ -42,9 +46,9 @@ public class JSONDeserializerTestCase
 	{
 		gson = new GsonBuilder().create();
 
-		json01 = InputReader.readJsonFile("src/test/resources/tweet01.json");
-		json02 = InputReader.readJsonFile("src/test/resources/tweet02.json");
-		json03 = InputReader.readJsonFile("src/test/resources/tweet03.json");
+		json01 = InputReader.readJsonFile(json01path);
+		json02 = InputReader.readJsonFile(json02path);
+		json03 = InputReader.readJsonFile(json03path);
 	}
 
     @AfterClass
