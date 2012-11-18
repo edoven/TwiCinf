@@ -55,7 +55,7 @@ public class User {
 	private boolean isProtected;
 	private int followersCount;
 	private int friendsCount;
-	private String createdAt; //BEWARE! getCreatedAt returns a long
+	private String createdAt; //BEWARE! getCreatedAt returns a long. see other TODO in Tweet.
 	private int favouritesCount;
 	private String lang;
 	private int statusesCount;

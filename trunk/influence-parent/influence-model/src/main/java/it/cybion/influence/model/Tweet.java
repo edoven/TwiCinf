@@ -17,13 +17,17 @@ public class Tweet {
 	private boolean isFavorited;
 	private int retweetCount;
 	private Tweet retweetedStatus;
+    //TODO init
 	private List<UserMentionEntity> userMentionEntities;
 	private List<UrlEntity> urlEntities;
 	private List<HashtagEntity> hashtagEntities;
 	private User user;
 
 	
-	
+
+    //TODO either use a custom deserializer for the field that converts string date to a long,
+    //either leave the data as it is. data type/format converting logic should not be hidden in getters.
+    //same thing for any other field.
 	public long getCreatedAt() {	
 		return DataParser.parseTwitterData(createdAt);
 	}

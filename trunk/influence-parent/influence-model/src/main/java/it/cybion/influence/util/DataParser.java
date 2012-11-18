@@ -9,9 +9,7 @@ public class DataParser {
 	
 	
 	private static final String dataFormat = "MMM dd, yyyy hh:mm:ss a";
-	
-	
-	
+
 	public static long parseTwitterData(String data) {
 		SimpleDateFormat sdf = new SimpleDateFormat(dataFormat, Locale.US);
 		Date date = null;

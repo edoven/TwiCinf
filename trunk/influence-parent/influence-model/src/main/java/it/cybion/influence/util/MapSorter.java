@@ -13,6 +13,7 @@ public class MapSorter {
 	
 	public static void main(String[] args)
 	{
+        //TODO if needed, move in a test
 		Map<String, Double> names2presences = new HashMap<String, Double>();
 		names2presences.put("gigi", 23.0);
 		names2presences.put("michele", 23.0);
@@ -68,7 +69,7 @@ public class MapSorter {
 	  
 	    Collections.sort(entries, new Comparator <Map.Entry<K,V>>()  
 	    {  
-	        @Override  
+	        @Override
 	        public int compare(  
 	               final Map.Entry<K,V> entry1,  
 	               final Map.Entry<K,V> entry2)  

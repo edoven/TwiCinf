@@ -1,17 +1,14 @@
 package it.cybion.influence.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.cybion.influence.model.Tweet;
-import it.cybion.influence.util.MysqlConnector;
-
-import java.io.IOException;
-import java.util.List;
-
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 
@@ -22,6 +19,7 @@ import static org.testng.Assert.assertEquals;
  * 
  */
 
+//TODO change name to MysqlConnectorTestCase
 public class MysqlConnectorTester {
 	
 	private int TWEET_COUNT = 6214;
