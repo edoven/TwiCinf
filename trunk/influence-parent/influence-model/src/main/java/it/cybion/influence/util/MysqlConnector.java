@@ -22,6 +22,7 @@ public class MysqlConnector {
 	*/
 	
 	public static List<String> getAllTwitterJsons() {
+        //TODO move this code inside the MysqlConnectorTester class
 		List<String> jsons = new ArrayList<String>();
 
 		TwitterMonitoringPersistenceConfiguration persistenceConfiguration =
