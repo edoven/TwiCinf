@@ -115,7 +115,7 @@ public class JSONDeserializerTestCase
 		Tweet tweet = gson.fromJson(json02, Tweet.class);
 		assertNotNull(tweet);
 		
-		assertEquals(tweet.getCreatedAt(), DataParser.parseTwitterData("Oct 19, 2012 1:02:39 PM"));
+		assertEquals(tweet.getCreatedAt(), DataParser.parseTwitterData("Oct 19, 2012 1:02:39 PM") );
         assertEquals(tweet.getId(), "259248190040178700");
         assertEquals(tweet.getText(), "@cristianotoni @rapierpa @SAPItalia @jessyb86 Se venite in Umbria da oggi Eurochocolate,sul nostro blog c'è scritto come muoversi meglio:-)");
         assertEquals(tweet.getSource(), "web");

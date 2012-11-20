@@ -1,13 +1,13 @@
 package it.cybion.influence.model;
 
-import it.cybion.influence.util.DataParser;
 
+import java.util.Date;
 import java.util.List;
 
 
 public class Tweet {
 	
-	private String createdAt;
+	private Date createdAt;
 	private String id;
 	private String text;
 	private String source;
@@ -26,13 +26,14 @@ public class Tweet {
 	/*
 	 * TODO: change!
 	 */
-	public long getCreatedAt() 
+	public Date getCreatedAt() 
 	{	
-		return DataParser.parseTwitterData(createdAt); //Sooo BAD!
+		//return DataParser.parseTwitterData(createdAt); //Sooo BAD!
+		return createdAt;
 	}
 	
 
-	public void setCreatedAt(String createdAt) 
+	public void setCreatedAt(Date createdAt) 
 	{
 		this.createdAt = createdAt;
 	}

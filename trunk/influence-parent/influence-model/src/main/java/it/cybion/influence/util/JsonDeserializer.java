@@ -22,7 +22,7 @@ public class JsonDeserializer {
 	
 	public static List<Tweet> jsons2tweets(List<String> jsons)
 	{
-		Gson gson = new GsonBuilder().create();
+		Gson gson = new GsonBuilder().setDateFormat("MMM dd, yyyy hh:mm:ss a").create();
 		
 		List<Tweet> tweets = new ArrayList<Tweet>();
 		Tweet tweet;

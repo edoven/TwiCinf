@@ -1,17 +1,15 @@
 package it.cybion.influence.model;
 
-import it.cybion.influence.util.DataParser;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /*
  * 
- * BEWARE: overridden method compare only compares ids 
- * (to speedup the MetricsCalculator's method genreateUser()
- * that returns the users list (user=tweet author) without duplicates)
+ * BEWARE: overridden method compare() only compares ids 
  * 
  */
 
@@ -67,7 +65,7 @@ public class User {
 	private boolean isProtected;
 	private int followersCount;
 	private int friendsCount;
-	private String createdAt; //BEWARE! getCreatedAt returns a long
+	private Date createdAt;
 	private int favouritesCount;
 	private String lang;
 	private int statusesCount;
@@ -172,13 +170,10 @@ public class User {
 	}
 	
 	
-	/*
-	 * TODO: change!
-	 */
-	public long getCreatedAt() {
-		return DataParser.parseTwitterData(createdAt); //Sooo BAD!
+	public Date getCreatedAt() {
+		return createdAt;
 	}
-	public void setCreatedAt(String createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 	public int getFavouritesCount() {
