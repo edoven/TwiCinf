@@ -13,25 +13,20 @@ public class MetricsReport {
 	private double followersCountAVG;
 	private double friendsCountAVG;
 	private double followersFriendsRatioAVG;
-	private int retweetsCount; //this is the number of tweets that are retweets of other tweets
+	private int retweetsCount; //this is the number of tweets that are retweets
+	private double users2tweetsCountAVG;
 
 	/*
 	 * Maps
 	 */
 	private Map<String, Integer> users2tweetsCountAmongDataset;
 	private Map<String, Integer> users2tweetsCount;
-		
-	/*
-	 * Hashtag metrics
-	 */
-	private Map<String, Integer> hashtags2count;// = new HashMap<String, Integer>();
+	private Map<String, Integer> hashtags2count;
+	private Map<String, Integer> userMentioned2count;
 
 	
 	
-	
-	
 
-	
 	/*
 	 * ==================
 	 * Getters and Setters
@@ -130,13 +125,23 @@ public class MetricsReport {
 	}
 
 
-	
+	public double getUsers2tweetsCountAVG() {
+		return users2tweetsCountAVG;
+	}
 
 
+	public void setUsers2tweetsCountAVG(double users2tweetsCountAVG) {
+		this.users2tweetsCountAVG = users2tweetsCountAVG;
+	}
 
 
+	public Map<String, Integer> getUserMentioned2count() {
+		return userMentioned2count;
+	}
 
-	
-	
+
+	public void setUserMentioned2count(Map<String, Integer> userMentioned2count) {
+		this.userMentioned2count = userMentioned2count;
+	}
 
 }

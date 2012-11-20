@@ -35,6 +35,7 @@ public class MetricsCalculatorTestCase {
 	Map<String, Integer> users2tweetsCount = new HashMap<String, Integer>();
 	Map<User, Integer> mostActiveUsers2tweetCount = new HashMap<User, Integer>();
 	Map<String, Integer> hashtags2counts = new HashMap<String, Integer>();
+	Map<String, Integer> usersMentioned2counts = new HashMap<String, Integer>();
 	
 	
 	
@@ -58,6 +59,8 @@ public class MetricsCalculatorTestCase {
 		users2tweetsCount = metricsReport.getUsers2tweetsCount();
 
 		hashtags2counts = metricsReport.getHashtags2count();
+		
+		usersMentioned2counts = metricsReport.getUserMentioned2count();
 		
 	}
 	
@@ -98,6 +101,8 @@ public class MetricsCalculatorTestCase {
     	assertEquals((int)users2tweetsCount.get(tweet01.getUser().getScreenName()), 996);
     	assertEquals((int)users2tweetsCount.get(tweet02.getUser().getScreenName()), 1171);
     	assertEquals((int)users2tweetsCount.get(tweet03.getUser().getScreenName()), 518);
+    	assertEquals(metricsReport.getUsers2tweetsCountAVG(), ( (996.0+1171.0+518.0) / 3) );
+    	
     	
     	//hashtags2counts
     	assertEquals(hashtags2counts.size(), 1); 	
@@ -105,6 +110,11 @@ public class MetricsCalculatorTestCase {
     	
     	//retweetsCount
     	assertEquals(metricsReport.getRetweetsCount(), 1); 	
+    	
+    	//usersMentioned2counts
+    	assertEquals(usersMentioned2counts.size(), 5); 	
+    	
+    	
     	
     }
     

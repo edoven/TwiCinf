@@ -9,6 +9,7 @@ import java.util.Map;
 import it.cybion.influence.model.HashtagEntity;
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.model.User;
+import it.cybion.influence.model.UserMentionEntity;
 import it.cybion.influence.util.MapSorter;
 
 /*
@@ -22,6 +23,7 @@ import it.cybion.influence.util.MapSorter;
  * DONE!
  * 
  * 5-test it in MetricsCalculatorTestCase class
+ * 6-print it in MetricsResultPrinter class
  */
 
 
@@ -72,18 +74,22 @@ public class MetricsCalculator {
 	private void createReport()  
 	{
 		/*
+		 * =========
 		 * Variables
+		 * =========
 		 */
 		int tweetsCount = 0;
 		int usersCount = 0;
 		double followersCountAVG = 0;
 		double friendsCountAVG = 0;
 		double followerFriendsRatioAVG = 0;
+		double users2tweetsCountAVG = 0;
 		
 		List<User> users = new ArrayList<User>();
 		Map<String, Integer> users2tweetsCountAmongDataset = new HashMap<String, Integer>(); //Map<ScreenName, tweetsCount>
 		Map<String, Integer> users2tweetsCount = new HashMap<String, Integer>(); //Map<ScreenName, tweetsCount>
 		Map<String, Integer> hashtags2count = new HashMap<String, Integer>();
+		Map<String, Integer> usersMentioned2count = new HashMap<String, Integer>();
 		
 		int retweetsCount = 0;
 		
@@ -95,30 +101,25 @@ public class MetricsCalculator {
 		 * Data calulation (batch process...beware the order of the operations)
 		 * ===============
 		 */
-		
-		/*
-		 * this cycle builds:
-		 * 1-the users list
-		 * 2-the users2tweetsCountAmongDataset map<String, Integer> (String = user.getScreenName())
-		 * 3-the hashtags2count map<String, Integer> (String = hashtag.getText())
-		 */
 		for (Tweet tweet: tweets)
 		{
 			User user = tweet.getUser();	
 			
 			users = updateUsers(users, user);			
 			users2tweetsCountAmongDataset = updateUsers2tweetsCountAmongDataset(users2tweetsCountAmongDataset, user); 
-			hashtags2count = updateHashtags2count(hashtags2count, tweet.getHashtagEntities());	
+			hashtags2count = updateHashtags2count(hashtags2count, tweet);	
 			retweetsCount = updateRetweetsCount(retweetsCount, tweet);
+			usersMentioned2count = updateUsersMentioned2count(usersMentioned2count, tweet);
 		}
 		
-		calculateUsers2tweetsCount(users, users2tweetsCount);	
+		users2tweetsCount = calculateUsers2tweetsCount(users);	
 				
 		tweetsCount = tweets.size();
 		usersCount = users.size();
 		followersCountAVG = calculateFollowersCountAVG(users);
 		friendsCountAVG = calculateFriendsCountAVG(users);
 		followerFriendsRatioAVG = calculateFollowerFriendsRatioAVG(users);
+		users2tweetsCountAVG = calculateUsers2tweetsCountAVG(users2tweetsCount);
 
 		
 		/*
@@ -127,7 +128,7 @@ public class MetricsCalculator {
 		users2tweetsCountAmongDataset = MapSorter.sortMapByValuesDescending(users2tweetsCountAmongDataset);
 		users2tweetsCount = MapSorter.sortMapByValuesDescending(users2tweetsCount);
 		hashtags2count = MapSorter.sortMapByValuesDescending(hashtags2count);
-		
+		usersMentioned2count = MapSorter.sortMapByValuesDescending(usersMentioned2count);
 		
 		
 		
@@ -146,6 +147,8 @@ public class MetricsCalculator {
 		report.setUsers2tweetsCount(users2tweetsCount);
 		report.setHashtags2count(hashtags2count);
 		report.setRetweetsCount(retweetsCount);
+		report.setUsers2tweetsCountAVG(users2tweetsCountAVG);
+		report.setUserMentioned2count(usersMentioned2count);
 		
 		
 	}
@@ -153,6 +156,10 @@ public class MetricsCalculator {
 	
 	
 	
+	
+
+
+
 	private List<User> updateUsers(List<User> users, User user)
 	{
 		if (!users.contains(user))
@@ -180,8 +187,9 @@ public class MetricsCalculator {
 	}
 	
 	
-	private Map<String, Integer> updateHashtags2count(Map<String, Integer> hashtags2count, List<HashtagEntity> hashtagEntities)
+	private Map<String, Integer> updateHashtags2count(Map<String, Integer> hashtags2count, Tweet tweet)
 	{
+		List<HashtagEntity> hashtagEntities = tweet.getHashtagEntities();
 		Map<String, Integer> updatedMap = hashtags2count;
 		for (HashtagEntity hashtagEntity: hashtagEntities)
 		{
@@ -195,10 +203,12 @@ public class MetricsCalculator {
 	}
 	
 	
-	private void calculateUsers2tweetsCount(List<User> users, Map<String, Integer> users2tweetsCount)
+	private Map<String, Integer> calculateUsers2tweetsCount(List<User> users)
 	{
+		Map<String, Integer> users2tweetsCount = new HashMap<String,Integer>();
 		for (User user: users)
 			users2tweetsCount.put(user.getScreenName(), user.getStatusesCount() );
+		return users2tweetsCount;
 	}
 	
 	
@@ -247,6 +257,30 @@ public class MetricsCalculator {
 			
 	}
 	
+	private double calculateUsers2tweetsCountAVG(Map<String, Integer> users2tweetsCount) {
+		double accumulator = 0;
+		for (Integer count: users2tweetsCount.values())
+			accumulator = accumulator + count;
+		return accumulator/users2tweetsCount.size();
+	}
+	
+	
+	private Map<String, Integer> updateUsersMentioned2count(Map<String, Integer> userMentioned2count, Tweet tweet) {
+		List<UserMentionEntity> userMentionEntities = tweet.getUserMentionEntities();
+		if (userMentionEntities.size()==0)
+			return userMentioned2count;
+		
+		Map<String, Integer> updatedMap = userMentioned2count;
+		for (UserMentionEntity userMentionEntity: userMentionEntities) {
+			String screenName = userMentionEntity.getScreenName();
+			if (userMentioned2count.containsKey(screenName))
+				updatedMap.put(screenName, (userMentioned2count.get(screenName)+1) );
+			else
+				updatedMap.put(screenName, 1 );
+		}
+		return updatedMap;
+			
+	}
 	
 	
 	
