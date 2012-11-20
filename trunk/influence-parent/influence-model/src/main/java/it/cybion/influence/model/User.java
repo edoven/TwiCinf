@@ -3,7 +3,19 @@ package it.cybion.influence.model;
 import it.cybion.influence.util.DataParser;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+/*
+ * 
+ * BEWARE: overridden method compare only compares ids 
+ * (to speedup the MetricsCalculator's method genreateUser()
+ * that returns the users list (user=tweet author) without duplicates)
+ * 
+ */
+
+
 
 /*
  * EXAMPLE :
@@ -55,14 +67,48 @@ public class User {
 	private boolean isProtected;
 	private int followersCount;
 	private int friendsCount;
-	private String createdAt; //BEWARE! getCreatedAt returns a long. see other TODO in Tweet.
+	private String createdAt; //BEWARE! getCreatedAt returns a long
 	private int favouritesCount;
 	private String lang;
 	private int statusesCount;
 	private int listedCount;
 	
-	private List<User> followers;
-	private List<User> friends;
+
+	/*
+	 * This map needs to be calculated
+	 * When a user is created from a JSON
+	 * this map is null.
+	 */
+	private Map<String, Integer> hashtags2count = null;
+	
+	/*
+	 * BEWARE!
+	 * To calcluate!
+	 * From the tweet json we can only get the followerCount and the friendCount.
+	 * We need the twitter API to get the user's followers/friends lists of IDs.
+	 */
+	private List<User> followers; 	
+	private List<User> friends;		
+	
+	
+	/*
+	 * "BUSINESS" METHODS
+	 */
+	
+	public void addHashtag(String hashtag) {
+		if (hashtags2count == null)
+			hashtags2count = new HashMap<String, Integer>();
+		if (hashtags2count.containsKey(hashtag))
+			hashtags2count.put(hashtag, (hashtags2count.get(hashtag) + 1) );
+		else
+			hashtags2count.put(hashtag, 1 );
+	}
+	
+	
+	
+	/*
+	 * GETTERS AND SETTERS
+	 */
 
     public long getId() {
 		return id;
@@ -166,38 +212,30 @@ public class User {
 	public void setFriends(List<User> friends) {
 		this.friends = friends;
 	}
+	public Map<String, Integer> getHashtags2count() {
+		return hashtags2count;
+	}
+	public void setHashtags2count(Map<String, Integer> hashtags2count) {
+		this.hashtags2count = hashtags2count;
+	}
+	
+	
+	
+	
+	/*
+	 * EQUALS, HASHCODE, TOSTRING
+	 */
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) 
+        	return true;
+        if (o == null || getClass() != o.getClass()) 
+        	return false;
         User user = (User) o;
-
-        if (favouritesCount != user.favouritesCount) return false;
-        if (followersCount != user.followersCount) return false;
-        if (friendsCount != user.friendsCount) return false;
-        if (id != user.id) return false;
-        if (isContributorsEnabled != user.isContributorsEnabled) return false;
-        if (isProtected != user.isProtected) return false;
-        if (listedCount != user.listedCount) return false;
-        if (statusesCount != user.statusesCount) return false;
-        if (description != null ? !description.equals(user.description) : user.description != null)
-            return false;
-        if (followers != null ? !followers.equals(user.followers) : user.followers != null)
-            return false;
-        if (friends != null ? !friends.equals(user.friends) : user.friends != null)
-            return false;
-        if (lang != null ? !lang.equals(user.lang) : user.lang != null)
-            return false;
-        if (location != null ? !location.equals(user.location) : user.location != null)
-            return false;
-        if (name != null ? !name.equals(user.name) : user.name != null)
-            return false;
-        if (screenName != null ? !screenName.equals(user.screenName) : user.screenName != null)
-            return false;
-        if (url != null ? !url.equals(user.url) : user.url != null)
-            return false;
+        if (id != user.id) 
+        	return false;
+        
 
         return true;
     }
@@ -244,4 +282,8 @@ public class User {
                 ", friends=" + friends +
                 '}';
     }
+    
+    
+	
+	
 }

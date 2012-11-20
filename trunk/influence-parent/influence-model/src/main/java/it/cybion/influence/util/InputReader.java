@@ -17,6 +17,7 @@ public class InputReader {
             stringBuilder.append(ls);
         }
 
+        reader.close();
         return stringBuilder.toString();
     }
 	

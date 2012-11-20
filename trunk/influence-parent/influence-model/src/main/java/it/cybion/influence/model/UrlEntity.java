@@ -4,7 +4,7 @@ import java.net.URL;
 
 /*
  * 
- * BEWARE: the jason name is urlEntities not UrlEntities
+ * BEWARE: the json name is urlEntities not UrlEntities
  * 
  */
 

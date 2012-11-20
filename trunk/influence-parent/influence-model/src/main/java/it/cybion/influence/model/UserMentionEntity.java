@@ -1,13 +1,14 @@
 package it.cybion.influence.model;
 
 
-/*{
-            "start": 0,
-            "end": 14,
-            "name": "Cristiano Toni",
-            "screenName": "cristianotoni",
-            "id": 18632224
-        }
+/*
+{
+ 	"start": 0,
+    "end": 14,
+    "name": "Cristiano Toni",
+    "screenName": "cristianotoni",
+    "id": 18632224
+}
 */
 public class UserMentionEntity {
 	private int start;
