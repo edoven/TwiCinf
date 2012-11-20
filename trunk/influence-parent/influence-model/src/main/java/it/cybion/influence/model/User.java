@@ -170,8 +170,13 @@ public class User {
 	public void setFriendsCount(int friendsCount) {
 		this.friendsCount = friendsCount;
 	}
+	
+	
+	/*
+	 * TODO: change!
+	 */
 	public long getCreatedAt() {
-		return DataParser.parseTwitterData(createdAt);
+		return DataParser.parseTwitterData(createdAt); //Sooo BAD!
 	}
 	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;

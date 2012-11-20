@@ -11,17 +11,28 @@ import it.cybion.influence.model.Tweet;
 import it.cybion.influence.model.User;
 import it.cybion.influence.util.MapSorter;
 
+/*
+ * To add a new report field:
+ * 
+ * 1-add the new variable in MetricsReport and generate its getter and setter
+ * 2-add the new variable in createReport() (section "variables")
+ * 3-add the operation to calculate the new variable in createReport() (section "data calulation")
+ * 4-set the report field in createReport() (section "report creation")
+ * 
+ * DONE!
+ * 
+ * 5-test it in MetricsCalculatorTestCase class
+ */
+
+
+
 
 
 public class MetricsCalculator {
 	
-	private MetricsReport report = null;
-	 
-	private List<Tweet> tweets; // = new ArrayList<Tweet>();
-	
-	
-	//private boolean users2tweetsCountAmongDatasetIsSorted = false;	
-	//private boolean users2tweetsCountIsSorted = false;
+	private MetricsReport report = null;	 
+	private List<Tweet> tweets;
+
 
 	
 	/*
@@ -38,7 +49,9 @@ public class MetricsCalculator {
 	
 	
 	/*
+	 * 
 	 * Public methods
+	 * 
 	 */
 	
 	public MetricsReport getReport() 
@@ -48,28 +61,31 @@ public class MetricsCalculator {
 		return this.report;		
 	}
 	
-	
-	
-	
 	/*
 	 * 
-	 * CALCULATE INFOS
+	 * Private methods
 	 * 
 	 */
-
 	
+	
+
 	private void createReport()  
 	{
-		int tweetsCount;
-		int usersCount;
-		double followersCountAVG;
-		double friendsCountAVG;
-		double followerFriendsRatioAVG;
+		/*
+		 * Variables
+		 */
+		int tweetsCount = 0;
+		int usersCount = 0;
+		double followersCountAVG = 0;
+		double friendsCountAVG = 0;
+		double followerFriendsRatioAVG = 0;
 		
 		List<User> users = new ArrayList<User>();
 		Map<String, Integer> users2tweetsCountAmongDataset = new HashMap<String, Integer>(); //Map<ScreenName, tweetsCount>
 		Map<String, Integer> users2tweetsCount = new HashMap<String, Integer>(); //Map<ScreenName, tweetsCount>
 		Map<String, Integer> hashtags2count = new HashMap<String, Integer>();
+		
+		int retweetsCount = 0;
 		
 		
 		
@@ -80,19 +96,24 @@ public class MetricsCalculator {
 		 * ===============
 		 */
 		
-
+		/*
+		 * this cycle builds:
+		 * 1-the users list
+		 * 2-the users2tweetsCountAmongDataset map<String, Integer> (String = user.getScreenName())
+		 * 3-the hashtags2count map<String, Integer> (String = hashtag.getText())
+		 */
 		for (Tweet tweet: tweets)
 		{
 			User user = tweet.getUser();	
 			
-			updateUsers(users, user);			
-			updateUsers2tweetsCountAmongDataset(users2tweetsCountAmongDataset, user); 
-			updateHashtags2count(hashtags2count, tweet.getHashtagEntities());				
+			users = updateUsers(users, user);			
+			users2tweetsCountAmongDataset = updateUsers2tweetsCountAmongDataset(users2tweetsCountAmongDataset, user); 
+			hashtags2count = updateHashtags2count(hashtags2count, tweet.getHashtagEntities());	
+			retweetsCount = updateRetweetsCount(retweetsCount, tweet);
 		}
 		
 		calculateUsers2tweetsCount(users, users2tweetsCount);	
-		
-		
+				
 		tweetsCount = tweets.size();
 		usersCount = users.size();
 		followersCountAVG = calculateFollowersCountAVG(users);
@@ -111,7 +132,9 @@ public class MetricsCalculator {
 		
 		
 		/*
+		 * ===============
 		 * Report creation
+		 * ===============
 		 */
 		this.report = new MetricsReport();
 		report.setTweetsCount(tweetsCount);
@@ -119,12 +142,10 @@ public class MetricsCalculator {
 		report.setFollowersCountAVG(followersCountAVG);
 		report.setFriendsCountAVG(friendsCountAVG);
 		report.setFollowerFriendsRatioAVG(followerFriendsRatioAVG);
-		
-		
-		
 		report.setUsers2tweetsCountAmongDataset(users2tweetsCountAmongDataset);		
 		report.setUsers2tweetsCount(users2tweetsCount);
 		report.setHashtags2count(hashtags2count);
+		report.setRetweetsCount(retweetsCount);
 		
 		
 	}
@@ -132,34 +153,45 @@ public class MetricsCalculator {
 	
 	
 	
-	private void updateUsers(List<User> users, User user)
+	private List<User> updateUsers(List<User> users, User user)
 	{
 		if (!users.contains(user))
-			users.add(user);
-	}
-	
-	
-	private void updateUsers2tweetsCountAmongDataset(Map<String, Integer> users2tweetsCountAmongDataset, User user)
-	{
-		if (!users2tweetsCountAmongDataset.containsKey(user.getScreenName()))
-			users2tweetsCountAmongDataset.put(user.getScreenName(), 1);
-		else {
-			int tweetCount = users2tweetsCountAmongDataset.get(user.getScreenName());
-			users2tweetsCountAmongDataset.put(user.getScreenName(), (tweetCount+1) );
+		{
+			
+			List<User> updatedUsers = users;
+			updatedUsers.add(user);
+			return updatedUsers;
 		}
+		else
+			return users;
 	}
 	
 	
-	private void updateHashtags2count(Map<String, Integer> hashtags2count, List<HashtagEntity> hashtagEntities)
+	private Map<String, Integer> updateUsers2tweetsCountAmongDataset(Map<String, Integer> users2tweetsCountAmongDataset, User user)
 	{
+		Map<String, Integer> updatedMap = users2tweetsCountAmongDataset;
+		if (!updatedMap.containsKey(user.getScreenName()))
+			updatedMap.put(user.getScreenName(), 1);
+		else {
+			int tweetCount = updatedMap.get(user.getScreenName());
+			updatedMap.put(user.getScreenName(), (tweetCount+1) );
+		}
+		return updatedMap;
+	}
+	
+	
+	private Map<String, Integer> updateHashtags2count(Map<String, Integer> hashtags2count, List<HashtagEntity> hashtagEntities)
+	{
+		Map<String, Integer> updatedMap = hashtags2count;
 		for (HashtagEntity hashtagEntity: hashtagEntities)
 		{
 			String hashtag = hashtagEntity.getText();
-			if (hashtags2count.containsKey(hashtag))
-				hashtags2count.put(hashtag, (hashtags2count.get(hashtag)+1) );
+			if (updatedMap.containsKey(hashtag))
+				updatedMap.put(hashtag, (updatedMap.get(hashtag)+1) );
 			else
-				hashtags2count.put(hashtag, 1 );
+				updatedMap.put(hashtag, 1 );
 		}
+		return updatedMap;
 	}
 	
 	
@@ -186,17 +218,34 @@ public class MetricsCalculator {
 	}
 		
 	
+	/*
+	 * BEWARE: this skips the users with friendsCount==0 
+	 * to avoid division by 0
+	 */
 	private double calculateFollowerFriendsRatioAVG(List<User> users) {
-		double accumulator = 0;
+		double accumulator = 0.0;
 		int countedUsers = 0;
 		for (User user: users) {
-			if (user.getFriendsCount()>0)
-			accumulator = accumulator + ( user.getFollowersCount() / user.getFriendsCount() );
-			countedUsers++;
+			if (user.getFriendsCount()>0) {
+				accumulator = accumulator + ( (double)user.getFollowersCount() / user.getFriendsCount() );
+				countedUsers++;
+			}
 		}
-		return accumulator/countedUsers;
+		
+		if (countedUsers==0)
+			return 0;
+		else
+			return accumulator/countedUsers;
 	}
 	
+	
+	private int updateRetweetsCount(int retweetsCount, Tweet tweet) {
+		if (tweet.getRetweetedStatus()!=null)
+			return retweetsCount+1;
+		else
+			return retweetsCount;
+			
+	}
 	
 	
 	

@@ -23,10 +23,12 @@ public class Tweet {
 	private User user;
 
 	
-	
+	/*
+	 * TODO: change!
+	 */
 	public long getCreatedAt() 
 	{	
-		return DataParser.parseTwitterData(createdAt);
+		return DataParser.parseTwitterData(createdAt); //Sooo BAD!
 	}
 	
 

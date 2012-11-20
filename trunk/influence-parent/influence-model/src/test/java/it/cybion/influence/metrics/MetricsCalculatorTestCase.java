@@ -20,31 +20,7 @@ import com.google.gson.GsonBuilder;
 
 public class MetricsCalculatorTestCase {
 	
-	/*
-	 * METRICS
-	 */
-	double followersCountAVG = (123 + 98 + 61) / 3; // = 94
-	double friendsCountAVG = (93 + 193 + 266) / 3; // = 184
-	double followerFriendsRatioAVG = ( (123.0/93) + (98.0/193) + (61.0/266) ) / 3;
-	double tweetsPerUserAVG = ( 996 + 1171 + 518 ) / 3;
-	
-	int tweetCountAmongDatasetUser01 = 1;
-	int tweetCountAmongDatasetUser02 = 1;
-	int tweetCountAmongDatasetUser03 = 1;
-	double tweetsPerUserAmongDatasetAVG = 1;
-	
-	int tweetCountUser01 = 996;
-	int tweetCountUser02 = 1171;
-	int tweetCountUser03 = 518;
-	double tweetCountUserAVG = (996 + 1171 + 518) / 3;
-	
-	String mostActiveUserScreenName01 = "PaolaGigante62";
-	String mostActiveUserScreenName02 = "PerugiaToday";
-	String mostActiveUserScreenName03 = "lauramesolella";
-	
-	
-	
-	
+
 	/*
 	 *  VARIABLES
 	 */
@@ -52,24 +28,16 @@ public class MetricsCalculatorTestCase {
 	String json02path = "src/test/resources/tweet02.json";
 	String json03path = "src/test/resources/tweet03.json";
 	Tweet tweet01, tweet02, tweet03;
-	List<User> users;
-	List<Tweet> tweets;
+	List<Tweet> tweets = new ArrayList<Tweet>();
 	Gson gson;
-	MetricsCalculator metricsCalculator;
-	Map<User, Integer> users2tweetsCountAmongDataset = new HashMap<User, Integer>();
-	Map<User, Integer> users2tweetsCount = new HashMap<User, Integer>();
+	MetricsReport metricsReport;
+	Map<String, Integer> users2tweetsCountAmongDataset = new HashMap<String, Integer>();
+	Map<String, Integer> users2tweetsCount = new HashMap<String, Integer>();
 	Map<User, Integer> mostActiveUsers2tweetCount = new HashMap<User, Integer>();
-	List<User> mostActiveUsers = new ArrayList<User>();
-	Map<User, Integer> mostActiveUsersAmongDataset2tweetCount = new HashMap<User, Integer>();
-
-	
-	/*
-	 * TODO
-	 */
-	Map<String, Integer> hashtags2counts; // = getMostUsedHashtags();
+	Map<String, Integer> hashtags2counts = new HashMap<String, Integer>();
 	
 	
-	/*
+	
 	@BeforeClass
 	public void setup() throws IOException
 	{
@@ -84,17 +52,15 @@ public class MetricsCalculatorTestCase {
 		tweets.add(tweet02);
 		tweets.add(tweet03);
 
-		metricsCalculator = new MetricsCalculator(tweets);
+		metricsReport = new MetricsCalculator(tweets).getReport();
+		
+		users2tweetsCountAmongDataset = metricsReport.getUsers2tweetsCountAmongDataset();
+		users2tweetsCount = metricsReport.getUsers2tweetsCount();
 
-		users2tweetsCountAmongDataset = metricsCalculator.getUsers2tweetsCountAmongDataset();
-		users2tweetsCount = metricsCalculator.getUsers2tweetsCount();
-		
-		mostActiveUsers2tweetCount = metricsCalculator.getMostActiveTwitters();
-		mostActiveUsers = new ArrayList<String>(mostActiveUsers2tweetCount.keySet());
-		
+		hashtags2counts = metricsReport.getHashtags2count();
 		
 	}
-	*/
+	
 
     @AfterClass
 	public void shutdown()
@@ -104,34 +70,43 @@ public class MetricsCalculatorTestCase {
         tweet02 = null;
         tweet03 = null;
         tweets = null;
-        users = null;
-        metricsCalculator = null;
+        metricsReport = null;      
+        users2tweetsCountAmongDataset = null;
+        users2tweetsCount = null;
+        hashtags2counts = null;
 	}
 	
-	/*
+	
     @Test
     public void testsIfTheMetricsAreCorrect() {
-    	assertEquals(metricsCalculator.getFollowersCountAVG(), followersCountAVG);
-    	assertEquals(metricsCalculator.getFriendsCountAVG(), friendsCountAVG);   	
-    	assertEquals(metricsCalculator.getFollowerFriendsRatioAVG(), followerFriendsRatioAVG);
-    	  	
-    	assertEquals((int)users2tweetsCountAmongDataset.get(tweet01.getUser().getScreenName()), tweetCountAmongDatasetUser01);
-    	assertEquals((int)users2tweetsCountAmongDataset.get(tweet02.getUser().getScreenName()), tweetCountAmongDatasetUser02);
-    	assertEquals((int)users2tweetsCountAmongDataset.get(tweet03.getUser().getScreenName()), tweetCountAmongDatasetUser03);
-    	assertEquals(metricsCalculator.getTweetsPerUserAmongDatasetAVG(), tweetsPerUserAmongDatasetAVG);
-    	
-    	assertEquals((int)users2tweetsCount.get(tweet01.getUser().getScreenName()), tweetCountUser01);
-    	assertEquals((int)users2tweetsCount.get(tweet02.getUser().getScreenName()), tweetCountUser02);
-    	assertEquals((int)users2tweetsCount.get(tweet03.getUser().getScreenName()), tweetCountUser03);
-    	assertEquals(metricsCalculator.getTweetsPerUserAVG(), tweetsPerUserAVG);
-    	
-    	assertEquals(mostActiveUsers.get(0), mostActiveUserScreenName01);
-    	assertEquals(mostActiveUsers.get(1), mostActiveUserScreenName02);
-    	assertEquals(mostActiveUsers.get(2), mostActiveUserScreenName03);
-    	
 
+    	//Basic info
+    	assertEquals(metricsReport.getTweetsCount(), 3);
+    	assertEquals(metricsReport.getUsersCount(), 3);  	
+    	assertEquals(metricsReport.getFollowersCountAVG(), ((double)(123 + 98 + 61)) / 3 );
+    	assertEquals(metricsReport.getFriendsCountAVG(), ((double)(93 + 193 + 266)) / 3 );   	
+    	assertEquals(metricsReport.getFollowersFriendsRatioAVG(), ((123.0/93) + (98.0/193) + (61.0/266)) / 3.0 );
     	
+    	//users2tweetsCountAmongDataset
+    	assertEquals(users2tweetsCountAmongDataset.size(), 3);  	
+    	assertEquals((int)users2tweetsCountAmongDataset.get(tweet01.getUser().getScreenName()), 1);
+    	assertEquals((int)users2tweetsCountAmongDataset.get(tweet02.getUser().getScreenName()), 1);
+    	assertEquals((int)users2tweetsCountAmongDataset.get(tweet03.getUser().getScreenName()), 1);
+    	
+    	//users2tweetsCount
+    	assertEquals(users2tweetsCount.size(), 3); 
+    	assertEquals((int)users2tweetsCount.get(tweet01.getUser().getScreenName()), 996);
+    	assertEquals((int)users2tweetsCount.get(tweet02.getUser().getScreenName()), 1171);
+    	assertEquals((int)users2tweetsCount.get(tweet03.getUser().getScreenName()), 518);
+    	
+    	//hashtags2counts
+    	assertEquals(hashtags2counts.size(), 1); 	
+    	assertEquals((int)hashtags2counts.get("basket"), 1);
+    	
+    	//retweetsCount
+    	assertEquals(metricsReport.getRetweetsCount(), 1); 	
     	
     }
-    */
+    
+    
 }
