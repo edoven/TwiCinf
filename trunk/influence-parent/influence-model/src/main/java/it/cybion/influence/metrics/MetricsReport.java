@@ -1,7 +1,11 @@
 package it.cybion.influence.metrics;
 
 
+
+import java.util.List;
 import java.util.Map;
+
+import it.cybion.influence.model.User;
 
 public class MetricsReport {
 
@@ -15,7 +19,11 @@ public class MetricsReport {
 	private double followersFriendsRatioAVG;
 	private int retweetsCount; //this is the number of tweets that are retweets
 	private double users2tweetsCountAVG;
-
+	
+	/*
+	 * Lists
+	 */
+	private List<User> users;
 	/*
 	 * Maps
 	 */
@@ -74,10 +82,9 @@ public class MetricsReport {
 	public double getFollowersFriendsRatioAVG() {
 		return followersFriendsRatioAVG;
 	}
-
-
-	public void setFollowerFriendsRatioAVG(double followerFriendsRatioAVG) {
-		this.followersFriendsRatioAVG = followerFriendsRatioAVG;
+	
+	public void setFollowersFriendsRatioAVG(double followersFriendsRatioAVG) {
+		this.followersFriendsRatioAVG = followersFriendsRatioAVG;
 	}
 
 
@@ -141,4 +148,17 @@ public class MetricsReport {
 		this.userMentioned2count = userMentioned2count;
 	}
 
+
+	public List<User> getUsers() {
+		return users;
+	}
+
+
+	public void setUsers(List<User> users) {
+		this.users = users;
+	}
+
+
+	
+	
 }

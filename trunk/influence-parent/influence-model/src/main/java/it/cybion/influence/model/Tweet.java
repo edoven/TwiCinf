@@ -23,12 +23,8 @@ public class Tweet {
 	private User user;
 
 	
-	/*
-	 * TODO: change!
-	 */
 	public Date getCreatedAt() 
 	{	
-		//return DataParser.parseTwitterData(createdAt); //Sooo BAD!
 		return createdAt;
 	}
 	

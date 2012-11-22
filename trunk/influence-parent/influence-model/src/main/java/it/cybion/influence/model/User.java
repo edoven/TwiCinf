@@ -240,24 +240,14 @@ public class User {
         return true;
     }
 
+    /*
+     * Lightweight version of hashCode() is needed to speed-up the
+     * report creation process.
+     * TODO: Can be better? Think about it!
+     */ 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (screenName != null ? screenName.hashCode() : 0);
-        result = 31 * result + (location != null ? location.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (isContributorsEnabled ? 1 : 0);
-        result = 31 * result + (url != null ? url.hashCode() : 0);
-        result = 31 * result + (isProtected ? 1 : 0);
-        result = 31 * result + followersCount;
-        result = 31 * result + friendsCount;
-        result = 31 * result + favouritesCount;
-        result = 31 * result + (lang != null ? lang.hashCode() : 0);
-        result = 31 * result + statusesCount;
-        result = 31 * result + listedCount;
-        result = 31 * result + (followers != null ? followers.hashCode() : 0);
-        result = 31 * result + (friends != null ? friends.hashCode() : 0);
+        int result = (int) (id+screenName.hashCode());
         return result;
     }
 

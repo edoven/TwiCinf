@@ -6,10 +6,21 @@ import it.cybion.influence.model.User;
 import it.cybion.influence.model.UserMentionEntity;
 import it.cybion.influence.util.MapSorter;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+/*
+ * 
+ * 
+ * SUPPRESSABLE (use AtomicMetricsCalculator)
+ * 
+ * 
+ */
+
+
 
 /*
  * To add a new report field:
@@ -98,13 +109,14 @@ public class MetricsCalculator {
 		
 		/*
 		 * maps sorting
-		 * TODO find and use (during the calculation) proper data structures that keep items
-		 * in order and remove these lines
+		 * (can't replace this with TreeMap because I need to sort the maps according to map values)
+		 * TODO: investigate TreeMap & Comparator
 		 */
 		users2tweetsCountAmongDataset = MapSorter.sortMapByValuesDescending(users2tweetsCountAmongDataset);
 		users2tweetsCount = MapSorter.sortMapByValuesDescending(users2tweetsCount);
 		hashtags2count = MapSorter.sortMapByValuesDescending(hashtags2count);
 		usersMentioned2count = MapSorter.sortMapByValuesDescending(usersMentioned2count);
+
 		
 		/*
 		 * ===============
@@ -121,13 +133,14 @@ public class MetricsCalculator {
 		report.setUsersCount(usersCount);
 		report.setFollowersCountAVG(followersCountAVG);
 		report.setFriendsCountAVG(friendsCountAVG);
-		report.setFollowerFriendsRatioAVG(followerFriendsRatioAVG);
+		report.setFollowersFriendsRatioAVG(followerFriendsRatioAVG);
 		report.setUsers2tweetsCountAmongDataset(users2tweetsCountAmongDataset);		
 		report.setUsers2tweetsCount(users2tweetsCount);
 		report.setHashtags2count(hashtags2count);
 		report.setRetweetsCount(retweetsCount);
 		report.setUsers2tweetsCountAVG(users2tweetsCountAVG);
 		report.setUserMentioned2count(usersMentioned2count);
+		report.setUsers(users);
 	}
 
 	private List<User> updateUsers(List<User> users, User newUser)
