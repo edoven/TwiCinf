@@ -247,7 +247,7 @@ public class User {
      */ 
     @Override
     public int hashCode() {
-        int result = (int) (id+screenName.hashCode());
+        int result = (int) (id);
         return result;
     }
 

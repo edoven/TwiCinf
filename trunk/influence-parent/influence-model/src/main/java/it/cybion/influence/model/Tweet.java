@@ -161,6 +161,10 @@ public class Tweet {
 	}
 
 
+	/*
+	 * Never used but can be optimized (maybe hashCode=id)
+	 * if necessary.
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;

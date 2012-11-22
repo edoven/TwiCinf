@@ -14,7 +14,8 @@ public class MetricsCalculatosSpeedTester {
 	private static final Logger logger = Logger.getLogger(MetricsCalculatosSpeedTester.class);
 
 	/*
-	 * This is not a test
+	 * This is not a test, it only measure the computational time difference 
+	 * between the old MetricsCalculator and the new AtomicMetricsCalculator
 	 */
 	@Test
 	public void testTheSpeedOfThe2MetricsCalculators() {

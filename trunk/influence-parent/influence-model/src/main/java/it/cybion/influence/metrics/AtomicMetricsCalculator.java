@@ -64,10 +64,7 @@ public class AtomicMetricsCalculator {
 		
 		logger.info("calculating getUserMentioned2count");
 		report.setUserMentioned2count(getUserMentioned2count());
-		
-		
-		
-		
+
 		return report;
 	}
 	
