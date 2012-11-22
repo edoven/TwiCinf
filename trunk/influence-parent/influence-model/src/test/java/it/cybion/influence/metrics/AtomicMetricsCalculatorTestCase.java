@@ -6,7 +6,7 @@ public class AtomicMetricsCalculatorTestCase {
 
 	@Test
 	public void testAll(){
-		// TODO Auto-generated method stub
+		// TODO move here testing logic for this class, remove MetricsCalculator code and tests since now it's old
 	}
 
 }
