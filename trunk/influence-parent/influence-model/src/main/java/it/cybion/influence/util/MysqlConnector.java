@@ -5,10 +5,23 @@ import it.cybion.monitor.dao.TweetDao;
 import it.cybion.monitor.model.Tweet;
 import org.joda.time.DateTime;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MysqlConnector {
+	
+	public static void main(String[] args)  {
+		//getFriendsEnrichedUsers();
+		writeFriend("user1", "friend2");
+	}
+	
+	
 
     //TODO why not local variables?
 	private static String mySqlHost = "localhost";
@@ -37,4 +50,100 @@ public class MysqlConnector {
 			jsons.add(tweet.getTweetJson());
 		return jsons;
 	}
+	
+	
+	public static List<String> getFriendsEnrichedUsers() {
+		List<String> users = new ArrayList<String>();
+
+		Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        String url = "jdbc:mysql://localhost:3306/twitter-users";
+        String user = "root";
+        String password = "qwerty";
+        String query = "SELECT distinct(user_screenname) FROM `twitter-users`.friends;";
+
+        try {
+            con = DriverManager.getConnection(url, user, password);
+            st = con.createStatement();
+            rs = st.executeQuery(query);
+
+            while (rs.next()) {
+            	users.add(rs.getString("user_screenname"));
+                //System.out.println(rs.getString("user_screenname"));
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+            	ex.printStackTrace();
+            }
+        }
+        return users;
+    
+	}
+	
+	
+	
+	public static void writeFriends(String user, List<String> friends) {
+		for (String friend : friends)
+			writeFriend(user, friend);
+	}
+	
+	
+	
+	
+	
+	
+	public static void writeFriend(String user, String friend) {
+
+		Connection con = null;
+		PreparedStatement pst = null;
+
+        String url = "jdbc:mysql://localhost:3306/twitter-users";
+        String mysqlUser = "root";
+        String password = "qwerty";
+        String query = "INSERT INTO `twitter-users`.`friends` (`user_screenname`, `friend_screenname`) VALUES ('"+user+"', '"+friend+"')";
+    	
+	         
+        try {
+            con = DriverManager.getConnection(url, mysqlUser, password);
+
+            pst = con.prepareStatement(query);
+            pst.executeUpdate();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+
+            try {
+                if (pst != null) {
+                    pst.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+            	ex.printStackTrace();
+            }
+        }
+        
+        
+	}
+
 }
