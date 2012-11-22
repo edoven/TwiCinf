@@ -7,34 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class MapSorter {
-	
-	/*
-	public static void main(String[] args)
-	{
-		Map<String, Double> names2presences = new HashMap<String, Double>();
-		names2presences.put("gigi", 23.0);
-		names2presences.put("michele", 23.0);
-		names2presences.put("antonio", 29.0);
-		names2presences.put("francesco", 12.0);
-		names2presences.put("alessandro", 15.0);
-		
-		System.out.println(names2presences);
-		
-		names2presences = sortMapByValuesAscending(names2presences);
-		
-		System.out.println(names2presences);
-		
-		names2presences = sortMapByValuesDescending(names2presences);
-		
-		System.out.println(names2presences);
-		
-	}
-	*/
-	
-	
-	
+
+    //TODO use a testcase if needed.
+    //anyway there are methods to keep maps sorted by some criteria
+    //
+
 	public static  <K,V extends Comparable <? super V> >  Map < K, V > sortMapByValuesAscending(final Map  < K, V >  mapToSort)  
 	{  
 	    List<Map.Entry<K,V>> entries = new ArrayList<Map.Entry<K,V>>(mapToSort.size());    
@@ -84,8 +62,5 @@ public class MapSorter {
 	    	sortedMap.put(entry.getKey(), entry.getValue());          
 	  
 	    return sortedMap;  
-	} 
-
-
-
+	}
 }

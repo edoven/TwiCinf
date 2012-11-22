@@ -1,36 +1,27 @@
 package it.cybion.influence.util;
 
-import it.cybion.influence.model.HashtagEntity;
-import it.cybion.influence.model.Tweet;
-import it.cybion.influence.model.UrlEntity;
-import it.cybion.influence.model.User;
-import it.cybion.influence.model.UserMentionEntity;
-import it.cybion.influence.util.DataParser;
-import it.cybion.influence.util.InputReader;
-
-import java.io.IOException;
-
-import java.util.List;
-
-import java.text.ParseException;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import it.cybion.influence.model.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.List;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-
-
-
-
+/* TODO: since there is NO instance of JsonDeserializerTestCase, this is not the correct name
+( considering also capital letters )
+* for the class. call it something like JsonDeserializationSpikeTestCase */
 public class JSONDeserializerTestCase
 {
 
-	String json01path = "src/test/resources/tweet01.json";
+	private static final String FIRST_JSON_PATH = "src/test/resources/tweet01.json";
+    //TODO propagate visibility and naming conventions to other variables
 	String json02path = "src/test/resources/tweet02.json";
 	String json03path = "src/test/resources/tweet03.json";
 	String json01;
@@ -46,7 +37,7 @@ public class JSONDeserializerTestCase
 	{
 		gson = new GsonBuilder().create();
 
-		json01 = InputReader.readJsonFile(json01path);
+		json01 = InputReader.readJsonFile(FIRST_JSON_PATH);
 		json02 = InputReader.readJsonFile(json02path);
 		json03 = InputReader.readJsonFile(json03path);
 	}

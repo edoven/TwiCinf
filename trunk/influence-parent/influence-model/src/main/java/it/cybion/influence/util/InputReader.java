@@ -8,7 +8,7 @@ public class InputReader {
 	
 	public static String readJsonFile(String filePath) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
-        String line = null;
+        String line;
         StringBuilder stringBuilder = new StringBuilder();
         String ls = System.getProperty("line.separator");
 
@@ -16,9 +16,7 @@ public class InputReader {
             stringBuilder.append(line);
             stringBuilder.append(ls);
         }
-
         reader.close();
         return stringBuilder.toString();
     }
-	
 }

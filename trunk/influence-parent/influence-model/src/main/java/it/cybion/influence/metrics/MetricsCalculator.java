@@ -1,16 +1,15 @@
 package it.cybion.influence.metrics;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-
 import it.cybion.influence.model.HashtagEntity;
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.model.User;
 import it.cybion.influence.model.UserMentionEntity;
 import it.cybion.influence.util.MapSorter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * To add a new report field:
@@ -27,57 +26,26 @@ import it.cybion.influence.util.MapSorter;
  */
 
 
-
-
-
 public class MetricsCalculator {
 	
 	private MetricsReport report = null;	 
 	private List<Tweet> tweets;
 
-
-	
-	/*
-	 * 
-	 * CONSTRUCTOR
-	 * 
-	 */
-
 	public MetricsCalculator(List<Tweet> tweets)
 	{
 		this.tweets = tweets;
 	}
-	
-	
-	
-	/*
-	 * 
-	 * Public methods
-	 * 
-	 */
-	
+
 	public MetricsReport getReport() 
 	{
 		if (this.report==null)
 			createReport();
 		return this.report;		
 	}
-	
-	/*
-	 * 
-	 * Private methods
-	 * 
-	 */
-	
-	
 
 	private void createReport()  
 	{
-		/*
-		 * =========
-		 * Variables
-		 * =========
-		 */
+
 		int tweetsCount = 0;
 		int usersCount = 0;
 		double followersCountAVG = 0;
@@ -92,21 +60,28 @@ public class MetricsCalculator {
 		Map<String, Integer> usersMentioned2count = new HashMap<String, Integer>();
 		
 		int retweetsCount = 0;
-		
-		
-		
-		
+
 		/*
 		 * ===============
 		 * Data calulation (batch process...beware the order of the operations)
 		 * ===============
 		 */
-		for (Tweet tweet: tweets)
+        /* TODO thinking about this, it is bad to have a monolithic method to "generate ALL reports":
+        * better to have N methods, each one responsible to calculate its own metric.
+        * Why should I have to wait for the overall method to finish,
+        * even if I was only interested in one specific report?
+        * bad side-effect: how do i know that every private method is tested?
+        * the only way in which i can run that code is to call the public ones. */
+
+ 		for (Tweet tweet: tweets)
 		{
-			User user = tweet.getUser();	
-			
-			users = updateUsers(users, user);			
-			users2tweetsCountAmongDataset = updateUsers2tweetsCountAmongDataset(users2tweetsCountAmongDataset, user); 
+			User currentUser = tweet.getUser();
+
+            //TODO if the design is like this, using all private methods,
+            //why not updating instance variables using void methods?
+            //in the end, private methods are not testable just like void methods
+			users = updateUsers(users, currentUser);
+			users2tweetsCountAmongDataset = updateUsers2tweetsCountAmongDataset(users2tweetsCountAmongDataset, currentUser);
 			hashtags2count = updateHashtags2count(hashtags2count, tweet);	
 			retweetsCount = updateRetweetsCount(retweetsCount, tweet);
 			usersMentioned2count = updateUsersMentioned2count(usersMentioned2count, tweet);
@@ -120,23 +95,27 @@ public class MetricsCalculator {
 		friendsCountAVG = calculateFriendsCountAVG(users);
 		followerFriendsRatioAVG = calculateFollowerFriendsRatioAVG(users);
 		users2tweetsCountAVG = calculateUsers2tweetsCountAVG(users2tweetsCount);
-
 		
 		/*
 		 * maps sorting
+		 * TODO find and use (during the calculation) proper data structures that keep items
+		 * in order and remove these lines
 		 */
 		users2tweetsCountAmongDataset = MapSorter.sortMapByValuesDescending(users2tweetsCountAmongDataset);
 		users2tweetsCount = MapSorter.sortMapByValuesDescending(users2tweetsCount);
 		hashtags2count = MapSorter.sortMapByValuesDescending(hashtags2count);
 		usersMentioned2count = MapSorter.sortMapByValuesDescending(usersMentioned2count);
 		
-		
-		
 		/*
 		 * ===============
 		 * Report creation
 		 * ===============
 		 */
+        /* TODO with this choice, it's easy to build an object and forget about setting one field.
+         * what if an item is null and someone gets it?
+         * better to set all values with a simple constructor (usually no more than 3-4 params).
+         * in this case an overall refactoring is needed. until then, keep it like this.
+         *  */
 		this.report = new MetricsReport();
 		report.setTweetsCount(tweetsCount);
 		report.setUsersCount(usersCount);
@@ -149,30 +128,19 @@ public class MetricsCalculator {
 		report.setRetweetsCount(retweetsCount);
 		report.setUsers2tweetsCountAVG(users2tweetsCountAVG);
 		report.setUserMentioned2count(usersMentioned2count);
-		
-		
 	}
 
-	
-	
-	
-	
-
-
-
-	private List<User> updateUsers(List<User> users, User user)
+	private List<User> updateUsers(List<User> users, User newUser)
 	{
-		if (!users.contains(user))
+		if (!users.contains(newUser))
 		{
-			
 			List<User> updatedUsers = users;
-			updatedUsers.add(user);
+			updatedUsers.add(newUser);
 			return updatedUsers;
 		}
 		else
 			return users;
 	}
-	
 	
 	private Map<String, Integer> updateUsers2tweetsCountAmongDataset(Map<String, Integer> users2tweetsCountAmongDataset, User user)
 	{
@@ -185,7 +153,6 @@ public class MetricsCalculator {
 		}
 		return updatedMap;
 	}
-	
 	
 	private Map<String, Integer> updateHashtags2count(Map<String, Integer> hashtags2count, Tweet tweet)
 	{
@@ -201,8 +168,7 @@ public class MetricsCalculator {
 		}
 		return updatedMap;
 	}
-	
-	
+
 	private Map<String, Integer> calculateUsers2tweetsCount(List<User> users)
 	{
 		Map<String, Integer> users2tweetsCount = new HashMap<String,Integer>();
@@ -210,25 +176,23 @@ public class MetricsCalculator {
 			users2tweetsCount.put(user.getScreenName(), user.getStatusesCount() );
 		return users2tweetsCount;
 	}
-	
-	
+
 	private double calculateFollowersCountAVG(List<User> users) {
 		double accumulator = 0;
 		for (User user: users)
 			accumulator = accumulator + user.getFollowersCount();
 		return accumulator/users.size();
 	}
-	
-	
+
 	private double calculateFriendsCountAVG(List<User> users) {
 		double accumulator = 0;
 		for (User user: users)
 			accumulator = accumulator + user.getFriendsCount();
 		return accumulator/users.size();
 	}
-		
 	
 	/*
+	why "beware"? it's correct!
 	 * BEWARE: this skips the users with friendsCount==0 
 	 * to avoid division by 0
 	 */
@@ -237,7 +201,8 @@ public class MetricsCalculator {
 		int countedUsers = 0;
 		for (User user: users) {
 			if (user.getFriendsCount()>0) {
-				accumulator = accumulator + ( (double)user.getFollowersCount() / user.getFriendsCount() );
+                double currentFollowerFriendRatio = (double)user.getFollowersCount() / user.getFriendsCount();
+				accumulator = accumulator + currentFollowerFriendRatio;
 				countedUsers++;
 			}
 		}
@@ -247,14 +212,12 @@ public class MetricsCalculator {
 		else
 			return accumulator/countedUsers;
 	}
-	
-	
+
 	private int updateRetweetsCount(int retweetsCount, Tweet tweet) {
 		if (tweet.getRetweetedStatus()!=null)
 			return retweetsCount+1;
 		else
 			return retweetsCount;
-			
 	}
 	
 	private double calculateUsers2tweetsCountAVG(Map<String, Integer> users2tweetsCount) {
@@ -263,7 +226,6 @@ public class MetricsCalculator {
 			accumulator = accumulator + count;
 		return accumulator/users2tweetsCount.size();
 	}
-	
 	
 	private Map<String, Integer> updateUsersMentioned2count(Map<String, Integer> userMentioned2count, Tweet tweet) {
 		List<UserMentionEntity> userMentionEntities = tweet.getUserMentionEntities();
@@ -279,11 +241,8 @@ public class MetricsCalculator {
 				updatedMap.put(screenName, 1 );
 		}
 		return updatedMap;
-			
 	}
-	
-	
-	
+
 	/*
 	private void enrichUsersWithHashtags()
 	{

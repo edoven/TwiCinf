@@ -24,9 +24,6 @@ public class MetricsReport {
 	private Map<String, Integer> hashtags2count;
 	private Map<String, Integer> userMentioned2count;
 
-	
-	
-
 	/*
 	 * ==================
 	 * Getters and Setters

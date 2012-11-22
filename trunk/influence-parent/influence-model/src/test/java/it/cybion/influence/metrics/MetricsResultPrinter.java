@@ -4,12 +4,11 @@ package it.cybion.influence.metrics;
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.util.JsonDeserializer;
 import it.cybion.influence.util.MysqlConnector;
+import org.apache.log4j.Logger;
+import org.testng.annotations.Test;
 
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
-import org.testng.annotations.Test;
 
 
 public class MetricsResultPrinter {
@@ -23,6 +22,19 @@ public class MetricsResultPrinter {
     public void printsAllTheResultsFromTheReport() {
     	logger.info("======================================================");
     	logger.info("Getting jsons from the database and creating Tweet objects from json strings...");
+        //TODO do not nest calls like this, use local vars
+        //after the refactoring, it should be something like this:
+        /*
+        * MysqlConnector mc = new MysqlConnector(host, port, etc... );
+        * List<String> jsons = mc.getAllTwitterJsons()
+        * JsonDeserializer jd = new JsonDeserializer();
+        * List<Tweet> tweets = jd.deserializeJsons(jsons);
+        * MetricsCalculator metricsCalculator = new MetricsCalculator();
+        * Object result = metricsCalculator.<method>(tweets)
+        * ...
+        *
+        * */
+
 		List<Tweet> tweets = JsonDeserializer.jsons2tweets(MysqlConnector.getAllTwitterJsons());
 		logger.info("ok!");
 		
@@ -41,11 +53,7 @@ public class MetricsResultPrinter {
 		logger.info("RetweetsCount: "+report.getRetweetsCount());
 		logger.info("RetweetsToTweetsRatio: "+ ((double)report.getRetweetsCount())/report.getTweetsCount());
 		logger.info("users2tweetsCountAVG: "+ report.getUsers2tweetsCountAVG());
-		
-		
-		
-		
-		
+
 		logger.info("");
 		
 		int mostActiveUsersAmongDataset = 10;
@@ -67,7 +75,6 @@ public class MetricsResultPrinter {
 			if ((mostActiveUsersInGeneral--) > 0)
 				logger.info(screenName+" - "+users2tweetsCount.get(screenName));			
 		}
-	
 		
 		logger.info("");
 		
@@ -79,8 +86,7 @@ public class MetricsResultPrinter {
 			if ((mostMentionedUser--) > 0)
 				logger.info(screenName+" - "+usersMentioned2count.get(screenName));			
 		}
-		
-		
+
 		logger.info("");
 		
 		int mostUsedHashtag = 10;
@@ -91,8 +97,8 @@ public class MetricsResultPrinter {
 			if ((mostUsedHashtag--) > 0)
 				logger.info(hashtag+" - "+hashtags2count.get(hashtag));			
 		}
-		
+
+        //why not logger?
 		System.out.print("======================================================");
-    	
     }
 }

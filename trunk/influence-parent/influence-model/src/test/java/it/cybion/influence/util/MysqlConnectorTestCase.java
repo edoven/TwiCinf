@@ -1,20 +1,18 @@
 package it.cybion.influence.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.cybion.influence.model.Tweet;
 import it.cybion.monitor.configuration.TwitterMonitoringPersistenceConfiguration;
 import it.cybion.monitor.dao.TweetDao;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 
@@ -26,42 +24,44 @@ import static org.testng.Assert.assertEquals;
  */
 
 public class MysqlConnectorTestCase {
-	
-	/*
-	 * Tested Dataset Data
-	 */
-	private int TWEET_COUNT = 6214;
-	private String firstJsonId = "263328879631036416";
-	private String lastJsonId = "266921929523462145";
-	List<String> tweets;
-	
-	
-	/*
-	 * Connection data
-	 */
+
+    //TODO move values where are used, using a local variable
+	private static int TWEET_COUNT = 6214;
+	private static String firstJsonId = "263328879631036416";
+	private static String lastJsonId = "266921929523462145";
+	private List<String> tweets;
+
 	private static String mySqlHost = "localhost";
 	private static int mySqlPort = 3306;
 	private static String mySqlUser = "root";
 	private static String mySqlPassword = "qwerty";
 	private static String mySqlDatabase = "twitter-monitor";
-	
-	
-	Gson gson;
+
+	private Gson gson;
 	
 	@BeforeClass
 	public void setup() throws IOException
 	{
 		gson = new GsonBuilder().create();
-		tweets = getTweets();
+        /* TODO instantiate a MysqlConnector and save the instance to a local variable:
+         it is the class under test, since we are in the MysqlConnector...TestCase!
+         */
+		tweets = loadTweetsFromPersistence();
 	}
 	
-	
 	/*
+	 * TODO this is one of the worst practices: duplicate code from a class just for the
+	 * sake of testing its functioning.
+	  * duplicated code costs to maintain: what if i want to change it here?
+	  * how do i know where i have to replicate my change?
+	  * This is another side-effect of having no constructor for MysqlConnector:
+	  * you can't instantiate it with the parameters you want, since the static variables inside
+	  * cant be overwritten in any case.
+	  *
 	 * Method extracted from MysqlConnector
 	 */
-	public List<String> getTweets() {
+	public List<String> loadTweetsFromPersistence() {
 		List<String> jsons = new ArrayList<String>();
-		
 
 		TwitterMonitoringPersistenceConfiguration persistenceConfiguration =
                 new TwitterMonitoringPersistenceConfiguration(
@@ -92,8 +92,10 @@ public class MysqlConnectorTestCase {
     
     @Test
     public void testIfTheFirstAndLastJsonsAreCorrect() {
+        //TODO move gson instance here since its only used here for a specific test
     	Tweet firstTweet = gson.fromJson(tweets.get(0), Tweet.class);
     	Tweet lastTweet = gson.fromJson(tweets.get(tweets.size()-1), Tweet.class);
+        //TODO move ids here, it's easier when reading tests
     	assertEquals(firstTweet.getId(), firstJsonId);
     	assertEquals(lastTweet.getId(), lastJsonId);
     }

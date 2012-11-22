@@ -1,43 +1,28 @@
 package it.cybion.influence.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.joda.time.DateTime;
-
 import it.cybion.monitor.configuration.TwitterMonitoringPersistenceConfiguration;
 import it.cybion.monitor.dao.TweetDao;
 import it.cybion.monitor.model.Tweet;
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MysqlConnector {
-	
-	/*
-	 * 
-	 * CONNECTION DATA
-	 * 
-	 */
-	
+
+    //TODO why not local variables?
 	private static String mySqlHost = "localhost";
 	private static int mySqlPort = 3306;
 	private static String mySqlUser = "root";
 	private static String mySqlPassword = "qwerty";
 	private static String mySqlDatabase = "twitter-monitor";
 
-	/*
-	public static void main(String[] args) {
-		List<String> jsons = getAllTwitterJsons();
-		for (String json: jsons)
-			System.out.println(json);
-		System.out.println(jsons.size());
-		
-	}
-	*/
-	
-	
-	
+    //TODO there should be a constructor that gets connection parameters,
+    //and then it instantiates an instance variable tweetDao with the configuration.
+    //in this way, getAllTwitterJsons calls just selectTweetsByQuery and returns jsons
+
 	public static List<String> getAllTwitterJsons() {
 		List<String> jsons = new ArrayList<String>();
-		
 
 		TwitterMonitoringPersistenceConfiguration persistenceConfiguration =
                 new TwitterMonitoringPersistenceConfiguration(
@@ -52,5 +37,4 @@ public class MysqlConnector {
 			jsons.add(tweet.getTweetJson());
 		return jsons;
 	}
-	
 }
