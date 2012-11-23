@@ -12,22 +12,23 @@ public class JsonDeserializer {
 	/* TODO add a constructor that builds an instance variable gson,
 	* used to deserialize tweets when calling the non-static-method json2tweets.
 	 * building a gson it's costly, why would we do everytime the method is called? */
+	 
 
-    //TODO rename it: deserializeJsonStringsToTweets
-	public static List<Tweet> jsons2tweets(List<String> jsons)
+	public List<Tweet> deserializeJsonStringsToTweets(List<String> jsons)
 	{
-		Gson gson = new GsonBuilder().setDateFormat("MMM dd, yyyy hh:mm:ss a").create();
-		
+			
 		List<Tweet> tweets = new ArrayList<Tweet>();
-		Tweet tweet;
-		//int counter = 0;
 		for (String json: jsons) {
-			//System.out.println("Deserializing json "+counter+" of "+jsons.size());
-			tweet = gson.fromJson(json, Tweet.class);
+			Tweet tweet = deserializeJsonStringToTweet(json);
 			tweets.add(tweet);
-			//counter++;
 		}
 		return tweets;
+	}
+	
+	public Tweet deserializeJsonStringToTweet(String json)
+	{
+		Gson gson = new GsonBuilder().setDateFormat("MMM dd, yyyy hh:mm:ss a").create();		
+		return gson.fromJson(json, Tweet.class);
 	}
 	
 }

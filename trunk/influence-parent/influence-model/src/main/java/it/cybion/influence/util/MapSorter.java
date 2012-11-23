@@ -15,52 +15,34 @@ public class MapSorter {
 
 	public static  <K,V extends Comparable <? super V> >  Map < K, V > sortMapByValuesAscending(final Map  < K, V >  mapToSort)  
 	{  
-	    List<Map.Entry<K,V>> entries = new ArrayList<Map.Entry<K,V>>(mapToSort.size());    
-	  
-	    entries.addAll(mapToSort.entrySet());  
-	  
-	    Collections.sort(entries, new Comparator <Map.Entry<K,V>>()  
-	    {  
+	    List<Map.Entry<K,V>> entries = new ArrayList<Map.Entry<K,V>>(mapToSort.size());    	  
+	    entries.addAll(mapToSort.entrySet());  	  
+	    Collections.sort(entries, new Comparator <Map.Entry<K,V>>() {  
 	        @Override  
-	        public int compare(  
-	               final Map.Entry<K,V> entry1,  
-	               final Map.Entry<K,V> entry2)  
-	        {  
+	        public int compare(final Map.Entry<K,V> entry1, final Map.Entry<K,V> entry2){  
 	            return entry1.getValue().compareTo(entry2.getValue());  
 	        }  
-	    });        
-	  
-	    Map <K,V>  sortedMap = new LinkedHashMap<K,V>();        
-	  
+	    });        	  
+	    Map <K,V>  sortedMap = new LinkedHashMap<K,V>();        	  
 	    for (Map.Entry<K,V> entry : entries)  
-	    	sortedMap.put(entry.getKey(), entry.getValue());          
-	  
+	    	sortedMap.put(entry.getKey(), entry.getValue());          	  
 	    return sortedMap;  
 	} 
 	
 
 	public static  <K,V extends Comparable <? super V> >  Map < K, V > sortMapByValuesDescending(final Map  < K, V >  mapToSort)  
 	{  
-	    List<Map.Entry<K,V>> entries = new ArrayList<Map.Entry<K,V>>(mapToSort.size());    
-	  
-	    entries.addAll(mapToSort.entrySet());  
-	  
-	    Collections.sort(entries, new Comparator <Map.Entry<K,V>>()  
-	    {  
+	    List<Map.Entry<K,V>> entries = new ArrayList<Map.Entry<K,V>>(mapToSort.size());    	  
+	    entries.addAll(mapToSort.entrySet());  	  
+	    Collections.sort(entries, new Comparator <Map.Entry<K,V>>() {  
 	        @Override  
-	        public int compare(  
-	               final Map.Entry<K,V> entry1,  
-	               final Map.Entry<K,V> entry2)  
-	        {  
+	        public int compare(final Map.Entry<K,V> entry1, final Map.Entry<K,V> entry2) {  
 	            return entry2.getValue().compareTo(entry1.getValue());  
 	        }  
-	    });        
-	  
-	    Map <K,V>  sortedMap = new LinkedHashMap<K,V>();        
-	  
+	    });        	  
+	    Map <K,V>  sortedMap = new LinkedHashMap<K,V>();        	  
 	    for (Map.Entry<K,V> entry : entries)  
-	    	sortedMap.put(entry.getKey(), entry.getValue());          
-	  
+	    	sortedMap.put(entry.getKey(), entry.getValue());          	  
 	    return sortedMap;  
 	}
 }

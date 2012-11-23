@@ -34,8 +34,11 @@ public class FriendsDownloader {
 		List<String> usersToEnrich = getUsersToEnrich(users, alreadyEnrichedUsers);
 		
 		int count = 0;
-		TwitterApiManager twitterApiManager = new TwitterApiManager();
-		int requestLimit = twitterApiManager.getLimit();
+		TwitterApiManager twitterApiManager = new TwitterApiManager("/home/godzy/tokens/consumerToken.txt");
+		twitterApiManager.addUserToken("/home/godzy/tokens/token1.txt");
+		twitterApiManager.addUserToken("/home/godzy/tokens/token2.txt");
+		twitterApiManager.addUserToken("/home/godzy/tokens/token3.txt");	
+		int requestLimit = twitterApiManager.getTotalLimit();
 		int i;
 		for (i=0; i<requestLimit && i<usersToEnrich.size(); i++) {
 			String user = usersToEnrich.get(i);
@@ -56,7 +59,7 @@ public class FriendsDownloader {
 	
 	private static List<String> getUsers() {
 		List<String> jsonTweets = MysqlConnector.getAllTwitterJsons();
-		List<Tweet> tweets = JsonDeserializer.jsons2tweets(jsonTweets);
+		List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsonTweets);
 		HashSet<String> users = new HashSet<String>();
 		for (Tweet tweet : tweets)
 			users.add(tweet.getUser().getScreenName()); 
