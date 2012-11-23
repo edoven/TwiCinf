@@ -15,6 +15,9 @@ public class TwitterApiManager {
 	
 	private List<Token> userTokens = new ArrayList<Token>();
 	private Token consumerToken;
+	private Token currentUserToken;
+	private int currentUserTokenIndex = 0;
+
 	
 	/*
 	 * test method
@@ -30,14 +33,26 @@ public class TwitterApiManager {
 		System.out.println(manager.getTotalLimit());
 	}
 	*/
+
+
+	public List<String> getFriends(String userId) {
+		List<String> friendsIds = new ArrayList<String>();
+		
+		//TODO: all..
+	}
 	
-	public TwitterApiManager(String consumerTokenFilePath) {
+	
+	
+	public TwitterApiManager(String consumerTokenFilePath, List<String> userTokenFilePaths) {
 		Token consumerToken = TokenBuilder.getTokenFromFile(consumerTokenFilePath);
 		this.consumerToken = consumerToken;
+		for (String userTokenFilePath : userTokenFilePaths)
+			addUserToken(userTokenFilePath);
 		
 	}
 	
-	public void addUserToken(String filePath) {
+	
+	private void addUserToken(String filePath) {
 		Token userToken = TokenBuilder.getTokenFromFile(filePath);
 		userTokens.add(userToken);
 	}

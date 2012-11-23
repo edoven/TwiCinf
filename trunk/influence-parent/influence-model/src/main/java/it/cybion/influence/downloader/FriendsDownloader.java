@@ -23,7 +23,7 @@ public class FriendsDownloader {
 	
 	private static final Logger logger = Logger.getLogger(FriendsDownloader.class);
 
-
+	
 	public static void main(String[] args) {		
 		List<String> users = getUsers();
 		List<String> alreadyEnrichedUsers = getAlreadyEnrichedUsers();
@@ -34,10 +34,13 @@ public class FriendsDownloader {
 		List<String> usersToEnrich = getUsersToEnrich(users, alreadyEnrichedUsers);
 		
 		int count = 0;
-		TwitterApiManager twitterApiManager = new TwitterApiManager("/home/godzy/tokens/consumerToken.txt");
-		twitterApiManager.addUserToken("/home/godzy/tokens/token1.txt");
-		twitterApiManager.addUserToken("/home/godzy/tokens/token2.txt");
-		twitterApiManager.addUserToken("/home/godzy/tokens/token3.txt");	
+		
+		List<String> userTokenFilePaths = new ArrayList<String>();
+		userTokenFilePaths.add("/home/godzy/tokens/token1.txt");
+		userTokenFilePaths.add("/home/godzy/tokens/token1.txt");
+		userTokenFilePaths.add("/home/godzy/tokens/token1.txt");
+		String consumerTokenFilePath = ("/home/godzy/tokens/consumerToken.txt");
+		TwitterApiManager twitterApiManager = new TwitterApiManager(consumerTokenFilePath, userTokenFilePaths);
 		int requestLimit = twitterApiManager.getTotalLimit();
 		int i;
 		for (i=0; i<requestLimit && i<usersToEnrich.size(); i++) {
@@ -51,8 +54,10 @@ public class FriendsDownloader {
 		}
 		
 		if (i==requestLimit) { //the for-cycle is finished because request limit has been reached
-			logger.info("EXIT! Limit reached. "+count+" users have been friends-enriched.");
-			System.exit(0);
+			logger.info("Limit reached. "+count+" users have been friends-enriched.");
+		}
+		if (i==usersToEnrich.size()) { //the for-cycle is finished because request limit has been reached
+			logger.info("All users enriched. "+count+" users have been friends-enriched.");
 		}
 	}
 
@@ -78,4 +83,5 @@ public class FriendsDownloader {
 		return toEnrich;
 		
 	}
+	
 }
