@@ -1,14 +1,13 @@
 package it.cybion.influence.downloader;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.util.JsonDeserializer;
 import it.cybion.influence.util.MysqlConnector;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 
 /*
@@ -48,6 +47,25 @@ public class FriendsDownloader {
 			logger.info("Successifully extracted and saved "+friends.size()+" friends for user: "+user);
 			count++;
 		}
+
+        /* TODO MysqlConnector should be renamed to MysqlPersistenceFacade
+        *
+        * it should have a constructor with connection parameters, one for twitter-monitor db
+        * and the other for twitter-users. (anyway, why not storing friends on graph?)
+        * pf = MysqlPersistenceFacade(monitorParameters, usersParameters)
+        *
+        * make api manager instance like this:
+        * tam = new TwitterApiManager(List<Token> usableTokenPairs);
+        * where the usableTokenPairs are loaded from file with the TokenBuilder.<method...>
+        *
+        * Then, build an object, always in main with the objects constructed:
+        * fd = new FriendsDownloader(persistenceFacade, tam);
+        * then, move the main logic you have before in a run() method
+        * and to fd.run();
+        *
+        *
+        * */
+
 	}
 
 	

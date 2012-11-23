@@ -1,14 +1,14 @@
 package it.cybion.influence.downloader;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import twitter4j.IDs;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Request handler for a single pair <application,user>
@@ -38,6 +38,7 @@ public class RequestHandlerImpl implements RequestHandler {
 		try {
 			ids = twitter.getFriendsIDs(userScreenName, -1);
 		} catch (TwitterException e) {
+            //TODO manage or rethtrow exception
 			e.printStackTrace();
 		}
 		if (ids==null)
@@ -61,6 +62,7 @@ public class RequestHandlerImpl implements RequestHandler {
 		try {
 			return twitter.getRateLimitStatus().getRemainingHits();
 		} catch (TwitterException e) {
+            //TODO manage or rethtrow exception
 			e.printStackTrace();
 		}
 		return limit;

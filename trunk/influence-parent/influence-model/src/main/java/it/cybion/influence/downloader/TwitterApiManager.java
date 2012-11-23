@@ -1,29 +1,29 @@
 package it.cybion.influence.downloader;
 
 import it.cybion.influence.util.TokenBuilder;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 
 
 public class TwitterApiManager {
 	
 	private static final Logger logger = Logger.getLogger(TwitterApiManager.class);
 	
-	private List<Token> userTokens = new ArrayList<Token>();
+	private List<Token> usableUserTokens = new ArrayList<Token>();
 	private Token consumerToken;
 	
 	private RequestHandler currentRequestHandler;
 	private Token currentUserToken;
 
-	
+
+    //TODO remove this constructor, change with a (Token consumerToken, List<Token> usableUserTokens)
 	public TwitterApiManager(String consumerTokenFilePath, List<String> userTokenFilePaths) {
 		this.consumerToken = TokenBuilder.getTokenFromFile(consumerTokenFilePath);
 		for (String userTokenFilePath : userTokenFilePaths)
 			addUserTokenToPool(userTokenFilePath);
-		currentUserToken = userTokens.get(0);
+		currentUserToken = usableUserTokens.get(0);
 		currentRequestHandler = new RequestHandlerImpl(consumerToken, currentUserToken);		
 	}
 
@@ -38,15 +38,18 @@ public class TwitterApiManager {
 	}
 	
 	//TODO: this can be written in a more elegant way
+    //TODO: do not return null, ever: throw an FinishedUsableHandlersException instead
 	private RequestHandler getUsableHandler() {
 		if (currentRequestHandler.getLimit()>0)
 			return currentRequestHandler;
 		else {
-			userTokens.remove(currentUserToken);
-			if (userTokens.size()==0)
+			usableUserTokens.remove(currentUserToken);
+			if (usableUserTokens.size()==0) {
+                //TODO here, throw an exception!
 				return null;
+            }
 			else {
-				currentUserToken = userTokens.get(0);
+				currentUserToken = usableUserTokens.get(0);
 				currentRequestHandler = new RequestHandlerImpl(consumerToken, currentUserToken);
 				return currentRequestHandler;
 			}
@@ -55,8 +58,9 @@ public class TwitterApiManager {
 	}
 	
 	private void addUserTokenToPool(String filePath) {
+        //TODO this logic will be done before constructing the TAM
 		Token userToken = TokenBuilder.getTokenFromFile(filePath);
-		userTokens.add(userToken);
+		usableUserTokens.add(userToken);
 	}
 	
 

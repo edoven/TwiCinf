@@ -11,7 +11,8 @@ public class JsonDeserializer {
 
 	/* TODO add a constructor that builds an instance variable gson,
 	* used to deserialize tweets when calling the non-static-method json2tweets.
-	 * building a gson it's costly, why would we do everytime the method is called? */
+	 * building a gson it's costly! Why would we do it everytime the method is called?
+	 */
 	 
 
 	public List<Tweet> deserializeJsonStringsToTweets(List<String> jsons)

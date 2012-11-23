@@ -3,16 +3,10 @@ package it.cybion.influence.util;
 import it.cybion.monitor.configuration.TwitterMonitoringPersistenceConfiguration;
 import it.cybion.monitor.dao.TweetDao;
 import it.cybion.monitor.model.Tweet;
-
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +18,9 @@ public class MysqlConnector {
 	
 	
 	public static void main(String[] args)  {
+        //TODO move to a test (rolling back the write transaction in the end, or
+        // deleting data at the end of the test:
+        // every integration test run should leave the db in the initial state)
 		List<String> friends = new ArrayList<String>();
 		friends.add("friend1");
 		friends.add("friend2");
@@ -45,6 +42,10 @@ public class MysqlConnector {
     //TODO there should be a constructor that gets connection parameters,
     //and then it instantiates an instance variable tweetDao with the configuration.
     //in this way, getAllTwitterJsons calls just selectTweetsByQuery and returns jsons
+    //TODO you added logic to connect to another database: pass the connection parameters
+    //in the constructor. consider wrapping each parameter set in properties objects:
+    //Properties twitterMonitorParams
+    //Properties twitterFriendsParams
 
 	public static List<String> getAllTwitterJsons() {
 		List<String> jsons = new ArrayList<String>();
@@ -71,6 +72,8 @@ public class MysqlConnector {
         Statement st = null;
         ResultSet rs = null;
 
+        //TODO these parameters should be taken in the constructor,
+        //together with the ones used for the twitter-monitor db connection
         String url = "jdbc:mysql://localhost:3306/twitter-users";
         String user = "root";
         String password = "qwerty";
@@ -97,6 +100,7 @@ public class MysqlConnector {
                     con.close();
                 }
             } catch (SQLException ex) {
+                //TODO throw a checked exception
             	ex.printStackTrace();
             }
         }
