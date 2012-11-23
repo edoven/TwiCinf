@@ -3,6 +3,8 @@ package it.cybion.influence.util;
 import it.cybion.monitor.configuration.TwitterMonitoringPersistenceConfiguration;
 import it.cybion.monitor.dao.TweetDao;
 import it.cybion.monitor.model.Tweet;
+
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.sql.Connection;
@@ -14,12 +16,22 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO: Create a non-static version
+
 public class MysqlConnector {
 	
+	private static final Logger logger = Logger.getLogger(MysqlConnector.class);
+	
+	
 	public static void main(String[] args)  {
-		//getFriendsEnrichedUsers();
-		writeFriend("user1", "friend2");
+		List<String> friends = new ArrayList<String>();
+		friends.add("friend1");
+		friends.add("friend2");
+		friends.add("friend3");
+		friends.add("friend4");
+		writeFriends("user", friends);
 	}
+	
 	
 	
 
@@ -68,15 +80,11 @@ public class MysqlConnector {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
             rs = st.executeQuery(query);
-
             while (rs.next()) {
             	users.add(rs.getString("user_screenname"));
-                //System.out.println(rs.getString("user_screenname"));
             }
-
         } catch (SQLException ex) {
             ex.printStackTrace();
-
         } finally {
             try {
                 if (rs != null) {
@@ -88,48 +96,32 @@ public class MysqlConnector {
                 if (con != null) {
                     con.close();
                 }
-
             } catch (SQLException ex) {
             	ex.printStackTrace();
             }
         }
-        return users;
-    
+        return users;   
 	}
 	
-	
-	
+		
 	public static void writeFriends(String user, List<String> friends) {
-		for (String friend : friends)
-			writeFriend(user, friend);
-	}
-	
-	
-	
-	
-	
-	
-	public static void writeFriend(String user, String friend) {
-
+		if (friends.size()==0)
+			return;
 		Connection con = null;
 		PreparedStatement pst = null;
 
         String url = "jdbc:mysql://localhost:3306/twitter-users";
         String mysqlUser = "root";
         String password = "qwerty";
-        String query = "INSERT INTO `twitter-users`.`friends` (`user_screenname`, `friend_screenname`) VALUES ('"+user+"', '"+friend+"')";
-    	
-	         
+        String query = createInsertQuery(user, friends);
+    		         
         try {
             con = DriverManager.getConnection(url, mysqlUser, password);
-
             pst = con.prepareStatement(query);
             pst.executeUpdate();
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-
             try {
                 if (pst != null) {
                     pst.close();
@@ -137,13 +129,24 @@ public class MysqlConnector {
                 if (con != null) {
                     con.close();
                 }
-
             } catch (SQLException ex) {
             	ex.printStackTrace();
             }
-        }
-        
-        
+        }		
+	}
+
+	
+	private static String createInsertQuery(String user, List<String> friends ) {
+		if (friends.size() == 1) {
+			String friend = friends.get(0);
+			return  "INSERT INTO `twitter-users`.`friends` (`user_screenname`, `friend_screenname`) VALUES ('"+user+"', '"+friend+"')";		
+		}
+		String query = "INSERT INTO `twitter-users`.`friends` (`user_screenname`, `friend_screenname`) VALUES ";
+		for (String friend : friends) {
+			query = query + "('"+user+"', '"+friend+"') ,";
+		}
+		query = query.substring(0, query.length()-2); //this remove last comma
+		return query;
 	}
 
 }

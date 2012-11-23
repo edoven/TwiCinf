@@ -5,83 +5,59 @@ import it.cybion.influence.util.TokenBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.conf.ConfigurationBuilder;
+import org.apache.log4j.Logger;
+
 
 public class TwitterApiManager {
 	
+	private static final Logger logger = Logger.getLogger(TwitterApiManager.class);
 	
 	private List<Token> userTokens = new ArrayList<Token>();
 	private Token consumerToken;
+	
+	private RequestHandler currentRequestHandler;
 	private Token currentUserToken;
-	private int currentUserTokenIndex = 0;
 
-	
-	/*
-	 * test method
-	 */
-	/*
-	public static void main(String[] args) {
-		TwitterApiManager manager = new TwitterApiManager("/home/godzy/tokens/consumerToken.txt");
-				
-		manager.addUserToken("/home/godzy/tokens/token1.txt");
-		manager.addUserToken("/home/godzy/tokens/token2.txt");
-		manager.addUserToken("/home/godzy/tokens/token3.txt");	
-
-		System.out.println(manager.getTotalLimit());
-	}
-	*/
-
-
-	public List<String> getFriends(String userId) {
-		List<String> friendsIds = new ArrayList<String>();
-		
-		//TODO: all..
-	}
-	
-	
 	
 	public TwitterApiManager(String consumerTokenFilePath, List<String> userTokenFilePaths) {
-		Token consumerToken = TokenBuilder.getTokenFromFile(consumerTokenFilePath);
-		this.consumerToken = consumerToken;
+		this.consumerToken = TokenBuilder.getTokenFromFile(consumerTokenFilePath);
 		for (String userTokenFilePath : userTokenFilePaths)
-			addUserToken(userTokenFilePath);
-		
+			addUserTokenToPool(userTokenFilePath);
+		currentUserToken = userTokens.get(0);
+		currentRequestHandler = new RequestHandlerImpl(consumerToken, currentUserToken);		
+	}
+
+	public List<String> getFriends(String userScreenName) {
+		//List<String> friendsIds = new ArrayList<String>();
+		RequestHandler requestHandler = getUsableHandler();
+		if (requestHandler==null) {
+			logger.info("EXIT! No requests left!");
+			System.exit(0);
+		}
+		return requestHandler.getFriendsIds(userScreenName);
 	}
 	
+	//TODO: this can be written in a more elegant way
+	private RequestHandler getUsableHandler() {
+		if (currentRequestHandler.getLimit()>0)
+			return currentRequestHandler;
+		else {
+			userTokens.remove(currentUserToken);
+			if (userTokens.size()==0)
+				return null;
+			else {
+				currentUserToken = userTokens.get(0);
+				currentRequestHandler = new RequestHandlerImpl(consumerToken, currentUserToken);
+				return currentRequestHandler;
+			}
+		}
+			
+	}
 	
-	private void addUserToken(String filePath) {
+	private void addUserTokenToPool(String filePath) {
 		Token userToken = TokenBuilder.getTokenFromFile(filePath);
 		userTokens.add(userToken);
 	}
-		
-	public int getTotalLimit() {
-		int limit = 0;
-		for (Token userToken : userTokens)
-			limit = limit + getLimitForUser(userToken);
-		return limit;		
-	}
 	
-	private int getLimitForUser(Token userToken) {
-		
-		int limit = -1; //TODO: this is not good
-		
-		ConfigurationBuilder cb = new ConfigurationBuilder();
-		cb.setDebugEnabled(true)
-		  .setOAuthConsumerKey(consumerToken.getTokenString())
-		  .setOAuthConsumerSecret(consumerToken.getSecretString())
-		  .setOAuthAccessToken(userToken.getTokenString())
-		  .setOAuthAccessTokenSecret(userToken.getSecretString());
-		TwitterFactory tf = new TwitterFactory(cb.build());
-		Twitter twitter = tf.getInstance();
-		try {
-			limit = twitter.getRateLimitStatus().getRemainingHits();
-		} catch (TwitterException e) {
-			e.printStackTrace();
-		}
-		return limit;
-	}
 
 }

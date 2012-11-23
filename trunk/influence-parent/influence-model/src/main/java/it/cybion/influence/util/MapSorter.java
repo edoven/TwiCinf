@@ -11,7 +11,6 @@ public class MapSorter {
 
     //TODO use a testcase if needed.
     //anyway there are methods to keep maps sorted by some criteria
-    //
 
 	public static  <K,V extends Comparable <? super V> >  Map < K, V > sortMapByValuesAscending(final Map  < K, V >  mapToSort)  
 	{  
