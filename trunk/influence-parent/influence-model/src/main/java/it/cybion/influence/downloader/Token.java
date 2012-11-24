@@ -18,6 +18,7 @@ public class Token {
 	 * token,secret.	 
 	 */
 	public Token(String filePath) {
+        //TODO decouple Token from TokenBuilder
 		Token token = TokenBuilder.getTokenFromFile(filePath);
 		if (token!=null) {
 			this.tokenString = token.getTokenString();

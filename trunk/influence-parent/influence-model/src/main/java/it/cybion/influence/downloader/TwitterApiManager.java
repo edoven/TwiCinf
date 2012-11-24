@@ -9,13 +9,15 @@ import java.util.List;
 
 public class TwitterApiManager {
 	
-	private static final Logger logger = Logger.getLogger(TwitterApiManager.class);
-	
-	private List<Token> usableUserTokens = new ArrayList<Token>();
-	private Token consumerToken;
-	
+    private Token consumerToken;
+
+    private Token currentUserToken;
+
 	private RequestHandler currentRequestHandler;
-	private Token currentUserToken;
+
+    private List<Token> usableUserTokens = new ArrayList<Token>();
+
+    private static final Logger logger = Logger.getLogger(TwitterApiManager.class);
 
 
     //TODO remove this constructor, change with a (Token consumerToken, List<Token> usableUserTokens)
@@ -45,7 +47,7 @@ public class TwitterApiManager {
 		else {
 			usableUserTokens.remove(currentUserToken);
 			if (usableUserTokens.size()==0) {
-                //TODO here, throw an exception!
+                //TODO here, throw an exception, manage it in the upper layers
 				return null;
             }
 			else {
