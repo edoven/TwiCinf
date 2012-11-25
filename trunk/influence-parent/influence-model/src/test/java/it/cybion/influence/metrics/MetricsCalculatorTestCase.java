@@ -42,10 +42,12 @@ public class MetricsCalculatorTestCase {
 			tweet01 = gson.fromJson(InputReader.readJsonFile(json01path), Tweet.class);
 			tweet02 = gson.fromJson(InputReader.readJsonFile(json02path), Tweet.class);
     		tweet03 = gson.fromJson(InputReader.readJsonFile(json03path), Tweet.class);
-		} catch (JsonSyntaxException | IOException e) {
+		} catch (JsonSyntaxException e) {
 			e.printStackTrace();
-		} 		
-		tweets.add(tweet01);
+		} catch (IOException e) {
+            e.printStackTrace();
+        }
+        tweets.add(tweet01);
 		tweets.add(tweet02);
 		tweets.add(tweet03);
 		

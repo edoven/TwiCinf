@@ -1,6 +1,7 @@
 package it.cybion.influence.util;
 
 import it.cybion.influence.model.*;
+import org.apache.log4j.Logger;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -17,12 +18,13 @@ public class JsonDeserializerTestCase {
 	
 	private JsonDeserializer jsonDeserializer;
 
-    //private static final Logger logger = Logger.getLogger(JSONDeserializerTestCase.class);
+    private static final Logger logger = Logger.getLogger(JsonDeserializerTestCase.class);
 	
 	@BeforeClass
 	public void setup() throws IOException
 	{
 		jsonDeserializer = new JsonDeserializer();
+        logger.info("started");
 	}
 
     @AfterClass
