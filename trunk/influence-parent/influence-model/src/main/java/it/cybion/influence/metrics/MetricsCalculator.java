@@ -109,7 +109,7 @@ public class MetricsCalculator {
 	}
 	
 	/*
-	 * The map returned contains the user.getScreenName() as key.
+	 * The map returned (and all other maps of this class) contains the user.getScreenName() as key.
 	 * Another option is to put the entire User.
 	 * Which one is better? TODO: think about it!
 	 */
@@ -128,11 +128,7 @@ public class MetricsCalculator {
 		return MapSorter.sortMapByValuesDescending(users2tweetsCountAmongDataset);
 	}
 	
-	/*
-	 * The map returned contains the user.getScreenName() as key.
-	 * Another option is to put the entire User.
-	 * Which one is better? TODO: think about it!
-	 */
+
 	public Map<String,Integer> getUsersTotweetsCount() {
 		Map<String,Integer> users2tweetsCount = new HashMap<String,Integer>();
 		List<User> users = getUsers();
@@ -176,11 +172,7 @@ public class MetricsCalculator {
 		return accumulator / users2tweetsCount.size();
 	}
 	
-	/*
-	 * The map returned contains the user.getScreenName() as key.
-	 * Another option is to put the entire User.
-	 * Which one is better? TODO: think about it!
-	 */
+
 	public Map<String, Integer> getUserMentionedTocount() {
 		Map<String, Integer> userMentioned2count = new HashMap<String,Integer>();
 		for (Tweet tweet: tweets) {

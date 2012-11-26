@@ -2,13 +2,12 @@ package it.cybion.influence.downloader;
 
 import java.util.List;
 
+import twitter4j.TwitterException;
+
 public interface RequestHandler {
 
-	/*
-	 * BEWARE: this ignores pagination. It only get the first (up to) 5000 friends .
-	 */	
-	public List<String> getFriendsIds(String userScreenName);
+	public List<String> getFriendsIds(String userScreenName) throws TwitterException;
 	
-	public int getLimit();
-
+	public int getLimit() throws TwitterException ; 
+	
 }

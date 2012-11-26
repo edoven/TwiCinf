@@ -33,18 +33,14 @@ public class RequestHandlerImpl implements RequestHandler {
 	 * BEWARE: this ignores pagination. It only get the first (up to) 5000 friends.
 	 */
 	@Override
-	public List<String> getFriendsIds(String userScreenName) {
+	public List<String> getFriendsIds(String userScreenName) throws TwitterException {
 		IDs ids = null;
 		try {
 			ids = twitter.getFriendsIDs(userScreenName, -1);
+			return longArrayToStringList(ids.getIDs());
 		} catch (TwitterException e) {
-            //TODO manage or rethtrow exception
-			e.printStackTrace();
-		}
-		if (ids==null)
-			return null;
-		
-		return longArrayToStringList(ids.getIDs());
+            throw e;
+		}		
 	}
 	
 	
@@ -57,14 +53,12 @@ public class RequestHandlerImpl implements RequestHandler {
 	
 	
 	@Override
-	public int getLimit() {
-		int limit = -1;
+	public int getLimit() throws TwitterException {
 		try {
 			return twitter.getRateLimitStatus().getRemainingHits();
 		} catch (TwitterException e) {
-            //TODO manage or rethtrow exception
-			e.printStackTrace();
+			throw e;
 		}
-		return limit;
 	}
+	
 }

@@ -18,9 +18,8 @@ public class DataParser {
 		Date date = null;
 		try {
 			date = sdf.parse(data);
-		} catch (ParseException e) {
-            //TODO exceptions should be managed and dealt with
-			e.printStackTrace();
+		} catch (ParseException e) { //TODO : what is the best way to handle with this exception?
+			return new DateTime(); 
 		}		
 		return new DateTime(date);		
 	}
