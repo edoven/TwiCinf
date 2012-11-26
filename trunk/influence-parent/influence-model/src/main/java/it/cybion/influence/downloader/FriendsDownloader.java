@@ -58,6 +58,7 @@ public class FriendsDownloader {
 	
 	
 	public FriendsDownloader(TwitterApiManager twitterApiManager) {
+        //TODO add dependency to MySQL, saved as instance variable
 		this.twitterApiManager = twitterApiManager;
 	}
 		
