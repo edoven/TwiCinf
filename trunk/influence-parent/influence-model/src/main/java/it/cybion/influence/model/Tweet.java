@@ -1,13 +1,14 @@
 package it.cybion.influence.model;
 
 
-import java.util.Date;
 import java.util.List;
+
+import org.joda.time.DateTime;
 
 
 public class Tweet {
 	
-	private Date createdAt;
+	private DateTime createdAt;
 	private String id;
 	private String text;
 	private String source;
@@ -23,13 +24,13 @@ public class Tweet {
 	private User user;
 
 	
-	public Date getCreatedAt() 
+	public DateTime getCreatedAt() 
 	{	
 		return createdAt;
 	}
 	
 
-	public void setCreatedAt(Date createdAt) 
+	public void setCreatedAt(DateTime createdAt) 
 	{
 		this.createdAt = createdAt;
 	}

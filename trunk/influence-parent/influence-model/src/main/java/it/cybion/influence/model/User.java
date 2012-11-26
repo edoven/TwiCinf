@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+
 /*
  * 
  * BEWARE: overridden method compare() only compares ids 
@@ -65,7 +67,7 @@ public class User {
 	private boolean isProtected;
 	private int followersCount;
 	private int friendsCount;
-	private Date createdAt;
+	private DateTime createdAt;
 	private int favouritesCount;
 	private String lang;
 	private int statusesCount;
@@ -170,10 +172,10 @@ public class User {
 	}
 	
 	
-	public Date getCreatedAt() {
+	public DateTime getCreatedAt() {
 		return createdAt;
 	}
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(DateTime createdAt) {
 		this.createdAt = createdAt;
 	}
 	public int getFavouritesCount() {

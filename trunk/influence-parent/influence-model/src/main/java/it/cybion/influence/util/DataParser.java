@@ -5,13 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-//TODO refactor this class to use jodatime APIs
+import org.joda.time.DateTime;
+
+
 public class DataParser {
 	
 	
 	private static final String twitterDataFormat = "MMM dd, yyyy hh:mm:ss a";
 
-	public static Date parseTwitterData(String data) {
+	public static DateTime parseTwitterData(String data) {
 		SimpleDateFormat sdf = new SimpleDateFormat(twitterDataFormat, Locale.US);
 		Date date = null;
 		try {
@@ -20,6 +22,6 @@ public class DataParser {
             //TODO exceptions should be managed and dealt with
 			e.printStackTrace();
 		}		
-		return date;		
+		return new DateTime(date);		
 	}
 }
