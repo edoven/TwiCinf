@@ -2,7 +2,6 @@ package it.cybion.influence.model;
 
 
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

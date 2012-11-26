@@ -14,11 +14,11 @@ public class DataParser {
 	private static final String twitterDataFormat = "MMM dd, yyyy hh:mm:ss a";
 
 	public static DateTime parseTwitterData(String data) {
-		SimpleDateFormat sdf = new SimpleDateFormat(twitterDataFormat, Locale.US);
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(twitterDataFormat, Locale.US);
 		Date date = null;
 		try {
-			date = sdf.parse(data);
-		} catch (ParseException e) { //TODO : what is the best way to handle with this exception?
+			date = simpleDateFormat.parse(data);
+		} catch (ParseException e) { //TODO : what is the best way to handle this exception?
 			return new DateTime(); 
 		}		
 		return new DateTime(date);		

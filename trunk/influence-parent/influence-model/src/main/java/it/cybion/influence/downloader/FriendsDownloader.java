@@ -42,9 +42,9 @@ public class FriendsDownloader {
 	public static void main(String[] args) {	
 		logger.info("Getting friends to enrich.");
 		List<String> userTokenFilePaths = new ArrayList<String>();
-		//userTokenFilePaths.add("/home/godzy/tokens/token1.txt");
-		//userTokenFilePaths.add("/home/godzy/tokens/token2.txt");
-		//userTokenFilePaths.add("/home/godzy/tokens/token3.txt");
+		userTokenFilePaths.add("/home/godzy/tokens/token1.txt");
+		userTokenFilePaths.add("/home/godzy/tokens/token2.txt");
+		userTokenFilePaths.add("/home/godzy/tokens/token3.txt");
 		userTokenFilePaths.add("/home/godzy/tokens/token4.txt");
 		Token consumerToken = TokenBuilder.getTokenFromFile("/home/godzy/tokens/consumerToken.txt");
 		List<Token> userTokens = getTokensFromFilePaths(userTokenFilePaths);
@@ -92,7 +92,7 @@ public class FriendsDownloader {
 
 	
 	private static List<String> getUsers() {
-		List<String> jsonTweets = MysqlPersistenceFacade.getAllTwitterJsons();
+		List<String> jsonTweets = MysqlPersistenceFacade.getAllJsonTweets();
 		List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsonTweets);
 		HashSet<String> users = new HashSet<String>();
 		for (Tweet tweet : tweets)

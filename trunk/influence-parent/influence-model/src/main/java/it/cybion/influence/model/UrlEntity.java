@@ -3,11 +3,8 @@ package it.cybion.influence.model;
 import java.net.URL;
 
 /*
- * 
  * BEWARE: the json name is urlEntities not UrlEntities
- * 
  */
-
 
 public class UrlEntity {
 	private int start;

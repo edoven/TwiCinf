@@ -16,22 +16,6 @@ public class MysqlPersistenceFacade {
 	
 	private static final Logger logger = Logger.getLogger(MysqlPersistenceFacade.class);
 	
-	/*
-	public static void main(String[] args)  {
-        //TODO move to a test (rolling back the write transaction in the end, or
-        // deleting data at the end of the test:
-        // every integration test run should leave the db in the initial state)
-		List<String> friends = new ArrayList<String>();
-		friends.add("friend1");
-		friends.add("friend2");
-		friends.add("friend3");
-		friends.add("friend4");
-		writeFriends("user", friends);
-	}
-	*/
-	
-	
-	
 
     //TODO why not local variables?
 	private static String mySqlHost = "localhost";
@@ -47,8 +31,41 @@ public class MysqlPersistenceFacade {
     //in the constructor. consider wrapping each parameter set in properties objects:
     //Properties twitterMonitorParams
     //Properties twitterFriendsParams
+	
+	/*
+	private String host;
+	private int port;
+	private String user;
+	private String password;
+	private String database;
+	
+	public MysqlPersistenceFacade(String host, int port, String user, String password, String database) {
+		super();
+		this.host = host;
+		this.port = port;
+		this.user = user;
+		this.password = password;
+		this.database = database;
+	}
+	*/
+	
+	/*
+	public List<String> getAllJsonTweets(long startDate, long endDate) {
+		List<String> jsons = new ArrayList<String>();
 
-	public static List<String> getAllTwitterJsons() {
+		TwitterMonitoringPersistenceConfiguration persistenceConfiguration =
+                new TwitterMonitoringPersistenceConfiguration(host, port,database,user,password);
+		TweetDao tweetDao = new TweetDao(persistenceConfiguration.getProperties());
+		List<Tweet> tweetDAOs = tweetDao.selectTweetsByQuery("", new DateTime(startDate) , new DateTime(endDate), true);
+		for (Tweet tweet: tweetDAOs)
+			jsons.add(tweet.getTweetJson());
+		return jsons;
+	}
+	*/
+	
+
+	
+	public static List<String> getAllJsonTweets() {
 		List<String> jsons = new ArrayList<String>();
 
 		TwitterMonitoringPersistenceConfiguration persistenceConfiguration =
@@ -64,6 +81,7 @@ public class MysqlPersistenceFacade {
 			jsons.add(tweet.getTweetJson());
 		return jsons;
 	}
+	
 	
 	
 	public static List<String> getFriendsEnrichedUsers() {
@@ -151,6 +169,98 @@ public class MysqlPersistenceFacade {
 			return  "INSERT INTO `twitter-users`.`friends` (`user_screenname`, `friend_screenname`) VALUES ('"+user+"', '"+friend+"')";		
 		}
 		String query = "INSERT INTO `twitter-users`.`friends` (`user_screenname`, `friend_screenname`) VALUES ";
+		for (String friend : friends) {
+			query = query + "('"+user+"', '"+friend+"') ,";
+		}
+		query = query.substring(0, query.length()-2); //this remove last comma
+		return query;
+	}
+
+
+	public static List<String> getFollowersEnrichedUsers() {
+		List<String> users = new ArrayList<String>();
+
+		Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        //TODO these parameters should be taken in the constructor,
+        //together with the ones used for the twitter-monitor db connection
+        String url = "jdbc:mysql://localhost:3306/twitter-users";
+        String user = "root";
+        String password = "qwerty";
+        String query = "SELECT distinct(user_screenname) FROM `twitter-users`.followers;";
+
+        try {
+            con = DriverManager.getConnection(url, user, password);
+            st = con.createStatement();
+            rs = st.executeQuery(query);
+            while (rs.next()) {
+            	users.add(rs.getString("user_screenname"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+                //TODO throw a checked exception
+            	ex.printStackTrace();
+            }
+        }
+        return users;   
+	}
+
+	
+	public static void writeFollowers(String user, List<String> friends) {
+		if (friends.size()==0)
+			return;
+		Connection con = null;
+		PreparedStatement pst = null;
+
+        String url = "jdbc:mysql://localhost:3306/twitter-users";
+        String mysqlUser = "root";
+        String password = "qwerty";
+        String query = createFollowersInsertQuery(user, friends);
+    		         
+        try {
+            con = DriverManager.getConnection(url, mysqlUser, password);
+            pst = con.prepareStatement(query);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (pst != null) {
+                    pst.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+            	ex.printStackTrace();
+            }
+        }		
+	}
+	
+	/*
+	 * This creates a single query string to insert
+	 * in a shot all followers ids
+	 */
+	private static String createFollowersInsertQuery(String user, List<String> friends ) {
+		if (friends.size() == 1) { //TODO: remove this
+			String friend = friends.get(0);
+			return  "INSERT INTO `twitter-users`.`followers` (`user_screenname`, `follower_screenname`) VALUES ('"+user+"', '"+friend+"')";		
+		}
+		String query = "INSERT INTO `twitter-users`.`followers` (`user_screenname`, `follower_screenname`) VALUES ";
 		for (String friend : friends) {
 			query = query + "('"+user+"', '"+friend+"') ,";
 		}

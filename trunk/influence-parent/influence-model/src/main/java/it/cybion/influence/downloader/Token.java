@@ -45,7 +45,6 @@ public class Token {
     }
 		
 	//line format is "token,secret."
-	//TODO : can be better (regex, etc..)
 	private Token getTokenFromFormattedString(String line) {
 		int i=0;
         char c;

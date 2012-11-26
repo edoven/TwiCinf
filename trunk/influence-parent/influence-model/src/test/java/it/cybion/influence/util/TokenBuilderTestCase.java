@@ -16,6 +16,11 @@ public class TokenBuilderTestCase {
 		assertEquals(token.getSecretString(),"bbb");
 	}
 
-    //TODO add a test this method too: TokenBuilder.getTokenFromFile(consumerTokenFilePath);
-
+    
+	@Test
+	public static void getTokenFromFileTEST() {
+		Token token = TokenBuilder.getTokenFromFile("src/test/resources/token.txt");
+		assertEquals(token.getTokenString(),"962689441-yrFTbTzI3nAQ9sIMLnxLexyLWGAfZzhXCosTwuWp");
+		assertEquals(token.getSecretString(),"elPwBu9NeAoGXunIl1wyPJDsSYgLWlFQXbXR8C2KQc");
+	}
 }

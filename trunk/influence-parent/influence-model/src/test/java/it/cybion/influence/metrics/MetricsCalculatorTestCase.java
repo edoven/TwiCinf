@@ -39,9 +39,9 @@ public class MetricsCalculatorTestCase {
     	List<Tweet> tweets = new ArrayList<Tweet>();
     	Gson gson = new GsonBuilder().create();
 		try {
-			tweet01 = gson.fromJson(InputReader.readJsonFile(json01path), Tweet.class);
-			tweet02 = gson.fromJson(InputReader.readJsonFile(json02path), Tweet.class);
-    		tweet03 = gson.fromJson(InputReader.readJsonFile(json03path), Tweet.class);
+			tweet01 = gson.fromJson(InputReader.fileContentToSingleLine(json01path), Tweet.class);
+			tweet02 = gson.fromJson(InputReader.fileContentToSingleLine(json02path), Tweet.class);
+    		tweet03 = gson.fromJson(InputReader.fileContentToSingleLine(json03path), Tweet.class);
 		} catch (JsonSyntaxException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

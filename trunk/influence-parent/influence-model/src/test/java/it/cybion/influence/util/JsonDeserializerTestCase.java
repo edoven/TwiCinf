@@ -40,7 +40,7 @@ public class JsonDeserializerTestCase {
 		String jsonString = null;
 		
 		try {
-			jsonString = InputReader.readJsonFile("src/test/resources/tweet01.json");
+			jsonString = InputReader.fileContentToSingleLine("src/test/resources/tweet01.json");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -96,7 +96,7 @@ public class JsonDeserializerTestCase {
 		String jsonString = null;
 		
 		try {
-			jsonString = InputReader.readJsonFile("src/test/resources/tweet02.json");
+			jsonString = InputReader.fileContentToSingleLine("src/test/resources/tweet02.json");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -182,7 +182,7 @@ public class JsonDeserializerTestCase {
 		String jsonString = null;
 		
 		try {
-			jsonString = InputReader.readJsonFile("src/test/resources/tweet03.json");
+			jsonString = InputReader.fileContentToSingleLine("src/test/resources/tweet03.json");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

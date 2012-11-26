@@ -14,9 +14,7 @@ import it.cybion.influence.model.User;
 import it.cybion.influence.model.UserMentionEntity;
 import it.cybion.influence.util.MapSorter;
 
-/*
- * TODO: test it!
- */
+
 public class MetricsCalculator {
 	
 	

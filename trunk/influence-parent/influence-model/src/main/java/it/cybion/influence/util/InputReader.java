@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class InputReader {
 	
-	public static String readJsonFile(String filePath) throws IOException {
+	public static String fileContentToSingleLine(String filePath) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
         StringBuilder stringBuilder = new StringBuilder();

@@ -25,7 +25,7 @@ public class MetricsResultPrinter {
     @Test
     public void printsAllTheResultsFromTheReportGeneratedWithMetricsCalculator() {
     	logger.info("======================================================");
-    	List<String> jsons = MysqlPersistenceFacade.getAllTwitterJsons();
+    	List<String> jsons = MysqlPersistenceFacade.getAllJsonTweets();
     	JsonDeserializer jd = new JsonDeserializer();
 		List<Tweet> tweets = jd.deserializeJsonStringsToTweets(jsons);
 		

@@ -5,6 +5,8 @@ import it.cybion.influence.downloader.Token;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TokenBuilder {
 	
@@ -26,7 +28,6 @@ public class TokenBuilder {
     }
 		
 	//line format is "token,secret."
-	//TODO : can be better (regex, etc..)
 	public static Token getTokenFromFormattedString(String line) {
 		int i=0;
         char c;
@@ -42,5 +43,12 @@ public class TokenBuilder {
         }
         return new Token(tokenString, secretString);
         
+	}
+	
+	public static List<Token> getTokensFromFilePaths(List<String> filePaths) {
+		List<Token> tokens = new ArrayList<Token>();
+		for (String filePath : filePaths)
+			tokens.add(TokenBuilder.getTokenFromFile(filePath));
+		return tokens;
 	}
 }
