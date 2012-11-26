@@ -45,12 +45,16 @@ public class TwitterApiManager {
 		} catch (FinishedUsableHandlersException e) {
 			logger.info("EXIT! No requests left.");
 			System.exit(0);
-		} catch (TwitterException e) {			
+		} catch (TwitterException e) {
+            // TODO do not re-throw the same exception: take some decision.
+            // Important thing is that the signature of this module
+            // does not include exceptions thrown by Twitter4j
 			throw e;
 		}
 		try {
 			friendsIds = requestHandler.getFriendsIds(userScreenName);
-		} catch (TwitterException e) {			
+		} catch (TwitterException e) {
+            //TODO same as before
 			throw e;
 		}
 		return friendsIds;
@@ -79,6 +83,7 @@ public class TwitterApiManager {
 				}
 			}
 		} catch (TwitterException e) {
+            //TODO same as before
 			throw e;
 		}
 			
