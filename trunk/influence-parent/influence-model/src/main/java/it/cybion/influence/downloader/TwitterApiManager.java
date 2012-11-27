@@ -95,6 +95,7 @@ public class TwitterApiManager {
 				logger.info("Requests limit reached for current user.");
 				usableUserTokens.remove(currentUserToken);
 				if (usableUserTokens.size()==0) {
+                    //TODO add a message inside the exception
 			        throw new FinishedUsableHandlersException();
 			    }
 				else {

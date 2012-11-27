@@ -19,7 +19,8 @@ public class MetricsCalculator {
 	
 	
 	private static final Logger logger = Logger.getLogger(MetricsCalculator.class);
-	
+
+    //TODO init var?
 	private List<Tweet> tweets;
 
 	

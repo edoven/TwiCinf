@@ -30,6 +30,7 @@ public class MysqlPersistenceFacade {
 		this.mysqlUser = mysqlUser;
 		this.password = password;
 		this.database = database;
+        //TODO this.url = "...";
 	}
 	
 	
@@ -77,6 +78,7 @@ public class MysqlPersistenceFacade {
         Statement st = null;
         ResultSet rs = null;
 
+        //TODO can be moved as private variable, built in the constructor
         String url = "jdbc:mysql://"+host+":"+port+"/"+database;
         String query = "SELECT distinct(user_screenname) FROM `"+database+"`.friends;";
 

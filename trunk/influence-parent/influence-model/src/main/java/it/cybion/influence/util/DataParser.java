@@ -18,7 +18,9 @@ public class DataParser {
 		Date date = null;
 		try {
 			date = simpleDateFormat.parse(data);
-		} catch (ParseException e) { //TODO : what is the best way to handle this exception?
+		} catch (ParseException e) {
+		//TODO : what is the best way to handle this exception?
+        // i would not catch it, letting upper layers to deal with it and decide if applying a default value or not
 			return new DateTime(); 
 		}		
 		return new DateTime(date);		
