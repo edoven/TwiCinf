@@ -20,7 +20,7 @@ import java.util.List;
  * 
  */
 
-public class FriendsDownloader {
+public class FriendsDownloader{
 	
 	private static final Logger logger = Logger.getLogger(FriendsDownloader.class);	
 	private TwitterApiManager twitterApiManager;
@@ -28,7 +28,7 @@ public class FriendsDownloader {
 
 	
 	public static void main(String[] args) {	
-		logger.info("Getting friends to enrich.");
+		logger.info("Getting users to friends-enrich.");
 		List<String> userTokenFilePaths = new ArrayList<String>();
 		userTokenFilePaths.add("/home/godzy/tokens/token1.txt");
 		userTokenFilePaths.add("/home/godzy/tokens/token2.txt");
@@ -37,8 +37,7 @@ public class FriendsDownloader {
 		Token consumerToken = TokenBuilder.getTokenFromFile("/home/godzy/tokens/consumerToken.txt");
 		List<Token> userTokens = TokenBuilder.getTokensFromFilePaths(userTokenFilePaths);
 		TwitterApiManager twitterApiManager = new TwitterApiManager(consumerToken, userTokens);
-		//MysqlPersistenceFacade(String host, int port, String mysqlUser, String password, String database)
-		MysqlPersistenceFacade mysqlPersistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter-users");
+		MysqlPersistenceFacade mysqlPersistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter");
 		FriendsDownloader friendsDownloader = new FriendsDownloader(twitterApiManager, mysqlPersistenceFacade);
 		
 		friendsDownloader.run();
@@ -84,7 +83,7 @@ public class FriendsDownloader {
 
 	
 	private List<String> getUsers() {
-		List<String> jsonTweets = MysqlPersistenceFacade.getAllJsonTweets();
+		List<String> jsonTweets = mysqlPersistenceFacade.getAllJsonTweets();
 		List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsonTweets);
 		HashSet<String> users = new HashSet<String>();
 		for (Tweet tweet : tweets)

@@ -1,8 +1,6 @@
 package it.cybion.influence.util;
 
-import it.cybion.monitor.configuration.TwitterMonitoringPersistenceConfiguration;
-import it.cybion.monitor.dao.TweetDao;
-import it.cybion.monitor.model.Tweet;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
+
 
 public class MysqlPersistenceFacade {
 	
@@ -34,33 +32,42 @@ public class MysqlPersistenceFacade {
 		this.database = database;
 	}
 	
-	/*
-	 * This is the only static method of this class because it's
-	 * the only operation that refers to "twitter-monitor" schema.
-	 * TODO: migrate the 3 tables (twitter-monitor.tweets, twitter-users.followers,
-	 * twitter-users.friends) into a single schema. This will allow us to 
-	 * use this method in a non-static way.
-	 */
-	public static List<String> getAllJsonTweets() {
-		String mySqlHost = "localhost";
-		int mySqlPort = 3306;
-		String mySqlUser = "root";
-		String mySqlPassword = "qwerty";
-		String mySqlDatabase = "twitter-monitor";
+	
+	public List<String> getAllJsonTweets() {
 		List<String> jsons = new ArrayList<String>();
 
-		TwitterMonitoringPersistenceConfiguration persistenceConfiguration =
-                new TwitterMonitoringPersistenceConfiguration(
-                		mySqlHost,
-                		mySqlPort,
-                        mySqlDatabase,
-                        mySqlUser,
-                        mySqlPassword);
-		TweetDao tweetDao = new TweetDao(persistenceConfiguration.getProperties());
-		List<Tweet> tweetDAOs = tweetDao.selectTweetsByQuery("", new DateTime(1351616021000l) , new DateTime(1352474121000l), true);
-		for (Tweet tweet: tweetDAOs)
-			jsons.add(tweet.getTweetJson());
-		return jsons;
+		Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        String url = "jdbc:mysql://"+host+":"+port+"/"+database;
+        String query = "SELECT tweet_json FROM `"+database+"`.tweets;";
+        try {
+            con = DriverManager.getConnection(url, mysqlUser, password);
+            st = con.createStatement();
+            rs = st.executeQuery(query);
+            while (rs.next()) {
+            	jsons.add(rs.getString("tweet_json"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+                //TODO throw a checked exception
+            	ex.printStackTrace();
+            }
+        }
+        return jsons;
 	}
 	
 	public List<String> getFriendsEnrichedUsers() {
@@ -70,8 +77,6 @@ public class MysqlPersistenceFacade {
         Statement st = null;
         ResultSet rs = null;
 
-        //TODO these parameters should be taken in the constructor,
-        //together with the ones used for the twitter-monitor db connection
         String url = "jdbc:mysql://"+host+":"+port+"/"+database;
         String query = "SELECT distinct(user_screenname) FROM `"+database+"`.friends;";
 
@@ -211,8 +216,7 @@ public class MysqlPersistenceFacade {
 	}
 	
 	/*
-	 * This creates a single query string to insert
-	 * in a shot all followers ids
+	 * This creates a single query string to insert in one shot all followers ids
 	 */
 	private String createFollowersInsertQuery(String user, List<String> friends ) {
 		String query = "INSERT INTO `"+database+"`.`followers` (`user_screenname`, `follower_screenname`) VALUES ";
@@ -222,6 +226,85 @@ public class MysqlPersistenceFacade {
 		query = query.substring(0, query.length()-2); //this removes last comma
 		return query;
 	}
+	
+	
+	public List<String> getFriends(String userScreenName) {
+		List<String> friends = new ArrayList<String>();
+
+		Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        String url = "jdbc:mysql://"+host+":"+port+"/"+database;
+        String query = "SELECT friend_screenname FROM `"+database+"`.friends where user_screenname='"+userScreenName+"';";
+
+        try {
+            con = DriverManager.getConnection(url, mysqlUser, password);
+            st = con.createStatement();
+            rs = st.executeQuery(query);
+            while (rs.next()) {
+            	friends.add(rs.getString("friend_screenname"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+                //TODO throw a checked exception
+            	ex.printStackTrace();
+            }
+        }
+        return friends;   
+	}
+	
+	
+	public List<String> getFollowers(String userScreenName) {
+		List<String> followers = new ArrayList<String>();
+
+		Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        String url = "jdbc:mysql://"+host+":"+port+"/"+database;
+        String query = "SELECT follower_screenname FROM `"+database+"`.followers where user_screenname='"+userScreenName+"';";
+
+        try {
+            con = DriverManager.getConnection(url, mysqlUser, password);
+            st = con.createStatement();
+            rs = st.executeQuery(query);
+            while (rs.next()) {
+            	followers.add(rs.getString("follower_screenname"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+                //TODO throw a checked exception
+            	ex.printStackTrace();
+            }
+        }
+        return followers;   
+	}
+	
 	
 	
 }

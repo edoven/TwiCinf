@@ -36,7 +36,7 @@ public class FollowersDownloader {
 		Token consumerToken = TokenBuilder.getTokenFromFile("/home/godzy/tokens/consumerToken.txt");
 		List<Token> userTokens = TokenBuilder.getTokensFromFilePaths(userTokenFilePaths);
 		TwitterApiManager twitterApiManager = new TwitterApiManager(consumerToken, userTokens);
-		MysqlPersistenceFacade mysqlPersistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter-users");
+		MysqlPersistenceFacade mysqlPersistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter");
 		FollowersDownloader followersDownloader = new FollowersDownloader(twitterApiManager,mysqlPersistenceFacade);
 		
 		followersDownloader.run();
@@ -48,7 +48,7 @@ public class FollowersDownloader {
 	}
 		
 	public void run() {	
-		logger.info("Getting followers to enrich.");
+		logger.info("Getting users to followers-enrich.");
 		List<String> usersToEnrich = getUsersToEnrichWithFollowers();
 		int count = 0;
 		
@@ -79,7 +79,7 @@ public class FollowersDownloader {
 	}
 	
 	private List<String> getAllUsers() {
-		List<String> jsonTweets = MysqlPersistenceFacade.getAllJsonTweets();
+		List<String> jsonTweets = mysqlPersistenceFacade.getAllJsonTweets();
 		List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsonTweets);
 		HashSet<String> users = new HashSet<String>();
 		for (Tweet tweet : tweets)
