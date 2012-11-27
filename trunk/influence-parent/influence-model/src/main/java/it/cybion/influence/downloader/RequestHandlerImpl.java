@@ -36,7 +36,26 @@ public class RequestHandlerImpl implements RequestHandler {
 	public List<String> getFriendsIds(String userScreenName) throws TwitterException {
 		IDs ids = null;
 		try {
+			//TwitterResponse response = twitter.getFriendsIDs(userScreenName, -1);
+			//RateLimitStatus rateLimit = response.getRateLimitStatus();
 			ids = twitter.getFriendsIDs(userScreenName, -1);
+			return longArrayToStringList(ids.getIDs());
+		} catch (TwitterException e) {
+            throw e;
+		}		
+	}
+	
+	
+	/*
+	 * BEWARE: this ignores pagination. It only get the first (up to) 5000 friends.
+	 */
+	@Override
+	public List<String> getFollowersIds(String userScreenName) throws TwitterException {
+		IDs ids = null;
+		try {
+			//TwitterResponse response = twitter.getFriendsIDs(userScreenName, -1);
+			//RateLimitStatus rateLimit = response.getRateLimitStatus();
+			ids = twitter.getFollowersIDs(userScreenName, -1);
 			return longArrayToStringList(ids.getIDs());
 		} catch (TwitterException e) {
             throw e;

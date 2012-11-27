@@ -20,11 +20,11 @@ import java.util.List;
  * 
  */
 
-
 public class FollowersDownloader {
 	
 	private static final Logger logger = Logger.getLogger(FollowersDownloader.class);	
 	private TwitterApiManager twitterApiManager;
+	private MysqlPersistenceFacade mysqlPersistenceFacade;
 
 	
 	public static void main(String[] args) {			
@@ -36,13 +36,15 @@ public class FollowersDownloader {
 		Token consumerToken = TokenBuilder.getTokenFromFile("/home/godzy/tokens/consumerToken.txt");
 		List<Token> userTokens = TokenBuilder.getTokensFromFilePaths(userTokenFilePaths);
 		TwitterApiManager twitterApiManager = new TwitterApiManager(consumerToken, userTokens);
-		FollowersDownloader followersDownloader = new FollowersDownloader(twitterApiManager);
+		MysqlPersistenceFacade mysqlPersistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter-users");
+		FollowersDownloader followersDownloader = new FollowersDownloader(twitterApiManager,mysqlPersistenceFacade);
 		
 		followersDownloader.run();
 	}
 		
-	public FollowersDownloader(TwitterApiManager twitterApiManager) {
+	public FollowersDownloader(TwitterApiManager twitterApiManager, MysqlPersistenceFacade mysqlPersistenceFacade) {
 		this.twitterApiManager = twitterApiManager;
+		this.mysqlPersistenceFacade = mysqlPersistenceFacade;
 	}
 		
 	public void run() {	
@@ -55,20 +57,19 @@ public class FollowersDownloader {
 			String user = usersToEnrich.get(i);
 			List<String> followers;
 			try {
-				followers = twitterApiManager.getFriends(user);
+				followers = twitterApiManager.getFollowers(user);
 				if (followers.size()>0)
-					MysqlPersistenceFacade.writeFollowers(user, followers);	
-				logger.info("Successifully extracted and saved "+followers.size()+" followers for user: "+user);
+					mysqlPersistenceFacade.writeFollowers(user, followers);	
 				count++;
-				logger.info("Extracted followers for "+count+" users.");
+				logger.info("Successifully extracted and saved "+followers.size()+" followers for user: "+user+". Extracted followers for "+count+" users.");
+				
 			} catch (TwitterException e) {
-				logger.info("Problem with user:" + user);
-				logger.info(e.toString());
+				logger.info("Problem with user:" + user +". "+e.toString());
 			}			
 		}
 	}
 	
-	private static List<String> getUsersToEnrichWithFollowers() {
+	private List<String> getUsersToEnrichWithFollowers() {
 		List<String> allUsers = getAllUsers();
 		List<String> alreadyEnriched = getAlreadyEnrichedUsers();
 		List<String> toEnrich = new ArrayList<String>(allUsers);
@@ -77,7 +78,7 @@ public class FollowersDownloader {
 		
 	}
 	
-	private static List<String> getAllUsers() {
+	private List<String> getAllUsers() {
 		List<String> jsonTweets = MysqlPersistenceFacade.getAllJsonTweets();
 		List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsonTweets);
 		HashSet<String> users = new HashSet<String>();
@@ -87,8 +88,8 @@ public class FollowersDownloader {
 	}
 
 	
-	private static List<String> getAlreadyEnrichedUsers() {
-		List<String> followersEnrichedUsers = MysqlPersistenceFacade.getFollowersEnrichedUsers();
+	private List<String> getAlreadyEnrichedUsers() {
+		List<String> followersEnrichedUsers = mysqlPersistenceFacade.getFollowersEnrichedUsers();
 		return followersEnrichedUsers;
 	}
 	

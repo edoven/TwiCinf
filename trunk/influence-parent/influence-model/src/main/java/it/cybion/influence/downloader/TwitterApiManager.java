@@ -60,9 +60,31 @@ public class TwitterApiManager {
 		return friendsIds;
 	}
 	
-	/*
-	 * TODO:this can be written in a more elegant way
-	 */	
+	
+	public List<String> getFollowers(String userScreenName) throws TwitterException {
+		RequestHandler requestHandler = null;
+		List<String> friendsIds = null;
+		try {
+			requestHandler = getUsableHandler();
+		} catch (FinishedUsableHandlersException e) {
+			logger.info("EXIT! No requests left.");
+			System.exit(0);
+		} catch (TwitterException e) {
+            // TODO do not re-throw the same exception: take some decision.
+            // Important thing is that the signature of this module
+            // does not include exceptions thrown by Twitter4j
+			throw e;
+		}
+		try {
+			friendsIds = requestHandler.getFollowersIds(userScreenName);
+		} catch (TwitterException e) {
+            //TODO same as before
+			throw e;
+		}
+		return friendsIds;
+	}
+	
+
 	private RequestHandler getUsableHandler() throws FinishedUsableHandlersException, TwitterException {
 		try {
 			int limit = currentRequestHandler.getLimit();

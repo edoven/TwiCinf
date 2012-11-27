@@ -20,23 +20,11 @@ import java.util.List;
  * 
  */
 
-/* TODO 
-*
-* MysqlPersistenceFacade should have a constructor with connection parameters, one for twitter-monitor db
-* and the other for twitter-users. (anyway, why not storing friends on graph?)
-* pf = MysqlPersistenceFacade(monitorParameters, usersParameters)
-*
-* Then, build an object, always in main with the objects constructed:
-* fd = new FriendsDownloader(persistenceFacade, tam);
-* then, move the main logic you have before in a run() method
-* and to fd.run();
-*
-* */
-
 public class FriendsDownloader {
 	
 	private static final Logger logger = Logger.getLogger(FriendsDownloader.class);	
 	private TwitterApiManager twitterApiManager;
+	private MysqlPersistenceFacade mysqlPersistenceFacade;
 
 	
 	public static void main(String[] args) {	
@@ -47,9 +35,11 @@ public class FriendsDownloader {
 		userTokenFilePaths.add("/home/godzy/tokens/token3.txt");
 		userTokenFilePaths.add("/home/godzy/tokens/token4.txt");
 		Token consumerToken = TokenBuilder.getTokenFromFile("/home/godzy/tokens/consumerToken.txt");
-		List<Token> userTokens = getTokensFromFilePaths(userTokenFilePaths);
+		List<Token> userTokens = TokenBuilder.getTokensFromFilePaths(userTokenFilePaths);
 		TwitterApiManager twitterApiManager = new TwitterApiManager(consumerToken, userTokens);
-		FriendsDownloader friendsDownloader = new FriendsDownloader(twitterApiManager);
+		//MysqlPersistenceFacade(String host, int port, String mysqlUser, String password, String database)
+		MysqlPersistenceFacade mysqlPersistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter-users");
+		FriendsDownloader friendsDownloader = new FriendsDownloader(twitterApiManager, mysqlPersistenceFacade);
 		
 		friendsDownloader.run();
 
@@ -57,9 +47,9 @@ public class FriendsDownloader {
 	
 	
 	
-	public FriendsDownloader(TwitterApiManager twitterApiManager) {
-        //TODO add dependency to MySQL, saved as instance variable
+	public FriendsDownloader(TwitterApiManager twitterApiManager, MysqlPersistenceFacade mysqlPersistenceFacade) {
 		this.twitterApiManager = twitterApiManager;
+		this.mysqlPersistenceFacade = mysqlPersistenceFacade;
 	}
 		
 	public void run() {		
@@ -73,26 +63,27 @@ public class FriendsDownloader {
 			try {
 				friends = twitterApiManager.getFriends(user);
 				if (friends.size()>0)
-					MysqlPersistenceFacade.writeFriends(user, friends);	
-				logger.info("Successifully extracted and saved "+friends.size()+" friends for user: "+user);
+					mysqlPersistenceFacade.writeFriends(user, friends);	
+				
 				count++;
-				logger.info("Extracted friends for "+count+" users.");
+				logger.info("Successifully extracted and saved "+friends.size()+" friends for user: "+user+". Extracted friends for "+count+" users.");
 			} catch (TwitterException e) {
-				logger.info("Problem with user:" + user);
-				logger.info(e.toString());
+				logger.info("Problem with user:" + user +". "+e.toString());
 			}			
 		}
 	}
 		
-	private static List<Token> getTokensFromFilePaths(List<String> filePaths) {
+	/*
+	private List<Token> getTokensFromFilePaths(List<String> filePaths) {
 		List<Token> tokens = new ArrayList<Token>();
 		for (String filePath : filePaths)
 			tokens.add(TokenBuilder.getTokenFromFile(filePath));
 		return tokens;
 	}
+	*/
 
 	
-	private static List<String> getUsers() {
+	private List<String> getUsers() {
 		List<String> jsonTweets = MysqlPersistenceFacade.getAllJsonTweets();
 		List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsonTweets);
 		HashSet<String> users = new HashSet<String>();
@@ -102,12 +93,12 @@ public class FriendsDownloader {
 	}
 
 	
-	private static List<String> getAlreadyEnrichedUsers() {
-		List<String> friendsEnrichedUsers = MysqlPersistenceFacade.getFriendsEnrichedUsers();
+	private List<String> getAlreadyEnrichedUsers() {
+		List<String> friendsEnrichedUsers = mysqlPersistenceFacade.getFriendsEnrichedUsers();
 		return friendsEnrichedUsers;
 	}
 	
-	private static List<String> getUsersToEnrich() {
+	private List<String> getUsersToEnrich() {
 		List<String> allUsers = getUsers();
 		List<String> alreadyEnriched = getAlreadyEnrichedUsers();
 		List<String> toEnrich = new ArrayList<String>(allUsers);
