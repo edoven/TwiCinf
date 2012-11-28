@@ -1,6 +1,6 @@
 package it.cybion.influence.IO;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.Assert.assertEquals;
 
 import it.cybion.influence.IO.InputReader;
 

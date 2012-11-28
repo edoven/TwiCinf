@@ -9,7 +9,10 @@ import java.util.List;
  */
 public class UserPOJO implements User, Serializable {
 
-    public int id;
+
+	private static final long serialVersionUID = 6761758017673109680L;
+
+	public int id;
 
     public String name;
 

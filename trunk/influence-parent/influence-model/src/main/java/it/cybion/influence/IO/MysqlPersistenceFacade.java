@@ -1,7 +1,6 @@
 package it.cybion.influence.IO;
 
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -32,6 +31,8 @@ public class MysqlPersistenceFacade {
 		this.database = database;
         //TODO this.url = "...";
 	}
+	
+	
 	
 	
 	public List<String> getAllJsonTweets() {
@@ -70,6 +71,49 @@ public class MysqlPersistenceFacade {
         }
         return jsons;
 	}
+	
+	
+	
+	public List<String> getFirstNJsonTweets(int n) {
+		List<String> jsons = new ArrayList<String>();
+
+		Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        String url = "jdbc:mysql://"+host+":"+port+"/"+database;
+        String query = "SELECT tweet_json FROM `"+database+"`.tweets LIMIT "+n+";";
+        try {
+            con = DriverManager.getConnection(url, mysqlUser, password);
+            st = con.createStatement();
+            rs = st.executeQuery(query);
+            while (rs.next()) {
+            	jsons.add(rs.getString("tweet_json"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException ex) {
+                //TODO throw a checked exception
+            	ex.printStackTrace();
+            }
+        }
+        return jsons;
+	}
+	
+	
+	
+	
 	
 	public List<String> getFriendsEnrichedUsers() {
 		List<String> users = new ArrayList<String>();

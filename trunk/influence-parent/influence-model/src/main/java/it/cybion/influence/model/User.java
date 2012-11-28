@@ -9,9 +9,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 
 /*
- * 
  * BEWARE: overridden method compare() only compares ids 
- * 
  */
 
 
@@ -39,7 +37,7 @@ useless	"profileSidebarBorderColor":"C0DEED",
 useless	"profileUseBackgroundImage":true,
 ??? useless ???	"showAllInlineMedia":false,
 	"friendsCount":93,
-TO_INSERT	"createdAt":"Dec 1, 2011 10:49:25 AM",
+	"createdAt":"Dec 1, 2011 10:49:25 AM",
 	"favouritesCount":0,
 useless	"utcOffset":-1,
 useless	"profileBackgroundImageUrl":"http://a0.twimg.com/images/themes/theme1/bg.png",
@@ -71,15 +69,10 @@ public class User {
 	private String lang;
 	private int statusesCount;
 	private int listedCount;
-	
-
 	/*
-	 * This map needs to be calculated
-	 * When a user is created from a JSON
-	 * this map is null.
+	 * This map needs to be calculated. When a user is created from a JSON this map is null.
 	 */
-	private Map<String, Integer> hashtags2count = null;
-	
+	private Map<String, Integer> hashtags2count = null;	
 	/*
 	 * BEWARE!
 	 * To calcluate!
@@ -90,10 +83,6 @@ public class User {
 	private List<User> friends;		
 	
 	
-	/*
-	 * "BUSINESS" METHODS
-	 */
-	
 	public void addHashtag(String hashtag) {
 		if (hashtags2count == null)
 			hashtags2count = new HashMap<String, Integer>();
@@ -103,11 +92,6 @@ public class User {
 			hashtags2count.put(hashtag, 1 );
 	}
 	
-	
-	
-	/*
-	 * GETTERS AND SETTERS
-	 */
 
     public long getId() {
 		return id;
@@ -168,9 +152,7 @@ public class User {
 	}
 	public void setFriendsCount(int friendsCount) {
 		this.friendsCount = friendsCount;
-	}
-	
-	
+	}	
 	public DateTime getCreatedAt() {
 		return createdAt;
 	}

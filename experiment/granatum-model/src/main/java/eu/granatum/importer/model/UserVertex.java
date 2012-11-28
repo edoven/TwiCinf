@@ -13,6 +13,7 @@ import java.util.List;
  * @author Matteo Moci ( matteo (dot) moci (at) gmail (dot) com )
  */
 public class UserVertex implements User {
+	
     public static final String CLASS_NAME = "User";
 
     public class Properties {
