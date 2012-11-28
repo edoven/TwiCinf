@@ -1,5 +1,6 @@
 package it.cybion.influence.util;
 
+import it.cybion.influence.IO.InputReader;
 import it.cybion.influence.model.*;
 import org.apache.log4j.Logger;
 import org.testng.annotations.AfterClass;

@@ -1,10 +1,9 @@
-package it.cybion.influence.util;
+package it.cybion.influence.IO;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import it.cybion.influence.model.Tweet;
 
-import org.apache.log4j.Logger;
+import it.cybion.influence.IO.MysqlPersistenceFacade;
+import it.cybion.influence.util.JsonDeserializer;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -23,7 +22,7 @@ import static org.testng.Assert.assertEquals;
 
 public class MysqlPersistenceFacadeTestCase {
 	
-	private static final Logger logger = Logger.getLogger(MysqlPersistenceFacadeTestCase.class);
+	//private static final Logger logger = Logger.getLogger(MysqlPersistenceFacadeTestCase.class);
 	
 	private MysqlPersistenceFacade persistenceFacade;
 	
@@ -57,22 +56,8 @@ public class MysqlPersistenceFacadeTestCase {
     	assertEquals(persistenceFacade.getFriends("citiamo").size() ,204);
     	assertEquals(persistenceFacade.getFollowers("citiamo").size() ,407);
     	assertEquals(persistenceFacade.getFriends("03Stefania55").size() ,1075);
-    	//assertEquals(persistenceFacade.getFollowers("03Stefania55").size() ,173);
+    	assertEquals(persistenceFacade.getFollowers("03Stefania55").size() ,173);
     }
     
-    
-    
-    
-    /*
-    @Test
-    public void writeFriendsTEST() {
-    	List<String> friends = new ArrayList<String>();
-		friends.add("friend1");
-		friends.add("friend2");
-		friends.add("friend3");
-		friends.add("friend4");
-		writeFriends("user", friends);    
-    }
-    */
 
 }

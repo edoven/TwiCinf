@@ -1,10 +1,10 @@
 package it.cybion.influence.metrics;
 
 
+import it.cybion.influence.IO.MysqlPersistenceFacade;
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.model.User;
 import it.cybion.influence.util.JsonDeserializer;
-import it.cybion.influence.util.MysqlPersistenceFacade;
 import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
 
@@ -18,12 +18,11 @@ public class MetricsResultPrinter {
 	private static final Logger logger = Logger.getLogger(MetricsResultPrinter.class);
 	
 	/*
-	 * MetricsCalculator
 	 * 
-	 * This is not a real test
+	 * This is not a real test, it only prints results.
 	 */
     @Test
-    public void printsAllTheResultsFromTheReportGeneratedWithMetricsCalculator() {
+    public void printsResultsFromTheReportGeneratedWithMetricsCalculator() {
     	logger.info("======================================================");
     	List<String> jsons = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter").getAllJsonTweets();
     	JsonDeserializer jd = new JsonDeserializer();

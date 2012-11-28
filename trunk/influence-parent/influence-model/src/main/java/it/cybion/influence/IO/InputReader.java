@@ -1,4 +1,4 @@
-package it.cybion.influence.util;
+package it.cybion.influence.IO;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

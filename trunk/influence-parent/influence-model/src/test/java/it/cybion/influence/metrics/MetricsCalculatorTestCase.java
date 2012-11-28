@@ -1,11 +1,7 @@
 package it.cybion.influence.metrics;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
-
+import it.cybion.influence.IO.InputReader;
 import it.cybion.influence.model.Tweet;
-import it.cybion.influence.util.InputReader;
 import it.cybion.influence.util.JsonDeserializer;
 
 import org.testng.annotations.AfterClass;
@@ -42,8 +38,8 @@ public class MetricsCalculatorTestCase {
     	JsonDeserializer deserializer = new JsonDeserializer();
 		try {
 			tweet01 = deserializer.deserializeJsonStringToTweet(InputReader.fileContentToSingleLine(json01path));
-			tweet01 = deserializer.deserializeJsonStringToTweet(InputReader.fileContentToSingleLine(json02path));
-    		tweet01 = deserializer.deserializeJsonStringToTweet(InputReader.fileContentToSingleLine(json03path));
+			tweet02 = deserializer.deserializeJsonStringToTweet(InputReader.fileContentToSingleLine(json02path));
+    		tweet03 = deserializer.deserializeJsonStringToTweet(InputReader.fileContentToSingleLine(json03path));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

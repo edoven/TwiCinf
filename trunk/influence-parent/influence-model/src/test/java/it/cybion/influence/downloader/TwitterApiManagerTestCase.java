@@ -25,10 +25,7 @@ public class TwitterApiManagerTestCase {
 		userTokens.add(TokenBuilder.getTokenFromFile("/home/godzy/tokens/token1.txt"));
 		userTokens.add(TokenBuilder.getTokenFromFile("/home/godzy/tokens/token1.txt"));
 		userTokens.add(TokenBuilder.getTokenFromFile("/home/godzy/tokens/token1.txt"));
-		Token consumerToken = TokenBuilder.getTokenFromFile("/home/godzy/tokens/consumerToken.txt");
-        //TODO build programmatically a list of 2 tokens, then
-        //TODO use a constructor: TwitterApiManager(List<Token> tokens)
-        //in this way we decouple the TwitterApiManager under test from the correct functioning of the TokenBuilder
+		Token consumerToken = TokenBuilder.getTokenFromFile("/home/godzy/tokens/consumerToken.txt");        
 		twitterApiManager = new TwitterApiManager(consumerToken, userTokens);
 	}
 	

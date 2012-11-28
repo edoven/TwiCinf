@@ -1,8 +1,8 @@
 package it.cybion.influence.downloader;
 
+import it.cybion.influence.IO.MysqlPersistenceFacade;
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.util.JsonDeserializer;
-import it.cybion.influence.util.MysqlPersistenceFacade;
 import it.cybion.influence.util.TokenBuilder;
 
 import org.apache.log4j.Logger;

@@ -31,6 +31,8 @@ public class MetricsCalculator {
 	public MetricsReport getReport() {
 		MetricsReport report = new MetricsReport();
 		
+		report.setTweetsCount(tweets.size());
+		
 		logger.info("calculating getUsers");
 		report.setUsers(getUsers());
 		

@@ -1,6 +1,8 @@
-package it.cybion.influence.util;
+package it.cybion.influence.IO;
 
 import static org.testng.AssertJUnit.assertEquals;
+
+import it.cybion.influence.IO.InputReader;
 
 import java.io.IOException;
 
