@@ -6,6 +6,8 @@ import com.google.gson.JsonSyntaxException;
 
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.util.InputReader;
+import it.cybion.influence.util.JsonDeserializer;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -37,16 +39,14 @@ public class MetricsCalculatorTestCase {
     		  tweet02 = null, 
     		  tweet03 = null;
     	List<Tweet> tweets = new ArrayList<Tweet>();
-    	Gson gson = new GsonBuilder().create();
+    	JsonDeserializer deserializer = new JsonDeserializer();
 		try {
-			tweet01 = gson.fromJson(InputReader.fileContentToSingleLine(json01path), Tweet.class);
-			tweet02 = gson.fromJson(InputReader.fileContentToSingleLine(json02path), Tweet.class);
-    		tweet03 = gson.fromJson(InputReader.fileContentToSingleLine(json03path), Tweet.class);
-		} catch (JsonSyntaxException e) {
-			e.printStackTrace();
+			tweet01 = deserializer.deserializeJsonStringToTweet(InputReader.fileContentToSingleLine(json01path));
+			tweet01 = deserializer.deserializeJsonStringToTweet(InputReader.fileContentToSingleLine(json02path));
+    		tweet01 = deserializer.deserializeJsonStringToTweet(InputReader.fileContentToSingleLine(json03path));
 		} catch (IOException e) {
-            e.printStackTrace();
-        }
+			e.printStackTrace();
+		}
         tweets.add(tweet01);
 		tweets.add(tweet02);
 		tweets.add(tweet03);

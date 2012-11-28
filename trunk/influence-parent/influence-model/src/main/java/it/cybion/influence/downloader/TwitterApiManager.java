@@ -7,6 +7,13 @@ import twitter4j.TwitterException;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * 
+ * TwitterApiManager menages a pool of RequestHandlers, each one 
+ * is associated with a different user token.
+ * 
+ */
+
 
 public class TwitterApiManager {
 	
