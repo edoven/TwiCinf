@@ -3,6 +3,11 @@ package it.cybion.influence.graph;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +22,8 @@ import org.testng.annotations.Test;
 
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.util.io.gml.GMLWriter;
+import com.tinkerpop.blueprints.util.io.graphml.GraphMLWriter;
 
 public class UserGraphFactoryTestCase {
 
@@ -42,7 +49,7 @@ public class UserGraphFactoryTestCase {
 		users.add(u3);
 		
 		
-		UsersGraphFactory factory = new UsersGraphFactory(users);
+		UsersGraphFactory factory = new UsersGraphFactory("src/test/resources/graphs/userRetrivalTest",users);
 		Graph graph = null;
 		try {
 			graph = factory.createGraph();
@@ -81,7 +88,7 @@ public class UserGraphFactoryTestCase {
 		
 		Graph graph = null;
 		try {
-			graph = new UsersGraphFactory(users).createGraph();
+			graph = new UsersGraphFactory("src/test/resources/graphs/testsBasicGraph", users).createGraph();
 		} catch (GraphCreationException e) {
 			e.printStackTrace();
 		}
@@ -101,7 +108,7 @@ public class UserGraphFactoryTestCase {
 	}
 	
 	
-	/*
+	
 	@Test
 	public void testsBasicGraphWithFollowersAndFriends() {
 		
@@ -124,13 +131,10 @@ public class UserGraphFactoryTestCase {
 		
 		List<User> users = new ArrayList<User>();
 		users.add(user);
-
-		
-		
-		
+	
 		Graph graph = null;
 		try {
-			graph = new UsersGraphFactory(users).createGraph();
+			graph = new UsersGraphFactory("src/test/resources/graphs/testsBasicGraphWithFollowersAndFriends" , users).createGraph();
 		} catch (GraphCreationException e) {
 			e.printStackTrace();
 		}
@@ -146,12 +150,12 @@ public class UserGraphFactoryTestCase {
 		
 		logger.info("=== END testsBasicGraphWithFollowersAndFriends ===");
 	}
-	*/
 	
 	
 	
 	
-	/*
+	
+	
 	@Test
 	public void partialDatasetGraphCreationTest() {
 		MysqlPersistenceFacade mysqlFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter");
@@ -181,7 +185,20 @@ public class UserGraphFactoryTestCase {
 		
 		Graph graph = null;
 		try {
-			graph = new UsersGraphFactory(users).createGraph();
+			graph = new UsersGraphFactory("src/test/resources/graphs/partialDatasetGraphCreationTest", users).createGraph();
+			
+			try {
+				OutputStream out = new FileOutputStream("src/test/resources/graphs/partialDatasetGraphCreationTest/graph");
+				GMLWriter.outputGraph(graph, out);
+				out.close();
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			graph.shutdown();
+		
 		} catch (GraphCreationException e) {
 			e.printStackTrace();
 		}
@@ -192,6 +209,6 @@ public class UserGraphFactoryTestCase {
 			logger.info("Graph not created!");	
 		
 	}
-	*/
+	
 	
 }

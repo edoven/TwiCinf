@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 
 
@@ -27,11 +28,12 @@ public class UsersGraphFactory {
 	
 	private static final Logger logger = Logger.getLogger(UsersGraphFactory.class);
 	
-	private Graph graph = new TinkerGraph();
+	private Graph graph = null;
 	private List<User> users = null;
 	
-	public UsersGraphFactory(List<User> users) {
+	public UsersGraphFactory(String filePath, List<User> users) {
 		this.users = users;
+		graph = new TinkerGraph(filePath);
 	}
 	
 	
@@ -44,6 +46,7 @@ public class UsersGraphFactory {
 			if (user.getFriends() != null)
 				addFriends(user);		
 		}
+		
 		return graph;
 	}
 	
@@ -79,6 +82,7 @@ public class UsersGraphFactory {
 			throw new GraphCreationException("addFollowsRelationship - can't find followerVertex or followedVertex");
 			
 		graph.addEdge(null, followerVertex, followedVertex, "follows");	
+		logger.info("Added follows relationship from "+follower.getId()+" to "+followed.getId());
 	}
 		
 	//TODO: indexes...
@@ -87,8 +91,8 @@ public class UsersGraphFactory {
 		
 		Iterable<Vertex> vertices = graph.getVertices();	
 		for (Vertex vertex : vertices) {
-			logger.info("containsUser - user ="+user.getId()+" vertex.userId="+vertex.getProperty("userId"));
-			if (vertex.getProperty("userId") == Long.toString(user.getId())) //TODO: what if not all vertexes are users?? Add vertex class type.
+			//logger.info("containsUser - user ="+user.getId()+" vertex.userId="+vertex.getProperty("userId"));
+			if (vertex.getProperty("userId").equals(Long.toString(user.getId()))) //TODO: what if not all vertexes are users?? Add vertex class type.
 				return true;
 		}
 		return false;
@@ -98,7 +102,7 @@ public class UsersGraphFactory {
 		
 		Iterable<Vertex> vertices = graph.getVertices();	
 		for (Vertex vertex : vertices)
-			if (vertex.getProperty("userId") == Long.toString(user.getId()))
+			if (vertex.getProperty("userId").equals(Long.toString(user.getId())))
 				return vertex;
 		logger.info("getUserVertex - can't find user "+user.getId());
 		return null;
