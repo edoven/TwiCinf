@@ -43,17 +43,17 @@ public class UserGraphFactoryTestCase extends InMemoryGraphDbServiceProvider {
 		users.add(u3);
 		
 		
-		UsersGraphFactory factory = new UsersGraphFactory("src/test/resources/graphs/userRetrivalTest",users);
+		UsersGraphFactory ugFactory = new UsersGraphFactoryImpl("src/test/resources/graphs/userRetrivalTest",users);
 		Graph graph = null;
 		try {
-			graph = factory.createGraph();
+			graph = ugFactory.createGraph();
 		} catch (GraphCreationException e) {
 			e.printStackTrace();
 		}
 		if (graph!=null) {
-			assertEquals(factory.containsUser(u1), true);
-			assertEquals(factory.containsUser(u2), true);
-			assertEquals(factory.containsUser(u3), true);
+			assertEquals(ugFactory.containsUser(u1), true);
+			assertEquals(ugFactory.containsUser(u2), true);
+			assertEquals(ugFactory.containsUser(u3), true);
 		}
 			
 		
@@ -82,7 +82,7 @@ public class UserGraphFactoryTestCase extends InMemoryGraphDbServiceProvider {
 		
 		Graph graph = null;
 		try {
-			graph = new UsersGraphFactory("src/test/resources/graphs/testsBasicGraph", users).createGraph();
+			graph = new UsersGraphFactoryImpl("src/test/resources/graphs/testsBasicGraph", users).createGraph();
 		} catch (GraphCreationException e) {
 			e.printStackTrace();
 		}
@@ -128,7 +128,7 @@ public class UserGraphFactoryTestCase extends InMemoryGraphDbServiceProvider {
 	
 		Graph graph = null;
 		try {
-			graph = new UsersGraphFactory("src/test/resources/graphs/testsBasicGraphWithFollowersAndFriends" , users).createGraph();
+			graph = new UsersGraphFactoryImpl("src/test/resources/graphs/testsBasicGraphWithFollowersAndFriends" , users).createGraph();
 		} catch (GraphCreationException e) {
 			e.printStackTrace();
 		}
@@ -179,7 +179,7 @@ public class UserGraphFactoryTestCase extends InMemoryGraphDbServiceProvider {
 		
 		Graph graph = null;
 		try {
-			graph = new UsersGraphFactory("src/test/resources/graphs/partialDatasetGraphCreationTest", users).createGraph();
+			graph = new UsersGraphFactoryImpl("src/test/resources/graphs/partialDatasetGraphCreationTest", users).createGraph();
 			
 			try {
 				OutputStream out = new FileOutputStream("src/test/resources/graphs/partialDatasetGraphCreationTest/graph");
