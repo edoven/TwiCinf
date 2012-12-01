@@ -1,40 +1,34 @@
 package it.cybion.influence.graph;
 
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.util.io.gml.GMLWriter;
+import it.cybion.influence.IO.MysqlPersistenceFacade;
+import it.cybion.influence.model.Tweet;
+import it.cybion.influence.model.User;
+import it.cybion.influence.util.JsonDeserializer;
+import org.apache.log4j.Logger;
+import org.testng.annotations.Test;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.cybion.influence.model.Tweet;
-import it.cybion.influence.model.User;
-import it.cybion.influence.util.JsonDeserializer;
-import it.cybion.influence.IO.MysqlPersistenceFacade;
-import it.cybion.influence.graph.UsersGraphFactory;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
-import org.apache.log4j.Logger;
-import org.testng.annotations.Test;
+public class UserGraphFactoryTestCase extends InMemoryGraphDbServiceProvider {
 
-import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.util.io.gml.GMLWriter;
-import com.tinkerpop.blueprints.util.io.graphml.GraphMLWriter;
-
-public class UserGraphFactoryTestCase {
-
-	private static final Logger logger = Logger.getLogger(UserGraphFactoryTestCase.class);
+	private static final Logger LOGGER = Logger.getLogger(UserGraphFactoryTestCase.class);
 
 	
 	
 	@Test
 	public void userRetrivalTest() {
 		
-		logger.info("=== START userRetrivalTest ===");
+		LOGGER.info("=== START userRetrivalTest ===");
 		
 		List<Long> ids = new ArrayList<Long>();
 		User u1 = new User();
@@ -63,14 +57,14 @@ public class UserGraphFactoryTestCase {
 		}
 			
 		
-		logger.info("=== END userRetrivalTest ===");
+		LOGGER.info("=== END userRetrivalTest ===");
 	}
 	
 	
 	@Test
 	public void testsBasicGraph() {
 		
-		logger.info("=== START testsBasicGraph ===");
+		LOGGER.info("=== START testsBasicGraph ===");
 		
 		List<Long> ids = new ArrayList<Long>();
 		User u1 = new User();
@@ -96,15 +90,15 @@ public class UserGraphFactoryTestCase {
 			Iterable<Vertex> vertices = graph.getVertices();
 			for (Vertex vertex : vertices) {
 				long vertedUserId = Long.parseLong((String)vertex.getProperty("userId")); 
-				logger.info(vertedUserId);
+				LOGGER.info(vertedUserId);
 				assertTrue(ids.contains(vertedUserId));
 				ids.remove(vertedUserId);
 			}
 		}
 		else
-			logger.info("Graph not created!");
+			LOGGER.info("Graph not created!");
 		
-		logger.info("=== END testsBasicGraph ===");
+		LOGGER.info("=== END testsBasicGraph ===");
 	}
 	
 	
@@ -112,7 +106,7 @@ public class UserGraphFactoryTestCase {
 	@Test
 	public void testsBasicGraphWithFollowersAndFriends() {
 		
-		logger.info("=== START testsBasicGraphWithFollowersAndFriends ===");
+		LOGGER.info("=== START testsBasicGraphWithFollowersAndFriends ===");
 		
 		User user = new User();
 		user.setId(111); 
@@ -142,13 +136,13 @@ public class UserGraphFactoryTestCase {
 			Iterable<Vertex> vertices = graph.getVertices();
 			for (Vertex vertex : vertices) {
 				long vertedUserId = Long.parseLong((String)vertex.getProperty("userId")); 
-				logger.info(vertedUserId);
+				LOGGER.info(vertedUserId);
 			}
 		}
 		else
-			logger.info("Graph not created!");
+			LOGGER.info("Graph not created!");
 		
-		logger.info("=== END testsBasicGraphWithFollowersAndFriends ===");
+		LOGGER.info("=== END testsBasicGraphWithFollowersAndFriends ===");
 	}
 	
 	
@@ -206,7 +200,7 @@ public class UserGraphFactoryTestCase {
 			
 		}
 		else
-			logger.info("Graph not created!");	
+			LOGGER.info("Graph not created!");
 		
 	}
 	
