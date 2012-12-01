@@ -83,6 +83,11 @@ public class User {
 	private List<User> friends;		
 	
 	
+	public User(long id) {
+		this.id = id;
+	}
+	
+	
 	public void addHashtag(String hashtag) {
 		if (hashtags2count == null)
 			hashtags2count = new HashMap<String, Integer>();

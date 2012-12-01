@@ -9,7 +9,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.model.User;
@@ -22,6 +24,7 @@ import org.testng.annotations.Test;
 
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 import com.tinkerpop.blueprints.util.io.gml.GMLWriter;
 import com.tinkerpop.blueprints.util.io.graphml.GraphMLWriter;
 
@@ -37,12 +40,12 @@ public class UserGraphFactoryTestCase {
 		logger.info("=== START userRetrivalTest ===");
 		
 		List<Long> ids = new ArrayList<Long>();
-		User u1 = new User();
-		u1.setId(111); ids.add(111l);
-		User u2 = new User();
-		u2.setId(222); ids.add(222l);
-		User u3 = new User();
-		u3.setId(333); ids.add(333l);
+		User u1 = new User(111);
+		ids.add(111l);
+		User u2 = new User(222);
+		ids.add(222l);
+		User u3 = new User(333);
+		ids.add(333l);
 		List<User> users = new ArrayList<User>();
 		users.add(u1);
 		users.add(u2);
@@ -53,6 +56,7 @@ public class UserGraphFactoryTestCase {
 		Graph graph = null;
 		try {
 			graph = factory.createGraph();
+			graph.shutdown();
 		} catch (GraphCreationException e) {
 			e.printStackTrace();
 		}
@@ -73,12 +77,12 @@ public class UserGraphFactoryTestCase {
 		logger.info("=== START testsBasicGraph ===");
 		
 		List<Long> ids = new ArrayList<Long>();
-		User u1 = new User();
-		u1.setId(111); ids.add(111l);
-		User u2 = new User();
-		u2.setId(222); ids.add(222l);
-		User u3 = new User();
-		u3.setId(333); ids.add(333l);
+		User u1 = new User(111);
+		ids.add(111l);
+		User u2 = new User(222);
+		ids.add(222l);
+		User u3 = new User(333);
+		ids.add(333l);
 		List<User> users = new ArrayList<User>();
 		users.add(u1);
 		users.add(u2);
@@ -89,6 +93,7 @@ public class UserGraphFactoryTestCase {
 		Graph graph = null;
 		try {
 			graph = new UsersGraphFactory("src/test/resources/graphs/testsBasicGraph", users).createGraph();
+			graph.shutdown();
 		} catch (GraphCreationException e) {
 			e.printStackTrace();
 		}
@@ -114,17 +119,14 @@ public class UserGraphFactoryTestCase {
 		
 		logger.info("=== START testsBasicGraphWithFollowersAndFriends ===");
 		
-		User user = new User();
-		user.setId(111); 
+		User user = new User(111);
 		
-		User friend = new User();
-		friend.setId(222);
+		User friend = new User(222);
 		List<User> friends = new ArrayList<User>();
 		friends.add(friend);
 		user.setFriends(friends);
 		
-		User follower = new User();
-		follower.setId(333);
+		User follower = new User(333);
 		List<User> followers = new ArrayList<User>();
 		followers.add(follower);
 		user.setFollowers(followers);
@@ -135,6 +137,7 @@ public class UserGraphFactoryTestCase {
 		Graph graph = null;
 		try {
 			graph = new UsersGraphFactory("src/test/resources/graphs/testsBasicGraphWithFollowersAndFriends" , users).createGraph();
+			graph.shutdown();
 		} catch (GraphCreationException e) {
 			e.printStackTrace();
 		}
@@ -156,59 +159,9 @@ public class UserGraphFactoryTestCase {
 	
 	
 	
-	@Test
-	public void partialDatasetGraphCreationTest() {
-		MysqlPersistenceFacade mysqlFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter");
-		List<String> jsonTweets = mysqlFacade.getFirstNJsonTweets(10);
-		List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsonTweets);
-		List<User> users = new ArrayList<User>();
-		for (Tweet tweet : tweets)
-			users.add(tweet.getUser());
-		for (User user : users) {
-			List<String> friendsId = mysqlFacade.getFriends(user.getScreenName());
-			List<User> friends = new ArrayList<User>();
-			for (String friendId : friendsId) {
-				User friend = new User();
-				friend.setId(Long.parseLong(friendId));
-				friends.add(friend);
-			}
-			List<String> followersId = mysqlFacade.getFollowers(user.getScreenName());
-			List<User> followers = new ArrayList<User>();
-			for (String followerId : followersId) {
-				User follower = new User();
-				follower.setId(Long.parseLong(followerId));
-				friends.add(follower);
-			}
-			user.setFriends(friends);
-			user.setFollowers(followers);
-		}
-		
-		Graph graph = null;
-		try {
-			graph = new UsersGraphFactory("src/test/resources/graphs/partialDatasetGraphCreationTest", users).createGraph();
-			
-			try {
-				OutputStream out = new FileOutputStream("src/test/resources/graphs/partialDatasetGraphCreationTest/graph");
-				GMLWriter.outputGraph(graph, out);
-				out.close();
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			graph.shutdown();
-		
-		} catch (GraphCreationException e) {
-			e.printStackTrace();
-		}
-		if (graph!=null) {
-			
-		}
-		else
-			logger.info("Graph not created!");	
-		
-	}
+	
 	
 	
 }
+

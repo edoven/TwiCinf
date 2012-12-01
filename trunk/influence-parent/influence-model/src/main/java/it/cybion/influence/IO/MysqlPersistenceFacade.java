@@ -10,9 +10,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import it.cybion.influence.model.User;
+
 
 
 public class MysqlPersistenceFacade {
+	
+	private static final Logger logger = Logger.getLogger(MysqlPersistenceFacade.class);
 	
 	private String host;
 	private int port;
@@ -350,6 +356,41 @@ public class MysqlPersistenceFacade {
         }
         return followers;   
 	}
+	
+	public List<User> enrichUsersWithFriendsAndFollowers(List<User> users) {
+		List<User> enrichedUsers = new ArrayList<User>();
+		int count = 1;
+		int size = users.size();
+		for (User user : users) {
+			logger.info("enriching user "+(count++)+"/"+size);
+			enrichedUsers.add(enrichUserWithFriendsAndFollower(user));
+		}
+		return enrichedUsers;
+	}
+	
+	
+	public User enrichUserWithFriendsAndFollower(User user) {
+		User enrichedUser = user;
+		
+		List<String> friendsIds = getFriends(user.getScreenName());	
+		List<User> friends = new ArrayList<User>();		
+		for (String friendId : friendsIds) {
+			User friend = new User(Long.parseLong(friendId));
+			friends.add(friend);
+		}
+		
+		List<String> followersIds = getFollowers(user.getScreenName());
+		List<User> followers = new ArrayList<User>();
+		for (String followerId : followersIds) {
+			User follower = new User(Long.parseLong(followerId));
+			followers.add(follower);
+		}
+		
+		enrichedUser.setFriends(friends);
+		enrichedUser.setFollowers(followers);
+		return enrichedUser;
+	}
+	
 	
 	
 	
