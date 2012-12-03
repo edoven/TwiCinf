@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import it.cybion.influence.graph.UsersGraphFactoryOptimized;
+import it.cybion.influence.graph.UsersGraphFactoryImpl;
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.model.User;
 

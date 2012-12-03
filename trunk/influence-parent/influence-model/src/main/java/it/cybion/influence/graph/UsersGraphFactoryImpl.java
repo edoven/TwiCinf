@@ -1,12 +1,26 @@
 package it.cybion.influence.graph;
 
-import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import it.cybion.influence.model.User;
-import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.neo4j.index.impl.lucene.LowerCaseKeywordAnalyzer;
+
+import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.Index;
+import com.tinkerpop.blueprints.Parameter;
+import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
+import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 
 
 /*
@@ -21,96 +35,109 @@ import java.util.List;
  * -userA is in userB's followers-list of -> userA follows userB
  */
 
-public class UsersGraphFactoryImpl implements UsersGraphFactory {
+public class UsersGraphFactoryImpl implements UserGraphFactory {
 	
 	private static final Logger logger = Logger.getLogger(UsersGraphFactoryImpl.class);
 	
-	private Graph graph = null;
-	private List<User> users = null;
+	private Neo4jGraph graph = null;
+	private Index<Vertex> index = null;
+	//private Map<String, Vertex> inseredVertices = new HashMap<String, Vertex>();
 	
-	public UsersGraphFactoryImpl(String filePath, List<User> users) {
-		this.users = users;
-		graph = new TinkerGraph(filePath);
+	public UsersGraphFactoryImpl(String dirPath) {
+//		try {
+//			deleteFile(new File(dirPath));
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		graph = new Neo4jGraph(dirPath);
+		index =  ((Neo4jGraph) graph).createIndex("vertexIndex", Vertex.class, new Parameter("analyzer", LowerCaseKeywordAnalyzer.class.getName()));
+	}
+		
+	/* (non-Javadoc)
+	 * @see it.cybion.influence.graph.UserGraphFactory#addUsersToGraph(java.util.List)
+	 */
+	@Override
+	public void addUsersToGraph(List<User> users) throws GraphCreationException {
+		
+		for (int i=0; i<users.size(); i++) {				
+			User user = users.get(i);
+			logger.info("Adding user "+(i+1)+"/"+users.size()+" (followers="+user.getFollowers().size()+"\t - friends="+user.getFriends().size()+")");
+			Vertex userVertex = getUserVertex(user);
+			if (userVertex == null)
+				userVertex = addUser(user);			
+			if (user.getFollowers() != null)
+				addFollowers(user, userVertex);
+			if (user.getFriends() != null)
+				addFriends(user, userVertex);	
+		}
+		graph.stopTransaction(Conclusion.SUCCESS); //this writes all in secondary memory to avoid main memory problems 
+		
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see it.cybion.influence.graph.UserGraphFactory#getGraph()
+	 */
 	@Override
-    public Graph createGraph() throws GraphCreationException {
-		for (User user : users) {	
-			if (!containsUser(user))
-				addUser(user);
-			if (user.getFollowers() != null)
-				addFollowers(user);
-			if (user.getFriends() != null)
-				addFriends(user);		
-		}
-		
+	public Graph getGraph(){
 		return graph;
 	}
 	
-	private void addUser(User user) {
+	private Vertex addUser(User user) {
 		Vertex userVertex = graph.addVertex(null);
 		userVertex.setProperty("userId", Long.toString(user.getId()));	
-		logger.info(user.getId()+" added.");
+		index.put("userId", Long.toString(user.getId()), userVertex);
+		//inseredVertices.put(Long.toString(user.getId()), userVertex);
+		return userVertex;
 	}
 	
-	private void addFollowers(User user) throws GraphCreationException {
-		for (User follower : user.getFollowers())
-			addFollowsRelationship(follower, user);
-	}
-	
-	private void addFriends(User user) throws GraphCreationException {
-		for (User friend : user.getFriends())
-			addFollowsRelationship(user , friend);
-	}
-	
-	private void addFollowsRelationship(User follower, User followed) throws GraphCreationException {
-		/*
-		if (containsRelationship(follower, followed, "follows"))
-			throw new GraphCreationException("Trying to insert relation \"follows\" from "+follower.getId()+" to "+followed.getId()+" but relation already exists.");
-		*/
-		if (!containsUser(follower))
-			addUser(follower);
-		if (!containsUser(followed))
-			addUser(followed);
-		
-		Vertex followerVertex = getUserVertex(follower);
-		Vertex followedVertex = getUserVertex(followed);
-		if (followerVertex==null || followedVertex==null)
-			throw new GraphCreationException("addFollowsRelationship - can't find followerVertex or followedVertex");
-			
-		graph.addEdge(null, followerVertex, followedVertex, "follows");	
-		logger.info("Added follows relationship from "+follower.getId()+" to "+followed.getId());
-	}
-		
-	//TODO: indexes...
-	//TODO: public is for test..this has to be private
-	@Override
-    public boolean containsUser(User user) {
-		
-		Iterable<Vertex> vertices = graph.getVertices();	
-		for (Vertex vertex : vertices) {
-			//logger.info("containsUser - user ="+user.getId()+" vertex.userId="+vertex.getProperty("userId"));
-			if (vertex.getProperty("userId").equals(Long.toString(user.getId()))) //TODO: what if not all vertexes are users?? Add vertex class type.
-				return true;
+	private void addFollowers(User user, Vertex userVertex) throws GraphCreationException {
+		for (User follower : user.getFollowers()) {
+			Vertex followerVertex = getUserVertex(follower);
+			if (followerVertex==null)
+				followerVertex = addUser(follower);
+			addFollowsRelationship(followerVertex, userVertex);
 		}
-		return false;
-	}
-
-	private Vertex getUserVertex(User user) {
-		
-		Iterable<Vertex> vertices = graph.getVertices();	
-		for (Vertex vertex : vertices)
-			if (vertex.getProperty("userId").equals(Long.toString(user.getId())))
-				return vertex;
-		logger.info("getUserVertex - can't find user "+user.getId());
-		return null;
+			
 	}
 	
+	private void addFriends(User user, Vertex userVertex) throws GraphCreationException {
+		for (User friend : user.getFriends()) {
+			Vertex friendVertex = getUserVertex(friend);
+			if (friendVertex==null)
+				friendVertex = addUser(friend);
+			addFollowsRelationship(userVertex, friendVertex);
+		}
+	}
+	
+	private void addFollowsRelationship(Vertex follower, Vertex followed) throws GraphCreationException {	
+		if (follower==null || followed==null)
+			throw new GraphCreationException("addFollowsRelationship - can't find followerVertex or followedVertex");			
+		graph.addEdge(null, follower, followed, "follows");	
+	}
+		
+	//this.
+	private Vertex getUserVertex(User user) {	
+		
+		Iterable<Vertex> results = index.get("userId", Long.toString(user.getId()));
+		Iterator<Vertex> iterator = results.iterator();
+		if (iterator.hasNext()==false)
+			return null;
+		else
+			return iterator.next();
+			
+		//return inseredVertices.get(Long.toString(user.getId()));
+	}
+	
+	/*
+	private void deleteFile(File f) throws IOException {
+		if (f.isDirectory())
+			for (File c : f.listFiles())
+				deleteFile(c);
+		//if (!f.delete())
+		//	throw new FileNotFoundException("Failed to delete file: " + f);
 
-	/* TODO
-	private boolean containsRelationship(User from, User to, String relationship) {
-		return false;
 	}
 	*/
 	

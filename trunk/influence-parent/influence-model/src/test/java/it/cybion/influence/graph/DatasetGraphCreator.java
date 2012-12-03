@@ -23,35 +23,31 @@ public class DatasetGraphCreator {
 	public void datasetGraphCreationTest() {
 		logger.info("=== START partialDatasetGraphCreationTest ===");
 		MysqlPersistenceFacade persistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter");	
-		UsersGraphFactoryOptimized graphFactory = new UsersGraphFactoryOptimized("src/test/resources/graphs/DatasetGraphCreator");
+		UserGraphFactory graphFactory = new UsersGraphFactoryImpl("src/test/resources/graphs/TwitterGraph3000");
 		Graph graph = null;
 		try {
-			List<User> users = getDatasetAuthors(persistenceFacade);
+			List<User> users = getDatasetAuthorsBOUNDED(persistenceFacade);
 			
 			int userCount = 0;
 			
-			int PARTITION_SIZE = 100;
+			int PARTITION_SIZE = 30;
 			int partitionsCount = (users.size()-(users.size()%PARTITION_SIZE) ) / PARTITION_SIZE;
 			List<User> partition;
-			for (int i=0; i<partitionsCount; i++) {
-				
-				if (users.size()>=PARTITION_SIZE) {
-					partition = users.subList(0, PARTITION_SIZE);
-					users.subList(0, PARTITION_SIZE).clear();
-				}
-				else {
-					partition = users.subList(0, users.size());
-					users.subList(0, users.size()).clear();
-				}
-				
-				List<User> enrichedUser = persistenceFacade.enrichUsersWithFriendsAndFollowers(partition);
-				//graphFactory.addUsersToGraph(enrichedUser);
+			for (int i=0; i<partitionsCount+1; i++) {				
+				if (users.size()>=PARTITION_SIZE)
+					partition = new ArrayList<User>(users.subList(0, PARTITION_SIZE));
+				else
+					partition = new ArrayList<User>(users.subList(0, users.size()));				
+				users.removeAll(partition);
+				logger.info("partition.size()="+partition.size());
 				logger.info(i+" - users.size()="+users.size());
+				
+				List<User> enrichedUsers = persistenceFacade.enrichUsersWithFriendsAndFollowers(partition);
+				graphFactory.addUsersToGraph(enrichedUsers);				
 			}
 			graph = graphFactory.getGraph();
 			logger.info("serializing...");
 			graph.shutdown();	
-			logger.info("ok!");	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -63,79 +59,20 @@ public class DatasetGraphCreator {
 		
 	
 	
-	private  List<User> getDatasetAuthors(MysqlPersistenceFacade persistenceFacade) {
-    	List<String> jsons = persistenceFacade.getAllJsonTweets();
-    	//List<String> jsons = persistenceFacade.getFirstNJsonTweets(600);
+	private  List<User> getDatasetAuthorsBOUNDED(MysqlPersistenceFacade persistenceFacade) {
+    	//List<String> jsons = persistenceFacade.getAllJsonTweets();
+    	List<String> jsons = persistenceFacade.getFirstNJsonTweets(3000);
     	List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsons);
     	List<User> users = new ArrayList<User>();
     	
     	for (Tweet tweet : tweets) {
     		User user = tweet.getUser();
-    		users.add(user);
+    		if (user.getFriendsCount()<5001 && user.getFollowersCount()<5000)
+    			users.add(user);
     		//logger.info(user.getScreenName());
     	}
     	users = new ArrayList<User>(new HashSet<User>(users)); //this removes duplicates
     	return users;
 	}
-	
-	
-//	@Test
-//	public void partialDatasetGraphCreationTest() {
-//		logger.info("=== START partialDatasetGraphCreationTest ===");
-//						
-//		Graph graph = null;
-//		try {
-//			List<User> users = getEnrichedDatasetAuthors();
-//			int userCount = 0;
-////			for (User user : users)
-////				logger.info("Enriched user "+(++userCount)+"/"+users.size()+" - "+user.getScreenName()+" - \t\tfollowers:"+user.getFollowers().size()+" - \tfriends:"+user.getFriends().size());  
-//			graph = new UsersGraphFactoryOptimized("src/test/resources/graphs/partialDatasetGraphCreationTest", users).createGraph();
-//			logger.info("serializing...");
-//			graph.shutdown();	
-//			logger.info("ok!");	
-//		} catch (GraphCreationException e) {
-//			e.printStackTrace();
-//		}
-//		if (graph==null)
-//			logger.info("Graph not created!");	
-//		
-//		logger.info("=== END partialDatasetGraphCreationTest ===");
-//	}
-	
 
-	
-	
-    /*
-	private  List<User> getEnrichedDatasetAuthors() {
-		MysqlPersistenceFacade persistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter");
-    	List<String> jsons = persistenceFacade.getAllJsonTweets();
-    	//List<String> jsons = persistenceFacade.getFirstNJsonTweets(600);
-    	List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsons);
-    	List<User> users = new ArrayList<User>();
-    	List<User> enrichedUsers = new ArrayList<User>();
-    	
-    	for (Tweet tweet : tweets)
-    		users.add(tweet.getUser());
-    	users = new ArrayList<User>(new HashSet<User>(users)); //this removes duplicates
-    	int userCount = 0;
-    	for (User user : users) {
-    		List<String> followersIds = persistenceFacade.getFollowers(user.getScreenName());
-    		List<User> followers = new ArrayList<User>();
-    		for (String followerId : followersIds) 
-    			followers.add(new User(Long.parseLong(followerId)));
-    		user.setFollowers(followers);
-    		
-    		List<String> friendsIds = persistenceFacade.getFriends(user.getScreenName());
-    		List<User> friends = new ArrayList<User>();
-    		for (String friendId : friendsIds) 
-    			friends.add(new User(Long.parseLong(friendId)));
-    		user.setFriends(friends);
-    		
-    		enrichedUsers.add(user);
-    		
-    		logger.info("Enriched user "+(++userCount)+"/"+users.size()+" - "+user.getScreenName()+" - \t\tfollowers:"+followers.size()+" - \tfriends:"+friends.size());   		
-    	}
-    	return enrichedUsers;
-	}
-	*/
 }
