@@ -26,14 +26,15 @@ public class DatasetGraphCreator {
 		UsersGraphFactoryOptimized graphFactory = new UsersGraphFactoryOptimized("src/test/resources/graphs/DatasetGraphCreator");
 		Graph graph = null;
 		try {
-			List<User> users = getDatasetAuthors();
+			List<User> users = getDatasetAuthors(persistenceFacade);
 			
 			int userCount = 0;
 			
 			int PARTITION_SIZE = 100;
 			int partitionsCount = (users.size()-(users.size()%PARTITION_SIZE) ) / PARTITION_SIZE;
-			for (int i=0; i<partitionsCount+1; i++) {
-				List<User> partition;
+			List<User> partition;
+			for (int i=0; i<partitionsCount; i++) {
+				
 				if (users.size()>=PARTITION_SIZE) {
 					partition = users.subList(0, PARTITION_SIZE);
 					users.subList(0, PARTITION_SIZE).clear();
@@ -62,15 +63,17 @@ public class DatasetGraphCreator {
 		
 	
 	
-	private  List<User> getDatasetAuthors() {
-		MysqlPersistenceFacade persistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter");
+	private  List<User> getDatasetAuthors(MysqlPersistenceFacade persistenceFacade) {
     	List<String> jsons = persistenceFacade.getAllJsonTweets();
     	//List<String> jsons = persistenceFacade.getFirstNJsonTweets(600);
     	List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsons);
     	List<User> users = new ArrayList<User>();
     	
-    	for (Tweet tweet : tweets)
-    		users.add(tweet.getUser());
+    	for (Tweet tweet : tweets) {
+    		User user = tweet.getUser();
+    		users.add(user);
+    		//logger.info(user.getScreenName());
+    	}
     	users = new ArrayList<User>(new HashSet<User>(users)); //this removes duplicates
     	return users;
 	}

@@ -1,5 +1,6 @@
 package it.cybion.influence.graph;
 
+<<<<<<< HEAD
 import it.cybion.influence.model.User;
 
 import java.util.List;
@@ -13,19 +14,18 @@ import com.tinkerpop.blueprints.Parameter;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 
+=======
+import com.tinkerpop.blueprints.Graph;
+import it.cybion.influence.model.User;
+>>>>>>> 6d7d6e25606353dbc5c16e4606ae61a30e57de6d
 
-/*
- * This class take as input a follower/friends-enriched users list 
- * and return the graph containing:
- * -users (vertexes)
- * -"follows" relationships (edges)
- * 
- * BEWARE: there is no difference between friendship-relation and
- * followship-relation, both are represented with a "follows" relation:
- * -userA is in userB's friends-list -> userB follows userA
- * -userA is in userB's followers-list of -> userA follows userB
+/**
+ * @author Matteo Moci ( matteo (dot) moci (at) gmail (dot) com )
  */
+public interface UsersGraphFactory {
+    Graph createGraph() throws GraphCreationException;
 
+<<<<<<< HEAD
 public class UsersGraphFactory {
 	
 	private static final Logger logger = Logger.getLogger(UsersGraphFactory.class);
@@ -130,4 +130,9 @@ public class UsersGraphFactory {
 	}
 	*/
 	
+=======
+    //TODO: indexes...
+    //TODO: public is for test..this has to be private
+    boolean containsUser(User user);
+>>>>>>> 6d7d6e25606353dbc5c16e4606ae61a30e57de6d
 }

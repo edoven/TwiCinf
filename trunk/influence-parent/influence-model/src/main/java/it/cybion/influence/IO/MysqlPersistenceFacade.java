@@ -358,6 +358,7 @@ public class MysqlPersistenceFacade {
 	}
 	
 	public List<User> enrichUsersWithFriendsAndFollowers(List<User> users) {
+		/*
 		List<User> enrichedUsers = new ArrayList<User>();
 		int count = 1;
 		int size = users.size();
@@ -366,6 +367,9 @@ public class MysqlPersistenceFacade {
 			enrichedUsers.add(enrichUserWithFriendsAndFollower(user));
 		}
 		return enrichedUsers;
+		*/
+		logger.info("enrichUsersWithFriendsAndFollowersg users.size()=" + users.size());
+		return null;
 	}
 	
 	
