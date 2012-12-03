@@ -41,8 +41,7 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 	}
 		
 	@Override
-	public void addUsersToGraph(List<User> users) throws GraphCreationException {
-		
+	public void addUsersToGraph(List<User> users) throws GraphCreationException {		
 		for (int i=0; i<users.size(); i++) {				
 			User user = users.get(i);
 			logger.info("Adding user "+(i+1)+"/"+users.size()+" (followers="+user.getFollowers().size()+"\t - friends="+user.getFriends().size()+")");
@@ -53,9 +52,8 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 				addFollowers(user, userVertex);
 			if (user.getFriends() != null)
 				addFriends(user, userVertex);	
-		}
-		graph.stopTransaction(Conclusion.SUCCESS); //this writes all in secondary memory to avoid main memory problems 
-		
+		}		
+		graph.stopTransaction(Conclusion.SUCCESS); //this flushes all to avoid main memory problems 		
 	}
 	
 	@Override

@@ -27,7 +27,7 @@ public class DatasetGraphCreator {
 	private int PARTITION_SIZE = 30;
 	
 	@Test
-	public void datasetGraphCreationTest() {
+	public void datasetGraphCreation() {
 		logger.info("=== START partialDatasetGraphCreationTest ===");
 		MysqlPersistenceFacade persistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter");	
 		UsersGraphFactory graphFactory = new UsersGraphFactoryImpl("src/test/resources/graphs/TwitterGraph3000");
