@@ -16,12 +16,10 @@ import it.cybion.influence.util.MapSorter;
 
 
 public class MetricsCalculator {
-	
-	
+		
 	private static final Logger logger = Logger.getLogger(MetricsCalculator.class);
 
-    //TODO init var?
-	private List<Tweet> tweets;
+	private List<Tweet> tweets = new ArrayList<Tweet>();
 
 	
 	public MetricsCalculator(List<Tweet> tweets){

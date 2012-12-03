@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import it.cybion.influence.graph.UsersGraphFactoryImpl;
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.model.User;
 
@@ -37,19 +36,21 @@ public class DatasetValuesTester {
 	}
 	
 	@Test
-	public void testsThatFollowerCountIsMax5000() {
+	public void testsThatFollowersCountAndFriendsCountAreMax5000() {
     	List<String> jsons = persistenceFacade.getAllJsonTweets();
     	List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsons);
     	List<User> users = new ArrayList<User>();
     	for (Tweet tweet : tweets)
     		users.add(tweet.getUser());
     	users = new ArrayList<User>(new HashSet<User>(users)); //this removes duplicates
+    	int currentUserIndex = 1;
     	for (User user : users) {
     		List<String> followers = persistenceFacade.getFollowers(user.getScreenName());
     		List<String> friends = persistenceFacade.getFriends(user.getScreenName());
-    		//logger.info(user.getScreenName()+" - followers:"+followers.size()+" - friends:"+friends.size());
+    		logger.info(currentUserIndex+"/"+users.size()+" - "+user.getScreenName()+" - followers:"+followers.size()+" - friends:"+friends.size());
     		assertTrue(followers.size()<=5000);
     		assertTrue(friends.size()<=5000);
+    		currentUserIndex++;
     	}
 	}
 }

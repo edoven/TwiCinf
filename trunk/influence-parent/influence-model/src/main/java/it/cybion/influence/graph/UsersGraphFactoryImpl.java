@@ -2,15 +2,8 @@ package it.cybion.influence.graph;
 
 import it.cybion.influence.model.User;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.neo4j.index.impl.lucene.LowerCaseKeywordAnalyzer;
@@ -41,22 +34,12 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 	
 	private Neo4jGraph graph = null;
 	private Index<Vertex> index = null;
-	//private Map<String, Vertex> inseredVertices = new HashMap<String, Vertex>();
 	
 	public UsersGraphFactoryImpl(String dirPath) {
-//		try {
-//			deleteFile(new File(dirPath));
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		graph = new Neo4jGraph(dirPath);
-		index =  ((Neo4jGraph) graph).createIndex("vertexIndex", Vertex.class, new Parameter("analyzer", LowerCaseKeywordAnalyzer.class.getName()));
+		index =  graph.createIndex("vertexIndex", Vertex.class, new Parameter<String, String>("analyzer", LowerCaseKeywordAnalyzer.class.getName()));
 	}
 		
-	/* (non-Javadoc)
-	 * @see it.cybion.influence.graph.UserGraphFactory#addUsersToGraph(java.util.List)
-	 */
 	@Override
 	public void addUsersToGraph(List<User> users) throws GraphCreationException {
 		
@@ -75,10 +58,6 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 		
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see it.cybion.influence.graph.UserGraphFactory#getGraph()
-	 */
 	@Override
 	public Graph getGraph(){
 		return graph;
@@ -88,7 +67,6 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 		Vertex userVertex = graph.addVertex(null);
 		userVertex.setProperty("userId", Long.toString(user.getId()));	
 		index.put("userId", Long.toString(user.getId()), userVertex);
-		//inseredVertices.put(Long.toString(user.getId()), userVertex);
 		return userVertex;
 	}
 	
@@ -117,28 +95,13 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 		graph.addEdge(null, follower, followed, "follows");	
 	}
 		
-	//this.
-	private Vertex getUserVertex(User user) {	
-		
+	private Vertex getUserVertex(User user) {			
 		Iterable<Vertex> results = index.get("userId", Long.toString(user.getId()));
 		Iterator<Vertex> iterator = results.iterator();
 		if (iterator.hasNext()==false)
 			return null;
 		else
 			return iterator.next();
-			
-		//return inseredVertices.get(Long.toString(user.getId()));
 	}
-	
-	/*
-	private void deleteFile(File f) throws IOException {
-		if (f.isDirectory())
-			for (File c : f.listFiles())
-				deleteFile(c);
-		//if (!f.delete())
-		//	throw new FileNotFoundException("Failed to delete file: " + f);
-
-	}
-	*/
 	
 }

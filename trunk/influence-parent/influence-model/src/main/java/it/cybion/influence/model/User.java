@@ -2,6 +2,7 @@ package it.cybion.influence.model;
 
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,8 +84,11 @@ public class User {
 	private List<User> friends;		
 	
 	
+	//this is used for tests
 	public User(long id) {
 		this.id = id;
+		this.followers = new ArrayList<User>();
+		this.friends = new ArrayList<User>();
 	}
 	
 	

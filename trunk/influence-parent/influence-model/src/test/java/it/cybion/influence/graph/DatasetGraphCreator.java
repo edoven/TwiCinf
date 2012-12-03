@@ -18,6 +18,13 @@ public class DatasetGraphCreator {
 	
 	private static final Logger logger = Logger.getLogger(DatasetGraphCreator.class);
 	
+	/*
+	 * To avoid memory out-of-bound problem the users (the authors
+	 * of the tweets in the dataset) are enriched (with followers and friends) 
+	 * and added to the graph not in a single shot but using partitions 
+	 * of PARTITION_SIZE dimention
+	 */
+	private int PARTITION_SIZE = 30;
 	
 	@Test
 	public void datasetGraphCreationTest() {
@@ -26,11 +33,8 @@ public class DatasetGraphCreator {
 		UsersGraphFactory graphFactory = new UsersGraphFactoryImpl("src/test/resources/graphs/TwitterGraph3000");
 		Graph graph = null;
 		try {
-			List<User> users = getDatasetAuthorsBOUNDED(persistenceFacade);
+			List<User> users = getDatasetAuthorsBOUNDED(persistenceFacade);			
 			
-			int userCount = 0;
-			
-			int PARTITION_SIZE = 30;
 			int partitionsCount = (users.size()-(users.size()%PARTITION_SIZE) ) / PARTITION_SIZE;
 			List<User> partition;
 			for (int i=0; i<partitionsCount+1; i++) {				
