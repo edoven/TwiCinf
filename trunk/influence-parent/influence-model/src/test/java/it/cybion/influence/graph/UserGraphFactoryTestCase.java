@@ -81,7 +81,7 @@ public class UserGraphFactoryTestCase {
 		
 		Graph graph = null;
 		try {
-			UserGraphFactory factory = new UsersGraphFactoryImpl("src/test/resources/graphs/testsBasicGraph");
+			UsersGraphFactory factory = new UsersGraphFactoryImpl("src/test/resources/graphs/testsBasicGraph");
 			factory.addUsersToGraph(users);
 			graph = factory.getGraph();
 			graph.shutdown();
@@ -127,7 +127,7 @@ public class UserGraphFactoryTestCase {
 	
 		Graph graph = null;
 		try {
-			UserGraphFactory factory = new UsersGraphFactoryImpl("src/test/resources/graphs/testsBasicGraph");
+			UsersGraphFactory factory = new UsersGraphFactoryImpl("src/test/resources/graphs/testsBasicGraph");
 			factory.addUsersToGraph(users);
 			graph = factory.getGraph();
 			graph.shutdown();

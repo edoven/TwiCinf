@@ -35,7 +35,7 @@ import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
  * -userA is in userB's followers-list of -> userA follows userB
  */
 
-public class UsersGraphFactoryImpl implements UserGraphFactory {
+public class UsersGraphFactoryImpl implements UsersGraphFactory {
 	
 	private static final Logger logger = Logger.getLogger(UsersGraphFactoryImpl.class);
 	

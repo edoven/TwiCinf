@@ -23,7 +23,7 @@ public class DatasetGraphCreator {
 	public void datasetGraphCreationTest() {
 		logger.info("=== START partialDatasetGraphCreationTest ===");
 		MysqlPersistenceFacade persistenceFacade = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter");	
-		UserGraphFactory graphFactory = new UsersGraphFactoryImpl("src/test/resources/graphs/TwitterGraph3000");
+		UsersGraphFactory graphFactory = new UsersGraphFactoryImpl("src/test/resources/graphs/TwitterGraph3000");
 		Graph graph = null;
 		try {
 			List<User> users = getDatasetAuthorsBOUNDED(persistenceFacade);
