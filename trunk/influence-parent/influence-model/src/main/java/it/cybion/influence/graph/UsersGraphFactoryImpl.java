@@ -8,6 +8,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.neo4j.index.impl.lucene.LowerCaseKeywordAnalyzer;
 
+import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Index;
 import com.tinkerpop.blueprints.Parameter;
@@ -34,17 +36,19 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 	
 	private Neo4jGraph graph = null;
 	private Index<Vertex> index = null;
+	private int usersCount = 0;
 	
 	public UsersGraphFactoryImpl(String dirPath) {
 		graph = new Neo4jGraph(dirPath);
 		index =  graph.createIndex("vertexIndex", Vertex.class, new Parameter<String, String>("analyzer", LowerCaseKeywordAnalyzer.class.getName()));
 	}
-		
+	
+
 	@Override
 	public void addUsersToGraph(List<User> users) throws GraphCreationException {		
 		for (int i=0; i<users.size(); i++) {				
 			User user = users.get(i);
-			logger.info("Adding user "+(i+1)+"/"+users.size()+" (followers="+user.getFollowers().size()+"\t - friends="+user.getFriends().size()+")");
+			logger.info("Adding user "+user.getScreenName()+" - "+(i+1)+"/"+users.size()+" (followers="+user.getFollowers().size()+"\t - friends="+user.getFriends().size()+")");
 			Vertex userVertex = getUserVertex(user);
 			if (userVertex == null)
 				userVertex = addUser(user);			
@@ -53,7 +57,41 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 			if (user.getFriends() != null)
 				addFriends(user, userVertex);	
 		}		
-		graph.stopTransaction(Conclusion.SUCCESS); //this flushes all to avoid main memory problems 		
+		graph.stopTransaction(Conclusion.SUCCESS); //this flushes all to avoid main memory problems 
+		logger.info("UsersCount = "+usersCount);
+	}
+	
+	@Override
+	public void addNodesDegreesCounts(){
+		Iterable<Vertex> vertices = graph.getVertices();
+		int currentVertex = 1;
+		for (Vertex vertex : vertices) {
+			int inEdges = 0;
+			int outEdges = 0;
+			//Let's calculate inEdges count
+			Iterator<Edge> iterator = vertex.getEdges(Direction.IN, "follows").iterator();
+			while (iterator.hasNext()) {
+				inEdges++;
+				iterator.next();
+			}	
+			//Let's calculate outEdges count
+			iterator = vertex.getEdges(Direction.OUT, "follows").iterator();
+			while (iterator.hasNext()) {
+				outEdges++;
+				iterator.next();
+			}			
+			vertex.setProperty("inDegree", inEdges);
+			vertex.setProperty("outDegree", outEdges);
+			vertex.setProperty("degree", (inEdges+outEdges) );
+			
+			currentVertex++;
+			
+			//Every 1000 nodes we do a flush (stopTransaction on graph)
+			if ((currentVertex % 1000) == 0) {
+				graph.stopTransaction(Conclusion.SUCCESS); //this flushes all to avoid main memory problems 
+				logger.info(currentVertex+" vertices enriched");
+			}
+		}
 	}
 	
 	@Override
@@ -64,7 +102,20 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 	private Vertex addUser(User user) {
 		Vertex userVertex = graph.addVertex(null);
 		userVertex.setProperty("userId", Long.toString(user.getId()));	
+		
+		String screenName = user.getScreenName();
+		//Only a dataset's tweet author has a full profile.
+		if (screenName==null)
+			userVertex.setProperty("isAuthor", false);
+		else {
+			userVertex.setProperty("isAuthor", true);
+			userVertex.setProperty("screenName", screenName);
+			userVertex.setProperty("friendsCount", user.getFriendsCount());
+			userVertex.setProperty("followersCount", user.getFollowersCount());
+		}				
+		userVertex.setProperty("userId", Long.toString(user.getId()));	
 		index.put("userId", Long.toString(user.getId()), userVertex);
+		usersCount++;
 		return userVertex;
 	}
 	
@@ -100,6 +151,11 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 			return null;
 		else
 			return iterator.next();
+	}
+
+	@Override
+	public int getUsersCount() {
+		return usersCount;
 	}
 	
 }

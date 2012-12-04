@@ -84,11 +84,30 @@ public class User {
 	private List<User> friends;		
 	
 	
-	//this is used for tests
+	/*
+	 * This constructor is user for tests
+	 * and when an "empty" user is created by its id
+	 * (taken with Twitter API getFriends(user)
+	 * or getFollowers(user)
+	 */
 	public User(long id) {
 		this.id = id;
-		this.followers = new ArrayList<User>();
-		this.friends = new ArrayList<User>();
+		followers = new ArrayList<User>();
+		friends = new ArrayList<User>();
+		name = null;
+		screenName=null;
+		//location=null;
+		//description=null;
+		//isContributorsEnabled=null;
+		//private URL url;
+		//private boolean isProtected;
+		followersCount=-1;
+		friendsCount=-1;
+		//private DateTime createdAt;
+		//private int favouritesCount;
+		//private String lang;
+		//private int statusesCount;
+		//private int listedCount;
 	}
 	
 	

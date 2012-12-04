@@ -10,13 +10,13 @@ public class GraphEnrichenerAGENT {
 	private static final Logger logger = Logger.getLogger(GraphEnrichenerAGENT.class);
 
 	public static void main(String args[]) {
-		Neo4jGraph graph = new Neo4jGraph("src/test/resources/graphs/TwitterGraph3000");
-		printLabels(graph);
+		Neo4jGraph graph = new Neo4jGraph("src/test/resources/graphs/TwitterGraphComplete");
 		
+		//enrichGraphWithNodesDegrees(graph);
+		printLabels(graph);
 	}
 	
-	public void enrichGraphWithNodesDegrees() {
-		Neo4jGraph graph = new Neo4jGraph("src/test/resources/graphs/TwitterGraph3000");
+	public static void enrichGraphWithNodesDegrees(Neo4jGraph graph) {
 		GraphEnrichener enrichener = new GraphEnrichener(graph);
 		enrichener.addNodesDegreesCounts();
 		graph = enrichener.getGraph();

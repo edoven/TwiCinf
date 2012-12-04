@@ -13,4 +13,8 @@ public interface UsersGraphFactory {
 
 	public abstract Graph getGraph();
 
+	public void addNodesDegreesCounts();
+
+	int getUsersCount();
+
 }
