@@ -37,7 +37,7 @@ public class DatasetGraphCreator {
 		UsersGraphFactory graphFactory = new UsersGraphFactoryImpl("src/test/resources/graphs/TwitterGraph");
 		Graph graph = null;
 		try {
-			List<User> users = getDatasetAuthors(persistenceFacade);			
+			List<User> users = getDatasetAuthors(persistenceFacade);	
 			
 			int partitionsCount = (users.size()-(users.size()%PARTITION_SIZE) ) / PARTITION_SIZE;
 			List<User> partition;

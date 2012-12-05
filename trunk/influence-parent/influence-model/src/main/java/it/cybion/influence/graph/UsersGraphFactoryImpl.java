@@ -4,6 +4,7 @@ import it.cybion.influence.model.User;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.neo4j.index.impl.lucene.LowerCaseKeywordAnalyzer;
@@ -37,6 +38,7 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 	private Neo4jGraph graph = null;
 	private Index<Vertex> index = null;
 	private int usersCount = 0;
+	private int authorsCount = 0;
 	
 	public UsersGraphFactoryImpl(String dirPath) {
 		graph = new Neo4jGraph(dirPath);
@@ -45,20 +47,37 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 	
 
 	@Override
-	public void addUsersToGraph(List<User> users) throws GraphCreationException {		
+	public void addUsersToGraph(List<User> users) throws GraphCreationException {	
+		
+		
+		
+		
 		for (int i=0; i<users.size(); i++) {				
 			User user = users.get(i);
 			logger.info("Adding user "+user.getScreenName()+" - "+(i+1)+"/"+users.size()+" (followers="+user.getFollowers().size()+"\t - friends="+user.getFriends().size()+")");
 			Vertex userVertex = getUserVertex(user);
 			if (userVertex == null)
-				userVertex = addUser(user);			
+				userVertex = addUser(user);		
+			else			
+				if (userVertex.getProperty("screenName")==null) { 
+					//this is the case when an author is already been added to the graph
+					//as another author's friend or follower. The author was than added as an
+					//"empty" user (only userId is set and screenName is null [not set]) 
+					//and so I need to add other labels.
+					userVertex.setProperty("isAuthor", true);
+					userVertex.setProperty("screenName", user.getScreenName());
+					userVertex.setProperty("friendsCount", user.getFriendsCount());
+					userVertex.setProperty("followersCount", user.getFollowersCount());
+					authorsCount++;
+					usersCount--;
+				}
 			if (user.getFollowers() != null)
 				addFollowers(user, userVertex);
 			if (user.getFriends() != null)
 				addFriends(user, userVertex);	
 		}		
 		graph.stopTransaction(Conclusion.SUCCESS); //this flushes all to avoid main memory problems 
-		logger.info("UsersCount = "+usersCount);
+		logger.info("UsersCount = "+usersCount+" - authorsCount = "+authorsCount);
 	}
 	
 	@Override
@@ -112,6 +131,7 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 			userVertex.setProperty("screenName", screenName);
 			userVertex.setProperty("friendsCount", user.getFriendsCount());
 			userVertex.setProperty("followersCount", user.getFollowersCount());
+			authorsCount++;
 		}				
 		userVertex.setProperty("userId", Long.toString(user.getId()));	
 		index.put("userId", Long.toString(user.getId()), userVertex);
