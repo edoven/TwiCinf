@@ -1,5 +1,7 @@
 package it.cybion.influence.graph.metrics;
 
+import it.cybion.influence.util.MapSorter;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,9 +11,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
@@ -50,7 +54,7 @@ public class GraphMetricsPrinter {
 		}
 	}
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void printMap() {
 		try {
 			FileInputStream fis = new FileInputStream("src/test/resources/graphs/TwitterGraphCompleteMap.ser");
@@ -70,6 +74,28 @@ public class GraphMetricsPrinter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Test(enabled=true)
+	public void getAuthorsToAuthorFollowersCountPRINTER(){
+		Graph graph = new Neo4jGraph("src/test/resources/graphs/TwitterGraph");
+		GraphMetricsCalculator metricsCalculator = new GraphMetricsCalculator(graph);
+		Map<Vertex, Integer> authorsToAuthorFollowersCount = metricsCalculator.getAuthorsToAuthorFollowersCount();
+		authorsToAuthorFollowersCount = MapSorter.sortMapByValuesDescending(authorsToAuthorFollowersCount);
+//		for (Entry<Vertex, Integer> entry : authorsToAuthorFollowersCount.entrySet())
+//			logger.info(entry.getKey().getProperty("screenName") +" - "+ entry.getValue());
+		
+		Map<Vertex, Double> vertex2rate = new HashMap<Vertex, Double>();
+		for (Vertex vertex : authorsToAuthorFollowersCount.keySet())
+			vertex2rate.put(vertex, (double)authorsToAuthorFollowersCount.get(vertex)/(Integer)vertex.getProperty("followersCount"));
+		
+		vertex2rate = MapSorter.sortMapByValuesDescending(vertex2rate);		
+		for (Vertex vertex : vertex2rate.keySet())
+		logger.info(vertex.getProperty("screenName") + " - " +
+						authorsToAuthorFollowersCount.get(vertex) + " - "+
+						vertex.getProperty("followersCount") + " - "+
+						vertex.getProperty("friendsCount") + " - "+
+						vertex2rate.get(vertex));
 	}
 	
 	

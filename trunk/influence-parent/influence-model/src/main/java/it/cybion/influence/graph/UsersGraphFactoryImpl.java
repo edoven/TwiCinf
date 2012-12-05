@@ -48,10 +48,7 @@ public class UsersGraphFactoryImpl implements UsersGraphFactory {
 
 	@Override
 	public void addUsersToGraph(List<User> users) throws GraphCreationException {	
-		
-		
-		
-		
+
 		for (int i=0; i<users.size(); i++) {				
 			User user = users.get(i);
 			logger.info("Adding user "+user.getScreenName()+" - "+(i+1)+"/"+users.size()+" (followers="+user.getFollowers().size()+"\t - friends="+user.getFriends().size()+")");

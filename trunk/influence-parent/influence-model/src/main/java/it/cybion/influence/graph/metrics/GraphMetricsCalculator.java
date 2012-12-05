@@ -3,12 +3,15 @@ package it.cybion.influence.graph.metrics;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 
 public class GraphMetricsCalculator {
 	
@@ -55,5 +58,25 @@ public class GraphMetricsCalculator {
 			inDegree2edgesCount.put(i, 0);
 	}
 	
+	
+	public Map<Vertex, Integer> getAuthorsToAuthorFollowersCount() {
+		Map<Vertex, Integer> author2authorFollowersCount = new HashMap<Vertex, Integer>();
+		Iterator<Vertex> usersIterator = graph.getVertices().iterator();
+		while(usersIterator.hasNext()) {
+			Vertex vertex = usersIterator.next();
+			if ( (Boolean)(vertex.getProperty("isAuthor")) == true ) {
+				Iterator<Vertex> followersIterator = vertex.getVertices(Direction.IN, "follows").iterator();
+				int counter = 0;
+				while (followersIterator.hasNext()) {
+					Vertex follower = followersIterator.next();
+					if ( (Boolean)(follower.getProperty("isAuthor")) == true ) {
+						counter++;
+					}
+				}
+				author2authorFollowersCount.put(vertex, counter);
+			}
+		}
+		return author2authorFollowersCount;
+	}
 	
 }
