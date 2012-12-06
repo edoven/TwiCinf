@@ -37,7 +37,7 @@ public class TwitterApiManagerTestCase {
 	@Test
 	public void printResultForOneUser() {
 		try {
-			List<String> friendsIds = twitterApiManager.getFriends("edoventurini");
+			List<String> friendsIds = twitterApiManager.getUpTo5000FriendsIds("edoventurini");
 			for (String friendId : friendsIds)
 				logger.info(friendId);
 			logger.info("friends number: "+friendsIds.size());

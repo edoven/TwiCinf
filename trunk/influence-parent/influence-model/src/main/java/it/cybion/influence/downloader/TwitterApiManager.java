@@ -44,7 +44,7 @@ public class TwitterApiManager {
 	}
 
 
-	public List<String> getFriends(String userScreenName) throws TwitterException {
+	public List<String> getUpTo5000FriendsIds(String userScreenName) throws TwitterException {
 		RequestHandler requestHandler = null;
 		List<String> friendsIds = null;
 		try {
@@ -59,7 +59,7 @@ public class TwitterApiManager {
 			throw e;
 		}
 		try {
-			friendsIds = requestHandler.getFriendsIds(userScreenName);
+			friendsIds = requestHandler.getUpTo5000FriendsIds(userScreenName);
 		} catch (TwitterException e) {
             //TODO same as before
 			throw e;
@@ -68,7 +68,7 @@ public class TwitterApiManager {
 	}
 	
 	
-	public List<String> getFollowers(String userScreenName) throws TwitterException {
+	public List<String> getUpTo5000FollowersIds(String userScreenName) throws TwitterException {
 		RequestHandler requestHandler = null;
 		List<String> friendsIds = null;
 		try {
@@ -83,11 +83,28 @@ public class TwitterApiManager {
 			throw e;
 		}
 		try {
-			friendsIds = requestHandler.getFollowersIds(userScreenName);
+			friendsIds = requestHandler.getUpTo5000FollowersIds(userScreenName);
 		} catch (TwitterException e) {
             //TODO same as before
 			throw e;
 		}
+		return friendsIds;
+	}
+	
+	
+	public List<String> getAllFollowersIds(String userScreenName) throws TwitterException {
+		RequestHandler requestHandler = null;
+		
+		//TODO
+		
+		return followersIds;
+	}
+	
+	public List<String> getAllFriendsIds(String userScreenName) throws TwitterException {
+		RequestHandler requestHandler = null;
+		
+		//TODO
+		
 		return friendsIds;
 	}
 	

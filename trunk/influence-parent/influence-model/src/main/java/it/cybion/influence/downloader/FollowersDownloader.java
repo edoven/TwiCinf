@@ -57,7 +57,7 @@ public class FollowersDownloader {
 			String user = usersToEnrich.get(i);
 			List<String> followers;
 			try {
-				followers = twitterApiManager.getFollowers(user);
+				followers = twitterApiManager.getUpTo5000FollowersIds(user);
 				if (followers.size()>0)
 					mysqlPersistenceFacade.writeFollowers(user, followers);	
 				count++;

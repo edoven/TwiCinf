@@ -33,7 +33,7 @@ public class RequestHandlerImpl implements RequestHandler {
 	 * BEWARE: this ignores pagination. It only get the first (up to) 5000 friends.
 	 */
 	@Override
-	public List<String> getFriendsIds(String userScreenName) throws TwitterException {
+	public List<String> getUpTo5000FriendsIds(String userScreenName) throws TwitterException {
 		IDs ids = null;
 		try {
 			//TwitterResponse response = twitter.getFriendsIDs(userScreenName, -1);
@@ -50,7 +50,7 @@ public class RequestHandlerImpl implements RequestHandler {
 	 * BEWARE: this ignores pagination. It only get the first (up to) 5000 friends.
 	 */
 	@Override
-	public List<String> getFollowersIds(String userScreenName) throws TwitterException {
+	public List<String> getUpTo5000FollowersIds(String userScreenName) throws TwitterException {
 		IDs ids = null;
 		try {
 			//TwitterResponse response = twitter.getFriendsIDs(userScreenName, -1);

@@ -60,7 +60,7 @@ public class FriendsDownloader{
 			String user = usersToEnrich.get(i);
 			List<String> friends;
 			try {
-				friends = twitterApiManager.getFriends(user);
+				friends = twitterApiManager.getUpTo5000FriendsIds(user);
 				if (friends.size()>0)
 					mysqlPersistenceFacade.writeFriends(user, friends);	
 				
