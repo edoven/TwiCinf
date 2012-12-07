@@ -2,6 +2,7 @@ package it.cybion.influence.downloader;
 
 import org.apache.log4j.Logger;
 
+import twitter4j.IDs;
 import twitter4j.TwitterException;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 
 /*
  * 
- * TwitterApiManager menages a pool of RequestHandlers, each one 
+ * TwitterApiManager manages a pool of RequestHandlers, each one 
  * is associated with a different user token.
  * 
  */
@@ -92,20 +93,116 @@ public class TwitterApiManager {
 	}
 	
 	
+	//this handles multiple request for users with more than 5000 followers
 	public List<String> getAllFollowersIds(String userScreenName) throws TwitterException {
 		RequestHandler requestHandler = null;
+		IDs idsContainer = null;
+		long cursor = -1;
+		List<String> ids = new ArrayList<String>();
+		try {
+			requestHandler = getUsableHandler();
+		} catch (FinishedUsableHandlersException e) {
+			logger.info("EXIT! No requests left.");
+			System.exit(0);
+		} catch (TwitterException e) {
+            // TODO do not re-throw the same exception: take some decision.
+            // Important thing is that the signature of this module
+            // does not include exceptions thrown by Twitter4j
+			throw e;
+		}
+		try {
+			idsContainer = requestHandler.getFollowersWithPagination(userScreenName, cursor);
+		} catch (TwitterException e) {
+            //TODO same as before
+			throw e;
+		}
 		
-		//TODO
+		for (Long id : idsContainer.getIDs())
+			ids.add(Long.toString(id));
+		cursor = idsContainer.getNextCursor();
 		
-		return followersIds;
+		if (cursor!=0) { //if cursor==0 this user has less than 5001 followers
+			while (cursor!=0) {
+				try {
+					requestHandler = getUsableHandler();
+				} catch (FinishedUsableHandlersException e) {
+					logger.info("EXIT! No requests left.");
+					System.exit(0);
+				} catch (TwitterException e) {
+		            // TODO do not re-throw the same exception: take some decision.
+		            // Important thing is that the signature of this module
+		            // does not include exceptions thrown by Twitter4j
+					throw e;
+				}
+				try {
+					idsContainer = requestHandler.getFollowersWithPagination(userScreenName, cursor);
+				} catch (TwitterException e) {
+		            //TODO same as before
+					throw e;
+				}
+				
+				for (Long id : idsContainer.getIDs())
+					ids.add(Long.toString(id));
+				cursor = idsContainer.getNextCursor();
+			}
+		}
+		return ids;
 	}
 	
+	//this handles multiple request for users with more than 5000 friends
 	public List<String> getAllFriendsIds(String userScreenName) throws TwitterException {
 		RequestHandler requestHandler = null;
+		IDs idsContainer = null;
+		long cursor = -1;
+		List<String> ids = new ArrayList<String>();
+		try {
+			requestHandler = getUsableHandler();
+		} catch (FinishedUsableHandlersException e) {
+			logger.info("EXIT! No requests left.");
+			System.exit(0);
+		} catch (TwitterException e) {
+            // TODO do not re-throw the same exception: take some decision.
+            // Important thing is that the signature of this module
+            // does not include exceptions thrown by Twitter4j
+			throw e;
+		}
+		try {
+			idsContainer = requestHandler.getFriendsWithPagination(userScreenName, cursor);
+		} catch (TwitterException e) {
+            //TODO same as before
+			throw e;
+		}
 		
-		//TODO
+		for (Long id : idsContainer.getIDs())
+			ids.add(Long.toString(id));
+		cursor = idsContainer.getNextCursor();
 		
-		return friendsIds;
+		if (cursor!=0) { //if cursor==0 this user has less than 5001 followers
+			while (cursor!=0) {
+				try {
+					requestHandler = getUsableHandler();
+				} catch (FinishedUsableHandlersException e) {
+					logger.info("EXIT! No requests left.");
+					System.exit(0);
+				} catch (TwitterException e) {
+		            // TODO do not re-throw the same exception: take some decision.
+		            // Important thing is that the signature of this module
+		            // does not include exceptions thrown by Twitter4j
+					throw e;
+				}
+				try {
+					idsContainer = requestHandler.getFriendsWithPagination(userScreenName, cursor);
+				} catch (TwitterException e) {
+		            //TODO same as before
+					throw e;
+				}
+				
+				for (Long id : idsContainer.getIDs())
+					ids.add(Long.toString(id));
+				cursor = idsContainer.getNextCursor();
+			}
+		}
+		return ids;
 	}
 	
 
@@ -124,16 +221,14 @@ public class TwitterApiManager {
 			    }
 				else {
 					currentUserToken = usableUserTokens.get(0);
-					currentRequestHandler = new RequestHandlerImpl(consumerToken, currentUserToken);
-					
+					currentRequestHandler = new RequestHandlerImpl(consumerToken, currentUserToken);					
 					return currentRequestHandler;
 				}
 			}
 		} catch (TwitterException e) {
             //TODO same as before
 			throw e;
-		}
-			
+		}			
 	}
 
 

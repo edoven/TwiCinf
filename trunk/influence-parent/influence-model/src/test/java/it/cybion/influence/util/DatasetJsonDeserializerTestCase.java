@@ -15,16 +15,16 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 
-public class JsonDeserializerTestCase {
+public class DatasetJsonDeserializerTestCase {
 	
-	private JsonDeserializer jsonDeserializer;
+	private DatasetJsonDeserializer jsonDeserializer;
 
-    private static final Logger logger = Logger.getLogger(JsonDeserializerTestCase.class);
+    private static final Logger logger = Logger.getLogger(DatasetJsonDeserializerTestCase.class);
 	
 	@BeforeClass
 	public void setup() throws IOException
 	{
-		jsonDeserializer = new JsonDeserializer();
+		jsonDeserializer = new DatasetJsonDeserializer();
         logger.info("started");
 	}
 
@@ -49,7 +49,7 @@ public class JsonDeserializerTestCase {
 		Tweet tweet = jsonDeserializer.deserializeJsonStringToTweet(jsonString);
 		assertNotNull(tweet);
 		
-		assertEquals(tweet.getCreatedAt(), DataParser.parseTwitterData("Oct 19, 2012 12:44:30 PM"));
+		assertEquals(tweet.getCreatedAt(), DataParser.parseDatasetTwitterData("Oct 19, 2012 12:44:30 PM"));
         assertEquals(tweet.getId(), "259243620450848770");
         assertEquals(tweet.getText(), "#basket, liomatic perugia affronta il casalpusterlengo\nhttp://t.co/YzzMkIao");
         assertEquals(tweet.getSource(), "web");
@@ -84,7 +84,7 @@ public class JsonDeserializerTestCase {
         assertEquals(user.isProtected(), false);
         assertEquals(user.getFollowersCount(), 123);
         assertEquals(user.getFriendsCount(), 93);
-        assertEquals(user.getCreatedAt(), DataParser.parseTwitterData("Dec 1, 2011 10:49:25 AM"));
+        assertEquals(user.getCreatedAt(), DataParser.parseDatasetTwitterData("Dec 1, 2011 10:49:25 AM"));
         assertEquals(user.getFavouritesCount(), 0);
         assertEquals(user.getLang(), "it");
         assertEquals(user.getStatusesCount(), 996);
@@ -105,7 +105,7 @@ public class JsonDeserializerTestCase {
 		Tweet tweet = jsonDeserializer.deserializeJsonStringToTweet(jsonString);
 		assertNotNull(tweet);
 		
-		assertEquals(tweet.getCreatedAt(), DataParser.parseTwitterData("Oct 19, 2012 1:02:39 PM") );
+		assertEquals(tweet.getCreatedAt(), DataParser.parseDatasetTwitterData("Oct 19, 2012 1:02:39 PM") );
         assertEquals(tweet.getId(), "259248190040178700");
         assertEquals(tweet.getText(), "@cristianotoni @rapierpa @SAPItalia @jessyb86 Se venite in Umbria da oggi Eurochocolate,sul nostro blog c'è scritto come muoversi meglio:-)");
         assertEquals(tweet.getSource(), "web");
@@ -168,7 +168,7 @@ public class JsonDeserializerTestCase {
         assertEquals(user.isProtected(), false);
         assertEquals(user.getFollowersCount(), 98);
         assertEquals(user.getFriendsCount(), 193);
-        assertEquals(user.getCreatedAt(), DataParser.parseTwitterData("May 5, 2011 9:19:00 AM"));
+        assertEquals(user.getCreatedAt(), DataParser.parseDatasetTwitterData("May 5, 2011 9:19:00 AM"));
         assertEquals(user.getFavouritesCount(), 81);
         assertEquals(user.getLang(), "it");
         assertEquals(user.getStatusesCount(), 1171);
@@ -191,7 +191,7 @@ public class JsonDeserializerTestCase {
 		Tweet tweet = jsonDeserializer.deserializeJsonStringToTweet(jsonString);
 		assertNotNull(tweet);
 		
-		assertEquals(tweet.getCreatedAt(), DataParser.parseTwitterData("Oct 19, 2012 1:24:53 PM"));
+		assertEquals(tweet.getCreatedAt(), DataParser.parseDatasetTwitterData("Oct 19, 2012 1:24:53 PM"));
         assertEquals(tweet.getId(), "259253783605936130");
         assertEquals(tweet.getText(), "RT @ansa_it: Via Eurochocolate con torta i-phone. Citta' gia' affollata di turisti http://t.co/S8tppZeH");
         assertEquals(tweet.getSource(), "<a href=\"http://twitter.com/download/iphone\" rel=\"nofollow\">Twitter for iPhone</a>");
@@ -205,7 +205,7 @@ public class JsonDeserializerTestCase {
          * retweeted status
          */
         Tweet retweetedStatus = tweet.getRetweetedStatus();
-        assertEquals(retweetedStatus.getCreatedAt(), DataParser.parseTwitterData("Oct 19, 2012 1:05:04 PM"));
+        assertEquals(retweetedStatus.getCreatedAt(), DataParser.parseDatasetTwitterData("Oct 19, 2012 1:05:04 PM"));
         assertEquals(retweetedStatus.getId(), "259248797421539330");
         assertEquals(retweetedStatus.getText(), "Via Eurochocolate con torta i-phone. Citta' gia' affollata di turisti http://t.co/S8tppZeH");
         assertEquals(retweetedStatus.getSource(),"<a href=\"http://www.timendum.net/\" rel=\"nofollow\">Timendum.net</a>");
@@ -236,7 +236,7 @@ public class JsonDeserializerTestCase {
         assertEquals(retweetedStatusUser.isProtected(), false);
         assertEquals(retweetedStatusUser.getFollowersCount(), 89057);
         assertEquals(retweetedStatusUser.getFriendsCount(), 1);
-        assertEquals(retweetedStatusUser.getCreatedAt(), DataParser.parseTwitterData("Jan 20, 2009 2:08:34 PM"));
+        assertEquals(retweetedStatusUser.getCreatedAt(), DataParser.parseDatasetTwitterData("Jan 20, 2009 2:08:34 PM"));
         assertEquals(retweetedStatusUser.getFavouritesCount(), 0);
         assertEquals(retweetedStatusUser.getLang(), "en");
         assertEquals(retweetedStatusUser.getStatusesCount(), 85073);
@@ -284,7 +284,7 @@ public class JsonDeserializerTestCase {
         assertEquals(user.isProtected(), false);
         assertEquals(user.getFollowersCount(), 61);
         assertEquals(user.getFriendsCount(), 266);
-        assertEquals(user.getCreatedAt(), DataParser.parseTwitterData("Nov 17, 2009 11:42:55 AM"));
+        assertEquals(user.getCreatedAt(), DataParser.parseDatasetTwitterData("Nov 17, 2009 11:42:55 AM"));
         assertEquals(user.getFavouritesCount(), 2);
         assertEquals(user.getLang(), "it");
         assertEquals(user.getStatusesCount(), 518);

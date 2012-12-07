@@ -55,8 +55,6 @@ public class Tweet {
 		this.text = text;
 	}
 
-	
-
 	public String getSource() {
 		return source;
 	}

@@ -11,6 +11,7 @@ import twitter4j.TwitterException;
 import it.cybion.influence.util.TokenBuilder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class TwitterApiManagerTestCase {
@@ -47,6 +48,33 @@ public class TwitterApiManagerTestCase {
 		}
 		
         //TODO add asserts: maybe test that it includes an id of a user you wont unfollow in the near future
+	}
+	
+	
+	@Test
+	public void testGetFriendsForUserWIthMoreThan5000followers() {
+		try {
+			List<String> ids = twitterApiManager.getAllFollowersIds("toccodizenzero");
+			assertTrue(ids.size()>5000);
+			assertTrue(ids.size() == (new ArrayList<String>(new HashSet<String>(ids)).size()) );
+			logger.info("followers = "+ids.size());
+		} catch (TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testGetFriendsForUserWIthMoreThan5000friends() {
+		try {
+			List<String> ids = twitterApiManager.getAllFriendsIds("SfigataMente");
+			assertTrue(ids.size()>5000);
+			assertTrue(ids.size() == (new ArrayList<String>(new HashSet<String>(ids)).size()) );
+			logger.info("friends = "+ids.size());
+		} catch (TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
     //TODO test the failure: build another TAM with an empty list of user tokens.

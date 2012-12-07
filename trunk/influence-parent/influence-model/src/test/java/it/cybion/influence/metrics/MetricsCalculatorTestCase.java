@@ -2,7 +2,7 @@ package it.cybion.influence.metrics;
 
 import it.cybion.influence.IO.InputReader;
 import it.cybion.influence.model.Tweet;
-import it.cybion.influence.util.JsonDeserializer;
+import it.cybion.influence.util.DatasetJsonDeserializer;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -35,7 +35,7 @@ public class MetricsCalculatorTestCase {
     		  tweet02 = null, 
     		  tweet03 = null;
     	List<Tweet> tweets = new ArrayList<Tweet>();
-    	JsonDeserializer deserializer = new JsonDeserializer();
+    	DatasetJsonDeserializer deserializer = new DatasetJsonDeserializer();
 		try {
 			tweet01 = deserializer.deserializeJsonStringToTweet(InputReader.fileContentToSingleLine(json01path));
 			tweet02 = deserializer.deserializeJsonStringToTweet(InputReader.fileContentToSingleLine(json02path));

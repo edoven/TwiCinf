@@ -1,6 +1,8 @@
 package it.cybion.influence.model;
 
 
+import it.cybion.influence.util.JodaDateTimeTypeDeserializer;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /*
  * BEWARE: overridden method compare() only compares ids 
@@ -262,29 +267,30 @@ public class User {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", screenName='" + screenName + '\'' +
-                ", location='" + location + '\'' +
-                ", description='" + description + '\'' +
-                ", isContributorsEnabled=" + isContributorsEnabled +
-                ", url=" + url +
-                ", isProtected=" + isProtected +
-                ", followersCount=" + followersCount +
-                ", friendsCount=" + friendsCount +
-                ", favouritesCount=" + favouritesCount +
-                ", lang='" + lang + '\'' +
-                ", statusesCount=" + statusesCount +
-                ", listedCount=" + listedCount +
-                ", followers=" + followers +
-                ", friends=" + friends +
-                '}';
-    }
     
     
-	
+    
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", screenName="
+				+ screenName + ", location=" + location + ", description="
+				+ description + ", isContributorsEnabled="
+				+ isContributorsEnabled + ", url=" + url + ", isProtected="
+				+ isProtected + ", followersCount=" + followersCount
+				+ ", friendsCount=" + friendsCount + ", createdAt=" + createdAt
+				+ ", favouritesCount=" + favouritesCount + ", lang=" + lang
+				+ ", statusesCount=" + statusesCount + ", listedCount="
+				+ listedCount + ", hashtags2count=" + hashtags2count
+				+ ", followers=" + followers + ", friends=" + friends + "]";
+	}
+
+
+	public String toJson() {
+		Gson gson = new GsonBuilder()
+		.setDateFormat("MMM dd, yyyy hh:mm:ss a")
+		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeDeserializer())
+		.create(); 
+		return gson.toJson(this);
+	}
 	
 }

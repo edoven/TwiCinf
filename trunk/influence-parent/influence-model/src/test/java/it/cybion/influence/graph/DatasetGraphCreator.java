@@ -3,7 +3,7 @@ package it.cybion.influence.graph;
 import it.cybion.influence.IO.MysqlPersistenceFacade;
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.model.User;
-import it.cybion.influence.util.JsonDeserializer;
+import it.cybion.influence.util.DatasetJsonDeserializer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -70,7 +70,7 @@ public class DatasetGraphCreator {
 	private  List<User> getDatasetAuthors(MysqlPersistenceFacade persistenceFacade) {
     	List<String> jsons = persistenceFacade.getAllJsonTweets();
     	//List<String> jsons = persistenceFacade.getFirstNJsonTweets(3000);
-    	List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsons);
+    	List<Tweet> tweets = new DatasetJsonDeserializer().deserializeJsonStringsToTweets(jsons);
     	List<User> users = new ArrayList<User>();
     	
     	for (Tweet tweet : tweets) {

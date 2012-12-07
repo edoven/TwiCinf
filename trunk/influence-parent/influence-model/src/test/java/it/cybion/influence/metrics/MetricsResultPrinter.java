@@ -4,7 +4,7 @@ package it.cybion.influence.metrics;
 import it.cybion.influence.IO.MysqlPersistenceFacade;
 import it.cybion.influence.model.Tweet;
 import it.cybion.influence.model.User;
-import it.cybion.influence.util.JsonDeserializer;
+import it.cybion.influence.util.DatasetJsonDeserializer;
 import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
 
@@ -25,7 +25,7 @@ public class MetricsResultPrinter {
     public void printsResultsFromTheReportGeneratedWithMetricsCalculator() {
     	logger.info("======================================================");
     	List<String> jsons = new MysqlPersistenceFacade("localhost", 3306, "root", "qwerty", "twitter").getAllJsonTweets();
-    	JsonDeserializer jd = new JsonDeserializer();
+    	DatasetJsonDeserializer jd = new DatasetJsonDeserializer();
 		List<Tweet> tweets = jd.deserializeJsonStringsToTweets(jsons);
 		
 		MetricsCalculator calculator = new MetricsCalculator(tweets);

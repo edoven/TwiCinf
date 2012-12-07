@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 
 import it.cybion.influence.IO.MysqlPersistenceFacade;
-import it.cybion.influence.util.JsonDeserializer;
+import it.cybion.influence.util.DatasetJsonDeserializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class DatasetValuesTester {
 	@Test
 	public void testsThatFollowersCountAndFriendsCountAreMax5000() {
     	List<String> jsons = persistenceFacade.getAllJsonTweets();
-    	List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsons);
+    	List<Tweet> tweets = new DatasetJsonDeserializer().deserializeJsonStringsToTweets(jsons);
     	List<User> users = new ArrayList<User>();
     	for (Tweet tweet : tweets)
     		users.add(tweet.getUser());

@@ -11,7 +11,7 @@ public class DataParserTestCase {
 	public void parseTwitterDataTEST() {
 		//twitterDataFormat = "MMM dd, yyyy hh:mm:ss a"
 		String twitterData = "oct 12, 1965 01:23:11 AM";
-		DateTime dateTime = DataParser.parseTwitterData(twitterData);
+		DateTime dateTime = DataParser.parseDatasetTwitterData(twitterData);
 		assertEquals(dateTime.getMonthOfYear(), 10);
 		assertEquals(dateTime.getDayOfMonth(), 12);
 		assertEquals(dateTime.getYear(), 1965);

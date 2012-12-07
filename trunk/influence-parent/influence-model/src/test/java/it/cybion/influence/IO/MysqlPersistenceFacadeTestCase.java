@@ -2,7 +2,7 @@ package it.cybion.influence.IO;
 
 
 import it.cybion.influence.IO.MysqlPersistenceFacade;
-import it.cybion.influence.util.JsonDeserializer;
+import it.cybion.influence.util.DatasetJsonDeserializer;
 
 import org.apache.log4j.Logger;
 import org.testng.annotations.AfterClass;
@@ -50,9 +50,9 @@ public class MysqlPersistenceFacadeTestCase {
     	List<String> tweets = persistenceFacade.getAllJsonTweets();    	
     	  	
     	assertEquals(tweets.size(), 6214);
-    	assertEquals(new JsonDeserializer().deserializeJsonStringToTweet(tweets.get(0)).getId(),
+    	assertEquals(new DatasetJsonDeserializer().deserializeJsonStringToTweet(tweets.get(0)).getId(),
     			"263328879631036416");
-    	assertEquals(new JsonDeserializer().deserializeJsonStringToTweet(tweets.get(999)).getId(),
+    	assertEquals(new DatasetJsonDeserializer().deserializeJsonStringToTweet(tweets.get(999)).getId(),
     			"263667501894864896");
     	logger.info("testIfTheExctractedDatasetIsCorrect END");
     }
@@ -75,7 +75,7 @@ public class MysqlPersistenceFacadeTestCase {
     	logger.info("getting all jsons");
     	List<String> jsons = persistenceFacade.getAllJsonTweets();
     	logger.info("deserializing jsons");
-    	List<Tweet> tweets = new JsonDeserializer().deserializeJsonStringsToTweets(jsons);
+    	List<Tweet> tweets = new DatasetJsonDeserializer().deserializeJsonStringsToTweets(jsons);
     	logger.info("extracting authors from tweets");
     	List<User> authors = new ArrayList<User>();
     	for (Tweet tweet : tweets)

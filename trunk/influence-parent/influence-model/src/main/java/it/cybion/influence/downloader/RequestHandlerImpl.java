@@ -62,7 +62,6 @@ public class RequestHandlerImpl implements RequestHandler {
 		}		
 	}
 	
-	
 	private List<String> longArrayToStringList(long[] array) {
 		List<String> list = new ArrayList<String>();
 		for (long arrayElement : array)
@@ -78,6 +77,16 @@ public class RequestHandlerImpl implements RequestHandler {
 		} catch (TwitterException e) {
 			throw e;
 		}
+	}
+
+	@Override
+	public IDs getFriendsWithPagination(String userScreenName, long cursor) throws TwitterException {
+		return twitter.getFriendsIDs(userScreenName, cursor);
+	}
+
+	@Override
+	public IDs getFollowersWithPagination(String userScreenName, long cursor) throws TwitterException {
+		return twitter.getFollowersIDs(userScreenName, cursor);
 	}
 	
 }
