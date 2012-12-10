@@ -14,9 +14,9 @@ import com.mongodb.util.JSON;
 public class MongoDbPersistenceFacade {
 	private DBCollection collection;
 	
-	public MongoDbPersistenceFacade(String host, String collection) throws UnknownHostException {
+	public MongoDbPersistenceFacade(String host, String database, String collection) throws UnknownHostException {
 		MongoClient mongoClient = new MongoClient( "localhost" );
-		DB db = mongoClient.getDB( "users" );
+		DB db = mongoClient.getDB( database );
 		this.collection = db.getCollection(collection);
 	}
 	
@@ -25,7 +25,23 @@ public class MongoDbPersistenceFacade {
 		collection.save( (DBObject) JSON.parse(json) );
 	}
 	
+	public void putDoc(DBObject json) {
+		collection.save( json );
+	}
+
 	
+	/*
+	 * This could not be the best way of doing that.
+	 * This class has to be as simple as possible, the responsability
+	 * of adding attributes to a document should be addressed elsewhere.
+	 * TODO: think about it.
+	 */
+//	public void putDocWithAttributes(String json, Map<String, String> attributes2value) {
+//		DBObject object = (DBObject) JSON.parse(json);
+//		object.putAll(attributes2value);
+//		collection.save( object );
+//	}
+		
 	public List<String> getAllUsers(){
 		List<String> jsons = new ArrayList<String>();
 		DBCursor cursor = collection.find();

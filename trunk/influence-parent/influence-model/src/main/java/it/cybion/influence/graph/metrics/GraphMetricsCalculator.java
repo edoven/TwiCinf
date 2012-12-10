@@ -3,7 +3,6 @@ package it.cybion.influence.graph.metrics;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -11,7 +10,6 @@ import org.apache.log4j.Logger;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 
 public class GraphMetricsCalculator {
 	

@@ -4,7 +4,6 @@ import it.cybion.influence.model.User;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.neo4j.index.impl.lucene.LowerCaseKeywordAnalyzer;

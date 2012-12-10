@@ -1,5 +1,7 @@
 package it.cybion.influence.downloader;
 
+import it.cybion.influence.model.User;
+
 import java.util.List;
 
 import twitter4j.IDs;
@@ -15,6 +17,18 @@ public interface RequestHandler {
 
 	IDs getFriendsWithPagination(String userScreenName, long cursor) throws TwitterException;
 
-	IDs getFollowersWithPagination(String userScreenName, long cursor) throws TwitterException; 
+	IDs getFollowersWithPagination(String userScreenName, long cursor) throws TwitterException;
+
+	public String getRawJsonUser(String userScreenName) throws TwitterException; 
+
+	public String getRawJsonUser(long userId) throws TwitterException;
+	
+	public User getUser(String screenName) throws TwitterException;
+
+	public User getUser(long userId) throws TwitterException;
+
+	public IDs getFollowersWithPagination(long userId, long cursor) throws TwitterException;
+	
+	public IDs getFriendsWithPagination(long userId, long cursor) throws TwitterException;
 	
 }

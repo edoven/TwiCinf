@@ -6,9 +6,13 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
+import twitter4j.json.DataObjectFactory;
+
+import it.cybion.influence.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /*
  * Request handler for a single pair <application,user>
@@ -88,5 +92,37 @@ public class RequestHandlerImpl implements RequestHandler {
 	public IDs getFollowersWithPagination(String userScreenName, long cursor) throws TwitterException {
 		return twitter.getFollowersIDs(userScreenName, cursor);
 	}
+
+	@Override
+	public String getRawJsonUser(String userScreenName) throws TwitterException {
+		 return DataObjectFactory.getRawJSON(twitter.showUser(userScreenName));
+	}
+	
+	@Override
+	public String getRawJsonUser(long userId) throws TwitterException {
+		 return DataObjectFactory.getRawJSON(twitter.showUser(userId));
+	}
+
+	@Override
+	public User getUser(String screenName) throws TwitterException {
+		return new User(twitter.showUser(screenName));
+	}
+	
+	
+	@Override
+	public User getUser(long userId) throws TwitterException {
+		return new User(twitter.showUser(userId));
+	}
+
+	@Override
+	public IDs getFollowersWithPagination(long userId, long cursor) throws TwitterException {
+		return twitter.getFollowersIDs(userId, cursor);
+	}
+	
+	@Override
+	public IDs getFriendsWithPagination(long userId, long cursor) throws TwitterException {
+		return twitter.getFriendsIDs(userId, cursor);
+	}
+	
 	
 }

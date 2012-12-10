@@ -1,6 +1,7 @@
 package it.cybion.influence.model;
 
 
+import it.cybion.influence.util.DataParser;
 import it.cybion.influence.util.JodaDateTimeTypeDeserializer;
 
 import java.net.URL;
@@ -113,6 +114,30 @@ public class User {
 		//private String lang;
 		//private int statusesCount;
 		//private int listedCount;
+	}
+	
+	
+	
+	// What about implementing twitter4j.User  interface???
+	// TODO: think about it!
+	public User(twitter4j.User twitter4jUser) {
+		this.id = twitter4jUser.getId();
+		followers = new ArrayList<User>();
+		friends = new ArrayList<User>();
+		name = twitter4jUser.getName();
+		screenName = twitter4jUser.getScreenName();
+		location = twitter4jUser.getLocation();
+		description = twitter4jUser.getDescription();
+		isContributorsEnabled = twitter4jUser.isContributorsEnabled();
+		url = twitter4jUser.getURL();
+		isProtected = twitter4jUser.isProtected();
+		followersCount = twitter4jUser.getFollowersCount();
+		friendsCount = twitter4jUser.getFriendsCount();
+		createdAt = DataParser.parseOriginalTwitterData(twitter4jUser.getCreatedAt().toString());
+		favouritesCount = twitter4jUser.getFavouritesCount();
+		lang = twitter4jUser.getLang();
+		statusesCount = twitter4jUser.getStatusesCount();
+		listedCount = twitter4jUser.getListedCount();
 	}
 	
 	
