@@ -21,6 +21,16 @@ import com.google.gson.GsonBuilder;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
+/*
+ * This agent is used to download and add to mongoDb the users
+ * taken from the followers and friends graph built from the food-46 users set.
+ * The users are selected with these features:
+ * -"non author" = the user is not one of the 46
+ * -indegree>=4 (this means that 4 or more users from the 46 follow this user)
+ * -outdegree>=2 (this mean that this user follows 2 or more users from the 46)
+ * 
+ */
+
 public class UsersDownloader {
 	
 	private final static String IDS_FILE = "/home/godzy/git/TwiCinf/trunk/influence-parent/influence-model/src/test/resources/food46/id_inGE4-oGE2.txt";

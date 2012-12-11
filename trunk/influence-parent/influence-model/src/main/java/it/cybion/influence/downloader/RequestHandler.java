@@ -30,5 +30,7 @@ public interface RequestHandler {
 	public IDs getFollowersWithPagination(long userId, long cursor) throws TwitterException;
 	
 	public IDs getFriendsWithPagination(long userId, long cursor) throws TwitterException;
+
+	public String getUserRawJson(long userId) throws TwitterException;
 	
 }

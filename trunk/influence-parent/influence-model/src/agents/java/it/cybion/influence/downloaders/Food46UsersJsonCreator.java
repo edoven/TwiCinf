@@ -134,7 +134,7 @@ public class Food46UsersJsonCreator {
 		screenNames.add("WineNewsIt");
 		screenNames.add("FeudiDSGregorio");
 		screenNames.add("gianlucamorino");
-		screenNames = new ArrayList<String>( new HashSet<String>(screenNames));
+		screenNames = new ArrayList<String>( new HashSet<String>(screenNames)); //this removes duplicates
 		for (String screenName : screenNames) {
 			User user = getEnrichedUser(screenName);
 			String json = gson.toJson(user);

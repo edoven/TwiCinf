@@ -22,6 +22,7 @@ public class DescriptionAnalyzer {
 				String name = (String)json.get("name");
 				String screenName = (String)json.get("screen_name");
 				int followersCount = (Integer)json.get("followers_count");
+				int userId = (Integer)json.get("id");
 				description = description.toLowerCase();
 				if (description.length()<1) {
 					empty++;
@@ -60,13 +61,14 @@ public class DescriptionAnalyzer {
 													  replaceAll(System.getProperty("line.separator"), "/");
 							
 							//System.out.println("("+screenName+" - "+name+" - "+followersCount+")__INIZIO__"+description+"__FINE__");
+							System.out.println(userId);
 					}
 					
-					else {
-						description = description.replaceAll("\n", "/").
-							  replaceAll(System.getProperty("line.separator"), "/");
-						System.out.println("("+screenName+" - "+name+" - "+followersCount+")__INIZIO__"+description+"__FINE__");
-				}
+//					else {
+//						description = description.replaceAll("\n", "/").
+//							  replaceAll(System.getProperty("line.separator"), "/");
+//						//System.out.println("("+screenName+" - "+name+" - "+followersCount+")__INIZIO__"+description+"__FINE__");
+//					}
 				}
 			}
 		}

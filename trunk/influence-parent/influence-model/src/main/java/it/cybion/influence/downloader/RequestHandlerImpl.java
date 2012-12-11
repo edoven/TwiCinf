@@ -28,9 +28,11 @@ public class RequestHandlerImpl implements RequestHandler {
 		  .setOAuthConsumerKey(applicationToken.getTokenString())
 		  .setOAuthConsumerSecret(applicationToken.getSecretString())
 		  .setOAuthAccessToken(userToken.getTokenString())
-		  .setOAuthAccessTokenSecret(userToken.getSecretString());
+		  .setOAuthAccessTokenSecret(userToken.getSecretString())
+		  .setJSONStoreEnabled(true);
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		twitter = tf.getInstance();
+
 	}
 	
 	/*
@@ -122,6 +124,11 @@ public class RequestHandlerImpl implements RequestHandler {
 	@Override
 	public IDs getFriendsWithPagination(long userId, long cursor) throws TwitterException {
 		return twitter.getFriendsIDs(userId, cursor);
+	}
+
+	@Override
+	public String getUserRawJson(long userId) throws TwitterException {
+		return DataObjectFactory.getRawJSON(twitter.showUser(userId));
 	}
 	
 	

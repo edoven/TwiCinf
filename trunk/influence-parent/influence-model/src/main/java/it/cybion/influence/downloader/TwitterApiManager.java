@@ -438,4 +438,26 @@ public class TwitterApiManager {
         return user;
 	}
 
+	
+	public String getUserRawJson(long userId) throws TwitterApiException {
+		String userRawJson = null;
+		RequestHandler requestHandler = null;
+		try {
+			try {
+				requestHandler = getUsableHandler();
+			} catch (TwitterApiException e) {
+				throw new TwitterApiException(e.getMessage());
+			}
+		} catch (FinishedUsableHandlersException e) {
+			logger.info("EXIT! No requests left.");
+			System.exit(0);
+		} 
+		try {
+			userRawJson = requestHandler.getUserRawJson(userId);
+		} catch (TwitterException e) {
+			throw new TwitterApiException(e.getMessage());
+		}
+        return userRawJson;
+	}
+	
 }

@@ -1,8 +1,5 @@
 package it.cybion.influence.graph;
 
-import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
-
-import it.cybion.influence.graph.GraphEnrichener;
 
 public class GraphEnrichenerAgent {
 	
@@ -11,10 +8,9 @@ public class GraphEnrichenerAgent {
 	}
 	
 	public static void enrichGraph(String graphPath) {
-		Neo4jGraph graph = new Neo4jGraph(graphPath);
-		GraphEnrichener graphEnrichener = new GraphEnrichener(graph);
-		graphEnrichener.addNodesDegreesCounts();
-		graph.shutdown();
+		UsersGraphFactory usersGraphFactory = new UsersGraphFactoryImpl(graphPath);
+		usersGraphFactory.addNodesDegreesCounts();
+		usersGraphFactory.getGraph().shutdown();
 	}
 	
 }

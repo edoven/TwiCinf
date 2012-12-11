@@ -1,5 +1,8 @@
 package it.cybion.influence.IO;
 
+import it.cybion.influence.model.User;
+import it.cybion.influence.util.OriginalJsonDeserializer;
+
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +31,41 @@ public class MongoDbPersistenceFacade {
 	public void putDoc(DBObject json) {
 		collection.save( json );
 	}
+	
+	public void deleteDoc(String json) {
+		collection.remove((DBObject) JSON.parse(json));
+	}
+	
+	public void deleteDoc(DBObject json) {
+		collection.remove(json);
+	}
+	
+	public boolean containsUser(User user) {
+		//List<String> jsons = new ArrayList<String>();
+		OriginalJsonDeserializer jsonDeserializer = new OriginalJsonDeserializer();
+		DBCursor cursor = collection.find();
+		while (cursor.hasNext()) {	
+			User currentUser = jsonDeserializer.deserializeJsonStringsToUser(cursor.next().toString());
+			if (currentUser.getId() == user.getId() )
+				return true;
+		}
+		return false;
+	}
+	
+	
+//	public void updateUser(User user) {
+//		OriginalJsonDeserializer jsonDeserializer = new OriginalJsonDeserializer();
+//		DBCursor cursor = collection.find();
+//		while (cursor.hasNext()) {	
+//			DBObject currentObject = cursor.next();
+//			User currentUser = jsonDeserializer.deserializeJsonStringsToUser(currentObject.toString());
+//			if (currentUser.getId() == user.getId() ) {
+//				collection.remove(currentObject);
+//				collection.save();
+//				return;
+//			}
+//		}
+//	}
 
 	
 	/*
