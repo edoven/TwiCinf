@@ -1,4 +1,4 @@
-package it.cybion.influence.downloader.agents;
+package it.cybion.influence.downloaders;
 
 
 import java.net.UnknownHostException;
@@ -11,7 +11,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tinkerpop.blueprints.Graph;
 
-import scala.util.parsing.json.JSON;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -20,6 +19,7 @@ import twitter4j.json.DataObjectFactory;
 
 import it.cybion.influence.IO.MongoDbPersistenceFacade;
 import it.cybion.influence.downloader.Token;
+import it.cybion.influence.downloader.TwitterApiException;
 import it.cybion.influence.downloader.TwitterApiManager;
 import it.cybion.influence.graph.GraphCreationException;
 import it.cybion.influence.graph.UsersGraphFactory;
@@ -30,7 +30,7 @@ import it.cybion.influence.util.OriginalJsonDeserializer;
 import it.cybion.influence.util.TokenBuilder;
 
 
-public class UsersJsonCreator {
+public class Food46UsersJsonCreator {
 	
 	public static void main(String[] args) throws TwitterException, GraphCreationException {
 //		try {
@@ -66,11 +66,11 @@ public class UsersJsonCreator {
 	
 	
 	public static List<String> getUsers() throws UnknownHostException {
-		MongoDbPersistenceFacade persistenceFacade = new MongoDbPersistenceFacade("localhost", "twitterUsers");
-		return persistenceFacade.getAllUsers();
+		MongoDbPersistenceFacade persistenceFacade = new MongoDbPersistenceFacade("localhost", "users", "twitterUsers");
+		return persistenceFacade.getAllDocs();
 	}
 	
-	public static void downloadAllUsers() throws UnknownHostException, TwitterException {
+	public static void downloadAllUsers() throws UnknownHostException, TwitterException, TwitterApiException {
 		Gson gson = new GsonBuilder()
 		.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
 					// "Wed Oct 17 19:59:40 +0000 2012"
@@ -78,7 +78,7 @@ public class UsersJsonCreator {
 		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeDeserializer())
 		.create(); 
 		
-		MongoDbPersistenceFacade persistenceFacade = new MongoDbPersistenceFacade("localhost", "twitterUsers");
+		MongoDbPersistenceFacade persistenceFacade = new MongoDbPersistenceFacade("localhost", "users", "twitterUsers");
 		List<String> screenNames = new ArrayList<String>();
 		screenNames.add("elisiamenduni");
 		screenNames.add("burde");
@@ -145,7 +145,7 @@ public class UsersJsonCreator {
 	
 	
 	
-	public static User getEnrichedUser(String screenName) throws TwitterException {
+	public static User getEnrichedUser(String screenName) throws TwitterApiException, TwitterException {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true).setJSONStoreEnabled(true);
         TwitterFactory twitterFactory = new TwitterFactory(cb.build());       

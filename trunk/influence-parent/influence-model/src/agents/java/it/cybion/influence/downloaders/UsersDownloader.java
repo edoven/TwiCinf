@@ -1,4 +1,4 @@
-package it.cybion.influence.downloader.agents;
+package it.cybion.influence.downloaders;
 
 import it.cybion.influence.IO.MongoDbPersistenceFacade;
 import it.cybion.influence.downloader.Token;

@@ -41,8 +41,10 @@ public class MongoDbPersistenceFacade {
 //		object.putAll(attributes2value);
 //		collection.save( object );
 //	}
+	
+	
 		
-	public List<String> getAllUsers(){
+	public List<String> getAllDocs(){
 		List<String> jsons = new ArrayList<String>();
 		DBCursor cursor = collection.find();
 		while (cursor.hasNext())

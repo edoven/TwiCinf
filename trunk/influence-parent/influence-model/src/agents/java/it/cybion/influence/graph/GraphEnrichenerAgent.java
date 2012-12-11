@@ -1,4 +1,4 @@
-package it.cybion.influence.graph.agents;
+package it.cybion.influence.graph;
 
 import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 
