@@ -20,7 +20,6 @@
 
     <modules>
         <module>influence-model</module>
-		<module>influencers-finder</module>
     </modules>
 
     <dependencyManagement>
