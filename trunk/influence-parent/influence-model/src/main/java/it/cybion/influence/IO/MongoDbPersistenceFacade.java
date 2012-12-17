@@ -15,6 +15,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 
 public class MongoDbPersistenceFacade {
+	
 	private DBCollection collection;
 	
 	public MongoDbPersistenceFacade(String host, String database, String collection) throws UnknownHostException {
