@@ -2,16 +2,20 @@
 <testng-results skipped="0" failed="0" total="1" passed="1">
   <reporter-output>
   </reporter-output>
-  <suite name="Default suite" duration-ms="309" started-at="2012-12-17T15:38:04Z" finished-at="2012-12-17T15:38:04Z">
+  <suite name="Default suite" duration-ms="409" started-at="2012-12-19T16:02:37Z" finished-at="2012-12-19T16:02:37Z">
     <groups>
     </groups>
-    <test name="Default test" duration-ms="309" started-at="2012-12-17T15:38:04Z" finished-at="2012-12-17T15:38:04Z">
-      <class name="it.cybion.influencers.twitter.persistance.MongodbPersistanceFacadeTEST">
-        <test-method status="PASS" signature="insertionDeletionTest()[pri:0, instance:it.cybion.influencers.twitter.persistance.MongodbPersistanceFacadeTEST@5351660a]" name="insertionDeletionTest" duration-ms="290" started-at="2012-12-17T16:38:04Z" finished-at="2012-12-17T16:38:04Z">
+    <test name="Default test" duration-ms="409" started-at="2012-12-19T16:02:37Z" finished-at="2012-12-19T16:02:37Z">
+      <class name="it.cybion.influencers.twitter.TwitterFacadeTEST">
+        <test-method status="PASS" signature="init()[pri:0, instance:it.cybion.influencers.twitter.TwitterFacadeTEST@e980a8d]" name="init" is-config="true" duration-ms="335" started-at="2012-12-19T17:02:37Z" finished-at="2012-12-19T17:02:37Z">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- insertionDeletionTest -->
-      </class> <!-- it.cybion.influencers.twitter.persistance.MongodbPersistanceFacadeTEST -->
+        </test-method> <!-- init -->
+        <test-method status="PASS" signature="basicTest()[pri:0, instance:it.cybion.influencers.twitter.TwitterFacadeTEST@e980a8d]" name="basicTest" duration-ms="57" started-at="2012-12-19T17:02:37Z" finished-at="2012-12-19T17:02:37Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- basicTest -->
+      </class> <!-- it.cybion.influencers.twitter.TwitterFacadeTEST -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
 </testng-results>

@@ -3,11 +3,11 @@
 <suite name="Failed suite [Default suite]">
   <test name="Default test(failed)">
     <classes>
-      <class name="it.cybion.influencers.twitter.persistance.MongodbPersistanceFacadeTEST">
+      <class name="it.cybion.influencers.twitter.TwitterFacadeTEST">
         <methods>
-          <include name="insertionDeletionTest"/>
+          <include name="basicTest"/>
         </methods>
-      </class> <!-- it.cybion.influencers.twitter.persistance.MongodbPersistanceFacadeTEST -->
+      </class> <!-- it.cybion.influencers.twitter.TwitterFacadeTEST -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
