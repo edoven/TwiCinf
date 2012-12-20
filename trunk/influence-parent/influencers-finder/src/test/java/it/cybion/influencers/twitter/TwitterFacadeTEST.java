@@ -45,11 +45,17 @@ public class TwitterFacadeTEST {
 	}
 
 	@Test
-	public void basicTest() throws TwitterApiException {
-		String user = twitterFacade.getDescription(5694982l);
-		logger.info(user);
-		user = twitterFacade.getDescription(5694982l);
-		logger.info(user);
+	public void getUserTest() throws TwitterApiException {
+		String user = twitterFacade.getDescription(14230524l);
+		logger.info("BEGIN_"+user+"_END");
+		user = twitterFacade.getDescription(14230524l);
+		logger.info("BEGIN_"+user+"_END");
+	}
+	
+	@Test
+	public void getFriends() throws TwitterApiException, YourCodeReallySucksException {
+		List<Long> friendIds = twitterFacade.getFriends(887469007l);
+		logger.info(friendIds.size());
 	}
 
 }

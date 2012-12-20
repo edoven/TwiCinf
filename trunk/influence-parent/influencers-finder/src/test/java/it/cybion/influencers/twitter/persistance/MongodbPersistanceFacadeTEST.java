@@ -6,21 +6,30 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 
-import static org.testng.Assert.assertEquals;
 
 
 public class MongodbPersistanceFacadeTEST {
 	
+	private MongodbPersistanceManager persistanceManager;
+	
+	@BeforeClass
+	public void init() throws UnknownHostException {
+		persistanceManager = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
+	}
+	
+	
 	@Test(enabled = false)
-	public void deleteUser() throws UnknownHostException{
-		MongodbPersistanceManager persistanceManager = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
+	public void deleteUser() throws UnknownHostException{		
 		persistanceManager.removeUser(425699035l);
 	}
 	
@@ -28,7 +37,7 @@ public class MongodbPersistanceFacadeTEST {
 	public void insertionDeletionTEST() throws UnknownHostException , UserNotProfileEnriched, UserNotPresentException{
 		String userJson = "{\"id\": 425699035,\"name\": \"PerugiaToday\",\"screenName\": \"PerugiaToday\",\"location\": \"Perugia\",\"description\": \"sono fatto cosi e cosa\",\"isContributorsEnabled\": false,\"profileImageUrl\": \"http://a0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"profileImageUrlHttps\": \"https://si0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"url\": \"http://www.perugiatoday.it/\",\"isProtected\": false,\"followersCount\": 123,\"profileBackgroundColor\": \"C0DEED\",\"profileTextColor\": \"333333\",\"profileLinkColor\": \"0084B4\",\"profileSidebarFillColor\": \"DDEEF6\",\"profileSidebarBorderColor\": \"C0DEED\",\"profileUseBackgroundImage\": true,\"showAllInlineMedia\": false,\"friendsCount\": 93,\"createdAt\": \"Dec 1, 2011 10:49:25 AM\",\"favouritesCount\": 0,\"utcOffset\": -1,\"profileBackgroundImageUrl\": \"http://a0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundImageUrlHttps\": \"https://si0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundTiled\": false,\"lang\": \"it\",\"statusesCount\": 996,\"isGeoEnabled\": false,\"isVerified\": false,\"translator\": false,\"listedCount\": 3,\"isFollowRequestSent\": false}";
 		//System.out.println(userJson);
-		MongodbPersistanceManager persistanceManager = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
+		//MongodbPersistanceManager persistanceManager = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
 		persistanceManager.putUser(userJson);
 		assertEquals(persistanceManager.getDescription(425699035l), "sono fatto cosi e cosa");
 		persistanceManager.removeUser(425699035l);
@@ -41,12 +50,11 @@ public class MongodbPersistanceFacadeTEST {
 		}
 		assertEquals(false, true);
 	}
-	
-	
+		
 	@Test
 	public void insertionAndRetrivalTEST() throws UnknownHostException , UserNotProfileEnriched, UserNotPresentException{
 		String userJson = "{\"id\": 425699035,\"name\": \"PerugiaToday\",\"screenName\": \"PerugiaToday\",\"location\": \"Perugia\",\"description\": \"sono fatto cosi e cosa\",\"isContributorsEnabled\": false,\"profileImageUrl\": \"http://a0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"profileImageUrlHttps\": \"https://si0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"url\": \"http://www.perugiatoday.it/\",\"isProtected\": false,\"followersCount\": 123,\"profileBackgroundColor\": \"C0DEED\",\"profileTextColor\": \"333333\",\"profileLinkColor\": \"0084B4\",\"profileSidebarFillColor\": \"DDEEF6\",\"profileSidebarBorderColor\": \"C0DEED\",\"profileUseBackgroundImage\": true,\"showAllInlineMedia\": false,\"friendsCount\": 93,\"createdAt\": \"Dec 1, 2011 10:49:25 AM\",\"favouritesCount\": 0,\"utcOffset\": -1,\"profileBackgroundImageUrl\": \"http://a0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundImageUrlHttps\": \"https://si0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundTiled\": false,\"lang\": \"it\",\"statusesCount\": 996,\"isGeoEnabled\": false,\"isVerified\": false,\"translator\": false,\"listedCount\": 3,\"isFollowRequestSent\": false}";
-		MongodbPersistanceManager persistanceManager = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
+		//MongodbPersistanceManager persistanceManager = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
 		persistanceManager.putUser(userJson);
 		String retrievedUserJson = persistanceManager.getUser(425699035l);		
 		persistanceManager.removeUser(425699035l);
@@ -61,11 +69,10 @@ public class MongodbPersistanceFacadeTEST {
 		assertEquals(originalUser.get("profileTextColor"), retrievedUser.get("profileTextColor"));
 		assertEquals(originalUser.get("profileImageUrlHttps"), retrievedUser.get("profileImageUrlHttps"));		
 	}
-	
-	
+		
 	@Test
 	public void addFriendsTEST() throws UserNotPresentException, UnknownHostException, UserNotFriendsEnrichedException {
-		MongodbPersistanceManager persistanceManager = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
+		//MongodbPersistanceManager persistanceManager = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
 		//user creation
 		DBObject user = new BasicDBObject();
 		Long userId = 1111l;
@@ -93,10 +100,19 @@ public class MongodbPersistanceFacadeTEST {
 		persistanceManager.removeUser(userId);
 		persistanceManager.removeUser(friendOneId);
 		persistanceManager.removeUser(friendTwoId);
-		persistanceManager.removeUser(friendThreeId);
-		
+		persistanceManager.removeUser(friendThreeId);		
 	}
 	
+	@Test
+	public void userNotPresentExceptionTEST(){
+		try {
+			persistanceManager.getUser(53452955l);
+		} catch (UserNotPresentException e) {
+			assertTrue(true);
+			return;
+		}
+		assertTrue(false);
+	}
 	
 
 }

@@ -7,7 +7,6 @@ import it.cybion.influencers.twitter.persistance.UserNotPresentException;
 import it.cybion.influencers.twitter.persistance.UserNotProfileEnriched;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -67,11 +66,6 @@ public class MongodbPersistanceManager implements PersistanceFacade {
 			DBObject json = cursor.next();
 			if (json.containsField("followers")) {
 				return (List<Long>) json.get("followers");
-//				long[] followers = (long[]) json.get("followers");
-//				List<Long> followersList = new ArrayList<Long>();
-//				for (long id : followers)
-//					followersList.add(id);
-//				return followersList;
 			}
 			else
 				throw new UserNotFollowersEnrichedException("User with id "+userId+" is not followers/friends-eniched.");
@@ -89,11 +83,6 @@ public class MongodbPersistanceManager implements PersistanceFacade {
 			DBObject json = cursor.next();
 			if (json.containsField("friends")) {
 				return (List<Long>) json.get("friends");
-//				long[] friends = (long[]) json.get("friends");
-//				List<Long> friendsList = new ArrayList<Long>();
-//				for (long id : friends)
-//					friendsList.add(id);
-//				return friendsList;
 			}
 			else
 				throw new UserNotFriendsEnrichedException("User with id "+userId+" is not followers/friends-eniched.");

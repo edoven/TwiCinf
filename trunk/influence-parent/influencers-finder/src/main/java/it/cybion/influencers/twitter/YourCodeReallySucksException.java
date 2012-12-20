@@ -2,6 +2,9 @@ package it.cybion.influencers.twitter;
 
 public class YourCodeReallySucksException extends Exception {
 
+
+	private static final long serialVersionUID = -7198312902487490560L;
+
 	public YourCodeReallySucksException() {
 		// TODO Auto-generated constructor stub
 	}

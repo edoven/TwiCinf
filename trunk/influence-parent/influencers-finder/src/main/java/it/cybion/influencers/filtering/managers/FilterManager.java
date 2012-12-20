@@ -10,5 +10,5 @@ public interface FilterManager {
 	public List<Long> filter();
 	public void setTwitterFacade(TwitterFacade twitterManager);
 	public void setGraphFacade(GraphFacade graphFacade);
-	public void setUsers(List<Long> users);
+	public void setSeedUsers(List<Long> users);
 }

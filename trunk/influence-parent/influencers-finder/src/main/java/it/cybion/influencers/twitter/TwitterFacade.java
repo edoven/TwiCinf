@@ -10,12 +10,16 @@ import it.cybion.influencers.twitter.web.twitter4j.TwitterApiException;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 /*
  * I'm using recursive methods!
  * They are less "performance-oriented"...but so elegant. :)  
  */
 
 public class TwitterFacade {
+	
+	private static final Logger logger = Logger.getLogger(TwitterFacade.class);
 	
 	TwitterWebFacade twitterWebFacade;
 	PersistanceFacade persistanceFacade;
@@ -25,29 +29,33 @@ public class TwitterFacade {
 		this.twitterWebFacade = twitterWebFacade;
 		this.persistanceFacade = persistanceFacade;
 	}
-	
-	
-	
+			
 	public String getUser(Long userId) throws TwitterApiException  {
 		try {
-			return persistanceFacade.getUser(userId);				
+			String user = persistanceFacade.getUser(userId);
+			logger.info("User with id "+userId+" is in the cache. Let's fetch it!");
+			return user;				
 		} catch (UserNotPresentException e) {
+			logger.info("User with id "+userId+" not cached. Let's donwload it!");
 			String userJson = twitterWebFacade.getUserJson(userId);
 			persistanceFacade.putUser(userJson);
 			return getUser(userId);
 		}
 	}
-	
-	
+		
 	public String getDescription(Long userId) throws TwitterApiException  {
 		try {
-			return persistanceFacade.getDescription(userId);				
+			String description = persistanceFacade.getDescription(userId);
+			logger.info("User with id "+userId+" is in the cache and has profile informations. Let's fetch it!");
+			return description;				
 		} catch (UserNotPresentException e) {
+			logger.info("User with id "+userId+" not cached. Let's donwload it!");
 			String userJson = twitterWebFacade.getUserJson(userId);
 			persistanceFacade.putUser(userJson);
 			return getDescription(userId);
 		}
 		catch (UserNotProfileEnriched e) {
+			logger.info("User with id "+userId+" has no profile informations. Let's donwload them!");
 			String userJson = twitterWebFacade.getUserJson(userId);
 			persistanceFacade.putUser(userJson);
 			return getDescription(userId);
@@ -89,6 +97,5 @@ public class TwitterFacade {
 			return getFriends(userId);
 		}
 	}
-
 	
 }

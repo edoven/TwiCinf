@@ -38,15 +38,29 @@ public class RequestHandler {
 		} catch (TwitterException e) {
 			throw new TwitterApiException(e.getMessage());
 		}
+	}	
+	public String getUserJson(String screenName) throws TwitterApiException {
+		try {
+			return DataObjectFactory.getRawJSON(twitter.showUser(screenName));
+		} catch (TwitterException e) {
+			throw new TwitterApiException(e.getMessage());
+		}
 	}
-	
+		
+		
 	public IDs getFollowersWithPagination(long userId, long cursor) throws TwitterException {
 		return twitter.getFollowersIDs(userId, cursor);
+	}	
+	public IDs getFollowersWithPagination(String screenName, long cursor) throws TwitterException {
+		return twitter.getFollowersIDs(screenName, cursor);
 	}
 	
 	
 	public IDs getFriendsWithPagination(long userId, long cursor) throws TwitterException {
 		return twitter.getFriendsIDs(userId, cursor);
+	}
+	public IDs getFriendsWithPagination(String screenName, long cursor) throws TwitterException {
+		return twitter.getFriendsIDs(screenName, cursor);
 	}
 	
 }
