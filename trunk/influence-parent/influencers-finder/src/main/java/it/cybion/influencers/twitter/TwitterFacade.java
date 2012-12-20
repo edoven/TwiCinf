@@ -62,7 +62,7 @@ public class TwitterFacade {
 		}	
 	}
 
-	public List<Long> getFollowers(Long userId) throws TwitterApiException, YourCodeReallySucksException {
+	public List<Long> getFollowers(Long userId) throws TwitterApiException {
 		try {
 			return persistanceFacade.getFollowers(userId);
 		} catch (UserNotPresentException e) {
@@ -74,13 +74,14 @@ public class TwitterFacade {
 			try {
 				persistanceFacade.putFollowers(userId, followers);
 			} catch (UserNotPresentException e1) {
-				throw new YourCodeReallySucksException("User with id "+userId+" can't be added to the caching system.");
+				logger.info("User with id "+userId+" can't be added to caching system.");
+				System.exit(0);
 			}
 			return getFollowers(userId);
 		}
 	}
 
-	public List<Long> getFriends(Long userId) throws TwitterApiException, YourCodeReallySucksException {
+	public List<Long> getFriends(Long userId) throws TwitterApiException {
 		try {
 			return persistanceFacade.getFriends(userId);
 		} catch (UserNotPresentException e) {
@@ -92,7 +93,8 @@ public class TwitterFacade {
 			try {
 				persistanceFacade.putFollowers(userId, friends);
 			} catch (UserNotPresentException e1) {
-				throw new YourCodeReallySucksException("User with id "+userId+" can't be added to the caching system.");
+				logger.info("User with id "+userId+" can't be added to caching system.");
+				System.exit(0);
 			}
 			return getFriends(userId);
 		}

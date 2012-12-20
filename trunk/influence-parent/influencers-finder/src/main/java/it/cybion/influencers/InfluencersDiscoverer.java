@@ -37,7 +37,7 @@ public class InfluencersDiscoverer {
 				FilterManager filterManager = filterManagers.get(i);
 				filterManager.setGraphFacade(graphFacade);
 				filterManager.setTwitterFacade(twitterFacade);
-				filterManager.setUsers(users);
+				filterManager.setSeedUsers(users);
 				users = filterManager.filter();
 			}
 		}
