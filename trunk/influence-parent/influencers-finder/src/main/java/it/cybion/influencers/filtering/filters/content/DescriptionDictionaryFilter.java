@@ -12,9 +12,11 @@ public class DescriptionDictionaryFilter implements Filter{
 	List<String> dictionary;
 	Map<Long,String> user2description;
 	
-	public DescriptionDictionaryFilter(List<String> dictionary) {
+	public DescriptionDictionaryFilter(List<String> dictionary,
+									   Map<Long,String> user2description) {
 		super();
-		this.dictionary = dictionary;		
+		this.dictionary = dictionary;	
+		this.user2description = user2description;
 	}
 	
 

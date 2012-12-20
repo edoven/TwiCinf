@@ -83,74 +83,76 @@ public class NodeDegreeFilterManager implements FilterManager{
 	
 	private void calculateUsersToBeFiltered() {
 		switch (expansionDirection) {
-			case NONE:
+			case SEEDS:
 				usersToBeFiltered = seedUsers;			
 			case FOLLOWERS:
 				usersToBeFiltered = new ArrayList<Long>();
 				for (Long userId : seedUsers) {
-					List<Long> followersIds;
 					try {
-						followersIds = twitterFacade.getFollowers(userId);
-						for (Long followerId : followersIds)
-							usersToBeFiltered.add(followerId);
+						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));
 					} catch (TwitterApiException e) {
 						logger.info("Problems with user with id "+userId+". User is skipped.");
-					} catch (YourCodeReallySucksException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
-					
 				}
+				usersToBeFiltered.removeAll(seedUsers);
 			case FRIENDS:
 				usersToBeFiltered = new ArrayList<Long>();
 				for (Long userId : seedUsers) {
-					List<Long> friendsIds;
 					try {
-						friendsIds = twitterFacade.getFriends(userId);
-						for (Long friendId : friendsIds)
-							usersToBeFiltered.add(friendId);
+						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
 					} catch (TwitterApiException e) {
 						logger.info("Problems with user with id "+userId+". User is skipped.");
-					} catch (YourCodeReallySucksException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
-					
 				}
+				usersToBeFiltered.removeAll(seedUsers);
 			case FOLLOWERS_AND_FRIENDS:
 				usersToBeFiltered = new ArrayList<Long>();
 				for (Long userId : seedUsers) {
-					List<Long> friendsIds;
-					List<Long> followersIds;
 					try {
-						friendsIds = twitterFacade.getFriends(userId);
-						for (Long friendId : friendsIds)
-							usersToBeFiltered.add(friendId);
+						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
+						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));						
 					} catch (TwitterApiException e) {
 						logger.info("Problems with user with id "+userId+". User is skipped.");
-					} catch (YourCodeReallySucksException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					try {
-						followersIds = twitterFacade.getFollowers(userId);
-						for (Long followerId : followersIds)
-							usersToBeFiltered.add(followerId);
-					} catch (TwitterApiException e) {
-						logger.info("Problems with user with id "+userId+". User is skipped.");
-					} catch (YourCodeReallySucksException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
 					
 				}	
-				/*
-				 * TODO:Remember this!!
-				 * This is used to remove seed users that are
-				 * follower or friend of some seed user.
-				 */
-				usersToBeFiltered.removeAll(seedUsers);
+				usersToBeFiltered.removeAll(seedUsers);				
+			case SEEDS_AND_FOLLOWERS:
+				usersToBeFiltered = new ArrayList<Long>();
+				for (Long userId : seedUsers) {
+					try {
+						usersToBeFiltered.add(userId);
+						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));
+					} catch (TwitterApiException e) {
+						logger.info("Problems with user with id "+userId+". User is skipped.");
+					}
+				}
+			case SEEDS_AND_FRIENDS:
+				usersToBeFiltered = new ArrayList<Long>();
+				for (Long userId : seedUsers) {
+					try {
+						usersToBeFiltered.add(userId);
+						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
+					} catch (TwitterApiException e) {
+						logger.info("Problems with user with id "+userId+". User is skipped.");
+					}
+				}
+			case SEEDS_AND_FOLLOWERS_AND_FRIENDS:
+				usersToBeFiltered = new ArrayList<Long>();
+				for (Long userId : seedUsers) {
+					try {
+						usersToBeFiltered.add(userId);
+						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));
+						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
+					} catch (TwitterApiException e) {
+						logger.info("Problems with user with id "+userId+". User is skipped.");
+					}
+				}
+			
 		}
+
+		//remove duplicates
+		usersToBeFiltered = new ArrayList<Long>(new HashSet<Long>(usersToBeFiltered));		
 	}
 	
 	public void createGraph() {

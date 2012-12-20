@@ -19,17 +19,19 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 	
 	private static final Logger logger = Logger.getLogger(DescriptionDictionaryFilterManager.class);
 
-	DescriptionDictionaryFilter filter;
+	
 	TwitterFacade twitterFacade;
 	GraphFacade graphFacade;	
 	List<Long> seedUsers;
 	List<Long> usersToFilter;
 	ExpansionDirection expansionDirection;
 	Map<Long, String> users2descriptions;
+	List<String> dictionary;
 		
 	@Override
 	public List<Long> filter() {
-		solveDependencies();		
+		solveDependencies();	
+		DescriptionDictionaryFilter filter = new DescriptionDictionaryFilter(dictionary,users2descriptions);
 		return filter.filter();
 	}
 	
@@ -41,7 +43,6 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 	private void solveDependencies() {		
 		createUserToFilterList(); //this expands the user set if needed
 		createUsers2descriptions(); //this gets the descriptions from twitterFacade
-		filter.setDescriptions(users2descriptions);
 	}
 	
 	private void createUserToFilterList() {
