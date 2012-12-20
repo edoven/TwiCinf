@@ -158,9 +158,9 @@ public class NodeDegreeFilterManager implements FilterManager{
 	public void createGraph() {
 		graphFacade.addUsers(usersToBeFiltered);
 		for (Long userId : usersToBeFiltered) {
-			List followersIds = twitterFacade.getFollowers(userId);
+			List<Long> followersIds = twitterFacade.getFollowers(userId);
 			graphFacade.addFollowers(userId , followersIds);
-			List friendsIds = twitterFacade.getFriends(userId);
+			List<Long> friendsIds = twitterFacade.getFriends(userId);
 			graphFacade.addFriends(userId , friendsIds);
 		}
 	}
