@@ -27,8 +27,7 @@ public class DescriptionDictionaryFilterTEST {
 		dictionary.add("chef");
 		dictionary.add("ristorante");
 		
-		DescriptionDictionaryFilter filter = new DescriptionDictionaryFilter(dictionary);
-		filter.setDescriptions(user2description);
+		DescriptionDictionaryFilter filter = new DescriptionDictionaryFilter(dictionary,user2description);
 		List<Long> goodUsers = filter.filter();
 		
 		assertEquals(goodUsers.size(), 3);
