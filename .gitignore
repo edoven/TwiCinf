@@ -32,6 +32,8 @@
 ######################
 target/**
 bin/**
+#maven surefire test reports
+test-output/**
 
 # TODO: move next sections to global .gitignore #
 
