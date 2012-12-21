@@ -12,6 +12,7 @@ import it.cybion.influencers.filtering.filters.topology.NodeDegreeFilter;
 import it.cybion.influencers.filtering.managers.ExpansionDirection;
 import it.cybion.influencers.filtering.managers.FilterManager;
 import it.cybion.influencers.graph.GraphFacade;
+import it.cybion.influencers.graph.UserVertexNotPresent;
 import it.cybion.influencers.twitter.TwitterFacade;
 import it.cybion.influencers.twitter.web.twitter4j.TwitterApiException;
 
@@ -152,8 +153,8 @@ public class NodeDegreeFilterManager implements FilterManager{
 	}
 	
 	public void createGraph() {
-		graphFacade.addUsers(usersToBeFiltered);
-		for (Long userId : usersToBeFiltered) {			
+		graphFacade.addUsers(seedUsers);
+		for (Long userId : seedUsers) {			
 			try {
 				List<Long> followersIds = twitterFacade.getFollowers(userId);
 				graphFacade.addFollowers(userId , followersIds);
@@ -161,6 +162,10 @@ public class NodeDegreeFilterManager implements FilterManager{
 				graphFacade.addFriends(userId , friendsIds);
 			} catch (TwitterApiException e) {
 				logger.info("Problem with user with id "+userId+". User skipped.");
+			} catch (UserVertexNotPresent e) {
+				logger.info("Problem with user with id "+userId+". " +
+							"User should have been added to the graph but the user is not present.");
+				System.exit(0);
 			}
 			
 		}
@@ -171,20 +176,20 @@ public class NodeDegreeFilterManager implements FilterManager{
 		
 		switch (degreeDirection) {
 			case IN:
-											 			// fromThisGroup   toThisGroup
-				graphFacade.calculateDirectedFollowsDegree(usersToBeFiltered, seedUsers);
+											 // source   		  destination
+				graphFacade.calculateInDegree(usersToBeFiltered, seedUsers);
 				for (Long userId : usersToBeFiltered)
 					node2degree.put(userId, graphFacade.getInDegree(userId));
 			case OUT:
-				 										// fromThisGroup   toThisGroup
-				graphFacade.calculateDirectedFollowsDegree(seedUsers,        usersToBeFiltered);
+				 							  // fromThisGroup   toThisGroup
+				graphFacade.calculateOutDegree(seedUsers,        usersToBeFiltered);
 				for (Long userId : usersToBeFiltered)
 					node2degree.put(userId, graphFacade.getOutDegree(userId));
 			case TOTAL:
 				List<Long> totUsers = new ArrayList<Long>();
 				totUsers.addAll(seedUsers);
 				totUsers.addAll(usersToBeFiltered);
-				graphFacade.calculateTotalFollowsDegree(totUsers);
+				graphFacade.calculateTotalDegree(totUsers);
 				for (Long userId : usersToBeFiltered)
 					node2degree.put(userId, graphFacade.getTotalDegree(userId));
 		}

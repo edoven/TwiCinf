@@ -1,10 +1,10 @@
 package it.cybion.influencers.graph;
 
+
 import java.util.Iterator;
 import java.util.List;
 
-import org.neo4j.index.impl.lucene.LowerCaseKeywordAnalyzer;
-
+import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Index;
 import com.tinkerpop.blueprints.Parameter;
 import com.tinkerpop.blueprints.Vertex;
@@ -18,25 +18,32 @@ public class Neo4jGraphFacade implements GraphFacade {
 	
 	public Neo4jGraphFacade(String dirPath) {
 		graph = new Neo4jGraph(dirPath);
-		vertexIndex =  graph.createIndex("vertexIndex", Vertex.class, new Parameter<String, String>("analyzer", LowerCaseKeywordAnalyzer.class.getName()));
+		vertexIndex =  graph.createIndex("vertexIndex", 
+										 Vertex.class, 
+										 new Parameter<String, String>(	
+												 "type", 
+												 "exact"));
 	}
 
 	@Override
 	public void addUsers(List<Long> usersIds) {
-		for (Long userId : usersIds) {
-			if (getUserVertex(userId)==null) {
-				Vertex vertex = graph.addVertex(null);
-				vertex.setProperty("userId", userId);
-				vertex.setProperty("type", "user");
-			}
-		}
+		for (Long userId : usersIds)
+			addUser(userId);
+	}
+	
+	public void addUser(Long userId) {
+		if (getUserVertex(userId) == null) {
+			Vertex vertex = graph.addVertex(null);
+			vertex.setProperty("userId", userId);
+			vertex.setProperty("type", "user");
+		}		
 	}
 	
 	
-	private Vertex getUserVertex(long userId) {
+	public Vertex getUserVertex(long userId) {
 		Iterable<Vertex> results = vertexIndex.get("userId",userId);
 		Iterator<Vertex> iterator = results.iterator();
-		if (iterator.hasNext()==false)
+		if (iterator.hasNext() == false)
 			return null;
 		else
 			return iterator.next();
@@ -74,16 +81,6 @@ public class Neo4jGraphFacade implements GraphFacade {
 		}
 	}
 
-	@Override
-	public void calculateDirectedFollowsDegree(List<Long> fromUsers, List<Long> toUsers) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void calculateTotalFollowsDegree(List<Long> totUsers) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public int getInDegree(Long userId) {
@@ -101,6 +98,94 @@ public class Neo4jGraphFacade implements GraphFacade {
 	public int getTotalDegree(Long userId) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void calculateInDegree(List<Long> usersToBeCalculated, List<Long> sourceUsers) throws UserVertexNotPresent {
+		for (Long userId : usersToBeCalculated) {
+			int inDegree = 0;
+			Vertex userVertex = getUserVertex(userId);
+			if (userVertex == null) {
+				throw new UserVertexNotPresent("Trying to get user with id "+userId+" but user vertex is not in the graph.");
+			}
+			Iterator<Vertex> iterator = userVertex.getVertices(Direction.IN, "follows").iterator();
+			while (iterator.hasNext()) {
+				Vertex followerVertex = iterator.next();
+				Long followerId = new Long((Integer)followerVertex.getProperty("userId"));
+				if (sourceUsers.contains( followerId ))
+					inDegree++;
+			}
+			userVertex.setProperty("inDegree", inDegree);
+		}
+	}
+
+	@Override
+	public void calculateOutDegree(List<Long> usersToBeCalculated, List<Long> destinationUsers) throws UserVertexNotPresent {
+		for (Long userId : usersToBeCalculated) {
+			int outDegree = 0;
+			Vertex userVertex = getUserVertex(userId);
+			if (userVertex == null) {
+				throw new UserVertexNotPresent("Trying to get user with id "+userId+" but user vertex is not in the graph.");
+			}
+			Iterator<Vertex> iterator = userVertex.getVertices(Direction.OUT, "follows").iterator();
+			while (iterator.hasNext()) {
+				Vertex friendVertex = iterator.next();
+				Long friendId = new Long((Integer)friendVertex.getProperty("userId"));
+				if (destinationUsers.contains( friendId ))
+					outDegree++;
+			}
+			userVertex.setProperty("outDegree", outDegree);
+		}
+	}
+
+	@Override
+	public void calculateTotalDegree(List<Long> usersToBeCalculated) throws UserVertexNotPresent {
+		for (Long userId : usersToBeCalculated) {
+			int outDegree = 0;
+			int inDegree = 0;
+			Vertex userVertex = getUserVertex(userId);
+			if (userVertex == null) {
+				throw new UserVertexNotPresent("Trying to get user with id "+userId+" but user vertex is not in the graph.");
+			}
+			Iterator<Vertex> iterator = userVertex.getVertices(Direction.OUT, "follows").iterator();
+			while (iterator.hasNext()) {
+				iterator.next();
+				outDegree++;
+			}
+			iterator = userVertex.getVertices(Direction.IN, "follows").iterator();
+			while (iterator.hasNext()) {
+				iterator.next();
+				inDegree++;
+			}
+			userVertex.setProperty("totalDegree", inDegree+outDegree);
+		}
+	}
+
+	@Override
+	public void calculateTotalDegree(List<Long> usersToBeCalculated,List<Long> wrtUsers) throws UserVertexNotPresent {
+		for (Long userId : usersToBeCalculated) {
+			int outDegree = 0;
+			int inDegree = 0;
+			Vertex userVertex = getUserVertex(userId);
+			if (userVertex == null) {
+				throw new UserVertexNotPresent("Trying to get user with id "+userId+" but user vertex is not in the graph.");
+			}
+			Iterator<Vertex> iterator = userVertex.getVertices(Direction.OUT, "follows").iterator();
+			while (iterator.hasNext()) {
+				Vertex followerVertex = iterator.next();
+				Long followerId = new Long((Integer)followerVertex.getProperty("userId"));
+				if (wrtUsers.contains( followerId ))
+					outDegree++;
+			}
+			iterator = userVertex.getVertices(Direction.IN, "follows").iterator();
+			while (iterator.hasNext()) {
+				Vertex friendVertex = iterator.next();
+				Long friendId = new Long((Integer)friendVertex.getProperty("userId"));
+				if (wrtUsers.contains( friendId ))
+					inDegree++;
+			}
+			userVertex.setProperty("totalDegree", inDegree+outDegree);
+		}
 	}
 
 

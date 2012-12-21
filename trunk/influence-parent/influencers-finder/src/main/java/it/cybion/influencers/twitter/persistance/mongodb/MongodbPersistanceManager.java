@@ -58,13 +58,14 @@ public class MongodbPersistanceManager implements PersistanceFacade {
 	}
 
 	@Override
+	//@SuppressWarnings("unchecked")
 	public List<Long> getFollowers(Long userId) throws  UserNotPresentException, UserNotFollowersEnrichedException {
 		BasicDBObject keys = new BasicDBObject();
 		keys.put("id", userId);
 		DBCursor cursor = collection.find(keys);
 		if (cursor.hasNext()) {	
 			DBObject json = cursor.next();
-			if (json.containsField("followers")) {
+			if (json.containsField("followers")) {				
 				return (List<Long>) json.get("followers");
 			}
 			else
