@@ -31,22 +31,35 @@ public class Neo4jGraphFacade implements GraphFacade {
 			addUser(userId);
 	}
 	
+	
 	public void addUser(Long userId) {
 		if (getUserVertex(userId) == null) {
 			Vertex vertex = graph.addVertex(null);
 			vertex.setProperty("userId", userId);
 			vertex.setProperty("type", "user");
+			vertexIndex.put("userId", userId, vertex); //don't forget this ;)
 		}		
 	}
 	
 	
-	public Vertex getUserVertex(long userId) {
+	public Vertex getUserVertex(Long userId) {
 		Iterable<Vertex> results = vertexIndex.get("userId",userId);
 		Iterator<Vertex> iterator = results.iterator();
-		if (iterator.hasNext() == false)
-			return null;
+		if (iterator.hasNext())
+			return iterator.next();			
 		else
-			return iterator.next();
+			return null;
+	}
+	
+	public int getVerticesCount() {
+		int count = 0;
+		Iterable<Vertex> results = graph.getVertices();		
+		Iterator<Vertex> iterator = results.iterator();
+		while (iterator.hasNext()) {
+			count++;
+			iterator.next();
+		}
+		return count;
 	}
 
 	@Override

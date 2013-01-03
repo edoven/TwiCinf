@@ -20,31 +20,38 @@ public class Neo4jGraphFacadeTEST {
 	private static final Logger logger = Logger.getLogger(Neo4jGraphFacadeTEST.class);
 	
 	@Test
-	public void addUserTEST() throws IOException {
+	public void insertAndRetrieveTEST() throws IOException {
 		String graphDirPath = "src/test/resources/graphs/addUserTEST";
 		delete(new File(graphDirPath));
 		
 		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
 		
-		long userId = 1111;
+		Long userId = 1111l;
 		graphFacade.addUser(userId);
+		Assert.assertEquals(graphFacade.getVerticesCount() , 1);
+		
 		Vertex vertex = graphFacade.getUserVertex(userId);
-		Assert.assertFalse( vertex == null );
+		Assert.assertNotNull(vertex);
 		
 		delete(new File(graphDirPath));
 	}
+
 	
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void addUsersTEST() throws IOException {
 		String graphDirPath = "src/test/resources/graphs/addUsersTESTgraph";
 		delete(new File(graphDirPath));
+		
 		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
+		
 		List<Long> usersIds = new ArrayList<Long>();
 		usersIds.add(111l);
 		usersIds.add(222l);
 		usersIds.add(333l);
 		usersIds.add(4l);
+		
 		graphFacade.addUsers(usersIds);
+		
 		for (Long userId : usersIds) {
 			Vertex vertex = graphFacade.getUserVertex(userId);
 			Assert.assertEquals( userId , vertex.getProperty("userId") );
@@ -52,7 +59,7 @@ public class Neo4jGraphFacadeTEST {
 		delete(new File(graphDirPath));
 	}
 	
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void addFollowersTEST() throws IOException, UserVertexNotPresent {
 		String graphDirPath = "src/test/resources/graphs/addFollowersTEST";
 		delete(new File(graphDirPath));
@@ -69,11 +76,14 @@ public class Neo4jGraphFacadeTEST {
 		followersIds.add(444l);
 		graphFacade.addFollowers(userId, followersIds);
 		
+		Assert.assertEquals(graphFacade.getVerticesCount(), (1+followersIds.size()) );
+		
 		Vertex userVertex = graphFacade.getUserVertex(userId);
-		Iterator<Vertex> followersIterator = userVertex.getVertices(Direction.IN, "follows").iterator();
+		Iterator<Vertex> followersIterator = userVertex.getVertices(Direction.OUT, "follows").iterator();
 		while (followersIterator.hasNext()) {
 			Vertex followerVertex = followersIterator.next();
-			Long followerId = new Long( (Integer) followerVertex.getProperty("userId"));
+			Long followerId = (Long) followerVertex.getProperty("userId");
+			logger.info(followerId);
 			Assert.assertTrue( followersIds.contains(followerId) );
 		}
 		

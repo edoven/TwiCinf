@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface GraphFacade {
 
-	void addUsers(List<Long> usersToBeFiltered);
+	void addUsers(List<Long> users);
 	void addFollowers(Long userId, List<Long> followersIds) throws UserVertexNotPresent;
 	void addFriends(Long userId, List<Long> friendsIds) throws UserVertexNotPresent;
 
