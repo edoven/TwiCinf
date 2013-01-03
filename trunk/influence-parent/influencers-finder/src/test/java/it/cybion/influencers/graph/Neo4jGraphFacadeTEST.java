@@ -91,7 +91,36 @@ public class Neo4jGraphFacadeTEST {
 	}
 	
 	
-	
+	@Test(enabled=true)
+	public void addFriendsTEST() throws IOException, UserVertexNotPresent {
+		String graphDirPath = "src/test/resources/graphs/addFriendsTEST";
+		delete(new File(graphDirPath));
+		
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
+		
+		long userId = 111;	
+		graphFacade.addUser(userId);
+		Assert.assertTrue( graphFacade.getUserVertex(userId) != null);
+		
+		List<Long> friendsIds = new ArrayList<Long>();
+		friendsIds.add(222l);	
+		friendsIds.add(333l);
+		friendsIds.add(444l);
+		graphFacade.addFriends(userId, friendsIds);
+		
+		Assert.assertEquals(graphFacade.getVerticesCount(), (1+friendsIds.size()) );
+		
+		Vertex userVertex = graphFacade.getUserVertex(userId);
+		Iterator<Vertex> friendsIterator = userVertex.getVertices(Direction.IN, "follows").iterator();
+		while (friendsIterator.hasNext()) {
+			Vertex friendVertex = friendsIterator.next();
+			Long friendId = (Long) friendVertex.getProperty("userId");
+			logger.info(friendId);
+			Assert.assertTrue( friendsIds.contains(friendId) );
+		}
+		
+		delete(new File(graphDirPath));
+	}
 	
 		
 		

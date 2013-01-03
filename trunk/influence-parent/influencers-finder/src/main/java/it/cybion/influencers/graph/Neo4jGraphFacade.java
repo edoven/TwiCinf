@@ -4,6 +4,8 @@ package it.cybion.influencers.graph;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Index;
 import com.tinkerpop.blueprints.Parameter;
@@ -12,6 +14,8 @@ import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 
 
 public class Neo4jGraphFacade implements GraphFacade {
+	
+	private static final Logger logger = Logger.getLogger(Neo4jGraphFacade.class);
 	
 	private Neo4jGraph graph;
 	private Index<Vertex> vertexIndex;
@@ -71,7 +75,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 			Vertex followerVertex = getUserVertex(followerId);
 			if (followerVertex == null) {
 				followerVertex = graph.addVertex(null);
-				followerVertex.setProperty("userId", userId);
+				followerVertex.setProperty("userId", followerId);
 				followerVertex.setProperty("type", "user");
 			}
 			graph.addEdge(null, followerVertex, userVertex, "follows");	
@@ -87,7 +91,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 			Vertex friendVertex = getUserVertex(friendId);
 			if (friendVertex == null) {
 				friendVertex = graph.addVertex(null);
-				friendVertex.setProperty("userId", userId);
+				friendVertex.setProperty("userId", friendVertex);
 				friendVertex.setProperty("type", "user");
 			}
 			graph.addEdge(null, userVertex, friendVertex, "follows");	
@@ -96,21 +100,35 @@ public class Neo4jGraphFacade implements GraphFacade {
 
 
 	@Override
-	public int getInDegree(Long userId) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getInDegree(Long userId) throws UserVertexNotPresent {
+		Vertex userVertex = getUserVertex(userId);
+		if (userVertex == null)
+			throw new UserVertexNotPresent("Trying to add followers for user with id "+userId+" but user vertex is not in the graph.");
+		Object inDegree = userVertex.getProperty("inDegree");
+		if (inDegree==null) {
+			//TODO: do something
+		}
+		return (Integer) inDegree;
 	}
 
 	@Override
 	public int getOutDegree(Long userId) {
-		// TODO Auto-generated method stub
-		return 0;
+		Vertex userVertex = getUserVertex(userId);
+		Object outDegree = userVertex.getProperty("outDegree");
+		if (outDegree==null) {
+			//TODO: do something
+		}
+		return (Integer) outDegree;
 	}
 
 	@Override
 	public int getTotalDegree(Long userId) {
-		// TODO Auto-generated method stub
-		return 0;
+		Vertex userVertex = getUserVertex(userId);
+		Object totalDegree = userVertex.getProperty("totalDegree");
+		if (totalDegree==null) {
+			//TODO: do something
+		}
+		return (Integer) totalDegree;
 	}
 
 	@Override
@@ -124,11 +142,13 @@ public class Neo4jGraphFacade implements GraphFacade {
 			Iterator<Vertex> iterator = userVertex.getVertices(Direction.IN, "follows").iterator();
 			while (iterator.hasNext()) {
 				Vertex followerVertex = iterator.next();
-				Long followerId = new Long((Integer)followerVertex.getProperty("userId"));
+				Long followerId = (Long)followerVertex.getProperty("userId");
+				logger.info("userId="+userId+" - followerId="+followerId);
 				if (sourceUsers.contains( followerId ))
 					inDegree++;
 			}
 			userVertex.setProperty("inDegree", inDegree);
+			logger.info("Set indegree="+inDegree+" for user with id="+userId);
 		}
 	}
 
@@ -144,10 +164,12 @@ public class Neo4jGraphFacade implements GraphFacade {
 			while (iterator.hasNext()) {
 				Vertex friendVertex = iterator.next();
 				Long friendId = new Long((Integer)friendVertex.getProperty("userId"));
+				logger.info("userId="+userId+" - friendId="+friendId);
 				if (destinationUsers.contains( friendId ))
 					outDegree++;
 			}
 			userVertex.setProperty("outDegree", outDegree);
+			logger.info("Set outDegree="+outDegree+" for user with id="+userId);
 		}
 	}
 

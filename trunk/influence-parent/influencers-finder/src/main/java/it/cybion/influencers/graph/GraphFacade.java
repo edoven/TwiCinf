@@ -9,7 +9,7 @@ public interface GraphFacade {
 	void addFollowers(Long userId, List<Long> followersIds) throws UserVertexNotPresent;
 	void addFriends(Long userId, List<Long> friendsIds) throws UserVertexNotPresent;
 
-	int getInDegree(Long userId);
+	int getInDegree(Long userId) throws UserVertexNotPresent;
 	int getOutDegree(Long userId);	
 	int getTotalDegree(Long userId);
 	
