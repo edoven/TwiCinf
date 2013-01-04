@@ -20,7 +20,7 @@ public class Neo4jGraphFacadeTEST {
 	private static final Logger logger = Logger.getLogger(Neo4jGraphFacadeTEST.class);
 	
 	@Test
-	public void insertAndRetrieveTEST() throws IOException {
+	public void insertAndRetrieveTEST() throws IOException, UserVertexNotPresent {
 		String graphDirPath = "src/test/resources/graphs/addUserTEST";
 		delete(new File(graphDirPath));
 		
@@ -38,7 +38,7 @@ public class Neo4jGraphFacadeTEST {
 
 	
 	@Test(enabled=true)
-	public void addUsersTEST() throws IOException {
+	public void addUsersTEST() throws IOException, UserVertexNotPresent {
 		String graphDirPath = "src/test/resources/graphs/addUsersTESTgraph";
 		delete(new File(graphDirPath));
 		

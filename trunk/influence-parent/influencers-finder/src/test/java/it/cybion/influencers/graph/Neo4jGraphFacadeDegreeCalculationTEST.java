@@ -15,7 +15,7 @@ public class Neo4jGraphFacadeDegreeCalculationTEST {
 	private static final Logger logger = Logger.getLogger(Neo4jGraphFacadeDegreeCalculationTEST.class);
 	
 	@Test (enabled=true)
-	public void calculateInDegreeTEST() throws IOException, UserVertexNotPresent {
+	public void calculateInDegreeTEST() throws IOException, UserVertexNotPresent, InDegreeNotSetException {
 		String graphDirPath = "src/test/resources/graphs/calculateInDegreeTEST";
 		delete(new File(graphDirPath));
 		
@@ -44,7 +44,7 @@ public class Neo4jGraphFacadeDegreeCalculationTEST {
 	
 	
 	@Test (enabled=true)
-	public void calculateOutDegreeTEST() throws IOException, UserVertexNotPresent {
+	public void calculateOutDegreeTEST() throws IOException, UserVertexNotPresent, OutDegreeNotSetException {
 		String graphDirPath = "src/test/resources/graphs/calculateOutDegreeTEST";
 		delete(new File(graphDirPath));
 		
@@ -71,12 +71,10 @@ public class Neo4jGraphFacadeDegreeCalculationTEST {
 			Assert.assertEquals(outDegree, 1);
 		}
 		
-		int outDegree = graphFacade.getOutDegree(userId);
-		Assert.assertEquals(outDegree, 0);
-
-		
 		delete(new File(graphDirPath));
 	}
+	
+	
 	
 	
 	public static void delete(File file) throws IOException{
