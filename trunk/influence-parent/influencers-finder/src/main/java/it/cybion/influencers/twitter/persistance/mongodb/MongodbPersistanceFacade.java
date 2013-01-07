@@ -18,11 +18,11 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 
-public class MongodbPersistanceManager implements PersistanceFacade {
+public class MongodbPersistanceFacade implements PersistanceFacade {
 
 	private DBCollection collection;
 
-	public MongodbPersistanceManager(String host, String database, String collection) throws UnknownHostException {
+	public MongodbPersistanceFacade(String host, String database, String collection) throws UnknownHostException {
 		super();
 		MongoClient mongoClient = new MongoClient( host );
 		DB db = mongoClient.getDB( database );
@@ -95,7 +95,7 @@ public class MongodbPersistanceManager implements PersistanceFacade {
 	
 	/*
 	 * 
-	 * If a user with the same id is already present, the new fields (if existing)
+	 * If a user with the same id (beware: id!=_id) is already present, the new fields (if existing)
 	 * are added.
 	 */
 	@Override

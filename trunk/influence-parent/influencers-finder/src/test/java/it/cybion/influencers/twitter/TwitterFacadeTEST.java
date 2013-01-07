@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
-import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceManager;
+import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.web.TwitterWebFacade;
 import it.cybion.influencers.twitter.web.twitter4j.Token;
 import it.cybion.influencers.twitter.web.twitter4j.Twitter4jFacade;
@@ -40,11 +40,11 @@ public class TwitterFacadeTEST {
 		userTokens.add(userToken6);
 		
 		TwitterWebFacade twitterWebFacade = new Twitter4jFacade(applicationToken, userTokens, 60);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
+		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb", "testcollection");
 		twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 	}
 
-	@Test
+	@Test(enabled=false)
 	public void getUserTest() throws TwitterApiException {
 		String user = twitterFacade.getDescription(14230524l);
 		logger.info("BEGIN_"+user+"_END");
@@ -52,10 +52,25 @@ public class TwitterFacadeTEST {
 		logger.info("BEGIN_"+user+"_END");
 	}
 	
-	@Test
-	public void getFriends() throws TwitterApiException, YourCodeReallySucksException {
-		List<Long> friendIds = twitterFacade.getFriends(887469007l);
+	
+	
+	@Test(enabled=true)
+	public void getFriends() throws TwitterApiException {
+		List<Long> friendIds = twitterFacade.getFriends(426724668l);
 		logger.info(friendIds.size());
+		
+		friendIds = twitterFacade.getFriends(887469007l);
+		logger.info("Friends number = "+friendIds.size());
 	}
+	
+	@Test(enabled=true)
+	public void getFollowers() throws TwitterApiException {
+		List<Long> followersIds = twitterFacade.getFollowers(426724668l);
+		logger.info("Followers number = "+followersIds.size());
+		
+		followersIds = twitterFacade.getFollowers(887469007l);
+		logger.info("Followers number = "+followersIds.size());
+	}
+
 
 }

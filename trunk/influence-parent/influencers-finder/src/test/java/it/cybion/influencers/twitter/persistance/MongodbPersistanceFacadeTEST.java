@@ -1,6 +1,6 @@
 package it.cybion.influencers.twitter.persistance;
 
-import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceManager;
+import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ import com.mongodb.util.JSON;
 
 public class MongodbPersistanceFacadeTEST {
 	
-	private MongodbPersistanceManager persistanceManager;
+	private MongodbPersistanceFacade persistanceManager;
 	
 	@BeforeClass
 	public void init() throws UnknownHostException {
-		persistanceManager = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
+		persistanceManager = new MongodbPersistanceFacade("localhost", "testdb", "testcollection");
 	}
 	
 	
@@ -101,6 +101,40 @@ public class MongodbPersistanceFacadeTEST {
 		persistanceManager.removeUser(friendOneId);
 		persistanceManager.removeUser(friendTwoId);
 		persistanceManager.removeUser(friendThreeId);		
+	}
+	
+	
+	@Test
+	public void addFollowersTEST() throws UserNotPresentException, UnknownHostException, UserNotFollowersEnrichedException {
+		//MongodbPersistanceManager persistanceManager = new MongodbPersistanceManager("localhost", "testdb", "testcollection");
+		//user creation
+		DBObject user = new BasicDBObject();
+		Long userId = 1111l;
+		user.put("id", userId);
+		//friends ids creation
+		List<Long> followersIds = new ArrayList<Long>();
+		Long followerOneId = 2222l; followersIds.add(followerOneId);
+		Long followerTwoId = 2222l; followersIds.add(followerTwoId);
+		Long followerThreeId = 2222l; followersIds.add(followerThreeId);
+		//user insertion
+		persistanceManager.putUser(user.toString());
+		//friends insertion
+		persistanceManager.putFollowers(userId, followersIds);
+		
+		//getting friends
+		List<Long> retrievedFollowersIds = persistanceManager.getFollowers(userId);
+		assertEquals( retrievedFollowersIds.size() , followersIds.size() );
+		
+		//getting user (it should have been enriched)
+		String retrievedUserJson = persistanceManager.getUser(userId);
+		DBObject retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
+		retrievedFollowersIds = (List<Long>) retrievedUser.get("followers");
+		assertEquals( retrievedFollowersIds.size() , followersIds.size() );
+		
+		persistanceManager.removeUser(userId);
+		persistanceManager.removeUser(followerOneId);
+		persistanceManager.removeUser(followerTwoId);
+		persistanceManager.removeUser(followerThreeId);		
 	}
 	
 	@Test

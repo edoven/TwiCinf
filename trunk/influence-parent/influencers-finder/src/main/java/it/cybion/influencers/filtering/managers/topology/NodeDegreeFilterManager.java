@@ -12,6 +12,8 @@ import it.cybion.influencers.filtering.filters.topology.NodeDegreeFilter;
 import it.cybion.influencers.filtering.managers.ExpansionDirection;
 import it.cybion.influencers.filtering.managers.FilterManager;
 import it.cybion.influencers.graph.GraphFacade;
+import it.cybion.influencers.graph.InDegreeNotSetException;
+import it.cybion.influencers.graph.OutDegreeNotSetException;
 import it.cybion.influencers.graph.UserVertexNotPresent;
 import it.cybion.influencers.twitter.TwitterFacade;
 import it.cybion.influencers.twitter.web.twitter4j.TwitterApiException;
@@ -71,10 +73,21 @@ public class NodeDegreeFilterManager implements FilterManager{
 	}
 	
 	private void solveDependencies() {		
-		absoluteThreshold = (int) (percentageThreshold * seedUsers.size());
+		absoluteThreshold = (int) Math.round((percentageThreshold * seedUsers.size()));
 		calculateUsersToBeFiltered();
 		createGraph();
-		calculateNode2degree();	
+		try {
+			calculateNode2degree();
+		} catch (UserVertexNotPresent e) {
+			e.printStackTrace();
+			System.exit(0);
+		} catch (InDegreeNotSetException e) {
+			e.printStackTrace();
+			System.exit(0);
+		} catch (OutDegreeNotSetException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}	
 	}
 	
 	
@@ -171,7 +184,7 @@ public class NodeDegreeFilterManager implements FilterManager{
 		}
 	}
 	
-	private void calculateNode2degree() {
+	private void calculateNode2degree() throws UserVertexNotPresent, InDegreeNotSetException, OutDegreeNotSetException {
 		node2degree = new HashMap<Long, Integer>();
 		
 		switch (degreeDirection) {
@@ -186,12 +199,17 @@ public class NodeDegreeFilterManager implements FilterManager{
 				for (Long userId : usersToBeFiltered)
 					node2degree.put(userId, graphFacade.getOutDegree(userId));
 			case TOTAL:
-				List<Long> totUsers = new ArrayList<Long>();
-				totUsers.addAll(seedUsers);
-				totUsers.addAll(usersToBeFiltered);
-				graphFacade.calculateTotalDegree(totUsers);
-				for (Long userId : usersToBeFiltered)
-					node2degree.put(userId, graphFacade.getTotalDegree(userId));
+				/*
+				 * TODO: implement!
+				 */
+//				List<Long> totUsers = new ArrayList<Long>();
+//				totUsers.addAll(seedUsers);
+//				totUsers.addAll(usersToBeFiltered);
+//				graphFacade.calculateTotalDegree(totUsers);
+//				for (Long userId : usersToBeFiltered)
+//					node2degree.put(userId, graphFacade.getTotalDegree(userId));
+				return;				
+
 		}
 	}
 	

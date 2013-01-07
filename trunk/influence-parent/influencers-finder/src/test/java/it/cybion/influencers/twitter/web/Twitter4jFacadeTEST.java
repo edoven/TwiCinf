@@ -40,38 +40,47 @@ public class Twitter4jFacadeTEST {
 		twitter4jFacade = new Twitter4jFacade(applicationToken, userTokens, 60);
 	}
 	
-	@Test
+	@Test(enabled=true)
 	public void getLessThan5000FollowersIdsTEST() throws TwitterApiException {
-		List<Long> followerIds = twitter4jFacade.getFollowersIds("gifo77");
+		List<Long> followerIds = twitter4jFacade.getFollowersIds(58477550);  //screenName=gifo77
+		logger.info("#############################");
 		logger.info(followerIds);
 		logger.info(followerIds.size());
-		assertTrue(followerIds.size()>5);
+		logger.info("#############################");
+		assertTrue(followerIds.size()<5000);
 	}
 	
-	@Test
+	@Test(enabled=true)
+	public void getMoreThan5000FollowersIdsTEST() throws TwitterApiException {
+		List<Long> followerIds = twitter4jFacade.getFollowersIds(444712353); //screenName=ChiaraMaci
+		logger.info("#############################");
+		logger.info(followerIds);
+		logger.info(followerIds.size());
+		logger.info("#############################");
+		assertTrue(followerIds.size()>5000);
+	}
+	
+	@Test(enabled=true)
 	public void getLessThan5000FriendsIdsTEST() throws TwitterApiException {
-		List<Long> friendIds = twitter4jFacade.getFriendsIds("gifo77");
+		List<Long> friendIds = twitter4jFacade.getFriendsIds(58477550); //screenName=gifo77
+		logger.info("#############################");
 		logger.info(friendIds);
 		logger.info(friendIds.size());
-		assertTrue(friendIds.size()>40);
+		logger.info("#############################");
+		assertTrue(friendIds.size()<5000);
 	}
 	
-	@Test
-	public void getMoreThan5000FollowersIdsTEST() throws TwitterApiException {
-		List<Long> followerIds = twitter4jFacade.getFollowersIds("ChiaraMaci");
+	
+	
+	@Test(enabled=true)
+	public void getMoreThan5000FriendsIdsTEST() throws TwitterApiException {
+		List<Long> followerIds = twitter4jFacade.getFriendsIds(14831419); //screenName=mattuk
+		logger.info("#############################");
 		logger.info(followerIds);
 		logger.info(followerIds.size());
+		logger.info("#############################");
 		assertTrue(followerIds.size()>5000);
 	}
-	
-	@Test
-	public void getMoreThan5000FriendssIdsTEST() throws TwitterApiException {
-		List<Long> followerIds = twitter4jFacade.getFriendsIds("mattuk");
-		logger.info(followerIds);
-		logger.info(followerIds.size());
-		assertTrue(followerIds.size()>5000);
-	}
-	
 	
 	
 
