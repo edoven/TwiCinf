@@ -1,4 +1,4 @@
-package it.cybion.influencers.twitter.web;
+package it.cybion.influencers.twitter.web.twitter4j;
 
 import static org.testng.AssertJUnit.assertTrue;
 import it.cybion.influencers.twitter.web.twitter4j.Token;
@@ -12,6 +12,16 @@ import org.apache.log4j.Logger;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+
+
+/*
+ * 
+ * TODO:
+ * -test the case when all tokens have reached the limit
+ * 
+ */
+
 
 public class Twitter4jFacadeTEST {
 	
@@ -80,6 +90,16 @@ public class Twitter4jFacadeTEST {
 		logger.info(followerIds.size());
 		logger.info("#############################");
 		assertTrue(followerIds.size()>5000);
+	}
+	
+	@Test
+	public void getUserJsonTEST() throws TwitterApiException {
+		String user = twitter4jFacade.getUserJson(813286l); //BarackObama
+		logger.info(user);
+		assertTrue(user.contains("Barack Obama"));
+		assertTrue(user.contains("followers"));
+		assertTrue(user.contains("friends"));
+		assertTrue(user.contains("This account is run by"));
 	}
 	
 	

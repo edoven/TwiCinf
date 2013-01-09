@@ -54,7 +54,7 @@ public class TwitterFacadeTEST {
 	
 	
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void getFriends() throws TwitterApiException {
 		List<Long> friendIds = twitterFacade.getFriends(426724668l);
 		logger.info(friendIds.size());
@@ -63,7 +63,7 @@ public class TwitterFacadeTEST {
 		logger.info("Friends number = "+friendIds.size());
 	}
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void getFollowers() throws TwitterApiException {
 		List<Long> followersIds = twitterFacade.getFollowers(426724668l);
 		logger.info("Followers number = "+followersIds.size());
@@ -71,6 +71,31 @@ public class TwitterFacadeTEST {
 		followersIds = twitterFacade.getFollowers(887469007l);
 		logger.info("Followers number = "+followersIds.size());
 	}
+	
+	
+	@Test(enabled=true)
+	public void testIfTheFollowersAreSavedInTheCache() throws TwitterApiException {
+		List<Long> followersIds = twitterFacade.getFollowers(426724668l);
+		logger.info("Followers number = "+followersIds.size());
+		
+		followersIds = twitterFacade.getFollowers(426724668l);
+		logger.info("Followers number = "+followersIds.size());
+		
+		followersIds = twitterFacade.getFollowers(426724668l);
+		logger.info("Followers number = "+followersIds.size());
+	}
 
+	
+	@Test(enabled=true)
+	public void testIfTheFriendsAreSavedInTheCache() throws TwitterApiException {
+		List<Long> friendIds = twitterFacade.getFriends(426724668l);
+		logger.info("Friends number = "+friendIds.size());
+		
+		friendIds = twitterFacade.getFriends(426724668l);
+		logger.info("Friends number = "+friendIds.size());
+		
+		friendIds = twitterFacade.getFriends(426724668l);
+		logger.info("Friends number = "+friendIds.size());
+	}
 
 }

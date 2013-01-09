@@ -33,5 +33,6 @@ public interface GraphFacade {
 //	 * the ones starting from wrtUsers to usersToBeCalculated.
 //	 */
 //	void calculateTotalDegree(List<Long> usersToBeCalculated, List<Long> wrtUsers) throws UserVertexNotPresent;
+	int getVerticesCount();
 
 }

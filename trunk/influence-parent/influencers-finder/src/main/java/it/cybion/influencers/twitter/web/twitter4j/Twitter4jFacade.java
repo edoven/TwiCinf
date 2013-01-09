@@ -44,7 +44,7 @@ public class Twitter4jFacade implements TwitterWebFacade{
 			else {
 				currentUserToken = usableUserTokens.get(0);
 				currentRequestHandler = new RequestHandler(consumerToken, currentUserToken);					
-				return currentRequestHandler;
+				return getUsableHandler();
 			}
 		}
 		logger.info("Current token limit = "+limit);
@@ -109,7 +109,7 @@ public class Twitter4jFacade implements TwitterWebFacade{
 //	}
 
 	public List<Long> getFollowersIds(long userId) throws TwitterApiException {
-		logger.info("Getting followers for user with id="+userId);
+		logger.info("Twitter4j - Getting followers for user with id="+userId);
 		RequestHandler requestHandler = null;
 		IDs idsContainer = null;
 		long cursor = -1;
@@ -178,7 +178,7 @@ public class Twitter4jFacade implements TwitterWebFacade{
 	
 	@Override
 	public List<Long> getFriendsIds(long userId) throws TwitterApiException {
-		logger.info("Getting friends for user with id="+userId);
+		logger.info("Twitter4j - Getting friends for user with id="+userId);
 		RequestHandler requestHandler = null;
 		IDs idsContainer = null;
 		long cursor = -1;

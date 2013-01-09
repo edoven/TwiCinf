@@ -46,17 +46,7 @@ public class NodeDegreeFilterManager implements FilterManager{
 		this.comparisonOption = comparisonOption;
 		this.percentageThreshold = percentageThreshold;
 	}
-
-	@Override
-	public List<Long> filter() {
-		solveDependencies();
-		NodeDegreeFilter filter = new NodeDegreeFilter(node2degree, 
-													   absoluteThreshold, 
-													   comparisonOption);
-		return filter.filter();
-		
-	}
-
+	
 	@Override
 	public void setTwitterFacade(TwitterFacade twitterFacade) {
 		this.twitterFacade = twitterFacade;	
@@ -70,14 +60,50 @@ public class NodeDegreeFilterManager implements FilterManager{
 	@Override
 	public void setSeedUsers(List<Long> seedUsers) {
 		this.seedUsers = seedUsers;	
+
 	}
 	
-	private void solveDependencies() {		
+	
+	
+	@Override
+	public List<Long> filter() {
+		solveDependencies();
+		NodeDegreeFilter filter = new NodeDegreeFilter(node2degree, 
+													   absoluteThreshold, 
+													   comparisonOption);
+		//return filter.filter();
+		return null;
+		
+	}
+	
+	private void solveDependencies() {	
+		logger.info("###### SOLVING DEPENDENCIES ######");
+		
+		logger.info("CALCULATING ABSOLUTE THRESHOLD_____");
 		absoluteThreshold = (int) Math.round((percentageThreshold * seedUsers.size()));
+		logger.info("seedUsers.size() = "+seedUsers.size());
+		logger.info("percentageThreshold = "+percentageThreshold);
+		logger.info("absoluteThreshold = "+absoluteThreshold);
+		
+				
+		logger.info("CALCULATING USERS TO BE FILTERED 1");
 		calculateUsersToBeFiltered();
+		logger.info("usersToBeFiltered.size()="+usersToBeFiltered.size());
+		logger.info("==================");
+		logger.info("UsersToBeFiltered:");
+		for (long userId : usersToBeFiltered)
+			logger.info(userId);
+		logger.info("==================");
+		
+		
+		
+		logger.info("CREATING GRAPH");
 		createGraph();
+		logger.info("vertices count = "+graphFacade.getVerticesCount());
+		
+		logger.info("CALCULATING node2degree");
 		try {
-			calculateNode2degree();
+			calculateNode2degree();			
 		} catch (UserVertexNotPresent e) {
 			e.printStackTrace();
 			System.exit(0);
@@ -88,34 +114,43 @@ public class NodeDegreeFilterManager implements FilterManager{
 			e.printStackTrace();
 			System.exit(0);
 		}	
+		
+		logger.info("node2degree.size()="+node2degree.size());
 	}
 	
 	
 	private void calculateUsersToBeFiltered() {
 		switch (expansionDirection) {
-			case SEEDS:
-				usersToBeFiltered = seedUsers;			
-			case FOLLOWERS:
-				usersToBeFiltered = new ArrayList<Long>();
-				for (Long userId : seedUsers) {
-					try {
-						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));
-					} catch (TwitterApiException e) {
-						logger.info("Problems with user with id "+userId+". User is skipped.");
-					}
-				}
-				usersToBeFiltered.removeAll(seedUsers);
-			case FRIENDS:
-				usersToBeFiltered = new ArrayList<Long>();
-				for (Long userId : seedUsers) {
-					try {
-						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
-					} catch (TwitterApiException e) {
-						logger.info("Problems with user with id "+userId+". User is skipped.");
-					}
-				}
-				usersToBeFiltered.removeAll(seedUsers);
+//			case SEEDS:
+//				logger.info("case SEEDS");
+//				usersToBeFiltered = seedUsers;	
+//				break;
+//			case FOLLOWERS:
+//				logger.info("case FOLLOWERS");
+//				usersToBeFiltered = new ArrayList<Long>();
+//				for (Long userId : seedUsers) {
+//					try {
+//						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));
+//					} catch (TwitterApiException e) {
+//						logger.info("Problems with user with id "+userId+". User is skipped.");
+//					}
+//				}
+//				usersToBeFiltered.removeAll(seedUsers);
+//				break;
+//			case FRIENDS:
+//				logger.info("case FRIENDS");
+//				usersToBeFiltered = new ArrayList<Long>();
+//				for (Long userId : seedUsers) {
+//					try {
+//						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
+//					} catch (TwitterApiException e) {
+//						logger.info("Problems with user with id "+userId+". User is skipped.");
+//					}
+//				}
+//				usersToBeFiltered.removeAll(seedUsers);
+//				break;
 			case FOLLOWERS_AND_FRIENDS:
+				logger.info("case FOLLOWERS_AND_FRIENDS");
 				usersToBeFiltered = new ArrayList<Long>();
 				for (Long userId : seedUsers) {
 					try {
@@ -123,44 +158,49 @@ public class NodeDegreeFilterManager implements FilterManager{
 						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));						
 					} catch (TwitterApiException e) {
 						logger.info("Problems with user with id "+userId+". User is skipped.");
-					}
-					
+					}					
 				}	
-				usersToBeFiltered.removeAll(seedUsers);				
-			case SEEDS_AND_FOLLOWERS:
-				usersToBeFiltered = new ArrayList<Long>();
-				for (Long userId : seedUsers) {
-					try {
-						usersToBeFiltered.add(userId);
-						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));
-					} catch (TwitterApiException e) {
-						logger.info("Problems with user with id "+userId+". User is skipped.");
-					}
-				}
-			case SEEDS_AND_FRIENDS:
-				usersToBeFiltered = new ArrayList<Long>();
-				for (Long userId : seedUsers) {
-					try {
-						usersToBeFiltered.add(userId);
-						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
-					} catch (TwitterApiException e) {
-						logger.info("Problems with user with id "+userId+". User is skipped.");
-					}
-				}
-			case SEEDS_AND_FOLLOWERS_AND_FRIENDS:
-				usersToBeFiltered = new ArrayList<Long>();
-				for (Long userId : seedUsers) {
-					try {
-						usersToBeFiltered.add(userId);
-						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));
-						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
-					} catch (TwitterApiException e) {
-						logger.info("Problems with user with id "+userId+". User is skipped.");
-					}
-				}
+				usersToBeFiltered.removeAll(seedUsers);		
+				break;
+//			case SEEDS_AND_FOLLOWERS:
+//				logger.info("case SEEDS_AND_FOLLOWERS");
+//				usersToBeFiltered = new ArrayList<Long>();
+//				for (Long userId : seedUsers) {
+//					try {
+//						usersToBeFiltered.add(userId);
+//						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));
+//					} catch (TwitterApiException e) {
+//						logger.info("Problems with user with id "+userId+". User is skipped.");
+//					}
+//				}
+//				break;
+//			case SEEDS_AND_FRIENDS:
+//				logger.info("case SEEDS_AND_FRIENDS");
+//				usersToBeFiltered = new ArrayList<Long>();
+//				for (Long userId : seedUsers) {
+//					try {
+//						usersToBeFiltered.add(userId);
+//						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
+//					} catch (TwitterApiException e) {
+//						logger.info("Problems with user with id "+userId+". User is skipped.");
+//					}
+//				}
+//				break;
+//			case SEEDS_AND_FOLLOWERS_AND_FRIENDS:
+//				logger.info("case SEEDS_AND_FOLLOWERS_AND_FRIENDS");
+//				usersToBeFiltered = new ArrayList<Long>();
+//				for (Long userId : seedUsers) {
+//					try {
+//						usersToBeFiltered.add(userId);
+//						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));
+//						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
+//					} catch (TwitterApiException e) {
+//						logger.info("Problems with user with id "+userId+". User is skipped.");
+//					}
+//				}
+//				break;
 			
 		}
-
 		//remove duplicates
 		usersToBeFiltered = new ArrayList<Long>(new HashSet<Long>(usersToBeFiltered));		
 	}
@@ -186,31 +226,35 @@ public class NodeDegreeFilterManager implements FilterManager{
 	
 	private void calculateNode2degree() throws UserVertexNotPresent, InDegreeNotSetException, OutDegreeNotSetException {
 		node2degree = new HashMap<Long, Integer>();
+
 		
 		switch (degreeDirection) {
 			case IN:
-											 // source   		  destination
+				 // source   		  destination
 				graphFacade.calculateInDegree(usersToBeFiltered, seedUsers);
 				for (Long userId : usersToBeFiltered)
 					node2degree.put(userId, graphFacade.getInDegree(userId));
+				break;
 			case OUT:
 				 							  // fromThisGroup   toThisGroup
 				graphFacade.calculateOutDegree(seedUsers,        usersToBeFiltered);
 				for (Long userId : usersToBeFiltered)
 					node2degree.put(userId, graphFacade.getOutDegree(userId));
+				break;
 			case TOTAL:
 				/*
 				 * TODO: implement!
 				 */
-//				List<Long> totUsers = new ArrayList<Long>();
-//				totUsers.addAll(seedUsers);
-//				totUsers.addAll(usersToBeFiltered);
-//				graphFacade.calculateTotalDegree(totUsers);
-//				for (Long userId : usersToBeFiltered)
-//					node2degree.put(userId, graphFacade.getTotalDegree(userId));
-				return;				
-
+	//				List<Long> totUsers = new ArrayList<Long>();
+	//				totUsers.addAll(seedUsers);
+	//				totUsers.addAll(usersToBeFiltered);
+	//				graphFacade.calculateTotalDegree(totUsers);
+	//				for (Long userId : usersToBeFiltered)
+	//					node2degree.put(userId, graphFacade.getTotalDegree(userId));
+				//break;
+				return;	
 		}
+			
 	}
 	
 }

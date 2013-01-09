@@ -14,7 +14,8 @@ public class RequestHandler {
 	public RequestHandler(Token applicationToken, Token userToken) {
 		
 		ConfigurationBuilder cb = new ConfigurationBuilder();
-		cb.setDebugEnabled(true)
+		cb
+			//.setDebugEnabled(false)
 		  .setOAuthConsumerKey(applicationToken.getTokenString())
 		  .setOAuthConsumerSecret(applicationToken.getSecretString())
 		  .setOAuthAccessToken(userToken.getTokenString())

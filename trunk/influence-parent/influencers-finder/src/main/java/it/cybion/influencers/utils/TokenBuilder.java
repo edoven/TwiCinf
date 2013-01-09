@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TokenBuilder {
-	
-	
-		
+			
 	public static Token getTokenFromFile(String filePath) {
         BufferedReader reader = null;
         String line = "";

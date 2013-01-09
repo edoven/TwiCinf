@@ -1,5 +1,11 @@
-package it.cybion.influencers.graph;
+package it.cybion.influencers.graph.neo4j;
 
+
+import it.cybion.influencers.graph.GraphFacade;
+import it.cybion.influencers.graph.InDegreeNotSetException;
+import it.cybion.influencers.graph.OutDegreeNotSetException;
+import it.cybion.influencers.graph.TotalDegreeNotSetException;
+import it.cybion.influencers.graph.UserVertexNotPresent;
 
 import java.util.Iterator;
 import java.util.List;
@@ -92,6 +98,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 			throw new UserVertexNotPresent("Trying to get node for user with id="+userId+" but node is not in the graph");
 	}
 	
+	@Override
 	public int getVerticesCount() {
 		int count = 0;
 		Iterable<Vertex> results = graph.getVertices();		
@@ -149,7 +156,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 			while (iterator.hasNext()) {
 				Vertex followerVertex = iterator.next();
 				Long followerId = (Long)followerVertex.getProperty("userId");
-				logger.info("userId="+userId+" - followerId="+followerId);
+				//logger.info("userId="+userId+" - followerId="+followerId);
 				if (sourceUsers.contains( followerId ))
 					inDegree++;
 			}
@@ -170,7 +177,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 			while (iterator.hasNext()) {
 				Vertex friendVertex = iterator.next();
 				Long friendId =(Long)friendVertex.getProperty("userId");
-				logger.info("userId="+userId+" - friendId="+friendId);
+				//logger.info("userId="+userId+" - friendId="+friendId);
 				if (destinationUsers.contains( friendId ))
 					outDegree++;
 			}
