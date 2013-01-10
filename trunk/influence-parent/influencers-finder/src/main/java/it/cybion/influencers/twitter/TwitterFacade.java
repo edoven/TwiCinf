@@ -6,11 +6,12 @@ import it.cybion.influencers.twitter.persistance.UserNotFriendsEnrichedException
 import it.cybion.influencers.twitter.persistance.UserNotPresentException;
 import it.cybion.influencers.twitter.persistance.UserNotProfileEnriched;
 import it.cybion.influencers.twitter.web.TwitterWebFacade;
-import it.cybion.influencers.twitter.web.twitter4j.TwitterApiException;
 
 import java.util.List;
 
 import org.apache.log4j.Logger;
+
+import twitter4j.TwitterException;
 
 /*
  * I'm using recursive methods!
@@ -30,7 +31,7 @@ public class TwitterFacade {
 		this.persistanceFacade = persistanceFacade;
 	}
 			
-	public String getUser(Long userId) throws TwitterApiException  {
+	public String getUser(Long userId) throws TwitterException  {
 		try {
 			String user = persistanceFacade.getUser(userId);
 			logger.info("User with id "+userId+" is in the cache. Let's fetch it!");
@@ -43,7 +44,7 @@ public class TwitterFacade {
 		}
 	}
 		
-	public String getDescription(Long userId) throws TwitterApiException  {
+	public String getDescription(Long userId) throws TwitterException  {
 		try {
 			String description = persistanceFacade.getDescription(userId);
 			logger.info("User with id "+userId+" is in the cache and has profile informations. Let's fetch it!");
@@ -83,7 +84,7 @@ public class TwitterFacade {
 //		}
 //	}
 	
-	public List<Long> getFollowers(Long userId) throws TwitterApiException {
+	public List<Long> getFollowers(Long userId) throws TwitterException {
 		List<Long> followers;
 		try {
 			followers = persistanceFacade.getFollowers(userId);
@@ -107,7 +108,7 @@ public class TwitterFacade {
 		}
 	}
 
-	public List<Long> getFriends(Long userId) throws TwitterApiException {
+	public List<Long> getFriends(Long userId) throws TwitterException {
 		List<Long> friends;
 		try {
 			friends = persistanceFacade.getFriends(userId);

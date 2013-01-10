@@ -9,7 +9,6 @@ import it.cybion.influencers.twitter.persistance.UserNotProfileEnriched;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -47,32 +46,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 	/*
 	 * If a user with the same id (beware: id!=_id) is already present, the new fields (if existing)
 	 * are added.
-	 */	
-//	@Override
-//	public void putUser(String userToInsertJson) {
-//		DBObject userToInsert = (DBObject) JSON.parse(userToInsertJson);
-//		long userId = new Long((Integer) userToInsert.get("id"));
-//		String userInDbJson;
-//		try {
-//			userInDbJson = getUser(userId);
-//		} catch (UserNotPresentException e) {
-//			collection.insert(userToInsert);
-//			return;
-//		}
-//		DBObject userInDb =  (DBObject) JSON.parse(userInDbJson);
-//		DBObject updatedUser = new BasicDBObject();
-//		
-//		for (String key : userToInsert.keySet())
-//			if (!updatedUser.containsField(key))
-//				updatedUser.put(key, userToInsert.get(key));
-//		for (String key : userInDb.keySet())
-//			if (!updatedUser.containsField(key))
-//				updatedUser.put(key, userInDb.get(key));
-//		collection.remove(userInDb);
-//		collection.insert(updatedUser);
-//		logger.info(updatedUser);
-//	}
-	
+	 */		
 	@Override
 	public void putUser(String userToInsertJson) {
 		DBObject userToInsert = (DBObject) JSON.parse(userToInsertJson);
@@ -87,10 +61,11 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 		DBObject userInDb = (DBObject) JSON.parse(userInDbJson);
 
 		Map<String, Object> field2value = new HashMap<String,Object>();
-		for (String field : userToInsert.keySet())
-			field2value.put(field, userToInsert.get(field));
+		
 		for (String field : userInDb.keySet())
 			field2value.put(field, userInDb.get(field));
+		for (String field : userToInsert.keySet())
+			field2value.put(field, userToInsert.get(field));
 		
 		DBObject updatedUser = new BasicDBObject();
 		for (String field : field2value.keySet())

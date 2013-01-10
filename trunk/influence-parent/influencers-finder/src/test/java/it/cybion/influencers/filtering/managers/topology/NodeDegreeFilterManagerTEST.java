@@ -8,7 +8,6 @@ import it.cybion.influencers.twitter.persistance.PersistanceFacade;
 import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.web.twitter4j.Token;
 import it.cybion.influencers.twitter.web.twitter4j.Twitter4jFacade;
-import it.cybion.influencers.twitter.web.twitter4j.TwitterApiException;
 import it.cybion.influencers.utils.FilesDeleter;
 import it.cybion.influencers.utils.TokenBuilder;
 
@@ -20,6 +19,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import twitter4j.TwitterException;
 
 public class NodeDegreeFilterManagerTEST {
 	
@@ -45,13 +46,12 @@ public class NodeDegreeFilterManagerTEST {
 		userTokens.add( TokenBuilder.getTokenFromFile("/home/godzy/tokens/token4.txt") );
 		userTokens.add( TokenBuilder.getTokenFromFile("/home/godzy/tokens/token5.txt") );
 		userTokens.add( TokenBuilder.getTokenFromFile("/home/godzy/tokens/token6.txt") );
-		int waitTime = 60;
-		Twitter4jFacade webFacade = new Twitter4jFacade(consumerToken, userTokens, waitTime);
+		Twitter4jFacade webFacade = new Twitter4jFacade(consumerToken, userTokens);
 		twitterFacade  = new TwitterFacade(webFacade, persistanceFacade);
 	}
 	
 	@Test(enabled=true)
-	public void testTheFilteringProcedure() throws IOException, TwitterApiException {	
+	public void testTheFilteringProcedure() throws IOException, TwitterException {	
 		List<Long> seedUsers = new ArrayList<Long>();
 		long id1 = 887469007;
 		long id2 = 426724668;
@@ -62,12 +62,14 @@ public class NodeDegreeFilterManagerTEST {
 				ExpansionDirection.FOLLOWERS_AND_FRIENDS,
 				DegreeDirection.IN,
 				ComparisonOption.GREATER_OR_EQUAL, 
-				0.5);
+				1.0);
 		filterManager.setGraphFacade(graphFacade);
 		filterManager.setTwitterFacade(twitterFacade);
 		filterManager.setSeedUsers(seedUsers);
 		
 		List<Long> result = filterManager.filter();
+		logger.info(result.size());
+		logger.info(result);
 	}
 
 }

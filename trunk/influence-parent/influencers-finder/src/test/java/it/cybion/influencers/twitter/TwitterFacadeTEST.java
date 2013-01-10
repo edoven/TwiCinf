@@ -4,17 +4,17 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.apache.log4j.Logger;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import twitter4j.TwitterException;
 
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
 import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.web.TwitterWebFacade;
 import it.cybion.influencers.twitter.web.twitter4j.Token;
 import it.cybion.influencers.twitter.web.twitter4j.Twitter4jFacade;
-import it.cybion.influencers.twitter.web.twitter4j.TwitterApiException;
 
 public class TwitterFacadeTEST {
 	
@@ -39,13 +39,13 @@ public class TwitterFacadeTEST {
 		Token userToken6 = new Token("/home/godzy/tokens/token6.txt");
 		userTokens.add(userToken6);
 		
-		TwitterWebFacade twitterWebFacade = new Twitter4jFacade(applicationToken, userTokens, 60);
+		TwitterWebFacade twitterWebFacade = new Twitter4jFacade(applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb", "testcollection");
 		twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 	}
 
 	@Test(enabled=false)
-	public void getUserTest() throws TwitterApiException {
+	public void getUserTest() throws TwitterException {
 		String user = twitterFacade.getDescription(14230524l);
 		logger.info("BEGIN_"+user+"_END");
 		user = twitterFacade.getDescription(14230524l);
@@ -55,7 +55,7 @@ public class TwitterFacadeTEST {
 	
 	
 	@Test(enabled=false)
-	public void getFriends() throws TwitterApiException {
+	public void getFriends() throws TwitterException {
 		List<Long> friendIds = twitterFacade.getFriends(426724668l);
 		logger.info(friendIds.size());
 		
@@ -64,7 +64,7 @@ public class TwitterFacadeTEST {
 	}
 	
 	@Test(enabled=false)
-	public void getFollowers() throws TwitterApiException {
+	public void getFollowers() throws TwitterException {
 		List<Long> followersIds = twitterFacade.getFollowers(426724668l);
 		logger.info("Followers number = "+followersIds.size());
 		
@@ -74,7 +74,7 @@ public class TwitterFacadeTEST {
 	
 	
 	@Test(enabled=true)
-	public void testIfTheFollowersAreSavedInTheCache() throws TwitterApiException {
+	public void testIfTheFollowersAreSavedInTheCache() throws TwitterException {
 		List<Long> followersIds = twitterFacade.getFollowers(426724668l);
 		logger.info("Followers number = "+followersIds.size());
 		
@@ -87,7 +87,7 @@ public class TwitterFacadeTEST {
 
 	
 	@Test(enabled=true)
-	public void testIfTheFriendsAreSavedInTheCache() throws TwitterApiException {
+	public void testIfTheFriendsAreSavedInTheCache() throws TwitterException {
 		List<Long> friendIds = twitterFacade.getFriends(426724668l);
 		logger.info("Friends number = "+friendIds.size());
 		

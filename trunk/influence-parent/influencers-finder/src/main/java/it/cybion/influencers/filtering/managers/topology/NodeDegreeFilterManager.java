@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import twitter4j.TwitterException;
+
 import it.cybion.influencers.filtering.filters.topology.NodeDegreeFilter;
 import it.cybion.influencers.filtering.managers.ExpansionDirection;
 import it.cybion.influencers.filtering.managers.FilterManager;
@@ -16,7 +18,6 @@ import it.cybion.influencers.graph.InDegreeNotSetException;
 import it.cybion.influencers.graph.OutDegreeNotSetException;
 import it.cybion.influencers.graph.UserVertexNotPresent;
 import it.cybion.influencers.twitter.TwitterFacade;
-import it.cybion.influencers.twitter.web.twitter4j.TwitterApiException;
 
 
 public class NodeDegreeFilterManager implements FilterManager{
@@ -51,18 +52,15 @@ public class NodeDegreeFilterManager implements FilterManager{
 	public void setTwitterFacade(TwitterFacade twitterFacade) {
 		this.twitterFacade = twitterFacade;	
 	}
-
 	@Override
 	public void setGraphFacade(GraphFacade graphFacade) {
 		this.graphFacade = graphFacade;
 	}
-
 	@Override
 	public void setSeedUsers(List<Long> seedUsers) {
 		this.seedUsers = seedUsers;	
 
 	}
-	
 	
 	
 	@Override
@@ -71,9 +69,7 @@ public class NodeDegreeFilterManager implements FilterManager{
 		NodeDegreeFilter filter = new NodeDegreeFilter(node2degree, 
 													   absoluteThreshold, 
 													   comparisonOption);
-		//return filter.filter();
-		return null;
-		
+		return filter.filter();	
 	}
 	
 	private void solveDependencies() {	
@@ -94,9 +90,7 @@ public class NodeDegreeFilterManager implements FilterManager{
 		for (long userId : usersToBeFiltered)
 			logger.info(userId);
 		logger.info("==================");
-		
-		
-		
+			
 		logger.info("CREATING GRAPH");
 		createGraph();
 		logger.info("vertices count = "+graphFacade.getVerticesCount());
@@ -156,7 +150,7 @@ public class NodeDegreeFilterManager implements FilterManager{
 					try {
 						usersToBeFiltered.addAll(twitterFacade.getFriends(userId));
 						usersToBeFiltered.addAll(twitterFacade.getFollowers(userId));						
-					} catch (TwitterApiException e) {
+					} catch (TwitterException e) {
 						logger.info("Problems with user with id "+userId+". User is skipped.");
 					}					
 				}	
@@ -213,7 +207,7 @@ public class NodeDegreeFilterManager implements FilterManager{
 				graphFacade.addFollowers(userId , followersIds);
 				List<Long> friendsIds = twitterFacade.getFriends(userId);
 				graphFacade.addFriends(userId , friendsIds);
-			} catch (TwitterApiException e) {
+			} catch (TwitterException e) {
 				logger.info("Problem with user with id "+userId+". User skipped.");
 			} catch (UserVertexNotPresent e) {
 				logger.info("Problem with user with id "+userId+". " +
@@ -226,7 +220,6 @@ public class NodeDegreeFilterManager implements FilterManager{
 	
 	private void calculateNode2degree() throws UserVertexNotPresent, InDegreeNotSetException, OutDegreeNotSetException {
 		node2degree = new HashMap<Long, Integer>();
-
 		
 		switch (degreeDirection) {
 			case IN:

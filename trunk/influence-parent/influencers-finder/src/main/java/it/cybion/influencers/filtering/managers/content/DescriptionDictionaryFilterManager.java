@@ -2,6 +2,8 @@ package it.cybion.influencers.filtering.managers.content;
 
 import org.apache.log4j.Logger;
 
+import twitter4j.TwitterException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,7 +15,7 @@ import it.cybion.influencers.filtering.managers.ExpansionDirection;
 import it.cybion.influencers.filtering.managers.FilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
-import it.cybion.influencers.twitter.web.twitter4j.TwitterApiException;
+
 
 public class DescriptionDictionaryFilterManager implements FilterManager {
 	
@@ -54,7 +56,7 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 				for (Long userId : seedUsers) {
 					try {
 						usersToFilter.addAll(twitterFacade.getFollowers(userId));
-					} catch (TwitterApiException e) {
+					} catch (TwitterException e) {
 						logger.info("Problem with user with id "+userId+". User skipped.");
 					}
 				}
@@ -62,7 +64,7 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 				for (Long userId : seedUsers) {
 					try {
 						usersToFilter.addAll(twitterFacade.getFriends(userId));
-					} catch (TwitterApiException e) {
+					} catch (TwitterException e) {
 						logger.info("Problem with user with id "+userId+". User skipped.");
 					}
 				}
@@ -71,7 +73,7 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 					try {
 						usersToFilter.addAll(twitterFacade.getFriends(userId));
 						usersToFilter.addAll(twitterFacade.getFollowers(userId));
-					} catch (TwitterApiException e) {
+					} catch (TwitterException e) {
 						logger.info("Problem with user with id "+userId+". User skipped.");
 					}					
 				}
@@ -80,7 +82,7 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 					try {
 						usersToFilter.add(userId);
 						usersToFilter.addAll(twitterFacade.getFollowers(userId));
-					} catch (TwitterApiException e) {
+					} catch (TwitterException e) {
 						logger.info("Problem with user with id "+userId+". User skipped.");
 					}
 				}
@@ -89,7 +91,7 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 					try {
 						usersToFilter.add(userId);
 						usersToFilter.addAll(twitterFacade.getFriends(userId));
-					} catch (TwitterApiException e) {
+					} catch (TwitterException e) {
 						logger.info("Problem with user with id "+userId+". User skipped.");
 					}
 				}
@@ -99,7 +101,7 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 						usersToFilter.add(userId);
 						usersToFilter.addAll(twitterFacade.getFriends(userId));
 						usersToFilter.addAll(twitterFacade.getFollowers(userId));
-					} catch (TwitterApiException e) {
+					} catch (TwitterException e) {
 						logger.info("Problem with user with id "+userId+". User skipped.");
 					}					
 				}
@@ -113,7 +115,7 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 		for (Long userId : usersToFilter)
 			try {
 				users2descriptions.put(userId, twitterFacade.getDescription(userId));
-			} catch (TwitterApiException e) {
+			} catch (TwitterException e) {
 				logger.info("Error to get user with id "+userId+" from Twitter. User skipped.");
 			}
 	}

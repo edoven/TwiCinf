@@ -12,237 +12,127 @@ import twitter4j.TwitterException;
 
 public class Twitter4jFacade implements TwitterWebFacade{
 	
-	private Token consumerToken;
-    private Token currentUserToken;
-	private RequestHandler currentRequestHandler;
-    private List<Token> usableUserTokens = new ArrayList<Token>();
-    private static final Logger logger = Logger.getLogger(Twitter4jFacade.class);
-    //this is the time (in minutes) to wait if all user tokens have reached the request limit
-    private int waitTime; 
+	/*
+	 * This class manages a pool of UserHandler.
+	 * Each RequestHandler is associated with one user (a user is represented
+	 * by a token saved in a file).
+	 * Every RequestHandler is associated with the same application (an application
+	 * is represented by a consumer token saved in a file).
+	 */	
+    
+	private static final Logger logger = Logger.getLogger(Twitter4jFacade.class);   
+	
+    private int waitTime = 5; //time (in minutes) to wait if all user tokens have reached the request limit
+    private List<UserHandler> userHandlers = new ArrayList<UserHandler>();
     
 
-	public Twitter4jFacade(Token consumerToken, List<Token> userTokens, int waitTime) {
-		this.consumerToken = consumerToken;
-		this.usableUserTokens = userTokens;
-		this.waitTime = waitTime;
-		currentUserToken = usableUserTokens.get(0);
-		currentRequestHandler = new RequestHandler(consumerToken, currentUserToken);
-		logger.info(this.usableUserTokens.size()+" user tokens available.");
-	}
-
-	
-	private RequestHandler getUsableHandler() throws FinishedUsableHandlersException {
-		int limit;
-		try {
-			limit = currentRequestHandler.getLimit();
-		} catch (TwitterApiException e) {
-			logger.info("Problem while asking the request limit for current user token, changing user.");
-			usableUserTokens.remove(currentUserToken);
-			if (usableUserTokens.size()==0) {
-		        throw new FinishedUsableHandlersException("No more user tokens with available requests.");
-		    }
-			else {
-				currentUserToken = usableUserTokens.get(0);
-				currentRequestHandler = new RequestHandler(consumerToken, currentUserToken);					
-				return getUsableHandler();
+	public Twitter4jFacade(Token consumerToken, List<Token> userTokens) {
+		for (Token userToken : userTokens) {
+			logger.info("Creating UserHandler");
+			for (int i=0; i<3; i++) { //3 tries
+				try {
+					UserHandler userHandler = new UserHandler( consumerToken, userToken );
+					userHandlers.add(userHandler);
+					break;
+				} catch (TwitterException e) {
+					logger.info("Can't create UserHandler for token = "+userToken+". Let's retry.");
+				}
+				logger.info("Can't create UserHandler for token = "+userToken+". Skipped.");
 			}
 		}
-		logger.info("Current token limit = "+limit);
-		if (limit>0)
-			return currentRequestHandler;
-		else {
-			logger.info("Requests limit reached for current user.");
-			usableUserTokens.remove(currentUserToken);
-			if (usableUserTokens.size()==0) {
-		        throw new FinishedUsableHandlersException("No more user tokens with available requests.");
-		    }
-			else {
-				currentUserToken = usableUserTokens.get(0);
-				currentRequestHandler = new RequestHandler(consumerToken, currentUserToken);					
-				return currentRequestHandler;
-			}
-		}
+		logger.info("UserHandlers created");
 	}
 	
 	@Override
-	public String getUserJson(long userId) throws TwitterApiException {
-		RequestHandler requestHandler = null;
-		try {
-			requestHandler = getUsableHandler();
-		} catch (FinishedUsableHandlersException e) {
-			logger.info("Limit reached for all user tokend. Waiting for "+waitTime+" minutes before doing the request.");
+	public String getUserJson(long userId) throws TwitterException {
+		for (int i=0; i<userHandlers.size(); i++) {
+			logger.info("Trying handler "+i+" for getUserJson");
+			UserHandler requestHandler = userHandlers.get(i);
 			try {
-				Thread.sleep(1000*60*waitTime);
-			} catch (InterruptedException e1) {
-				logger.info("Problem in Thread.sleep().");
-				System.exit(0);
-			}
+				return requestHandler.getUserJson(userId);
+			} catch (LimitReachedForCurrentRequestException e) {
+				logger.info("Token "+i+" has reached request limit for getUserJson");
+			} 
+		}
+		//this point is reached if all tokens have reached the limit for this request
+		try {
+			logger.info("All handlers have reached the limit, let's wait for "+waitTime+" min");
+			Thread.sleep(1000*60*waitTime);
 			return getUserJson(userId);
-		} 
-		try {
-			return requestHandler.getUserJson(userId);
-		} catch (TwitterApiException e) {
-			throw e;
-		}
+		} catch (InterruptedException e1) {
+			logger.info("Problem in Thread.sleep().");
+			System.exit(0);
+			return null;
+		}	
 	}
-	
-//	@Override
-//	public String getUserJson(String screenName) throws TwitterApiException {
-//		RequestHandler requestHandler = null;
-//		try {
-//			requestHandler = getUsableHandler();
-//		} catch (FinishedUsableHandlersException e) {
-//			logger.info("Limit reached for all user tokend. Waiting for "+waitTime+" minutes before doing the request.");
-//			try {
-//				Thread.sleep(1000*60*waitTime);
-//			} catch (InterruptedException e1) {
-//				logger.info("Problem in Thread.sleep().");
-//				System.exit(0);
-//			}
-//			return getUserJson(screenName);
-//		} 
-//		try {
-//			return requestHandler.getUserJson(screenName);
-//		} catch (TwitterApiException e) {
-//			throw e;
-//		}
-//	}
-
-	public List<Long> getFollowersIds(long userId) throws TwitterApiException {
-		logger.info("Twitter4j - Getting followers for user with id="+userId);
-		RequestHandler requestHandler = null;
-		IDs idsContainer = null;
-		long cursor = -1;
-		List<Long> ids = new ArrayList<Long>();
-		while (cursor!=0) {
-			try {
-				requestHandler = getUsableHandler();
-			} catch (FinishedUsableHandlersException e) {
-				logger.info("Limit reached for all user tokend. Waiting for "+waitTime+" minutes before doing the request.");
-				try {
-					Thread.sleep(1000*60*waitTime);
-				} catch (InterruptedException e1) {
-					logger.info("Problem in Thread.sleep().");
-					System.exit(0);
-				}
-				return getFollowersIds(userId);
-			} 
-			try {
-				idsContainer = requestHandler.getFollowersWithPagination(userId, cursor);
-			} catch (TwitterException e) {
-	            throw new TwitterApiException(e.getMessage());
-			}
-			
-			for (Long id : idsContainer.getIDs())
-				ids.add(id);
-			cursor = idsContainer.getNextCursor();
-		}
-		return ids;
-	}
-	
-	
-//	@Override
-//	public List<Long> getFollowersIds(String screenName) throws TwitterApiException {
-//		logger.info("Getting followers for user with screenName="+screenName);
-//		RequestHandler requestHandler = null;
-//		IDs idsContainer = null;
-//		long cursor = -1;
-//		List<Long> ids = new ArrayList<Long>();
-//		
-//		while (cursor!=0) {
-//			try {
-//				requestHandler = getUsableHandler();
-//			} catch (FinishedUsableHandlersException e) {
-//				logger.info("Limit reached for all user tokend. Waiting for "+waitTime+" minutes before doing the request.");
-//				try {
-//					Thread.sleep(1000*60*waitTime);
-//				} catch (InterruptedException e1) {
-//					logger.info("Problem in Thread.sleep().");
-//					System.exit(0);
-//				}
-//				return getFollowersIds(screenName);
-//			} 
-//			try {
-//				idsContainer = requestHandler.getFollowersWithPagination(screenName, cursor);
-//			} catch (TwitterException e) {
-//	            throw new TwitterApiException(e.getMessage());
-//			}
-//			
-//			for (Long id : idsContainer.getIDs())
-//				ids.add(id);
-//			cursor = idsContainer.getNextCursor();
-//		}
-//		return ids;
-//	}
-	
 	
 	@Override
-	public List<Long> getFriendsIds(long userId) throws TwitterApiException {
-		logger.info("Twitter4j - Getting friends for user with id="+userId);
-		RequestHandler requestHandler = null;
-		IDs idsContainer = null;
+	public List<Long> getFollowersIds(long userId) throws TwitterException {
 		long cursor = -1;
 		List<Long> ids = new ArrayList<Long>();
-		
 		while (cursor!=0) {
-			try {
-				requestHandler = getUsableHandler();
-			} catch (FinishedUsableHandlersException e) {
-				logger.info("Limit reached for all user tokend. Waiting for "+waitTime+" minutes before doing the request.");
-				try {
-					Thread.sleep(1000*60*waitTime);
-				} catch (InterruptedException e1) {
-					logger.info("Problem in Thread.sleep().");
-					System.exit(0);
-				}
-				return getFriendsIds(userId);
-			} 
-			try {
-				idsContainer = requestHandler.getFriendsWithPagination(userId, cursor);
-			} catch (TwitterException e) {
-	            throw new TwitterApiException(e.getMessage());
-			}
-			
-			for (Long id : idsContainer.getIDs())
+			IDs idsContainter = getFollowersIdsWithPagination(userId, cursor);			
+			for (Long id : idsContainter.getIDs())
 				ids.add(id);
-			cursor = idsContainer.getNextCursor();
+			cursor = idsContainter.getNextCursor();
 		}
 		return ids;
 	}
 	
-//	@Override
-//	public List<Long> getFriendsIds(String screenName) throws TwitterApiException {
-//		logger.info("Getting friends for user with screenName="+screenName);
-//		RequestHandler requestHandler = null;
-//		IDs idsContainer = null;
-//		long cursor = -1;
-//		List<Long> ids = new ArrayList<Long>();
-//		
-//		while (cursor!=0) {
-//			try {
-//				requestHandler = getUsableHandler();
-//			} catch (FinishedUsableHandlersException e) {
-//				logger.info("Limit reached for all user tokend. Waiting for "+waitTime+" minutes before doing the request.");
-//				try {
-//					Thread.sleep(1000*60*waitTime);
-//				} catch (InterruptedException e1) {
-//					logger.info("Problem in Thread.sleep().");
-//					System.exit(0);
-//				}
-//				return getFriendsIds(screenName);
-//			} 
-//			try {
-//				idsContainer = requestHandler.getFriendsWithPagination(screenName, cursor);
-//			} catch (TwitterException e) {
-//	            throw new TwitterApiException(e.getMessage());
-//			}
-//			
-//			for (Long id : idsContainer.getIDs())
-//				ids.add(id);
-//			cursor = idsContainer.getNextCursor();
-//		}
-//		return ids;
-//	}
+	private IDs getFollowersIdsWithPagination(long userId, long cursor) throws TwitterException  {
+		for (int i=0; i<userHandlers.size(); i++) {
+			UserHandler requestHandler = userHandlers.get(i);
+			try {
+				return requestHandler.getFollowersWithPagination(userId, cursor);
+			} catch (LimitReachedForCurrentRequestException e) {
+				logger.info("Token "+i+" has reached request limit for getFollowersIdsWithPagination");
+			} 
+		}
+		//this point is reached if all tokens have reached the limit for this request
+		try {
+			logger.info("All handlers have reached the limit, let's wait for "+waitTime+" min");
+			Thread.sleep(1000*60*waitTime);
+			return getFollowersIdsWithPagination(userId, cursor);
+		} catch (InterruptedException e1) {
+			logger.info("Problem in Thread.sleep().");
+			System.exit(0);
+			return null;
+		}	
+	}
+	
+	@Override
+	public List<Long> getFriendsIds(long userId) throws TwitterException {
+		long cursor = -1;
+		List<Long> ids = new ArrayList<Long>();
+		while (cursor!=0) {
+			IDs idsContainter = getFriendsIdsWithPagination(userId, cursor);			
+			for (Long id : idsContainter.getIDs())
+				ids.add(id);
+			cursor = idsContainter.getNextCursor();
+		}
+		return ids;
+	}
+	
+	private IDs getFriendsIdsWithPagination(long userId, long cursor) throws TwitterException  {
+		for (int i=0; i<userHandlers.size(); i++) {
+			UserHandler requestHandler = userHandlers.get(i);
+			try {
+				return requestHandler.getFriendsWithPagination(userId, cursor);
+			} catch (LimitReachedForCurrentRequestException e) {
+				logger.info("Token "+i+" has reached request limit for getFriendsIdsWithPagination");
+			} 
+		}
+		//this point is reached if all tokens have reached the limit for this request
+		try {
+			logger.info("All handlers have reached the limit, let's wait for "+waitTime+" min");
+			Thread.sleep(1000*60*waitTime);
+			return getFriendsIdsWithPagination(userId, cursor);
+		} catch (InterruptedException e1) {
+			logger.info("Problem in Thread.sleep().");
+			System.exit(0);
+			return null;
+		}	
+	}
 
 
 }
