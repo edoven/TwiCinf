@@ -4,9 +4,7 @@ import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -25,10 +23,13 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 	TwitterFacade twitterFacade;
 	GraphFacade graphFacade;	
 	List<Long> seedUsers;
-	List<Long> usersToFilter;
 	ExpansionDirection expansionDirection;
 	Map<Long, String> users2descriptions;
 	List<String> dictionary;
+	
+	public DescriptionDictionaryFilterManager(List<String> dictionary) {
+		this.dictionary = dictionary;
+	}
 		
 	@Override
 	public List<Long> filter() {
@@ -43,76 +44,13 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 	 * It acts in different ways depending on expansionDirection.
 	 */
 	private void solveDependencies() {		
-		createUserToFilterList(); //this expands the user set if needed
 		createUsers2descriptions(); //this gets the descriptions from twitterFacade
 	}
 	
-	private void createUserToFilterList() {
-		usersToFilter = new ArrayList<Long>();
-		switch (expansionDirection) {
-			case SEEDS:
-				usersToFilter.addAll(seedUsers);			
-			case FOLLOWERS:
-				for (Long userId : seedUsers) {
-					try {
-						usersToFilter.addAll(twitterFacade.getFollowers(userId));
-					} catch (TwitterException e) {
-						logger.info("Problem with user with id "+userId+". User skipped.");
-					}
-				}
-			case FRIENDS:
-				for (Long userId : seedUsers) {
-					try {
-						usersToFilter.addAll(twitterFacade.getFriends(userId));
-					} catch (TwitterException e) {
-						logger.info("Problem with user with id "+userId+". User skipped.");
-					}
-				}
-			case FOLLOWERS_AND_FRIENDS:
-				for (Long userId : seedUsers) {
-					try {
-						usersToFilter.addAll(twitterFacade.getFriends(userId));
-						usersToFilter.addAll(twitterFacade.getFollowers(userId));
-					} catch (TwitterException e) {
-						logger.info("Problem with user with id "+userId+". User skipped.");
-					}					
-				}
-			case SEEDS_AND_FOLLOWERS:
-				for (Long userId : seedUsers) {
-					try {
-						usersToFilter.add(userId);
-						usersToFilter.addAll(twitterFacade.getFollowers(userId));
-					} catch (TwitterException e) {
-						logger.info("Problem with user with id "+userId+". User skipped.");
-					}
-				}
-			case SEEDS_AND_FRIENDS:
-				for (Long userId : seedUsers) {
-					try {
-						usersToFilter.add(userId);
-						usersToFilter.addAll(twitterFacade.getFriends(userId));
-					} catch (TwitterException e) {
-						logger.info("Problem with user with id "+userId+". User skipped.");
-					}
-				}
-			case SEEDS_AND_FOLLOWERS_AND_FRIENDS:
-				for (Long userId : seedUsers) {
-					try {
-						usersToFilter.add(userId);
-						usersToFilter.addAll(twitterFacade.getFriends(userId));
-						usersToFilter.addAll(twitterFacade.getFollowers(userId));
-					} catch (TwitterException e) {
-						logger.info("Problem with user with id "+userId+". User skipped.");
-					}					
-				}
-		}
-		//Remove duplicates
-		usersToFilter = new ArrayList<Long>(new HashSet<Long>(usersToFilter));
-	}
 		
 	private void createUsers2descriptions() {
 		users2descriptions = new HashMap<Long, String>();
-		for (Long userId : usersToFilter)
+		for (Long userId : seedUsers)
 			try {
 				users2descriptions.put(userId, twitterFacade.getDescription(userId));
 			} catch (TwitterException e) {

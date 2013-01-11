@@ -44,7 +44,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 			vertex.setProperty("userId", userId);
 			vertex.setProperty("nodeType", "user");
 			vertexIndex.put("userId", userId, vertex); //do not forget this ;)
-			logger.info("added node for user with id="+userId);
+			//logger.info("added node for user with id="+userId);
 		}		
 		return vertex;
 	}
@@ -161,7 +161,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 					inDegree++;
 			}
 			userVertex.setProperty("inDegree", inDegree);
-			logger.info("Set indegree="+inDegree+" for user with id="+userId);
+			//logger.info("Set indegree="+inDegree+" for user with id="+userId);
 		}
 	}
 
@@ -182,7 +182,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 					outDegree++;
 			}
 			userVertex.setProperty("outDegree", outDegree);
-			logger.info("Set outDegree="+outDegree+" for user with id="+userId);
+			//logger.info("Set outDegree="+outDegree+" for user with id="+userId);
 		}
 	}
 

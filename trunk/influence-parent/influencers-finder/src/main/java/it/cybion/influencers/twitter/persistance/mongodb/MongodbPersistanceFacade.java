@@ -36,11 +36,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 		MongoClient mongoClient = new MongoClient( host );
 		DB db = mongoClient.getDB( database );
 		this.collection = db.getCollection(collection);
-		/*
-		 * Indexes
-		 */
-		//this.collection.createIndex(new BasicDBObject("userId", 1));
-		//this.collection.ensureIndex("userId");
+		this.collection.createIndex(new BasicDBObject("id", 1));
 	}
 	
 	/*
@@ -73,8 +69,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 		
 		DBObject query = new BasicDBObject();
 		query.put("id", userId);
-		collection.update(query, updatedUser);
-		
+		collection.update(query, updatedUser);		
 	}
 
 	@Override
@@ -125,6 +120,16 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 			throw new UserNotPresentException("User with id "+userId+" is not in the collection.");
 		return user.toString();
 	}
+	
+	
+	private DBObject getUserDbObject(Long userId) throws UserNotPresentException {
+		BasicDBObject keys = new BasicDBObject();
+		keys.put("id", userId);
+		DBObject user = collection.findOne(keys);
+		if (user==null)
+			throw new UserNotPresentException("User with id "+userId+" is not in the collection.");
+		return user;
+	}
 
 	@Override
 	public String getDescription(Long userId) throws UserNotPresentException, UserNotProfileEnriched {
@@ -138,44 +143,32 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 
 	@Override
 	public List<Long> getFollowers(Long userId) throws  UserNotPresentException, UserNotFollowersEnrichedException {
-		BasicDBObject keys = new BasicDBObject();
-		keys.put("id", userId);
-		DBCursor cursor = collection.find(keys);
-		if (cursor.hasNext()) {	
-			DBObject json = cursor.next();
-			if (json.containsField("followers")) {	
-				List<Integer> intList = (List<Integer>)json.get("followers");
-				List<Long> longList = new ArrayList<Long>();
-				for (int intElement : intList)
-					longList.add( (long)intElement );
-				return longList;
-			}
-			else
-				throw new UserNotFollowersEnrichedException("User with id "+userId+" is not followers/friends-eniched.");
+		DBObject userJson = getUserDbObject(userId);		
+		if (userJson.containsField("followers")) {	
+			List<Integer> intList = (List<Integer>)userJson.get("followers");
+			List<Long> longList = new ArrayList<Long>();
+			for (int intElement : intList)
+				longList.add( (long)intElement );
+			return longList;
 		}
 		else
-			throw new UserNotPresentException("User with id "+userId+" is not in the collection.");
+			throw new UserNotFollowersEnrichedException("User with id "+userId+" is not followers/friends-eniched.");
+
+			
 	}
 
 	@Override
 	public List<Long> getFriends(Long userId) throws UserNotFriendsEnrichedException, UserNotPresentException {
-		BasicDBObject keys = new BasicDBObject();
-		keys.put("id", userId);
-		DBCursor cursor = collection.find(keys);
-		if (cursor.hasNext()) {	
-			DBObject json = cursor.next();
-			if (json.containsField("friends")) {
-				List<Integer> intList = (List<Integer>)json.get("friends");
-				List<Long> longList = new ArrayList<Long>();
-				for (int intElement : intList)
-					longList.add( (long)intElement );
-				return longList;
-			}
-			else
-				throw new UserNotFriendsEnrichedException("User with id "+userId+" is not friends-eniched.");
+		DBObject userJson = getUserDbObject(userId);
+		if (userJson.containsField("friends")) {
+			List<Integer> intList = (List<Integer>)userJson.get("friends");
+			List<Long> longList = new ArrayList<Long>();
+			for (int intElement : intList)
+				longList.add( (long)intElement );
+			return longList;
 		}
 		else
-			throw new UserNotPresentException("User with id "+userId+" is not in the collection.");
+			throw new UserNotFriendsEnrichedException("User with id "+userId+" is not friends-eniched.");			
 	}
 	
 }

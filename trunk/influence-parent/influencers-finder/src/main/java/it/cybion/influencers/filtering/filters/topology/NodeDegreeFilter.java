@@ -38,35 +38,35 @@ public class NodeDegreeFilter implements Filter {
 			switch (comparisonOption) {
 				case EQUAL:
 					for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
-						logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
+						//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
 						if (mapEntry.getValue() == threshold)
 							goodNodes.add(mapEntry.getKey());
 					}
 					break;
 				case GREATER:
 					for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
-						logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
+						//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
 						if (mapEntry.getValue() > threshold)
 							goodNodes.add(mapEntry.getKey());
 					}					
 					break;
 				case GREATER_OR_EQUAL:
 					for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
-						logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
+						//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
 						if (mapEntry.getValue() >= threshold)
 							goodNodes.add(mapEntry.getKey());
 					}
 					break;
 				case SMALLER:
 					for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
-						logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
+						//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
 						if (mapEntry.getValue() < threshold)
 							goodNodes.add(mapEntry.getKey());
 					}
 					break;
 				case SMALLER_OR_EQUAL:
 					for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
-						logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
+						//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
 						if (mapEntry.getValue() <= threshold)
 							goodNodes.add(mapEntry.getKey());	
 					}
