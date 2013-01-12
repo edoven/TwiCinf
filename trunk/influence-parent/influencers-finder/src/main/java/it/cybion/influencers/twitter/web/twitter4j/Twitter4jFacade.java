@@ -175,7 +175,7 @@ public class Twitter4jFacade implements TwitterWebFacade{
 			try {
 				return requestHandler.getUsersJsons(usersIds);
 			} catch (LimitReachedForCurrentRequestException e) {
-				logger.info("Token "+i+" has reached request limit for getFriendsIdsWithPagination");
+				logger.info("Token "+i+" has reached request limit for getUsersJsons");
 			} 
 		}
 		//this point is reached if all tokens have reached the limit for this request

@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -21,7 +24,7 @@ import twitter4j.json.DataObjectFactory;
 
 public class UserHandler {
 
-	private static final Logger logger = Logger.getLogger(Twitter4jFacade.class);
+	private static final Logger logger = Logger.getLogger(UserHandler.class);
 	
 	private Twitter twitter;
 	
@@ -41,13 +44,33 @@ public class UserHandler {
 		  .setJSONStoreEnabled(true);
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		twitter = tf.getInstance();
+		//setRequestType2limit();
 		
+		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+		Runnable periodicTask = new Runnable() {
+		    public void run() {
+		    	try {
+					setRequestType2limit();
+				} catch (TwitterException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+		    }
+		};
+			
+		executor.scheduleAtFixedRate(periodicTask, 0, 10, TimeUnit.SECONDS);
+		
+		logger.info("Using token of user "+twitter.getScreenName());
+	}
+	
+	private void setRequestType2limit() throws TwitterException {
+		logger.info("setRequestType2limit");
 		Map<String, RateLimitStatus> requestType2limitStatus = twitter.getRateLimitStatus();
 		for (String requestType : requestType2limitStatus.keySet()) {
 			int limit = requestType2limitStatus.get(requestType).getRemaining();
 			requestType2limit.put(requestType , limit);
 		}
-		logger.info("Using token of user "+twitter.getScreenName());
 	}
 	
 	public String getUserJson(long userId) throws LimitReachedForCurrentRequestException, TwitterException {
