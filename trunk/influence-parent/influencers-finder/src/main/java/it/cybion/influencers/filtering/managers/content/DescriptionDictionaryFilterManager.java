@@ -35,6 +35,7 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 	public List<Long> filter() {
 		solveDependencies();	
 		DescriptionDictionaryFilter filter = new DescriptionDictionaryFilter(dictionary,users2descriptions);
+		logger.info("users2descriptions.size()="+users2descriptions.size());
 		return filter.filter();
 	}
 	

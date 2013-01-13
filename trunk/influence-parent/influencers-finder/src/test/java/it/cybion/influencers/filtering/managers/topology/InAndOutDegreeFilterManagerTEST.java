@@ -6,7 +6,7 @@ import it.cybion.influencers.twitter.TwitterFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
 import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.web.twitter4j.Token;
-import it.cybion.influencers.twitter.web.twitter4j.Twitter4jFacade;
+import it.cybion.influencers.twitter.web.twitter4j.Twitter4jWebFacade;
 import it.cybion.influencers.utils.FilesDeleter;
 import it.cybion.influencers.utils.TokenBuilder;
 
@@ -43,7 +43,7 @@ public class InAndOutDegreeFilterManagerTEST {
 		userTokens.add( TokenBuilder.getTokenFromFile("/home/godzy/tokens/token4.txt") );
 		userTokens.add( TokenBuilder.getTokenFromFile("/home/godzy/tokens/token5.txt") );
 		userTokens.add( TokenBuilder.getTokenFromFile("/home/godzy/tokens/token6.txt") );
-		Twitter4jFacade webFacade = new Twitter4jFacade(consumerToken, userTokens);
+		Twitter4jWebFacade webFacade = new Twitter4jWebFacade(consumerToken, userTokens);
 		twitterFacade  = new TwitterFacade(webFacade, persistanceFacade);
 	}
 	

@@ -2,7 +2,7 @@ package it.cybion.influencers.twitter.web.twitter4j;
 
 import static org.testng.AssertJUnit.assertTrue;
 import it.cybion.influencers.twitter.web.twitter4j.Token;
-import it.cybion.influencers.twitter.web.twitter4j.Twitter4jFacade;
+import it.cybion.influencers.twitter.web.twitter4j.Twitter4jWebFacade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +24,11 @@ import twitter4j.TwitterException;
  */
 
 
-public class Twitter4jFacadeTEST {
+public class Twitter4jWebFacadeTEST {
 	
-	private static final Logger logger = Logger.getLogger(Twitter4jFacadeTEST.class);
+	private static final Logger logger = Logger.getLogger(Twitter4jWebFacadeTEST.class);
 	
-	private Twitter4jFacade twitter4jFacade;
+	private Twitter4jWebFacade twitter4jFacade;
 
 
 	@BeforeClass
@@ -36,6 +36,8 @@ public class Twitter4jFacadeTEST {
 		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.txt");
 		List<Token> userTokens = new ArrayList<Token>();
 		
+		Token userToken1 = new Token("/home/godzy/tokens/token1.txt"); 
+		userTokens.add(userToken1);
 		Token userToken2 = new Token("/home/godzy/tokens/token2.txt");
 		userTokens.add(userToken2);
 		Token userToken3 = new Token("/home/godzy/tokens/token3.txt");
@@ -46,25 +48,21 @@ public class Twitter4jFacadeTEST {
 		userTokens.add(userToken5);
 		Token userToken6 = new Token("/home/godzy/tokens/token6.txt");
 		userTokens.add(userToken6);
-		Token userToken1 = new Token("/home/godzy/tokens/token1.txt"); 
-		userTokens.add(userToken1);
 		
-		twitter4jFacade = new Twitter4jFacade(applicationToken, userTokens);
+		
+		twitter4jFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 	}
 		
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void getUserJsonTEST() throws TwitterException {
-		String user = ""; //BarackObama
-//		for (int i=0; i<181; i++)
-			user = twitter4jFacade.getUserJson(813286l); //BarackObama
-		logger.info(user);
+		String user = twitter4jFacade.getUserJson(813286l); //BarackObama
 		assertTrue(user.contains("Barack Obama"));
 		assertTrue(user.contains("followers"));
 		assertTrue(user.contains("friends"));
 		assertTrue(user.contains("This account is run by"));
 	}
 	
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void getLessThan5000FollowersIdsTEST() throws TwitterException {
 		List<Long> followerIds = twitter4jFacade.getFollowersIds(58477550);  //screenName=gifo77
 		logger.info("#############################");
@@ -74,7 +72,7 @@ public class Twitter4jFacadeTEST {
 		assertTrue(followerIds.size()<5000);
 	}
 	
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void getMoreThan5000FollowersIdsTEST() throws TwitterException {
 		List<Long> followerIds = twitter4jFacade.getFollowersIds(444712353); //screenName=ChiaraMaci
 		logger.info("#############################");
@@ -84,7 +82,7 @@ public class Twitter4jFacadeTEST {
 		assertTrue(followerIds.size()>5000);
 	}
 	
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void getLessThan5000FriendsIdsTEST() throws TwitterException {
 		List<Long> friendIds = twitter4jFacade.getFriendsIds(58477550); //screenName=gifo77
 		logger.info("#############################");
@@ -93,8 +91,16 @@ public class Twitter4jFacadeTEST {
 		logger.info("#############################");
 		assertTrue(friendIds.size()<5000);
 	}
+	
+	@Test(enabled=true)
+	public void getFriendsIdsRepeatedRequestsTEST() throws TwitterException {
+		List<Long> friendIds = twitter4jFacade.getFriendsIds(58477550); //screenName=gifo77
+		for (int i=0; i<15; i++)
+			friendIds = twitter4jFacade.getFriendsIds(58477550);
+		assertTrue(friendIds.size()<5000);
+	}
 		
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void getMoreThan5000FriendsIdsTEST() throws TwitterException {
 		List<Long> followerIds = twitter4jFacade.getFriendsIds(14831419); //screenName=mattuk
 		logger.info("#############################");
@@ -107,7 +113,7 @@ public class Twitter4jFacadeTEST {
 	@Test(enabled=true)
 	public void getUsersJsonsTEST() throws TwitterException {
 		List<Long> followerIds = new ArrayList<Long>();
-		for (long i=0; i<2023; i++)
+		for (long i=0; i<854; i++)
 			followerIds.add(435668609+i);
 		twitter4jFacade.getUsersJsons(followerIds);
 	}

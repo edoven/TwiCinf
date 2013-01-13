@@ -58,9 +58,10 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 		solveDependencies();
 		
 		Map<Long, Integer> node2inDegree = new HashMap<Long, Integer>();
-		for (Long userId : followersAndFriends)
+		for (Long userId : followersAndFriends) {
 			try {
-				node2inDegree.put(userId, graphFacade.getInDegree(userId));
+				int inDegree = graphFacade.getInDegree(userId);
+				node2inDegree.put(userId, inDegree);
 			} catch (UserVertexNotPresent e) {
 				e.printStackTrace();
 				System.exit(0);
@@ -68,10 +69,13 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 				e.printStackTrace();
 				System.exit(0);
 			}
+		}
+		logger.info("node2inDegree.size()="+node2inDegree.size());
 		Map<Long, Integer> node2outDegree = new HashMap<Long, Integer>();
-		for (Long userId : followersAndFriends)
+		for (Long userId : followersAndFriends) {
 			try {
-				node2outDegree.put(userId, graphFacade.getOutDegree(userId));
+				int outDegree = graphFacade.getOutDegree(userId);
+				node2outDegree.put(userId, outDegree);
 			} catch (UserVertexNotPresent e) {
 				e.printStackTrace();
 				System.exit(0);
@@ -79,20 +83,25 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 				e.printStackTrace();
 				System.exit(0);
 			}
+		}
+		logger.info("node2outDegree.size()="+node2outDegree.size());
 		
 		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(
 											node2inDegree, 
 											inDegreeAbsoluteThreshold, 
 											ComparisonOption.GREATER_OR_EQUAL);
 		List<Long> inDegreeFiltered = inDegreeFilter.filter();
+		logger.info("inDegreeFiltered.size()="+inDegreeFiltered.size());
 		
 		NodeDegreeFilter outDegreeFilter = new NodeDegreeFilter(
 											node2outDegree, 
 											outDegreeAbsoluteThreshold, 
 											ComparisonOption.GREATER_OR_EQUAL);
 		List<Long> outDegreeFiltered = outDegreeFilter.filter();
+		logger.info("outDegreeFiltered.size()="+outDegreeFiltered.size());
 		
 		List<Long> inAndOutDegreeFiltered = putListsInAnd(inDegreeFiltered,outDegreeFiltered);
+		logger.info("inAndOutDegreeFiltered.size()="+inAndOutDegreeFiltered.size());
 		return inAndOutDegreeFiltered;
 		
 	}
@@ -113,13 +122,22 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	private void populateFollowersAndFriends() {
 		followersAndFriends = new ArrayList<Long>();
 		
-		for (Long userId : seedUsers) {					
-			try {
-				followersAndFriends.addAll(twitterFacade.getFollowers(userId));
-				followersAndFriends.addAll(twitterFacade.getFriends(userId));			
-			} catch (TwitterException e) {
-				logger.info("Problem with user with id "+userId+". User skipped.");
-			}			
+		for (Long userId : seedUsers) {		
+			boolean problemWithUser = false;
+			for (int i=0; i<3; i++) {
+				try {
+					List<Long> followers = twitterFacade.getFollowers(userId);
+					followersAndFriends.addAll(followers);
+					List<Long> friends = twitterFacade.getFriends(userId);
+					followersAndFriends.addAll(friends);
+					break;
+				} catch (TwitterException e) {
+					logger.info("populateFollowersAndFriends: Problem with user with id "+userId+". Let's retry.");
+					problemWithUser = true;
+				}
+			}
+			if (problemWithUser == true)
+				logger.info("populateFollowersAndFriends: Problem with user with id "+userId+". User skipped.");
 		}
 		followersAndFriends.removeAll(seedUsers);
 		//remove duplicates

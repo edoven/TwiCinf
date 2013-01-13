@@ -10,7 +10,7 @@ import it.cybion.influencers.twitter.persistance.PersistanceFacade;
 import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.web.TwitterWebFacade;
 import it.cybion.influencers.twitter.web.twitter4j.Token;
-import it.cybion.influencers.twitter.web.twitter4j.Twitter4jFacade;
+import it.cybion.influencers.twitter.web.twitter4j.Twitter4jWebFacade;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
@@ -21,14 +21,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-
+import twitter4j.TwitterException;
 
 public class Food46 {
 	
 	private static final Logger logger = Logger.getLogger(Food46.class);
 
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, TwitterException {
 
 		int iterations = 1;
 		GraphFacade graphFacade = getGraphFacade();
@@ -42,7 +42,13 @@ public class Food46 {
 																				twitterFacade, 
 																				filterManagers);
 		logger.info("#######");
-		logger.info("Possible influencers = "+influencersDiscoverer.getInfluencers());
+		List<Long> influencers = influencersDiscoverer.getInfluencers();
+		logger.info("Possible influencers = "+influencers);
+		for (Long userId : influencers) {
+			String description = twitterFacade.getDescription(userId).replace('\n', ' ').replace('\r',' ');
+			logger.info(twitterFacade.getScreenName(userId)+" - "+description);
+		}
+		System.exit(0);
 	}
 
 	
@@ -70,7 +76,7 @@ public class Food46 {
 		Token userToken6 = new Token("/home/godzy/tokens/token6.txt");
 		userTokens.add(userToken6);
 		
-		TwitterWebFacade twitterWebFacade = new Twitter4jFacade(applicationToken, userTokens);
+		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "users", "users");
 		TwitterFacade twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 		return twitterFacade;

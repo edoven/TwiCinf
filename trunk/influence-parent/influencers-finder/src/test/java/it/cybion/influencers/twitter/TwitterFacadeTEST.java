@@ -14,7 +14,7 @@ import it.cybion.influencers.twitter.persistance.PersistanceFacade;
 import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.web.TwitterWebFacade;
 import it.cybion.influencers.twitter.web.twitter4j.Token;
-import it.cybion.influencers.twitter.web.twitter4j.Twitter4jFacade;
+import it.cybion.influencers.twitter.web.twitter4j.Twitter4jWebFacade;
 
 public class TwitterFacadeTEST {
 	
@@ -39,7 +39,7 @@ public class TwitterFacadeTEST {
 		Token userToken6 = new Token("/home/godzy/tokens/token6.txt");
 		userTokens.add(userToken6);
 		
-		TwitterWebFacade twitterWebFacade = new Twitter4jFacade(applicationToken, userTokens);
+		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb", "testcollection");
 		twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 	}

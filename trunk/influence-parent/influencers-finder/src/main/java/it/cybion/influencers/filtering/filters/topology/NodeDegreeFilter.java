@@ -27,50 +27,52 @@ public class NodeDegreeFilter implements Filter {
 		this.node2degree = node2degree;
 		this.threshold = threshold;
 		this.comparisonOption = comparisonOption;
-		//logger.info("node2degree.size()="+node2degree.size());
 	}
 
 
 	@Override
 	public List<Long> filter() {
-		List<Long> goodNodes = new ArrayList<Long>();
-		
-			switch (comparisonOption) {
-				case EQUAL:
-					for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
-						//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
-						if (mapEntry.getValue() == threshold)
-							goodNodes.add(mapEntry.getKey());
-					}
-					break;
-				case GREATER:
-					for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
-						//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
-						if (mapEntry.getValue() > threshold)
-							goodNodes.add(mapEntry.getKey());
-					}					
-					break;
-				case GREATER_OR_EQUAL:
-					for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
-						//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
-						if (mapEntry.getValue() >= threshold)
-							goodNodes.add(mapEntry.getKey());
-					}
-					break;
-				case SMALLER:
-					for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
-						//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
-						if (mapEntry.getValue() < threshold)
-							goodNodes.add(mapEntry.getKey());
-					}
-					break;
-				case SMALLER_OR_EQUAL:
-					for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
-						//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
-						if (mapEntry.getValue() <= threshold)
-							goodNodes.add(mapEntry.getKey());	
-					}
-					break;
+		List<Long> goodNodes = new ArrayList<Long>();	
+		switch (comparisonOption) {
+			case EQUAL: {
+				for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
+					if (mapEntry.getValue() == threshold)
+						goodNodes.add(mapEntry.getKey());
+				}
+				break;
+			}
+			case GREATER: {
+				for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
+					//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
+					if (mapEntry.getValue() > threshold)
+						goodNodes.add(mapEntry.getKey());
+				}					
+				break;
+			}
+			case GREATER_OR_EQUAL: {
+				for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
+					//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
+					if (mapEntry.getValue() >= threshold)
+						goodNodes.add(mapEntry.getKey());
+				}
+				break;
+			}
+			case SMALLER: {
+				for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
+					//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
+					if (mapEntry.getValue() < threshold)
+						goodNodes.add(mapEntry.getKey());
+				}
+				break;
+			}
+			case SMALLER_OR_EQUAL: {
+				for (Entry<Long,Integer> mapEntry : node2degree.entrySet()) {
+					//logger.info(mapEntry.getKey()+"-"+mapEntry.getValue());
+					if (mapEntry.getValue() <= threshold)
+						goodNodes.add(mapEntry.getKey());	
+				}
+				break;
+			}
 		}
 		return goodNodes;
 	}

@@ -140,6 +140,16 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 		else
 			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
 	}
+	
+	@Override
+	public String getScreenName(Long userId) throws UserNotPresentException, UserNotProfileEnriched {
+		String userJson = getUser(userId);
+		DBObject user = (DBObject) JSON.parse(userJson);
+		if (user.containsField("screen_name"))
+			return (String) user.get("screen_name");
+		else
+			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
+	}
 
 	@Override
 	public List<Long> getFollowers(Long userId) throws  UserNotPresentException, UserNotFollowersEnrichedException {
