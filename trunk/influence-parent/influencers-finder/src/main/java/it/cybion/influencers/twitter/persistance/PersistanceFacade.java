@@ -15,6 +15,8 @@ public interface PersistanceFacade {
 	void putFollowers(Long userId, List<Long> followersJsons) throws UserNotPresentException;
 	
 	void removeUser(Long userId);
+	int getFollowersCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched;
+	int getFriendsCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched;
 	
 		
 }

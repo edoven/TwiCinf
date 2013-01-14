@@ -30,7 +30,7 @@ public class Food46 {
 	
 	public static void main(String[] args) throws IOException, TwitterException {
 
-		int iterations = 1;
+		int iterations = 2;
 		GraphFacade graphFacade = getGraphFacade();
 		TwitterFacade twitterFacade = getTwitterFacade();
 		List<Long> usersIds = getUsersIds();
@@ -45,10 +45,10 @@ public class Food46 {
 		logger.info("Possible influencers = "+influencers);
 		for (Long userId : influencers) {
 			String description = twitterFacade.getDescription(userId).replace('\n', ' ').replace('\r',' ');
-			int followerCount = twitterFacade.getFollowers(userId).size();
-			int friendsCount = twitterFacade.getFriends(userId).size();
+			int followersCount = twitterFacade.getFollowersCount(userId);
+			int friendsCount = twitterFacade.getFriendsCount(userId);
 			logger.info(twitterFacade.getScreenName(userId)+" - "+
-						followerCount+" - "+
+						followersCount+" - "+
 						friendsCount+" - "+
 						description);
 		}
