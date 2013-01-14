@@ -14,6 +14,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+
 import twitter4j.TwitterException;
 
 /*
@@ -66,6 +69,44 @@ public class TwitterFacade {
 		}	
 	}
 	
+	public Map<Long,String> getDescriptions(List<Long> userIds) {
+		Map<Long,String> userToDescription = new HashMap<Long,String>();
+		List<Long> usersToDownload = new ArrayList<Long>();		
+		for (Long userId : userIds) {			
+			try {
+				String description = persistanceFacade.getDescription(userId);
+				userToDescription.put(userId, description);
+			} catch (UserNotPresentException e) {
+				usersToDownload.add(userId);
+			} catch (UserNotProfileEnriched e) {
+				usersToDownload.add(userId);
+			}			
+		}		
+		List<String> downloadedUsersJsons = twitterWebFacade.getUsersJsons(usersToDownload);
+		for (String userJson : downloadedUsersJsons)
+			persistanceFacade.putUser(userJson);
+		for (String donwloadedUserJson : downloadedUsersJsons) {
+			/*
+			 * It's not good to use mongDb object (DBObject) to extract
+			 * the id from the user json string!
+			 * TODO: use another way of doing this!
+			 */
+			DBObject downloadedUserObject = (DBObject) JSON.parse(donwloadedUserJson);
+			long userId = new Long ((Integer) downloadedUserObject.get("id"));
+			try {				
+				String description = persistanceFacade.getDescription(userId);
+				userToDescription.put(userId, description);
+			} catch (UserNotPresentException e) {
+				logger.info("ERROR! User with id "+userId+" can't be added to caching system.");
+				System.exit(0);
+			} catch (UserNotProfileEnriched e) {
+				logger.info("ERROR! User with id "+userId+" can't be added to caching system.");
+				System.exit(0);
+			}
+		}
+		return userToDescription;
+	}
+	
 	public String getScreenName(Long userId) throws TwitterException  {
 		try {
 			String description = persistanceFacade.getScreenName(userId);
@@ -85,40 +126,7 @@ public class TwitterFacade {
 		}	
 	}
 	
-	/*
-	 * This use the new TwitterAPI 1.1 function to get
-	 * up to 100 users profiles with one request
-	 */
-	public Map<Long,String> getDescriptions(List<Long> userIds) throws TwitterException {
-		Map<Long,String> userToDescription = new HashMap<Long,String>();
-		List<Long> usersToDownload = new ArrayList<Long>();		
-		for (Long userId : userIds) {			
-			try {
-				String description = persistanceFacade.getDescription(userId);
-				userToDescription.put(userId, description);
-			} catch (UserNotPresentException e) {
-				usersToDownload.add(userId);
-			} catch (UserNotProfileEnriched e) {
-				usersToDownload.add(userId);
-			}			
-		}		
-		List<String> usersJson = twitterWebFacade.getUsersJsons(usersToDownload);
-		for (String userJson : usersJson)
-			persistanceFacade.putUser(userJson);
-		for (Long userDownloaded : usersToDownload) {
-			try {
-				String description = persistanceFacade.getDescription(userDownloaded);
-				userToDescription.put(userDownloaded, description);
-			} catch (UserNotPresentException e) {
-				logger.info("ERROR! User with id "+userDownloaded+" can't be added to caching system.");
-				System.exit(0);
-			} catch (UserNotProfileEnriched e) {
-				logger.info("ERROR! User with id "+userDownloaded+" can't be added to caching system.");
-				System.exit(0);
-			}
-		}
-		return userToDescription;
-	}
+	
 
 	
 	public List<Long> getFollowers(Long userId) throws TwitterException {

@@ -1,11 +1,11 @@
-package it.cybion.influencers.filtering.filters.content;
+package it.cybion.influencers.filtering.contentbased;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import it.cybion.influencers.filtering.filters.Filter;
+import it.cybion.influencers.filtering.Filter;
 
 public class DescriptionDictionaryFilter implements Filter {
 
@@ -16,11 +16,6 @@ public class DescriptionDictionaryFilter implements Filter {
 									   Map<Long,String> user2description) {
 		super();
 		this.dictionary = dictionary;	
-		this.user2description = user2description;
-	}
-	
-
-	public void setDescriptions(Map<Long,String> user2description) {
 		this.user2description = user2description;
 	}
 

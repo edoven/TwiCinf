@@ -1,6 +1,6 @@
-package it.cybion.influencers.filtering.managers.topology;
+package it.cybion.influencers.filtering.topologybased;
 
-import it.cybion.influencers.filtering.managers.ExpansionDirection;
+import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.neo4j.Neo4jGraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
@@ -22,12 +22,10 @@ import org.testng.annotations.Test;
 
 import twitter4j.TwitterException;
 
-public class NodeDegreeFilterManagerTEST {
+public class InAndOutDegreeFilterManagerTEST {
 	
-	
-	private static final Logger logger = Logger.getLogger(NodeDegreeFilterManagerTEST.class);
+	private static final Logger logger = Logger.getLogger(InAndOutDegreeFilterManagerTEST.class);
 
-	
 	private TwitterFacade twitterFacade;
 	private GraphFacade graphFacade;
 	
@@ -58,11 +56,7 @@ public class NodeDegreeFilterManagerTEST {
 		seedUsers.add(id1);
 		seedUsers.add(id2);
 		
-		NodeDegreeFilterManager filterManager = new NodeDegreeFilterManager(
-				ExpansionDirection.FOLLOWERS_AND_FRIENDS,
-				DegreeDirection.IN,
-				ComparisonOption.GREATER_OR_EQUAL, 
-				1.0);
+		InAndOutDegreeFilterManager filterManager = new InAndOutDegreeFilterManager(1.0, 0.5);
 		filterManager.setGraphFacade(graphFacade);
 		filterManager.setTwitterFacade(twitterFacade);
 		filterManager.setSeedUsers(seedUsers);

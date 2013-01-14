@@ -1,10 +1,10 @@
-package it.cybion.influencers.filtering.filters.content;
+package it.cybion.influencers.filtering.contentbased;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import it.cybion.influencers.filtering.filters.Filter;
+import it.cybion.influencers.filtering.Filter;
 
 public class FollowersCountFilter implements Filter {
 

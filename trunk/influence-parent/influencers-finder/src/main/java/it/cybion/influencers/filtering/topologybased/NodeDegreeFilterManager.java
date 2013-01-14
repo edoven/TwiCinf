@@ -1,4 +1,4 @@
-package it.cybion.influencers.filtering.managers.topology;
+package it.cybion.influencers.filtering.topologybased;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,9 +10,8 @@ import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
 
-import it.cybion.influencers.filtering.filters.topology.NodeDegreeFilter;
-import it.cybion.influencers.filtering.managers.ExpansionDirection;
-import it.cybion.influencers.filtering.managers.FilterManager;
+import it.cybion.influencers.filtering.ExpansionDirection;
+import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.InDegreeNotSetException;
 import it.cybion.influencers.graph.OutDegreeNotSetException;

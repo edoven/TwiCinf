@@ -53,7 +53,7 @@ public class Twitter4jWebFacadeTEST {
 		twitter4jFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 	}
 		
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void getUserJsonTEST() throws TwitterException {
 		String user = twitter4jFacade.getUserJson(813286l); //BarackObama
 		assertTrue(user.contains("Barack Obama"));
@@ -62,7 +62,7 @@ public class Twitter4jWebFacadeTEST {
 		assertTrue(user.contains("This account is run by"));
 	}
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void getLessThan5000FollowersIdsTEST() throws TwitterException {
 		List<Long> followerIds = twitter4jFacade.getFollowersIds(58477550);  //screenName=gifo77
 		logger.info("#############################");
@@ -72,7 +72,7 @@ public class Twitter4jWebFacadeTEST {
 		assertTrue(followerIds.size()<5000);
 	}
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void getMoreThan5000FollowersIdsTEST() throws TwitterException {
 		List<Long> followerIds = twitter4jFacade.getFollowersIds(444712353); //screenName=ChiaraMaci
 		logger.info("#############################");
@@ -82,7 +82,7 @@ public class Twitter4jWebFacadeTEST {
 		assertTrue(followerIds.size()>5000);
 	}
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void getLessThan5000FriendsIdsTEST() throws TwitterException {
 		List<Long> friendIds = twitter4jFacade.getFriendsIds(58477550); //screenName=gifo77
 		logger.info("#############################");
@@ -92,7 +92,7 @@ public class Twitter4jWebFacadeTEST {
 		assertTrue(friendIds.size()<5000);
 	}
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void getFriendsIdsRepeatedRequestsTEST() throws TwitterException {
 		List<Long> friendIds = twitter4jFacade.getFriendsIds(58477550); //screenName=gifo77
 		for (int i=0; i<15; i++)
@@ -100,7 +100,7 @@ public class Twitter4jWebFacadeTEST {
 		assertTrue(friendIds.size()<5000);
 	}
 		
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void getMoreThan5000FriendsIdsTEST() throws TwitterException {
 		List<Long> followerIds = twitter4jFacade.getFriendsIds(14831419); //screenName=mattuk
 		logger.info("#############################");
@@ -113,7 +113,7 @@ public class Twitter4jWebFacadeTEST {
 	@Test(enabled=true)
 	public void getUsersJsonsTEST() throws TwitterException {
 		List<Long> followerIds = new ArrayList<Long>();
-		for (long i=0; i<854; i++)
+		for (long i=0; i<101; i++)
 			followerIds.add(435668609+i);
 		twitter4jFacade.getUsersJsons(followerIds);
 	}

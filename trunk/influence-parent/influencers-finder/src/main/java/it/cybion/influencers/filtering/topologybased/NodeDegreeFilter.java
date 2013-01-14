@@ -1,4 +1,4 @@
-package it.cybion.influencers.filtering.filters.topology;
+package it.cybion.influencers.filtering.topologybased;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import it.cybion.influencers.filtering.filters.Filter;
-import it.cybion.influencers.filtering.managers.topology.ComparisonOption;
+import it.cybion.influencers.filtering.Filter;
 
 
 public class NodeDegreeFilter implements Filter {

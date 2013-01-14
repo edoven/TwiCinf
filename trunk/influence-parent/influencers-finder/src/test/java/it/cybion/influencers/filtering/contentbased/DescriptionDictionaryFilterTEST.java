@@ -1,5 +1,7 @@
-package it.cybion.influencers.filtering.filters.content;
+package it.cybion.influencers.filtering.contentbased;
 
+
+import it.cybion.influencers.filtering.contentbased.DescriptionDictionaryFilter;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
 package it.cybion.influencers;
 
-import it.cybion.influencers.filtering.managers.FilterManager;
+import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
 

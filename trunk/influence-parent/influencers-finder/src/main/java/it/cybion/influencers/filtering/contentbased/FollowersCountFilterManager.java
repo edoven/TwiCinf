@@ -1,4 +1,4 @@
-package it.cybion.influencers.filtering.managers.content;
+package it.cybion.influencers.filtering.contentbased;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,8 +8,7 @@ import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
 
-import it.cybion.influencers.filtering.filters.content.FollowersCountFilter;
-import it.cybion.influencers.filtering.managers.FilterManager;
+import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
 

@@ -1,4 +1,4 @@
-package it.cybion.influencers.filtering.filters;
+package it.cybion.influencers.filtering;
 
 import java.util.List;
 

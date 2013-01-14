@@ -1,8 +1,8 @@
 package it.cybion.influencers;
 
-import it.cybion.influencers.filtering.managers.FilterManager;
-import it.cybion.influencers.filtering.managers.content.DescriptionDictionaryFilterManager;
-import it.cybion.influencers.filtering.managers.topology.InAndOutDegreeFilterManager;
+import it.cybion.influencers.filtering.FilterManager;
+import it.cybion.influencers.filtering.contentbased.DescriptionDictionaryFilterManager;
+import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.neo4j.Neo4jGraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
@@ -41,7 +41,6 @@ public class Food46 {
 																				graphFacade, 
 																				twitterFacade, 
 																				filterManagers);
-		logger.info("#######");
 		List<Long> influencers = influencersDiscoverer.getInfluencers();
 		logger.info("Possible influencers = "+influencers);
 		for (Long userId : influencers) {

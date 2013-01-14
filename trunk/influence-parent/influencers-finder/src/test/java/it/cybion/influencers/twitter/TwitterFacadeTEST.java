@@ -97,5 +97,15 @@ public class TwitterFacadeTEST {
 		friendIds = twitterFacade.getFriends(426724668l);
 		logger.info("Friends number = "+friendIds.size());
 	}
+	
+	@Test(enabled=true)
+	public void getDescriptionsTEST() throws TwitterException {
+		List<Long> ids = new ArrayList<Long>();
+		ids.add(426724668l);
+		ids.add(887469007l);
+		ids.add(14230524l);
+		//ids.add(43246534L);
+		logger.info(twitterFacade.getDescriptions(ids));
+	}
 
 }

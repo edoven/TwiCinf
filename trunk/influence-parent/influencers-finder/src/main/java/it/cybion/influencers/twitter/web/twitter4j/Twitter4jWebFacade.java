@@ -52,7 +52,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 	}
 	
 
-	//Factorized method to execute requests
+	//Factorized method to execute a single request
 	private Object executeRequest(RequestName requestName, List<Object> requestParameters) throws MethodInputNotCorrectException, TwitterException {
 		Object requestResult = null;
 		int currentUserHandlerIndex = lastUsedHandlerIndex;
@@ -107,8 +107,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		}
 		lastUsedHandlerIndex = currentUserHandlerIndex;
 		logger.debug("requestResult="+requestResult);
-		return requestResult;
-		
+		return requestResult;		
 	}
 	
 	@Override
@@ -183,13 +182,15 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 	public List<String> getUsersJsons(List<Long> usersIds) {
 		List<String> usersJsons = new ArrayList<String>();
 		int listSize = usersIds.size();
+		logger.info("listSize="+listSize);
 		int chunkSize = 100;	
 		int remainder = (listSize%chunkSize);		
-		int chunksCount = listSize / chunkSize;	
+		int chunksCount = listSize / chunkSize;			
 		if (remainder>0)
 			chunksCount++;
 		for (int i=0; i<chunksCount; i++) {
 			long[] chunk = getChunk(usersIds, 100, i);
+			logger.info("chunk.length="+chunk.length);
 			try {
 				List<String> chunkResult = getUpTo100Users(chunk);				
 				usersJsons.addAll(chunkResult);
@@ -204,19 +205,21 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 	}
 	
 	private long[] getChunk(List<Long> list, int chunkSize, int chunkIndex) {
-		int start = chunkIndex*chunkSize;
-		int end = chunkIndex*chunkSize + chunkSize;
-		if (end > list.size()) {
-			end = list.size()-1;
-			chunkSize = end-start;
+		int firstElementIndex = chunkIndex*chunkSize;
+		logger.info("firstElementIndex="+firstElementIndex);
+		int lastElementIndex = chunkIndex*chunkSize + chunkSize;
+		logger.info("lastElementIndex="+lastElementIndex);
+		if (lastElementIndex > list.size()) {
+			lastElementIndex = list.size();
+			chunkSize = lastElementIndex-firstElementIndex;
 		}
-		List<Long> chunkList = list.subList(start, end);
+		logger.info("end="+lastElementIndex);
+		List<Long> chunkList = list.subList(firstElementIndex, lastElementIndex);
 		long chunkArray[] = new long[chunkList.size()];
 		for (int i=0; i<chunkSize; i++)
 			chunkArray[i] = chunkList.get(i);
 		return chunkArray;
 	}
-
 	
 	private List<String> getUpTo100Users(long[] usersIds) throws TwitterException, MethodInputNotCorrectException  {
 		RequestName requestname = RequestName.GET_UP_TO_100_USERS;

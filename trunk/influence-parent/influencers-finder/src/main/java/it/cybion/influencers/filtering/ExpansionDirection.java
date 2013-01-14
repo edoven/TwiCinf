@@ -1,4 +1,4 @@
-package it.cybion.influencers.filtering.managers;
+package it.cybion.influencers.filtering;
 
 public enum ExpansionDirection {
 	SEEDS,
