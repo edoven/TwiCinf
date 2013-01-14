@@ -58,7 +58,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		int currentUserHandlerIndex = lastUsedHandlerIndex;
 		for (int i=0; i<userHandlers.size(); i++) {
 			currentUserHandlerIndex = (currentUserHandlerIndex+1) % userHandlers.size();
-			logger.info("using handler ="+currentUserHandlerIndex);
+			logger.debug("using handler ="+currentUserHandlerIndex);
 			UserHandler userHandler = userHandlers.get(currentUserHandlerIndex);			
 			try {
 				switch (requestName) {
@@ -66,23 +66,27 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 						long[] usersIds = (long[])requestParameters.get(0);
 						List<String> usersJsons =  userHandler.getUsersJsons(usersIds);
 						requestResult =  usersJsons;
+						break;
 					}
 					case GET_FRIENDS_IDS_WITH_PAGINATION: {
 						long userId = (Long) requestParameters.get(0);
 						long cursor = (Long) requestParameters.get(1);
 						IDs result = userHandler.getFriendsWithPagination(userId, cursor);
 						requestResult = result;
+						break;
 					}
 					case GET_FOLLOWERS_IDS_WITH_PAGINATION: {
 						long userId = (Long) requestParameters.get(0);
 						long cursor = (Long) requestParameters.get(1);
 						IDs result = userHandler.getFollowersWithPagination(userId, cursor);
 						requestResult = result;
+						break;
 					}
 					case GET_USER_JSON: {
 						long userId = (Long) requestParameters.get(0);
 						String result = userHandler.getUserJson(userId);
 						requestResult = result;
+						break;
 					}
 				}
 			} catch (LimitReachedForCurrentRequestException e) {
@@ -93,7 +97,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 			//this point is reached if all tokens have reached the limit for this request
 			try {
 				logger.info("All handlers have reached the limit, let's wait for "+WAIT_TIME+" min");
-				Thread.sleep(1000*60*WAIT_TIME);
+				Thread.sleep(WAIT_TIME*60*1000);
 				return executeRequest(requestName, requestParameters);
 			} catch (InterruptedException e1) {
 				logger.info("Problem in Thread.sleep().");
@@ -102,6 +106,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 			}	
 		}
 		lastUsedHandlerIndex = currentUserHandlerIndex;
+		logger.debug("requestResult="+requestResult);
 		return requestResult;
 		
 	}

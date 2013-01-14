@@ -46,7 +46,12 @@ public class Food46 {
 		logger.info("Possible influencers = "+influencers);
 		for (Long userId : influencers) {
 			String description = twitterFacade.getDescription(userId).replace('\n', ' ').replace('\r',' ');
-			logger.info(twitterFacade.getScreenName(userId)+" - "+description);
+			int followerCount = twitterFacade.getFollowers(userId).size();
+			int friendsCount = twitterFacade.getFriends(userId).size();
+			logger.info(twitterFacade.getScreenName(userId)+" - "+
+						followerCount+" - "+
+						friendsCount+" - "+
+						description);
 		}
 		System.exit(0);
 	}
