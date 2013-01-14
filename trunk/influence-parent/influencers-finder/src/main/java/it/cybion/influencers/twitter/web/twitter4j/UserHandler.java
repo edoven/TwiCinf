@@ -106,7 +106,7 @@ public class UserHandler {
 	public IDs getFollowersWithPagination(long userId, long cursor) throws TwitterException, LimitReachedForCurrentRequestException {
 		String requestName = "/followers/ids";
 		int limit = requestType2limit.get(requestName);
-		logger.info("limit for getFollowersWithPagination="+limit);
+		logger.debug("limit for getFollowersWithPagination="+limit);
 		if (limit<=0)
 			throw new LimitReachedForCurrentRequestException();			
 		IDs result = twitter.getFollowersIDs(userId, cursor);
@@ -117,7 +117,7 @@ public class UserHandler {
 	public IDs getFriendsWithPagination(long userId, long cursor) throws TwitterException, LimitReachedForCurrentRequestException {
 		String requestName = "/friends/ids";
 		int limit = requestType2limit.get(requestName);
-		logger.info("limit for getFriendsWithPagination="+limit);
+		logger.debug("limit for getFriendsWithPagination="+limit);
 		if (limit<=0)
 			throw new LimitReachedForCurrentRequestException();		
 		IDs result = twitter.getFriendsIDs(userId, cursor);
