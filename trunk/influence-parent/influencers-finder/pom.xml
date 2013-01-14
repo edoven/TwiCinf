@@ -14,14 +14,26 @@
 	<name>Cybion Twitter Influence Calculator - Model</name>
 
 
+	<repositories>
+      <repository>
+         <id>twitter4j.org</id>
+         <name>twitter4j.org Repository</name>
+         <url>http://twitter4j.org/maven2</url>
+         <releases>
+            <enabled>true</enabled>
+         </releases>
+         <snapshots>
+            <enabled>true</enabled>
+         </snapshots>
+      </repository>
+   </repositories>
+
 	<dependencies>
-		<!--	
 		<dependency>
-			<groupId>org.twitter4j</groupId>
-			<artifactId>twitter4j-core</artifactId>
-			<version>3.0.4-SNAPSHOT</version>
-		</dependency>
-		-->
+        	<groupId>org.twitter4j</groupId>
+        	<artifactId>twitter4j-core</artifactId>
+        	<version>3.0.4-SNAPSHOT</version>
+     	</dependency>
 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
