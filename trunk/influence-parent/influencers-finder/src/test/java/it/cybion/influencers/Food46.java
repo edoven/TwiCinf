@@ -67,7 +67,7 @@ public class Food46 {
 	private static TwitterFacade getTwitterFacade() throws UnknownHostException {
 		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.txt");
 		List<Token> userTokens = new ArrayList<Token>();
-		Token userToken1 = new Token("tokens/token1.txt"); 
+		Token userToken1 = new Token("/home/godzy/tokens/token1.txt"); 
 		userTokens.add(userToken1);
 		Token userToken2 = new Token("/home/godzy/tokens/token2.txt");
 		userTokens.add(userToken2);

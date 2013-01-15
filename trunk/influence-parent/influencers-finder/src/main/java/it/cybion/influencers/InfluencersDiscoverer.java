@@ -32,7 +32,7 @@ public class InfluencersDiscoverer {
 
 	public List<Long> getInfluencers()  {
 		for (int iterationIndex=0; iterationIndex<iterations; iterationIndex++) {
-			logger.info("#### ITERATION "+iterationIndex+" #####");
+			logger.info("#### ITERATION "+(iterationIndex+1)+" #####");
 			for (int filterIndex=0; filterIndex<filterManagers.size(); filterIndex++) {
 				FilterManager filterManager = filterManagers.get(filterIndex);
 				logger.info("#### filter "+(filterIndex+1)+"/"+filterManagers.size()+" "+filterManager.getClass().getName()+" ####");			

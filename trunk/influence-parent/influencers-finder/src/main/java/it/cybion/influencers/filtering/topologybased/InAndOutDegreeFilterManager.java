@@ -115,15 +115,18 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	
 	private void calculateThresholds() {
 		inDegreeAbsoluteThreshold = (int) Math.round((inDegreePercentageThreshold * seedUsers.size()));
+		logger.info("inDegreeAbsoluteThreshold="+inDegreeAbsoluteThreshold);
 		outDegreeAbsoluteThreshold = (int) Math.round((outDegreePercentageThreshold * seedUsers.size()));
+		logger.info("outDegreeAbsoluteThreshold="+outDegreeAbsoluteThreshold);
 	}
 	
 	private void populateFollowersAndFriends() {
 		followersAndFriends = new ArrayList<Long>();
-		
+		int usersCount=0;
 		for (Long userId : seedUsers) {		
+			logger.info("populateFollowersAndFriends() for user "+(++usersCount)+"/"+seedUsers.size());
 			boolean problemWithUser = false;
-			for (int i=0; i<3; i++) {
+			for (int i=0; i<1; i++) { //1 try
 				try {
 					List<Long> followers = twitterFacade.getFollowers(userId);
 					followersAndFriends.addAll(followers);

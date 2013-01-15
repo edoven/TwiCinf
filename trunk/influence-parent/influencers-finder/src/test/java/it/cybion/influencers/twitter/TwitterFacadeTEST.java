@@ -40,7 +40,7 @@ public class TwitterFacadeTEST {
 		userTokens.add(userToken6);
 		
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb", "testcollection");
+		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testds", "test");
 		twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 	}
 
@@ -54,12 +54,12 @@ public class TwitterFacadeTEST {
 	
 	
 	
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void getFriends() throws TwitterException {
-		List<Long> friendIds = twitterFacade.getFriends(426724668l);
+		List<Long> friendIds = twitterFacade.getFriends(253956088L);
 		logger.info(friendIds.size());
 		
-		friendIds = twitterFacade.getFriends(887469007l);
+		friendIds = twitterFacade.getFriends(253956088L);
 		logger.info("Friends number = "+friendIds.size());
 	}
 	
@@ -73,7 +73,7 @@ public class TwitterFacadeTEST {
 	}
 	
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void testIfTheFollowersAreSavedInTheCache() throws TwitterException {
 		List<Long> followersIds = twitterFacade.getFollowers(426724668l);
 		logger.info("Followers number = "+followersIds.size());
@@ -86,7 +86,7 @@ public class TwitterFacadeTEST {
 	}
 
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void testIfTheFriendsAreSavedInTheCache() throws TwitterException {
 		List<Long> friendIds = twitterFacade.getFriends(426724668l);
 		logger.info("Friends number = "+friendIds.size());
@@ -98,7 +98,7 @@ public class TwitterFacadeTEST {
 		logger.info("Friends number = "+friendIds.size());
 	}
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void getDescriptionsTEST() throws TwitterException {
 		List<Long> ids = new ArrayList<Long>();
 		ids.add(426724668l);

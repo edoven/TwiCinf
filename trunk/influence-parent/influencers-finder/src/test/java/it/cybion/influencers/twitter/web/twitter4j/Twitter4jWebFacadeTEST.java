@@ -36,20 +36,19 @@ public class Twitter4jWebFacadeTEST {
 		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.txt");
 		List<Token> userTokens = new ArrayList<Token>();
 		
-		Token userToken1 = new Token("/home/godzy/tokens/token1.txt"); 
-		userTokens.add(userToken1);
-		Token userToken2 = new Token("/home/godzy/tokens/token2.txt");
-		userTokens.add(userToken2);
-		Token userToken3 = new Token("/home/godzy/tokens/token3.txt");
-		userTokens.add(userToken3);
-		Token userToken4 = new Token("/home/godzy/tokens/token4.txt");
-		userTokens.add(userToken4);
+//		Token userToken1 = new Token("/home/godzy/tokens/token1.txt"); 
+//		userTokens.add(userToken1);
+//		Token userToken2 = new Token("/home/godzy/tokens/token2.txt");
+//		userTokens.add(userToken2);
+//		Token userToken3 = new Token("/home/godzy/tokens/token3.txt");
+//		userTokens.add(userToken3);
+//		Token userToken4 = new Token("/home/godzy/tokens/token4.txt");
+//		userTokens.add(userToken4);
 		Token userToken5 = new Token("/home/godzy/tokens/token5.txt");
 		userTokens.add(userToken5);
 		Token userToken6 = new Token("/home/godzy/tokens/token6.txt");
 		userTokens.add(userToken6);
-		
-		
+	
 		twitter4jFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 	}
 		
@@ -110,12 +109,12 @@ public class Twitter4jWebFacadeTEST {
 		assertTrue(followerIds.size()>5000);
 	}
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void getUsersJsonsTEST() throws TwitterException {
 		List<Long> followerIds = new ArrayList<Long>();
 		for (long i=0; i<101; i++)
 			followerIds.add(435668609+i);
 		twitter4jFacade.getUsersJsons(followerIds);
 	}
-	
+
 }

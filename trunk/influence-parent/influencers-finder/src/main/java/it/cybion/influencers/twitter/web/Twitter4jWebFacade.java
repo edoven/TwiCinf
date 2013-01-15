@@ -22,7 +22,6 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 	private static final Logger logger = Logger.getLogger(Twitter4jWebFacade.class);   
 	
 	private final int WAIT_TIME = 1; //time (in minutes) to wait if all user tokens have reached the request limit
-	private int lastUsedHandlerIndex = 0; //this is user for round-robin policy in handlers usage
 	
 	private enum RequestName {
 		GET_UP_TO_100_USERS,
@@ -50,64 +49,52 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		logger.info("UserHandlers created");
 	}
 	
-
 	//Factorized method to execute a single request
 	private Object executeRequest(RequestName requestName, List<Object> requestParameters) throws MethodInputNotCorrectException, TwitterException {
-		Object requestResult = null;
-		int currentUserHandlerIndex = lastUsedHandlerIndex;
 		for (int i=0; i<userHandlers.size(); i++) {
-			currentUserHandlerIndex = (currentUserHandlerIndex+1) % userHandlers.size();
-			logger.info("using handler ="+currentUserHandlerIndex);
-			UserHandler userHandler = userHandlers.get(currentUserHandlerIndex);			
+			//logger.info("Trying UserHandler "+i);
+			UserHandler userHandler = userHandlers.get(i);			
 			try {
 				switch (requestName) {
 					case GET_UP_TO_100_USERS: {
 						long[] usersIds = (long[])requestParameters.get(0);
 						List<String> usersJsons =  userHandler.getUsersJsons(usersIds);
-						requestResult =  usersJsons;
-						break;
+						return  usersJsons;
 					}
 					case GET_FRIENDS_IDS_WITH_PAGINATION: {
 						long userId = (Long) requestParameters.get(0);
 						long cursor = (Long) requestParameters.get(1);
 						IDs result = userHandler.getFriendsWithPagination(userId, cursor);
-						requestResult = result;
-						break;
+						return result;
 					}
 					case GET_FOLLOWERS_IDS_WITH_PAGINATION: {
 						long userId = (Long) requestParameters.get(0);
 						long cursor = (Long) requestParameters.get(1);
 						IDs result = userHandler.getFollowersWithPagination(userId, cursor);
-						requestResult = result;
-						break;
+						return result;
 					}
 					case GET_USER_JSON: {
 						long userId = (Long) requestParameters.get(0);
 						String result = userHandler.getUserJson(userId);
-						requestResult = result;
-						break;
+						return result;
 					}
 				}
 			} catch (LimitReachedForCurrentRequestException e) {
 				logger.debug("Token "+i+" has reached request limit for "+requestName);
-				logger.info(e.getLimits());
+				logger.debug("Limits = "+e.getLimits());
 			} 
 		}
-		if (requestResult == null) {
-			//this point is reached if all tokens have reached the limit for this request
-			try {
-				logger.info("All handlers have reached the limit, let's wait for "+WAIT_TIME+" min");
-				Thread.sleep(WAIT_TIME*60*1000);
-				return executeRequest(requestName, requestParameters);
-			} catch (InterruptedException e1) {
-				logger.info("Problem in Thread.sleep().");
-				System.exit(0);
-				return null;
-			}	
-		}
-		lastUsedHandlerIndex = currentUserHandlerIndex;
-		logger.debug("requestResult="+requestResult);
-		return requestResult;		
+
+		//this point is reached if all tokens have reached the limit for this request
+		try {
+			logger.info("All handlers have reached the limit, let's wait for "+WAIT_TIME+" min");
+			Thread.sleep(WAIT_TIME*60*1000);
+			return executeRequest(requestName, requestParameters);
+		} catch (InterruptedException e1) {
+			logger.info("Problem in Thread.sleep().");
+			System.exit(0);
+			return null;
+		}	
 	}
 	
 	@Override
@@ -180,6 +167,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 	
 	@Override
 	public List<String> getUsersJsons(List<Long> usersIds) {
+		logger.info("Downloading "+usersIds.size()+" users profiles");
 		List<String> usersJsons = new ArrayList<String>();
 		int listSize = usersIds.size();
 		logger.info("listSize="+listSize);
