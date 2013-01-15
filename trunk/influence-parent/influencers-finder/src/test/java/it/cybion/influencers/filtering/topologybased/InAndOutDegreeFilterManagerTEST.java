@@ -2,12 +2,12 @@ package it.cybion.influencers.filtering.topologybased;
 
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
-import it.cybion.influencers.graph.neo4j.Neo4jGraphFacade;
+import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
+import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
-import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
-import it.cybion.influencers.twitter.web.twitter4j.Token;
-import it.cybion.influencers.twitter.web.twitter4j.Twitter4jWebFacade;
+import it.cybion.influencers.twitter.web.Token;
+import it.cybion.influencers.twitter.web.Twitter4jWebFacade;
 import it.cybion.influencers.utils.FilesDeleter;
 import it.cybion.influencers.utils.TokenBuilder;
 

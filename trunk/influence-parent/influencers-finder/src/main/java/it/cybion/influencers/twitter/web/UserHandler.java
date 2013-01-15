@@ -1,4 +1,4 @@
-package it.cybion.influencers.twitter.web.twitter4j;
+package it.cybion.influencers.twitter.web;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,7 +77,7 @@ public class UserHandler {
 		int limit = requestType2limit.get(requestName);
 		logger.debug("limit for getUserJson="+limit);
 		if (limit<=0)
-			throw new LimitReachedForCurrentRequestException();		
+			throw new LimitReachedForCurrentRequestException(requestType2limit);		
 		String result =  DataObjectFactory.getRawJSON(twitter.showUser(userId));
 		requestType2limit.put(requestName, (limit-1) );
 		return result;
@@ -90,7 +90,7 @@ public class UserHandler {
 		int limit = requestType2limit.get(requestName);
 		logger.debug("limit for getUsersJsons="+limit);
 		if (limit<=0)
-			throw new LimitReachedForCurrentRequestException();		
+			throw new LimitReachedForCurrentRequestException(requestType2limit);		
 		ResponseList<User> responseList = twitter.lookupUsers(usersIds);
 		requestType2limit.put(requestName, (limit-1) );
 		List<String> result = new ArrayList<String>();
@@ -108,7 +108,7 @@ public class UserHandler {
 		int limit = requestType2limit.get(requestName);
 		logger.debug("limit for getFollowersWithPagination="+limit);
 		if (limit<=0)
-			throw new LimitReachedForCurrentRequestException();			
+			throw new LimitReachedForCurrentRequestException(requestType2limit);			
 		IDs result = twitter.getFollowersIDs(userId, cursor);
 		requestType2limit.put(requestName, (limit-1) );
 		return result;
@@ -119,7 +119,7 @@ public class UserHandler {
 		int limit = requestType2limit.get(requestName);
 		logger.debug("limit for getFriendsWithPagination="+limit);
 		if (limit<=0)
-			throw new LimitReachedForCurrentRequestException();		
+			throw new LimitReachedForCurrentRequestException(requestType2limit);		
 		IDs result = twitter.getFriendsIDs(userId, cursor);
 		requestType2limit.put(requestName, (limit-1) );
 		return result;

@@ -1,6 +1,5 @@
-package it.cybion.influencers.twitter.web.twitter4j;
+package it.cybion.influencers.twitter.web;
 
-import it.cybion.influencers.twitter.web.TwitterWebFacade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +57,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		int currentUserHandlerIndex = lastUsedHandlerIndex;
 		for (int i=0; i<userHandlers.size(); i++) {
 			currentUserHandlerIndex = (currentUserHandlerIndex+1) % userHandlers.size();
-			logger.debug("using handler ="+currentUserHandlerIndex);
+			logger.info("using handler ="+currentUserHandlerIndex);
 			UserHandler userHandler = userHandlers.get(currentUserHandlerIndex);			
 			try {
 				switch (requestName) {
@@ -91,6 +90,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 				}
 			} catch (LimitReachedForCurrentRequestException e) {
 				logger.debug("Token "+i+" has reached request limit for "+requestName);
+				logger.info(e.getLimits());
 			} 
 		}
 		if (requestResult == null) {

@@ -3,6 +3,10 @@ package it.cybion.influencers.twitter.web.twitter4j;
 import org.testng.annotations.Test;
 
 import twitter4j.TwitterException;
+import it.cybion.influencers.twitter.web.LimitReachedForCurrentRequestException;
+import it.cybion.influencers.twitter.web.MethodInputNotCorrectException;
+import it.cybion.influencers.twitter.web.Token;
+import it.cybion.influencers.twitter.web.UserHandler;
 import it.cybion.influencers.utils.TokenBuilder;
 
 public class UserHandlerTEST {

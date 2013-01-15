@@ -10,11 +10,11 @@ import org.testng.annotations.Test;
 
 import twitter4j.TwitterException;
 
+import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
-import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
+import it.cybion.influencers.twitter.web.Token;
+import it.cybion.influencers.twitter.web.Twitter4jWebFacade;
 import it.cybion.influencers.twitter.web.TwitterWebFacade;
-import it.cybion.influencers.twitter.web.twitter4j.Token;
-import it.cybion.influencers.twitter.web.twitter4j.Twitter4jWebFacade;
 
 public class TwitterFacadeTEST {
 	

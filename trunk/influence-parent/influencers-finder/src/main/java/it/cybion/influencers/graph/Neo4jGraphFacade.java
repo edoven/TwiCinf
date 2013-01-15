@@ -1,11 +1,6 @@
-package it.cybion.influencers.graph.neo4j;
+package it.cybion.influencers.graph;
 
 
-import it.cybion.influencers.graph.GraphFacade;
-import it.cybion.influencers.graph.InDegreeNotSetException;
-import it.cybion.influencers.graph.OutDegreeNotSetException;
-import it.cybion.influencers.graph.TotalDegreeNotSetException;
-import it.cybion.influencers.graph.UserVertexNotPresent;
 
 import java.util.Iterator;
 import java.util.List;

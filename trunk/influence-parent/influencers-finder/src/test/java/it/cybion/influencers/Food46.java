@@ -4,13 +4,13 @@ import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionDictionaryFilterManager;
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
-import it.cybion.influencers.graph.neo4j.Neo4jGraphFacade;
+import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
+import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
-import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
+import it.cybion.influencers.twitter.web.Token;
+import it.cybion.influencers.twitter.web.Twitter4jWebFacade;
 import it.cybion.influencers.twitter.web.TwitterWebFacade;
-import it.cybion.influencers.twitter.web.twitter4j.Token;
-import it.cybion.influencers.twitter.web.twitter4j.Twitter4jWebFacade;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
@@ -67,7 +67,7 @@ public class Food46 {
 	private static TwitterFacade getTwitterFacade() throws UnknownHostException {
 		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.txt");
 		List<Token> userTokens = new ArrayList<Token>();
-		Token userToken1 = new Token("/home/godzy/tokens/token1.txt"); 
+		Token userToken1 = new Token("tokens/token1.txt"); 
 		userTokens.add(userToken1);
 		Token userToken2 = new Token("/home/godzy/tokens/token2.txt");
 		userTokens.add(userToken2);

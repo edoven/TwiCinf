@@ -1,11 +1,11 @@
 package it.cybion.influencers.twitter.persistance.mongodb;
 
+import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
 import it.cybion.influencers.twitter.persistance.UserNotFollowersEnrichedException;
 import it.cybion.influencers.twitter.persistance.UserNotFriendsEnrichedException;
 import it.cybion.influencers.twitter.persistance.UserNotPresentException;
 import it.cybion.influencers.twitter.persistance.UserNotProfileEnriched;
-import it.cybion.influencers.twitter.persistance.mongodb.MongodbPersistanceFacade;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;

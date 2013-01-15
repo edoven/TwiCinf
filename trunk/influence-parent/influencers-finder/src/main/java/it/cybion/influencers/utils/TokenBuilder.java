@@ -1,7 +1,7 @@
 package it.cybion.influencers.utils;
 
 
-import it.cybion.influencers.twitter.web.twitter4j.Token;
+import it.cybion.influencers.twitter.web.Token;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -1,9 +1,9 @@
 package it.cybion.influencers.graph.neo4j;
 
 import it.cybion.influencers.graph.InDegreeNotSetException;
+import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.OutDegreeNotSetException;
 import it.cybion.influencers.graph.UserVertexNotPresent;
-import it.cybion.influencers.graph.neo4j.Neo4jGraphFacade;
 
 import java.io.File;
 import java.io.IOException;
