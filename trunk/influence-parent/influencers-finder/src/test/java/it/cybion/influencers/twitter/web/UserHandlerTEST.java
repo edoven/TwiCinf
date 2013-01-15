@@ -1,4 +1,4 @@
-package it.cybion.influencers.twitter.web.twitter4j;
+package it.cybion.influencers.twitter.web;
 
 import org.testng.annotations.Test;
 

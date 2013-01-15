@@ -1,4 +1,4 @@
-package it.cybion.influencers.twitter.persistance.mongodb;
+package it.cybion.influencers.twitter.persistance;
 
 import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;

@@ -1,4 +1,4 @@
-package it.cybion.influencers.graph.neo4j;
+package it.cybion.influencers.graph;
 
 import it.cybion.influencers.graph.InDegreeNotSetException;
 import it.cybion.influencers.graph.Neo4jGraphFacade;

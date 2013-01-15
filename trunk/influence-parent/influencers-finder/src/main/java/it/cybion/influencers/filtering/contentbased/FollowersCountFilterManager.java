@@ -17,7 +17,6 @@ public class FollowersCountFilterManager implements FilterManager{
 	private static final Logger logger = Logger.getLogger(FollowersCountFilterManager.class);
 
 	private TwitterFacade twitterManager;
-	private GraphFacade graphFacade;
 	private List<Long> users;
 	private int threshold;
 	private Map<Long, Integer> user2followersCount;
@@ -62,7 +61,9 @@ public class FollowersCountFilterManager implements FilterManager{
 
 	@Override
 	public void setGraphFacade(GraphFacade graphFacade) {
-		this.graphFacade = graphFacade;
+		/*
+		 * GraphFacade is not needed
+		 */
 	}
 
 	@Override
