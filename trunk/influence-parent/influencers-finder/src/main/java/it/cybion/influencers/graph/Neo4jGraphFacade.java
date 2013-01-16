@@ -2,12 +2,18 @@ package it.cybion.influencers.graph;
 
 
 
+import it.cybion.influencers.utils.FilesDeleter;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.neo4j.graphdb.Transaction;
 
 import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Index;
 import com.tinkerpop.blueprints.Parameter;
 import com.tinkerpop.blueprints.Vertex;
@@ -20,17 +26,40 @@ public class Neo4jGraphFacade implements GraphFacade {
 	
 	private Neo4jGraph graph;
 	private Index<Vertex> vertexIndex;
+	private Transaction transaction;
+	private int insersionsCount = 0;
+	private String dirPath;
+	
 	
 	public Neo4jGraphFacade(String dirPath) {
+		this.dirPath = dirPath;
 		graph = new Neo4jGraph(dirPath);
 		vertexIndex =  graph.createIndex("vertexIndex", 
 										 Vertex.class, 
 										 new Parameter<String, String>(	
 												 "type", 
 												 "exact"));
+		
+		transaction = graph.getRawGraph().beginTx();
 	}
+	
+	@Override
+	public void eraseGraphAndRecreate() throws IOException {
+		graph.shutdown();
+		FilesDeleter.delete(new File(dirPath));
+		graph = new Neo4jGraph(dirPath);
+		vertexIndex =  graph.createIndex("vertexIndex", 
+										 Vertex.class, 
+										 new Parameter<String, String>(	
+												 "type", 
+												 "exact"));
+		
+		transaction = graph.getRawGraph().beginTx();
+	}
+	
 
 	public Vertex addUser(Long userId) {
+				
 		Vertex vertex;
 		try {
 			vertex = getUserVertex(userId);
@@ -40,7 +69,16 @@ public class Neo4jGraphFacade implements GraphFacade {
 			vertex.setProperty("nodeType", "user");
 			vertexIndex.put("userId", userId, vertex); //do not forget this ;)
 			//logger.info("added node for user with id="+userId);
-		}		
+		}	
+		
+		insersionsCount++;
+		if (insersionsCount>0 && (insersionsCount%1000)==0) {
+			transaction.success();
+			transaction.finish();
+			logger.debug("transaction closed");
+			transaction = graph.getRawGraph().beginTx();
+		}	
+		
 		return vertex;
 	}
 	
@@ -52,10 +90,12 @@ public class Neo4jGraphFacade implements GraphFacade {
 		
 	@Override
 	public void addFollowers(Long userId, List<Long> followersIds) throws UserVertexNotPresent {
+		logger.info("adding "+followersIds.size()+" followers for user "+userId);
 		Vertex userVertex = getUserVertex(userId);
 		if (userVertex == null)
 			throw new UserVertexNotPresent("Trying to add followers for user with id "+userId+" but user vertex is not in the graph.");
 		for (Long followerId : followersIds) {
+			
 			Vertex followerVertex;
 			try {
 				followerVertex = getUserVertex(followerId);
@@ -68,6 +108,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 
 	@Override
 	public void addFriends(Long userId, List<Long> friendsIds) throws UserVertexNotPresent {
+		logger.info("adding "+friendsIds.size()+" friends for user "+userId);
 		Vertex userVertex = getUserVertex(userId);
 		if (userVertex == null)
 			throw new UserVertexNotPresent("Trying to add followers for user with id "+userId+" but user vertex is not in the graph.");
@@ -81,8 +122,6 @@ public class Neo4jGraphFacade implements GraphFacade {
 			graph.addEdge(null, userVertex, friendVertex, "follows");	
 		}
 	}
-
-	
 	
 	public Vertex getUserVertex(Long userId) throws UserVertexNotPresent {
 		Iterable<Vertex> results = vertexIndex.get("userId",userId);
@@ -92,6 +131,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 		else
 			throw new UserVertexNotPresent("Trying to get node for user with id="+userId+" but node is not in the graph");
 	}
+	
 	
 	@Override
 	public int getVerticesCount() {
@@ -141,7 +181,10 @@ public class Neo4jGraphFacade implements GraphFacade {
 
 	@Override
 	public void calculateInDegree(List<Long> usersToBeCalculated, List<Long> sourceUsers) throws UserVertexNotPresent {
-		for (Long userId : usersToBeCalculated) {
+		logger.info("### calculateInDegree ###");
+		for (int i=0; i<usersToBeCalculated.size(); i++) {
+			logger.info("calculating iDegree for user "+i+" of "+usersToBeCalculated.size());
+			long userId = usersToBeCalculated.get(i);
 			int inDegree = 0;
 			Vertex userVertex = getUserVertex(userId);
 			if (userVertex == null) {
@@ -162,7 +205,10 @@ public class Neo4jGraphFacade implements GraphFacade {
 
 	@Override
 	public void calculateOutDegree(List<Long> usersToBeCalculated, List<Long> destinationUsers) throws UserVertexNotPresent {
-		for (Long userId : usersToBeCalculated) {
+		logger.info("### calculateOutDegree ###");
+		for (int i=0; i<usersToBeCalculated.size(); i++) {
+			logger.info("calculating outDegree for user "+i+" of "+usersToBeCalculated.size());
+			long userId = usersToBeCalculated.get(i);
 			int outDegree = 0;
 			Vertex userVertex = getUserVertex(userId);
 			if (userVertex == null) {

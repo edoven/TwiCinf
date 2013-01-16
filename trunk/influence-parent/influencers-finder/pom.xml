@@ -66,6 +66,8 @@
             <version>1.8.M06</version>
             <scope>test</scope>
     	</dependency>
+    	
+    	<!-- 
     	<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
@@ -90,7 +92,10 @@
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queryparser</artifactId>
 			<version>4.0.0</version>
-		</dependency>
+		</dependency> 
+		 -->
+		 
+		 
 	</dependencies>
 	<build>
         <plugins>

@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -26,11 +27,26 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.DocsEnum;
+import org.apache.lucene.index.Fields;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.SlowCompositeReaderWrapper;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
 
 import twitter4j.TwitterException;
@@ -42,14 +58,17 @@ public class Food46descriptions {
 	public static StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_40);
 
 	
-	public static void main(String[] args) throws IOException, TwitterException {	
-		
-		
-		createIndex();
-		System.exit(0);
-		IndexReader indexReader = new AtomicReader();
-		//Directory index = new SimpleFSDirectory(new File("/home/godzy/lucene/descriptions"));
-		//IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+	public static void main(String[] args) throws IOException, TwitterException, ParseException {	
+				
+//		createIndex();		
+		Directory index = new SimpleFSDirectory(new File("/home/godzy/lucene/descriptions"));
+		IndexReader indexReader = DirectoryReader.open(index);
+		int docIndex = 0;
+		Document doc = indexReader.document(docIndex);
+		logger.info(doc);
+		Fields fields = indexReader.getTermVectors(docIndex);
+		logger.info(fields==null);
+
 		
 	}
 	
@@ -117,8 +136,8 @@ public class Food46descriptions {
 		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
 		IndexWriter indexWriter = new IndexWriter(index, config);
 		String uniqueDescription = "";
-		for (String description : descriptions)
-			uniqueDescription = uniqueDescription.concat(uniqueDescription);
+		for (String description : descriptions) 
+			uniqueDescription = uniqueDescription+" "+description;
 		Document doc = new Document();
 		doc.add(new TextField("descriptions", uniqueDescription, Field.Store.YES)); 
 		indexWriter.addDocument(doc);

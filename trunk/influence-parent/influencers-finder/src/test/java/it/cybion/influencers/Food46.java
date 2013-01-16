@@ -58,14 +58,14 @@ public class Food46 {
 	
 
 	private static GraphFacade getGraphFacade() throws IOException {
-		String graphDirPath = "src/test/resources/graphs/food46";
+		String graphDirPath = "graphs/food46";
 		FilesDeleter.delete(new File(graphDirPath));	
 		GraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
 		return graphFacade;
 	}
 	
 	private static TwitterFacade getTwitterFacade() throws UnknownHostException {
-		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.txt");
+		Token applicationToken = new Token("tokens/consumerToken.txt");
 		List<Token> userTokens = new ArrayList<Token>();
 		Token userToken1 = new Token("/home/godzy/tokens/token1.txt"); 
 		userTokens.add(userToken1);

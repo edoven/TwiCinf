@@ -108,8 +108,11 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 
 	private void solveDependencies() {
 		calculateThresholds();
+		logger.info("### populating followers and friends ###");
 		populateFollowersAndFriends();
+		logger.info("### creating graph ###");
 		createGraph();		
+		logger.info("### calculating node degrees ###");
 		calculateNodeDegrees();
 	}
 	
@@ -147,13 +150,27 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	}
 	
 	private void createGraph() {
-		graphFacade.addUsers(seedUsers);		
-		for (Long userId : seedUsers) {		
+		graphFacade.addUsers(seedUsers);
+		List<Long> followersIds;
+		List<Long> friendsIds;
+		for (int i=0; i<seedUsers.size(); i++) {	
+			logger.info("createGraph user "+i+" of "+seedUsers.size()+
+						" (free memory= "+Runtime.getRuntime().freeMemory()/(1024*1024)+" MB"+
+						" - verticesCount="+graphFacade.getVerticesCount()+")");
+			long userId = seedUsers.get(i);
 			try {
-				List<Long> followersIds = twitterFacade.getFollowers(userId);
-				graphFacade.addFollowers(userId, followersIds);
-				List<Long> friendsIds = twitterFacade.getFriends(userId);
-				graphFacade.addFriends(userId, friendsIds);
+				
+				followersIds = twitterFacade.getFollowers(userId);
+				if (followersIds.size()>50000)
+					logger.info("followersIds.size()>50000 -> skipped");
+				else
+					graphFacade.addFollowers(userId, followersIds);
+				
+				friendsIds = twitterFacade.getFriends(userId);
+				if (friendsIds.size()>50000)
+					logger.info("friendsIds.size()>50000 -> skipped");
+				else
+					graphFacade.addFriends(userId, friendsIds);
 			} catch (UserVertexNotPresent e) {
 				logger.info("Problem with user with id "+userId+". " +
 						"User should have been added to the graph but the user is not present.");

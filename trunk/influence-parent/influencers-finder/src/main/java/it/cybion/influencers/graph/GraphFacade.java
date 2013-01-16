@@ -1,5 +1,6 @@
 package it.cybion.influencers.graph;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -34,5 +35,6 @@ public interface GraphFacade {
 //	 */
 //	void calculateTotalDegree(List<Long> usersToBeCalculated, List<Long> wrtUsers) throws UserVertexNotPresent;
 	int getVerticesCount();
+	void eraseGraphAndRecreate() throws IOException;
 
 }
