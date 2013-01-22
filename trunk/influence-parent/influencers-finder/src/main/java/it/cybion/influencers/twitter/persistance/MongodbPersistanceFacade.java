@@ -27,16 +27,15 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 	private DBCollection collection;
 
 	public MongodbPersistanceFacade(String host, String database, String collection) throws UnknownHostException {
-		super();
 		MongoClient mongoClient = new MongoClient( host );
 		DB db = mongoClient.getDB( database );
-		this.collection = db.getCollection(collection);
-		this.collection.createIndex(new BasicDBObject("id", 1));
+		this.collection = db.getCollection( collection );
+		this.collection.createIndex( new BasicDBObject("id", 1) ); //if the index already exist this does nothing
 	}
 	
 	/*
-	 * If a user with the same id (beware: id!=_id) is already present, the new fields (if existing)
-	 * are added.
+	 * If a user with the same id (beware: id!=_id) is already present, 
+	 * the new fields (if exist) are added.
 	 */		
 	@Override
 	public void putUser(String userToInsertJson) {
@@ -50,18 +49,14 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 			return;
 		}
 		DBObject userInDb = (DBObject) JSON.parse(userInDbJson);
-
-		Map<String, Object> field2value = new HashMap<String,Object>();
-		
+		Map<String, Object> field2value = new HashMap<String,Object>();		
 		for (String field : userInDb.keySet())
 			field2value.put(field, userInDb.get(field));
 		for (String field : userToInsert.keySet())
-			field2value.put(field, userToInsert.get(field));
-		
+			field2value.put(field, userToInsert.get(field));		
 		DBObject updatedUser = new BasicDBObject();
 		for (String field : field2value.keySet())
-			updatedUser.put(field, field2value.get(field));
-		
+			updatedUser.put(field, field2value.get(field));		
 		DBObject query = new BasicDBObject();
 		query.put("id", userId);
 		collection.update(query, updatedUser);		
@@ -115,8 +110,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 			throw new UserNotPresentException("User with id "+userId+" is not in the collection.");
 		return user.toString();
 	}
-	
-	
+		
 	private DBObject getUserDbObject(Long userId) throws UserNotPresentException {
 		BasicDBObject keys = new BasicDBObject();
 		keys.put("id", userId);
@@ -145,8 +139,6 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 		if (!user.containsField("followers_count"))
 			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
 		int followersCount = (Integer)user.get("followers_count");
-//		if (description==null)
-//			description = "";
 		return followersCount;		
 	}
 	
@@ -157,8 +149,6 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 		if (!user.containsField("friends_count"))
 			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
 		int followersCount = (Integer)user.get("friends_count");
-//		if (description==null)
-//			description = "";
 		return followersCount;		
 	}
 	
@@ -185,9 +175,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 			return longList;
 		}
 		else
-			throw new UserNotFollowersEnrichedException("User with id "+userId+" is not followers/friends-eniched.");
-
-			
+			throw new UserNotFollowersEnrichedException("User with id "+userId+" is not followers/friends-eniched.");			
 	}
 
 	@Override

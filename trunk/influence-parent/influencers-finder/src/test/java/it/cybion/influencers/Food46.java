@@ -30,7 +30,7 @@ public class Food46 {
 	
 	public static void main(String[] args) throws IOException, TwitterException {
 
-		int iterations = 2;
+		int iterations = 1;
 		GraphFacade graphFacade = getGraphFacade();
 		TwitterFacade twitterFacade = getTwitterFacade();
 		List<Long> usersIds = getUsersIds();
@@ -67,17 +67,17 @@ public class Food46 {
 	private static TwitterFacade getTwitterFacade() throws UnknownHostException {
 		Token applicationToken = new Token("tokens/consumerToken.txt");
 		List<Token> userTokens = new ArrayList<Token>();
-		Token userToken1 = new Token("/home/godzy/tokens/token1.txt"); 
+		Token userToken1 = new Token("tokens/token1.txt"); 
 		userTokens.add(userToken1);
-		Token userToken2 = new Token("/home/godzy/tokens/token2.txt");
+		Token userToken2 = new Token("tokens/token2.txt");
 		userTokens.add(userToken2);
-		Token userToken3 = new Token("/home/godzy/tokens/token3.txt");
+		Token userToken3 = new Token("tokens/token3.txt");
 		userTokens.add(userToken3);
-		Token userToken4 = new Token("/home/godzy/tokens/token4.txt");
+		Token userToken4 = new Token("tokens/token4.txt");
 		userTokens.add(userToken4);
-		Token userToken5 = new Token("/home/godzy/tokens/token5.txt");
+		Token userToken5 = new Token("tokens/token5.txt");
 		userTokens.add(userToken5);
-		Token userToken6 = new Token("/home/godzy/tokens/token6.txt");
+		Token userToken6 = new Token("tokens/token6.txt");
 		userTokens.add(userToken6);
 		
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
@@ -139,7 +139,8 @@ public class Food46 {
 	
 	private static List<FilterManager> getFilterManagers() {
 		List<FilterManager> filters = new ArrayList<FilterManager>();
-		InAndOutDegreeFilterManager degreeFilter = new InAndOutDegreeFilterManager(0.05, 0.1);
+		InAndOutDegreeFilterManager degreeFilter1 = new InAndOutDegreeFilterManager(0.05, 0.1);
+		InAndOutDegreeFilterManager degreeFilter2 = new InAndOutDegreeFilterManager(0.025, 0.5);
 		List<String> dictionary = new ArrayList<String>();
 		dictionary.add("food");
 		dictionary.add("cibo");
@@ -169,8 +170,10 @@ public class Food46 {
 		dictionary.add("agricol");
 		dictionary.add("mangi");
 		DescriptionDictionaryFilterManager descriptionFilter = new DescriptionDictionaryFilterManager(dictionary);
-		filters.add(0, degreeFilter);
+		filters.add(0, degreeFilter1);
 		filters.add(1, descriptionFilter);
+		filters.add(2, degreeFilter2);
+		filters.add(3, descriptionFilter);
 		return filters;
 	}
 	

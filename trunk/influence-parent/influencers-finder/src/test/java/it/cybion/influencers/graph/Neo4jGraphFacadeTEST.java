@@ -22,7 +22,44 @@ public class Neo4jGraphFacadeTEST {
 	
 	private static final Logger logger = Logger.getLogger(Neo4jGraphFacadeTEST.class);
 	
-	@Test
+	
+	public static void main(String[] args) throws IOException {
+		String graphDirPath = "src/test/resources/graphs/massiveInsertionsTEST";
+		delete(new File(graphDirPath));
+		
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
+		
+		for (long i=0; i<800000; i++) {
+			logger.info(i+
+						" (free memory= "+Runtime.getRuntime().freeMemory()/(1024*1024)+" MB");
+			graphFacade.addUser(i);
+			
+		}
+	}
+	
+	@Test(enabled=false)
+	public void massiveInsertionsTEST() throws IOException, UserVertexNotPresent {
+		String graphDirPath = "src/test/resources/graphs/massiveInsertionsTEST";
+		delete(new File(graphDirPath));
+		
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
+		
+		for (long i=0; i<800000; i++) {
+
+			graphFacade.addUser(i);
+			if (i%100 == 0) {
+				logger.info("before - "+i+
+						" (free memory= "+Runtime.getRuntime().freeMemory()/(1024*1024)+" MB");
+				Runtime.getRuntime().gc();
+				logger.info("after - "+i+
+						" (free memory= "+Runtime.getRuntime().freeMemory()/(1024*1024)+" MB");
+			}
+		}
+		
+	}
+	
+	
+	@Test(enabled=false)
 	public void insertAndRetrieveTEST() throws IOException, UserVertexNotPresent {
 		String graphDirPath = "src/test/resources/graphs/addUserTEST";
 		delete(new File(graphDirPath));
@@ -40,7 +77,7 @@ public class Neo4jGraphFacadeTEST {
 	}
 
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void addUsersTEST() throws IOException, UserVertexNotPresent {
 		String graphDirPath = "src/test/resources/graphs/addUsersTESTgraph";
 		delete(new File(graphDirPath));
@@ -62,7 +99,7 @@ public class Neo4jGraphFacadeTEST {
 		delete(new File(graphDirPath));
 	}
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void addFollowersTEST() throws IOException, UserVertexNotPresent {
 		String graphDirPath = "src/test/resources/graphs/addFollowersTEST";
 		delete(new File(graphDirPath));
@@ -94,7 +131,7 @@ public class Neo4jGraphFacadeTEST {
 	}
 	
 	
-	@Test(enabled=true)
+	@Test(enabled=false)
 	public void addFriendsTEST() throws IOException, UserVertexNotPresent {
 		String graphDirPath = "src/test/resources/graphs/addFriendsTEST";
 		delete(new File(graphDirPath));

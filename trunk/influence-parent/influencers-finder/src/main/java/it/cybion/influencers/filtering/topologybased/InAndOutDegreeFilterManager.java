@@ -1,7 +1,6 @@
 package it.cybion.influencers.filtering.topologybased;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +11,6 @@ import twitter4j.TwitterException;
 
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.graph.GraphFacade;
-import it.cybion.influencers.graph.InDegreeNotSetException;
-import it.cybion.influencers.graph.OutDegreeNotSetException;
 import it.cybion.influencers.graph.UserVertexNotPresent;
 import it.cybion.influencers.twitter.TwitterFacade;
 
@@ -29,6 +26,27 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	private double outDegreePercentageThreshold;	
 	private int outDegreeAbsoluteThreshold;
 	private List<Long> followersAndFriends;
+	private List<User> enrichedUsers;
+	private Map<Long, Integer> node2inDegree;
+	private Map<Long, Integer> node2outDegree;
+	
+	
+	class User {
+		private long id;
+		private List<Long> followers;
+		private List<Long> friends;
+		
+		public User(long id, List<Long> followers, List<Long> friends) {
+			this.id = id;
+			this.followers = followers;
+			this.friends = friends;
+		}
+
+		public long getId() { return id;}
+		public List<Long> getFollowers() {return followers;}
+		public List<Long> getFriends() {return friends;	}
+
+	};
 	
 
 	public InAndOutDegreeFilterManager(	double inDegreePercentageThreshold,
@@ -56,64 +74,35 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	public List<Long> filter()  {
 		solveDependencies();
 		
-		Map<Long, Integer> node2inDegree = new HashMap<Long, Integer>();
-		for (Long userId : followersAndFriends) {
-			try {
-				int inDegree = graphFacade.getInDegree(userId);
-				node2inDegree.put(userId, inDegree);
-			} catch (UserVertexNotPresent e) {
-				e.printStackTrace();
-				System.exit(0);
-			} catch (InDegreeNotSetException e) {
-				e.printStackTrace();
-				System.exit(0);
-			}
-		}
-		logger.info("node2inDegree.size()="+node2inDegree.size());
-		Map<Long, Integer> node2outDegree = new HashMap<Long, Integer>();
-		for (Long userId : followersAndFriends) {
-			try {
-				int outDegree = graphFacade.getOutDegree(userId);
-				node2outDegree.put(userId, outDegree);
-			} catch (UserVertexNotPresent e) {
-				e.printStackTrace();
-				System.exit(0);
-			} catch (OutDegreeNotSetException e) {
-				e.printStackTrace();
-				System.exit(0);
-			}
-		}
-		logger.info("node2outDegree.size()="+node2outDegree.size());
-		
+		logger.info("node2outDegree.size()="+node2outDegree.size());		
 		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(
 											node2inDegree, 
 											inDegreeAbsoluteThreshold, 
 											ComparisonOption.GREATER_OR_EQUAL);
 		List<Long> inDegreeFiltered = inDegreeFilter.filter();
-		logger.info("inDegreeFiltered.size()="+inDegreeFiltered.size());
-		
+		logger.info("inDegreeFiltered.size()="+inDegreeFiltered.size());		
 		NodeDegreeFilter outDegreeFilter = new NodeDegreeFilter(
 											node2outDegree, 
 											outDegreeAbsoluteThreshold, 
 											ComparisonOption.GREATER_OR_EQUAL);
 		List<Long> outDegreeFiltered = outDegreeFilter.filter();
-		logger.info("outDegreeFiltered.size()="+outDegreeFiltered.size());
-		
+		logger.info("outDegreeFiltered.size()="+outDegreeFiltered.size());		
 		List<Long> inAndOutDegreeFiltered = putListsInAnd(inDegreeFiltered,outDegreeFiltered);
 		logger.info("inAndOutDegreeFiltered.size()="+inAndOutDegreeFiltered.size());
-		return inAndOutDegreeFiltered;
-		
+		return inAndOutDegreeFiltered;		
 	}
 
 
 	private void solveDependencies() {
-		calculateThresholds();
-		logger.info("### populating followers and friends ###");
-		populateFollowersAndFriends();
+		logger.info("### calculating thresholds ###");
+		calculateThresholds();		
 		logger.info("### creating graph ###");
 		createGraph();		
+		logger.info("### populating followers and friends big list###");
+		populateFollowersAndFriendsList();
 		logger.info("### calculating node degrees ###");
 		calculateNodeDegrees();
+		enrichedUsers = null;
 	}
 	
 	private void calculateThresholds() {
@@ -122,75 +111,71 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 		outDegreeAbsoluteThreshold = (int) Math.round((outDegreePercentageThreshold * seedUsers.size()));
 		logger.info("outDegreeAbsoluteThreshold="+outDegreeAbsoluteThreshold);
 	}
-	
-	private void populateFollowersAndFriends() {
-		followersAndFriends = new ArrayList<Long>();
-		int usersCount=0;
-		for (Long userId : seedUsers) {		
-			logger.info("populateFollowersAndFriends() for user "+(++usersCount)+"/"+seedUsers.size());
-			boolean problemWithUser = false;
-			for (int i=0; i<1; i++) { //1 try
-				try {
-					List<Long> followers = twitterFacade.getFollowers(userId);
-					followersAndFriends.addAll(followers);
-					List<Long> friends = twitterFacade.getFriends(userId);
-					followersAndFriends.addAll(friends);
-					break;
-				} catch (TwitterException e) {
-					logger.info("populateFollowersAndFriends: Problem with user with id "+userId+". Let's retry.");
-					problemWithUser = true;
-				}
-			}
-			if (problemWithUser == true)
-				logger.info("populateFollowersAndFriends: Problem with user with id "+userId+". User skipped.");
-		}
-		followersAndFriends.removeAll(seedUsers);
-		//remove duplicates
-		followersAndFriends = new ArrayList<Long>( new HashSet<Long>(followersAndFriends));
-	}
-	
+		
 	private void createGraph() {
 		graphFacade.addUsers(seedUsers);
-		List<Long> followersIds;
-		List<Long> friendsIds;
-		for (int i=0; i<seedUsers.size(); i++) {	
-			logger.info("createGraph user "+i+" of "+seedUsers.size()+
-						" (free memory= "+Runtime.getRuntime().freeMemory()/(1024*1024)+" MB"+
-						" - verticesCount="+graphFacade.getVerticesCount()+")");
-			long userId = seedUsers.get(i);
+		getFollowersAndFriendsEnrichedUsers();
+		
+		for (int i=0; i<enrichedUsers.size(); i++) {	
+			User user = enrichedUsers.get(i);
+			logger.info("createGraph user "+i+" of "+seedUsers.size()+" (free memory= "+Runtime.getRuntime().freeMemory()/(1024*1024)+" MB)");
 			try {
-				
-				followersIds = twitterFacade.getFollowers(userId);
-				if (followersIds.size()>50000)
-					logger.info("followersIds.size()>50000 -> skipped");
-				else
-					graphFacade.addFollowers(userId, followersIds);
-				
-				friendsIds = twitterFacade.getFriends(userId);
-				if (friendsIds.size()>50000)
-					logger.info("friendsIds.size()>50000 -> skipped");
-				else
-					graphFacade.addFriends(userId, friendsIds);
+				graphFacade.addFollowers(user.getId(), user.getFollowers());
+				graphFacade.addFriends(user.getId(), user.getFriends());
 			} catch (UserVertexNotPresent e) {
-				logger.info("Problem with user with id "+userId+". " +
-						"User should have been added to the graph but the user is not present.");
+				logger.info("Error! User should be in the graph but vertex is not present.");
 				System.exit(0);
-			} catch (TwitterException e) {
+			}
+		}
+	}
+	
+	
+	private void getFollowersAndFriendsEnrichedUsers() {
+		enrichedUsers = new ArrayList<User>();
+		for (int i=0; i<seedUsers.size(); i++) {	
+			logger.info("getFollowersAndFriendsEnrichedUsers user "+i+" of "+seedUsers.size());
+			long userId = seedUsers.get(i);
+			try {					
+				List<Long> followersIds = twitterFacade.getFollowers(userId);				
+				List<Long> friendsIds = twitterFacade.getFriends(userId);
+				User user = new User(userId, followersIds, friendsIds);
+				enrichedUsers.add(user);
+			} 
+			catch (TwitterException e) {
 				logger.info("Problem with user with id "+userId+". User skipped.");
 			}
-			
 		}
+	}
+	
+	private void populateFollowersAndFriendsList() {
+		followersAndFriends = new ArrayList<Long>();
+		for (int i=0; i<enrichedUsers.size(); i++) {
+			User user = enrichedUsers.get(i);
+			logger.info("populateFollowersAndFriendsList for user "+i+"/"+seedUsers.size());
+			for (int j=0; j<1; j++) { //1 try
+				List<Long> followers = user.getFollowers();
+				followersAndFriends.addAll(followers);
+				List<Long> friends = user.getFriends();
+				followersAndFriends.addAll(friends);			
+			}
+		}
+		//some user in seedUsers list can be follower or firend of another seedUsers user
+		//so let's remove them from followersAndFriends
+		followersAndFriends.removeAll(seedUsers);
+		//let's remove duplicates
+		followersAndFriends = new ArrayList<Long>( new HashSet<Long>(followersAndFriends));
 	}
 	
 	private void calculateNodeDegrees() {
 		try {
-			graphFacade.calculateInDegree(followersAndFriends, seedUsers);
-			graphFacade.calculateOutDegree(followersAndFriends, seedUsers);	
+			//this sets an inDegree label in the graph for each node of followersAndFriends set
+			node2inDegree = graphFacade.calculateInDegree(followersAndFriends, seedUsers); 
+			//this sets an outDegree label in the graph for each node of followersAndFriends set
+			node2outDegree = graphFacade.calculateOutDegree(followersAndFriends, seedUsers);	
 		} catch (UserVertexNotPresent e) {			
 			e.printStackTrace();
 			System.exit(0);
-		}
-			
+		}			
 	}
 	
 	private List<Long> putListsInAnd(List<Long> listA,
