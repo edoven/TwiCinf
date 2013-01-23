@@ -118,7 +118,9 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 		
 		for (int i=0; i<enrichedUsers.size(); i++) {	
 			User user = enrichedUsers.get(i);
-			logger.info("createGraph user "+i+" of "+seedUsers.size()+" (free memory= "+Runtime.getRuntime().freeMemory()/(1024*1024)+" MB)");
+			logger.info("createGraph user "+i+" of "+seedUsers.size()+
+									" (free memory= "+Runtime.getRuntime().freeMemory()/(1024*1024)+" MB -"+
+									"verticesCount="+graphFacade.getVerticesCount());
 			try {
 				graphFacade.addFollowers(user.getId(), user.getFollowers());
 				graphFacade.addFriends(user.getId(), user.getFriends());

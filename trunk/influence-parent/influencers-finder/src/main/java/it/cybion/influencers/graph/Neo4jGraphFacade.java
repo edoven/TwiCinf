@@ -29,7 +29,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 	private Index<Vertex> vertexIndex;
 	private int vericesCount = 0;
 	
-	private final int OPERATIONS_PER_TRANSACTION = 700;
+	private final int OPERATIONS_PER_TRANSACTION = 20000;
 		
 	public Neo4jGraphFacade(String dirPath) {
 		this.dirPath = dirPath;
@@ -62,7 +62,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 	@Override
 	public void addUsers(List<Long> usersIds) {
 		for (Long userId : usersIds)
-			addUser(userId);
+			addUser(userId);		
 	}
 		
 	@Override
@@ -177,8 +177,8 @@ public class Neo4jGraphFacade implements GraphFacade {
 			userVertex.setProperty("inDegree", inDegree);
 			user2inDegree.put(userId, inDegree);
 			//logger.info("Set indegree="+inDegree+" for user with id="+userId);
-			if (i%OPERATIONS_PER_TRANSACTION==0)
-				graph.stopTransaction(Conclusion.SUCCESS);
+//			if (i%OPERATIONS_PER_TRANSACTION==0)
+//				graph.stopTransaction(Conclusion.SUCCESS);
 		}
 		return user2inDegree;
 	}
@@ -211,8 +211,8 @@ public class Neo4jGraphFacade implements GraphFacade {
 			userVertex.setProperty("outDegree", outDegree);
 			user2outDegree.put(userId, outDegree);
 			//logger.info("Set outDegree="+outDegree+" for user with id="+userId);
-			if (i%OPERATIONS_PER_TRANSACTION==0)
-				graph.stopTransaction(Conclusion.SUCCESS);
+//			if (i%OPERATIONS_PER_TRANSACTION==0)
+//				graph.stopTransaction(Conclusion.SUCCESS);
 		}
 		return user2outDegree;
 	}
