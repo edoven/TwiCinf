@@ -36,11 +36,11 @@ public class InfluencersDiscoverer {
 			logger.info("#### ITERATION "+(iterationIndex+1)+" #####");
 			for (int filterIndex=0; filterIndex<filterManagers.size(); filterIndex++) {
 				FilterManager filterManager = filterManagers.get(filterIndex);
-				logger.info("#### filter "+(filterIndex+1)+"/"+filterManagers.size()+" "+filterManager.getClass().getName()+" ####");			
-				
-				logger.info("deleting old graph and recreating a new one");
-				graphFacade.eraseGraphAndRecreate();
-				
+				logger.info("#### filter "+(filterIndex+1)+"/"+filterManagers.size()+" "+filterManager.getClass().getName()+" ####");							
+				if (filterIndex>0) {
+					logger.info("deleting old graph and recreating a new one");
+					graphFacade.eraseGraphAndRecreate();
+				}				
 				filterManager.setGraphFacade(graphFacade);
 				filterManager.setTwitterFacade(twitterFacade);
 				filterManager.setSeedUsers(users);

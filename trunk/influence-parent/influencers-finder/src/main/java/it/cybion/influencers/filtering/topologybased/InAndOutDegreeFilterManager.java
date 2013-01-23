@@ -1,6 +1,7 @@
 package it.cybion.influencers.filtering.topologybased;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	private Map<Long, Integer> node2outDegree;
 	
 	
-	class User {
+	class User implements Comparable{
 		private long id;
 		private List<Long> followers;
 		private List<Long> friends;
@@ -45,6 +46,13 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 		public long getId() { return id;}
 		public List<Long> getFollowers() {return followers;}
 		public List<Long> getFriends() {return friends;	}
+		
+		@Override
+		public int compareTo(Object objectToCompare) {	
+			User userToCompare = (User) objectToCompare;
+			return  userToCompare.getFollowers().size() - this.getFollowers().size();
+	 
+		}
 
 	};
 	
@@ -112,15 +120,16 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 		logger.info("outDegreeAbsoluteThreshold="+outDegreeAbsoluteThreshold);
 	}
 		
-	private void createGraph() {
+	private void createGraph() {		
 		graphFacade.addUsers(seedUsers);
-		getFollowersAndFriendsEnrichedUsers();
-		
+		getAndSetFollowersAndFriendsEnrichedUsers();		
 		for (int i=0; i<enrichedUsers.size(); i++) {	
 			User user = enrichedUsers.get(i);
-			logger.info("createGraph user "+i+" of "+seedUsers.size()+
-									" (free memory= "+Runtime.getRuntime().freeMemory()/(1024*1024)+" MB -"+
-									"verticesCount="+graphFacade.getVerticesCount());
+			logger.info("createGraph user "+i+"/"+seedUsers.size()+
+						" flwrs="+user.getFollowers().size()+
+						" frnds="+user.getFriends().size()+
+						" (freeMem= "+Runtime.getRuntime().freeMemory()/(1024*1024)+" MB - "+
+						"vertices="+graphFacade.getVerticesCount()+")");
 			try {
 				graphFacade.addFollowers(user.getId(), user.getFollowers());
 				graphFacade.addFriends(user.getId(), user.getFriends());
@@ -132,10 +141,12 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	}
 	
 	
-	private void getFollowersAndFriendsEnrichedUsers() {
+	private void getAndSetFollowersAndFriendsEnrichedUsers() {
 		enrichedUsers = new ArrayList<User>();
+		int percentCompleted = 0;
+		int tenPercent = Math.round((float)seedUsers.size()/10);
 		for (int i=0; i<seedUsers.size(); i++) {	
-			logger.info("getFollowersAndFriendsEnrichedUsers user "+i+" of "+seedUsers.size());
+			
 			long userId = seedUsers.get(i);
 			try {					
 				List<Long> followersIds = twitterFacade.getFollowers(userId);				
@@ -146,19 +157,31 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 			catch (TwitterException e) {
 				logger.info("Problem with user with id "+userId+". User skipped.");
 			}
-		}
+			
+			if (i%tenPercent == 0) {
+				logger.info("getFollowersAndFriendsEnrichedUsers completed for "+percentCompleted+"%");
+				percentCompleted = percentCompleted + 10;
+			}
+		}		
+		Collections.sort(enrichedUsers);		
 	}
 	
 	private void populateFollowersAndFriendsList() {
 		followersAndFriends = new ArrayList<Long>();
+		int percentCompleted = 0;
+		int tenPercent = Math.round((float)enrichedUsers.size()/10);
 		for (int i=0; i<enrichedUsers.size(); i++) {
 			User user = enrichedUsers.get(i);
-			logger.info("populateFollowersAndFriendsList for user "+i+"/"+seedUsers.size());
+			
 			for (int j=0; j<1; j++) { //1 try
 				List<Long> followers = user.getFollowers();
 				followersAndFriends.addAll(followers);
 				List<Long> friends = user.getFriends();
 				followersAndFriends.addAll(friends);			
+			}
+			if (i%tenPercent == 0) {
+				logger.info("populateFollowersAndFriendsList completed for "+percentCompleted+"%");
+				percentCompleted = percentCompleted + 10;
 			}
 		}
 		//some user in seedUsers list can be follower or firend of another seedUsers user
@@ -171,9 +194,9 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	private void calculateNodeDegrees() {
 		try {
 			//this sets an inDegree label in the graph for each node of followersAndFriends set
-			node2inDegree = graphFacade.calculateInDegree(followersAndFriends, seedUsers); 
+			node2inDegree = graphFacade.getInDegrees(followersAndFriends, seedUsers); 
 			//this sets an outDegree label in the graph for each node of followersAndFriends set
-			node2outDegree = graphFacade.calculateOutDegree(followersAndFriends, seedUsers);	
+			node2outDegree = graphFacade.getOutDegrees(followersAndFriends, seedUsers);	
 		} catch (UserVertexNotPresent e) {			
 			e.printStackTrace();
 			System.exit(0);
