@@ -138,7 +138,7 @@ public class Food46 {
 	private static List<FilterManager> getFilterManagers() {
 		List<FilterManager> filters = new ArrayList<FilterManager>();
 		InAndOutDegreeFilterManager degreeFilter1 = new InAndOutDegreeFilterManager(0.05, 0.1);
-		InAndOutDegreeFilterManager degreeFilter2 = new InAndOutDegreeFilterManager(0.015, 0.01);
+		InAndOutDegreeFilterManager degreeFilter2 = new InAndOutDegreeFilterManager(0.00, 0.1);
 		List<String> dictionary = new ArrayList<String>();
 		dictionary.add("food");
 		dictionary.add("cibo");

@@ -62,4 +62,15 @@ public class DescriptionDictionaryFilterManager implements FilterManager {
 		this.seedUsers = seedUsers;
 	}
 
+	@Override
+	public String toString() {
+		String result = "###DescriptionDictionaryFilter###" +
+				" (inputSize="+seedUsers.size()+
+				" dictionary=[";
+		for (String word: dictionary)
+			result = result.concat(word+",");
+		result = result.concat("]");
+		return result;
+	}
+
 }

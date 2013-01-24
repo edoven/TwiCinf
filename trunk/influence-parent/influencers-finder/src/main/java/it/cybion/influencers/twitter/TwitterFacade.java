@@ -89,7 +89,7 @@ public class TwitterFacade {
 			/*
 			 * It's not good to use mongDb object (DBObject) to extract
 			 * the id from the user json string!
-			 * TODO: use another way of doing this!
+			 * TODO: use another way to do this!
 			 */
 			DBObject downloadedUserObject = (DBObject) JSON.parse(donwloadedUserJson);
 			long userId = new Long ((Integer) downloadedUserObject.get("id"));

@@ -32,7 +32,7 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	private Map<Long, Integer> node2outDegree;
 	
 	
-	class User implements Comparable{
+	class User implements Comparable<User>{
 		private long id;
 		private List<Long> followers;
 		private List<Long> friends;
@@ -48,10 +48,8 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 		public List<Long> getFriends() {return friends;	}
 		
 		@Override
-		public int compareTo(Object objectToCompare) {	
-			User userToCompare = (User) objectToCompare;
-			return  userToCompare.getFollowers().size() - this.getFollowers().size();
-	 
+		public int compareTo(User userToCompare) {	
+			return  userToCompare.getFollowers().size() - this.getFollowers().size();	 
 		}
 
 	};
@@ -80,9 +78,7 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 
 	@Override
 	public List<Long> filter()  {
-		solveDependencies();
-		
-		logger.info("node2outDegree.size()="+node2outDegree.size());		
+		solveDependencies();	
 		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(
 											node2inDegree, 
 											inDegreeAbsoluteThreshold, 
@@ -214,5 +210,15 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 				andList.add(elementB);
 		andList = new ArrayList<Long>( new HashSet<Long>(andList));
 		return andList;
+	}
+
+	@Override
+	public String toString() {
+		return "###inAndOutDegreeFilterManager###" +
+				" (inDegreePercentageThreshold="+inDegreePercentageThreshold*100+"%"+
+				" - outDegreePercentageThreshold="+outDegreePercentageThreshold*100+"%"+
+				" - inDegreeAbsoluteThreshold="+inDegreeAbsoluteThreshold+
+				" - outDegreeAbsoluteThreshold="+outDegreeAbsoluteThreshold+
+				" - inputSize="+seedUsers.size()+")";
 	}
 }

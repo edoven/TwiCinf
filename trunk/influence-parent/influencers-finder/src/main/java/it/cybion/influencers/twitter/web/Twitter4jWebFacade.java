@@ -167,10 +167,10 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 	
 	@Override
 	public List<String> getUsersJsons(List<Long> usersIds) {
-		logger.info("Downloading "+usersIds.size()+" users profiles");
+		logger.info("downloading "+usersIds.size()+" users profiles");
 		List<String> usersJsons = new ArrayList<String>();
 		int listSize = usersIds.size();
-		logger.info("listSize="+listSize);
+		//logger.info("listSize="+listSize);
 		int chunkSize = 100;	
 		int remainder = (listSize%chunkSize);		
 		int chunksCount = listSize / chunkSize;			
@@ -178,7 +178,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 			chunksCount++;
 		for (int i=0; i<chunksCount; i++) {
 			long[] chunk = getChunk(usersIds, 100, i);
-			logger.info("chunk.length="+chunk.length);
+			logger.info("downloading chunk "+i+"/"+chunksCount);
 			try {
 				List<String> chunkResult = getUpTo100Users(chunk);				
 				usersJsons.addAll(chunkResult);
@@ -186,7 +186,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 				e.printStackTrace();
 				System.exit(0);
 			} catch (TwitterException e) {
-				logger.info("Problem with chunk, skipped. Chunk = "+chunk);
+				//logger.info("Problem with chunk, skipped. Chunk = "+chunk);
 			}
 		}			
 		return usersJsons;
@@ -194,14 +194,14 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 	
 	private long[] getChunk(List<Long> list, int chunkSize, int chunkIndex) {
 		int firstElementIndex = chunkIndex*chunkSize;
-		logger.info("firstElementIndex="+firstElementIndex);
+		//logger.info("firstElementIndex="+firstElementIndex);
 		int lastElementIndex = chunkIndex*chunkSize + chunkSize;
-		logger.info("lastElementIndex="+lastElementIndex);
+		//logger.info("lastElementIndex="+lastElementIndex);
 		if (lastElementIndex > list.size()) {
 			lastElementIndex = list.size();
 			chunkSize = lastElementIndex-firstElementIndex;
 		}
-		logger.info("end="+lastElementIndex);
+		//logger.info("end="+lastElementIndex);
 		List<Long> chunkList = list.subList(firstElementIndex, lastElementIndex);
 		long chunkArray[] = new long[chunkList.size()];
 		for (int i=0; i<chunkSize; i++)

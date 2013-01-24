@@ -1,6 +1,10 @@
 package it.cybion.influencers.graph;
 
 
+import it.cybion.influencers.graph.index.GraphIndex;
+import it.cybion.influencers.graph.index.IndexType;
+import it.cybion.influencers.graph.index.LuceneIndex;
+import it.cybion.influencers.graph.index.TreeMapIndex;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
@@ -12,6 +16,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+
+import scala.reflect.generic.Trees.CaseDef;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
@@ -25,17 +31,24 @@ public class Neo4jGraphFacade implements GraphFacade {
 	
 	private Neo4jGraph graph;
 	private String dirPath;
-//	private Index<Vertex> vertexIndex;
-	private TreeMap<Long, Object> vertexIndex;
 	private int vericesCount = 0;
+	private GraphIndex vertexIndex;
+	private IndexType indexType;
 	
 	private final int OPERATIONS_PER_TRANSACTION = 20000;
 		
-	public Neo4jGraphFacade(String dirPath) {
+	public Neo4jGraphFacade(String dirPath, IndexType indexType) {
 		this.dirPath = dirPath;
 		graph = new Neo4jGraph(dirPath);
-//		vertexIndex = graph.createIndex("vertexIndex", Vertex.class);
-		vertexIndex = new TreeMap<Long, Object>();
+		this.indexType = indexType;
+		switch (indexType) {
+			case LUCENE_INDEX: 
+				vertexIndex = new LuceneIndex(graph.createIndex("vertexIndex", Vertex.class));
+				break;
+			case TREEMAP:
+				vertexIndex = new TreeMapIndex();
+				break;
+		}		
 	}
 	
 	@Override
@@ -44,8 +57,14 @@ public class Neo4jGraphFacade implements GraphFacade {
 		graph.shutdown();
 		FilesDeleter.delete(new File(dirPath));
 		graph = new Neo4jGraph(dirPath);				
-//		vertexIndex = graph.createIndex("vertexIndex", Vertex.class);
-		vertexIndex = new TreeMap<Long, Object>();
+		switch (indexType) {
+			case LUCENE_INDEX: 
+				vertexIndex = new LuceneIndex(graph.createIndex("vertexIndex", Vertex.class));
+				break;
+			case TREEMAP:
+				vertexIndex = new TreeMapIndex();
+				break;
+		}	
 		vericesCount = 0;
 	}
 	
@@ -55,9 +74,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 		} catch (UserVertexNotPresent e) {
 			final Vertex vertex = graph.addVertex(null);
 			vertex.setProperty("userId", userId);
-//			vertexIndex.put("userId", userId, vertex); //do not forget this ;)
-			if (!vertexIndex.containsKey(userId)) //does this speedup the process?! TODO:test it!
-				vertexIndex.put(userId, vertex.getId());
+			vertexIndex.put(userId, vertex);
 			vericesCount++;
 			return vertex;
 		}	
@@ -118,14 +135,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 	}
 	
 	public Vertex getUserVertex(Long userId) throws UserVertexNotPresent {
-//		Iterable<Vertex> results = vertexIndex.get("userId",userId);
-//		Iterator<Vertex> iterator = results.iterator();
-//		if (iterator.hasNext())
-//			return iterator.next();	
-		if (vertexIndex.containsKey(userId))
-			return graph.getVertex(vertexIndex.get(userId));
-		else
-			throw new UserVertexNotPresent("Trying to get node for user with id="+userId+" but node is not in the graph");
+		return vertexIndex.getVertex(graph, userId);		
 	}
 		
 	@Override

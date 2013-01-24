@@ -36,7 +36,7 @@ public class InfluencersDiscoverer {
 			logger.info("#### ITERATION "+(iterationIndex+1)+" #####");
 			for (int filterIndex=0; filterIndex<filterManagers.size(); filterIndex++) {
 				FilterManager filterManager = filterManagers.get(filterIndex);
-				logger.info("#### filter "+(filterIndex+1)+"/"+filterManagers.size()+" "+filterManager.getClass().getName()+" ####");							
+				logger.info("#### filter "+(filterIndex+1)+"/"+filterManagers.size()+" ####");							
 				if (filterIndex>0) {
 					logger.info("deleting old graph and recreating a new one");
 					graphFacade.eraseGraphAndRecreate();
@@ -44,8 +44,9 @@ public class InfluencersDiscoverer {
 				filterManager.setGraphFacade(graphFacade);
 				filterManager.setTwitterFacade(twitterFacade);
 				filterManager.setSeedUsers(users);
+				logger.info(filterManager.toString());
 				users = filterManager.filter();
-				logger.info("results from filtering = "+users);
+				//logger.info("results from filtering = "+users);
 				logger.info("number of results from filtering = "+users.size());
 			}
 		}
