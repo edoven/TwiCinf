@@ -4,6 +4,7 @@ import it.cybion.influencers.graph.InDegreeNotSetException;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.OutDegreeNotSetException;
 import it.cybion.influencers.graph.UserVertexNotPresent;
+import it.cybion.influencers.graph.index.IndexType;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class Neo4jGraphFacadeDegreeCalculationTEST {
 		String graphDirPath = "src/test/resources/graphs/calculateInDegreeTEST";
 		delete(new File(graphDirPath));
 		
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
 		
 		long userId = 111;	
 		graphFacade.addUser(userId);
@@ -53,7 +54,7 @@ public class Neo4jGraphFacadeDegreeCalculationTEST {
 		String graphDirPath = "src/test/resources/graphs/calculateOutDegreeTEST";
 		delete(new File(graphDirPath));
 		
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
 		
 		long userId = 111;	
 		graphFacade.addUser(userId);

@@ -15,20 +15,17 @@ import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.UserVertexNotPresent;
 import it.cybion.influencers.twitter.TwitterFacade;
 
-public class InAndOutDegreeFilterManager implements FilterManager {
+public class OutDegreeFilterManager implements FilterManager {
 	
-	private static final Logger logger = Logger.getLogger(InAndOutDegreeFilterManager.class);
+	private static final Logger logger = Logger.getLogger(OutDegreeFilterManager.class);
 
 	private List<Long> seedUsers;
 	private TwitterFacade twitterFacade;
 	private GraphFacade graphFacade;
-	private double inDegreePercentageThreshold;
-	private int inDegreeAbsoluteThreshold;
 	private double outDegreePercentageThreshold;	
 	private int outDegreeAbsoluteThreshold;
 	private List<Long> followersAndFriends;
 	private List<User> enrichedSeedUsers;
-	private Map<Long, Integer> node2inDegree;
 	private Map<Long, Integer> node2outDegree;
 	
 	
@@ -55,9 +52,7 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	};
 	
 
-	public InAndOutDegreeFilterManager(	double inDegreePercentageThreshold,
-										double outDegreePercentageThreshold) {
-		this.inDegreePercentageThreshold = inDegreePercentageThreshold;
+	public OutDegreeFilterManager(double outDegreePercentageThreshold) {
 		this.outDegreePercentageThreshold = outDegreePercentageThreshold;
 	}
 	
@@ -75,22 +70,16 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	public void setSeedUsers(List<Long> seedUsers) {
 		this.seedUsers = seedUsers;
 		//once seedUsers are set, absolute thresholds can be calculated
-		inDegreeAbsoluteThreshold = (int) Math.round((inDegreePercentageThreshold * seedUsers.size()));
 		outDegreeAbsoluteThreshold = (int) Math.round((outDegreePercentageThreshold * seedUsers.size()));
 	}
 
 	@Override
 	public List<Long> filter()  {
 		solveDependencies();	
-		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(node2inDegree, inDegreeAbsoluteThreshold);
-		List<Long> inDegreeFiltered = inDegreeFilter.filter();
-		logger.info("inDegreeFiltered.size()="+inDegreeFiltered.size());		
 		NodeDegreeFilter outDegreeFilter = new NodeDegreeFilter(node2outDegree,outDegreeAbsoluteThreshold);
 		List<Long> outDegreeFiltered = outDegreeFilter.filter();
 		logger.info("outDegreeFiltered.size()="+outDegreeFiltered.size());		
-		List<Long> inAndOutDegreeFiltered = putListsInAnd(inDegreeFiltered,outDegreeFiltered);
-		logger.info("inAndOutDegreeFiltered.size()="+inAndOutDegreeFiltered.size());
-		return inAndOutDegreeFiltered;		
+		return outDegreeFiltered;		
 	}
 
 
@@ -178,15 +167,12 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 		 * can be in followersAndFriends
 		 * 
 		 */
-		
 		//let's remove duplicates
 		followersAndFriends = new ArrayList<Long>( new HashSet<Long>(followersAndFriends));
 	}
 	
 	private void calculateNodeDegrees() {
 		try {
-			//this sets an inDegree label in the graph for each node of followersAndFriends set
-			node2inDegree = graphFacade.getInDegrees(followersAndFriends, seedUsers); 
 			//this sets an outDegree label in the graph for each node of followersAndFriends set
 			node2outDegree = graphFacade.getOutDegrees(followersAndFriends, seedUsers);	
 		} catch (UserVertexNotPresent e) {			
@@ -195,25 +181,11 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 		}			
 	}
 	
-	private List<Long> putListsInAnd(List<Long> listA,
-									 List<Long> listB) {
-		List<Long> andList = new ArrayList<Long>();
-		for (Long elementA : listA)
-			if (listB.contains(elementA))
-				andList.add(elementA);
-		for (Long elementB : listB)
-			if (listA.contains(elementB))
-				andList.add(elementB);
-		andList = new ArrayList<Long>( new HashSet<Long>(andList));
-		return andList;
-	}
 
 	@Override
 	public String toString() {
 		return "###inAndOutDegreeFilterManager###" +
-				" (inDegreePercentageThreshold="+inDegreePercentageThreshold*100+"%"+
-				" - outDegreePercentageThreshold="+outDegreePercentageThreshold*100+"%"+
-				" - inDegreeAbsoluteThreshold="+inDegreeAbsoluteThreshold+
+				" (outDegreePercentageThreshold="+outDegreePercentageThreshold*100+"%"+
 				" - outDegreeAbsoluteThreshold="+outDegreeAbsoluteThreshold+
 				" - inputSize="+seedUsers.size()+")";
 	}

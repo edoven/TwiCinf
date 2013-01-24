@@ -2,6 +2,7 @@ package it.cybion.influencers.graph;
 
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.UserVertexNotPresent;
+import it.cybion.influencers.graph.index.IndexType;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
@@ -29,7 +30,7 @@ public class Neo4jGraphFacadeTEST {
 		String graphDirPath = "src/test/resources/graphs/addUserTEST";
 		FilesDeleter.delete(new File(graphDirPath));
 		
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
 		
 		Long userId = 1111l;
 		graphFacade.addUser(userId);
@@ -47,7 +48,7 @@ public class Neo4jGraphFacadeTEST {
 		String graphDirPath = "src/test/resources/graphs/addUsersTESTgraph";
 		FilesDeleter.delete(new File(graphDirPath));
 		
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
 		
 		List<Long> usersIds = new ArrayList<Long>();
 		usersIds.add(111l);
@@ -69,7 +70,7 @@ public class Neo4jGraphFacadeTEST {
 		String graphDirPath = "src/test/resources/graphs/addFollowersTEST";
 		FilesDeleter.delete(new File(graphDirPath));
 		
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
 		
 		long userId = 111;	
 		graphFacade.addUser(userId);
@@ -101,7 +102,7 @@ public class Neo4jGraphFacadeTEST {
 		String graphDirPath = "src/test/resources/graphs/addFriendsTEST";
 		FilesDeleter.delete(new File(graphDirPath));
 		
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
 		
 		long userId = 111;	
 		graphFacade.addUser(userId);

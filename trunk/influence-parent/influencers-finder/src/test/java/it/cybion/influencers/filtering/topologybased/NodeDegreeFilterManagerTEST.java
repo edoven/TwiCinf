@@ -1,11 +1,8 @@
 package it.cybion.influencers.filtering.topologybased;
 
-import it.cybion.influencers.filtering.ExpansionDirection;
-import it.cybion.influencers.filtering.topologybased.ComparisonOption;
-import it.cybion.influencers.filtering.topologybased.DegreeDirection;
-import it.cybion.influencers.filtering.topologybased.NodeDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
+import it.cybion.influencers.graph.index.IndexType;
 import it.cybion.influencers.twitter.TwitterFacade;
 import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
@@ -39,7 +36,7 @@ public class NodeDegreeFilterManagerTEST {
 		String graphPath = "src/test/resources/graphs/test1";
 		FilesDeleter.delete(new File(graphPath));
 		
-		graphFacade = new Neo4jGraphFacade(graphPath);
+		graphFacade = new Neo4jGraphFacade(graphPath,  IndexType.TREEMAP);
 		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "tests", "test1");
 		Token consumerToken = TokenBuilder.getTokenFromFile("/home/godzy/tokens/consumerToken.txt");
 		List<Token> userTokens = new ArrayList<Token>();
@@ -53,26 +50,5 @@ public class NodeDegreeFilterManagerTEST {
 		twitterFacade  = new TwitterFacade(webFacade, persistanceFacade);
 	}
 	
-	@Test(enabled=true)
-	public void testTheFilteringProcedure() throws IOException, TwitterException {	
-		List<Long> seedUsers = new ArrayList<Long>();
-		long id1 = 887469007;
-		long id2 = 426724668;
-		seedUsers.add(id1);
-		seedUsers.add(id2);
-		
-		NodeDegreeFilterManager filterManager = new NodeDegreeFilterManager(
-				ExpansionDirection.FOLLOWERS_AND_FRIENDS,
-				DegreeDirection.IN,
-				ComparisonOption.GREATER_OR_EQUAL, 
-				1.0);
-		filterManager.setGraphFacade(graphFacade);
-		filterManager.setTwitterFacade(twitterFacade);
-		filterManager.setSeedUsers(seedUsers);
-		
-		List<Long> result = filterManager.filter();
-		logger.info(result.size());
-		logger.info(result);
-	}
 
 }

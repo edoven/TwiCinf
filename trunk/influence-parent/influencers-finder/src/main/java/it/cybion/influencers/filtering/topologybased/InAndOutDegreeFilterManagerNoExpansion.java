@@ -15,9 +15,9 @@ import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.UserVertexNotPresent;
 import it.cybion.influencers.twitter.TwitterFacade;
 
-public class InAndOutDegreeFilterManager implements FilterManager {
+public class InAndOutDegreeFilterManagerNoExpansion implements FilterManager {
 	
-	private static final Logger logger = Logger.getLogger(InAndOutDegreeFilterManager.class);
+	private static final Logger logger = Logger.getLogger(InAndOutDegreeFilterManagerNoExpansion.class);
 
 	private List<Long> seedUsers;
 	private TwitterFacade twitterFacade;
@@ -55,7 +55,7 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	};
 	
 
-	public InAndOutDegreeFilterManager(	double inDegreePercentageThreshold,
+	public InAndOutDegreeFilterManagerNoExpansion(	double inDegreePercentageThreshold,
 										double outDegreePercentageThreshold) {
 		this.inDegreePercentageThreshold = inDegreePercentageThreshold;
 		this.outDegreePercentageThreshold = outDegreePercentageThreshold;

@@ -1,8 +1,10 @@
-package it.cybion.influencers;
+package food46;
 
+import it.cybion.influencers.InfluencersDiscoverer;
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionDictionaryFilterManager;
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
+import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.index.IndexType;
@@ -44,6 +46,7 @@ public class Food46 {
 																				filterManagers);
 		List<Long> influencers = influencersDiscoverer.getInfluencers();
 		logger.info("Possible influencers = "+influencers);
+		
 		for (Long userId : influencers) {
 			String description = twitterFacade.getDescription(userId).replace('\n', ' ').replace('\r',' ');
 			int followersCount = twitterFacade.getFollowersCount(userId);
@@ -138,8 +141,8 @@ public class Food46 {
 	
 	private static List<FilterManager> getFilterManagers() {
 		List<FilterManager> filters = new ArrayList<FilterManager>();
-		InAndOutDegreeFilterManager degreeFilter1 = new InAndOutDegreeFilterManager(0.05, 0.1);
-		InAndOutDegreeFilterManager degreeFilter2 = new InAndOutDegreeFilterManager(0.00, 0.1);
+		InAndOutDegreeFilterManager inAndOutDegree = new InAndOutDegreeFilterManager(0.05, 0.1);
+		OutDegreeFilterManager outDegree = new OutDegreeFilterManager(0.025);
 		List<String> dictionary = new ArrayList<String>();
 		dictionary.add("food");
 		dictionary.add("cibo");
@@ -169,9 +172,9 @@ public class Food46 {
 		dictionary.add("agricol");
 		dictionary.add("mangi");
 		DescriptionDictionaryFilterManager descriptionFilter = new DescriptionDictionaryFilterManager(dictionary);
-		filters.add(0, degreeFilter1);
+		filters.add(0, inAndOutDegree);
 		filters.add(1, descriptionFilter);
-		filters.add(2, degreeFilter2);
+		filters.add(2, outDegree);
 		filters.add(3, descriptionFilter);
 		return filters;
 	}
