@@ -79,16 +79,10 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 	@Override
 	public List<Long> filter()  {
 		solveDependencies();	
-		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(
-											node2inDegree, 
-											inDegreeAbsoluteThreshold, 
-											ComparisonOption.GREATER_OR_EQUAL);
+		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(node2inDegree, inDegreeAbsoluteThreshold);
 		List<Long> inDegreeFiltered = inDegreeFilter.filter();
 		logger.info("inDegreeFiltered.size()="+inDegreeFiltered.size());		
-		NodeDegreeFilter outDegreeFilter = new NodeDegreeFilter(
-											node2outDegree, 
-											outDegreeAbsoluteThreshold, 
-											ComparisonOption.GREATER_OR_EQUAL);
+		NodeDegreeFilter outDegreeFilter = new NodeDegreeFilter(node2outDegree,outDegreeAbsoluteThreshold);
 		List<Long> outDegreeFiltered = outDegreeFilter.filter();
 		logger.info("outDegreeFiltered.size()="+outDegreeFiltered.size());		
 		List<Long> inAndOutDegreeFiltered = putListsInAnd(inDegreeFiltered,outDegreeFiltered);

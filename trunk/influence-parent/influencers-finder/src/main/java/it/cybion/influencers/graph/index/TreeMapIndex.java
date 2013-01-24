@@ -17,7 +17,7 @@ public class TreeMapIndex implements GraphIndex {
 
 	@Override
 	public void put(Long userId, Vertex vertex) {
-		if (!userId2vertexId.containsKey(userId)) //does this speedup the process?! TODO:test it!
+		if (!userId2vertexId.containsKey(userId))
 			userId2vertexId.put(userId, vertex.getId());
 	}
 

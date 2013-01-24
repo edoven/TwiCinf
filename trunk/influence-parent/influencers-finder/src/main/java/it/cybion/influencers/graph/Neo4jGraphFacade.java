@@ -13,11 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
-
-import scala.reflect.generic.Trees.CaseDef;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
@@ -32,6 +29,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 	private Neo4jGraph graph;
 	private String dirPath;
 	private int vericesCount = 0;
+	private int edgeCount = 0;
 	private GraphIndex vertexIndex;
 	private IndexType indexType;
 	
@@ -66,18 +64,28 @@ public class Neo4jGraphFacade implements GraphFacade {
 				break;
 		}	
 		vericesCount = 0;
+		edgeCount = 0;
 	}
 	
 	public Vertex addUser(Long userId) {				
 		try {
 			return getUserVertex(userId);
 		} catch (UserVertexNotPresent e) {
-			final Vertex vertex = graph.addVertex(null);
+			Vertex vertex = graph.addVertex(null);
 			vertex.setProperty("userId", userId);
 			vertexIndex.put(userId, vertex);
 			vericesCount++;
+			if ((vericesCount%OPERATIONS_PER_TRANSACTION) == 0)
+				graph.stopTransaction(Conclusion.SUCCESS);
 			return vertex;
 		}	
+	}
+	
+	public void addEdge(Vertex followerVertex, Vertex userVertex) {
+		graph.addEdge(null, followerVertex, userVertex, "follows");
+		edgeCount++;
+		if ((edgeCount%OPERATIONS_PER_TRANSACTION) == 0)
+			graph.stopTransaction(Conclusion.SUCCESS);
 	}
 	
 	@Override
@@ -87,8 +95,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 	}
 		
 	@Override
-	public void addFollowers(Long userId, List<Long> followersIds) throws UserVertexNotPresent {
-		int insersionsCount = 0;		
+	public void addFollowers(Long userId, List<Long> followersIds) throws UserVertexNotPresent {	
 //		logger.info("adding "+followersIds.size()+" followers for user "+userId);
 		Vertex userVertex = getUserVertex(userId);
 		if (userVertex == null)
@@ -100,19 +107,12 @@ public class Neo4jGraphFacade implements GraphFacade {
 			} catch (UserVertexNotPresent e) {
 				followerVertex = addUser(followerId);
 			}
-			graph.addEdge(null, followerVertex, userVertex, "follows");	
-			
-			insersionsCount++;
-			if (insersionsCount>0 && (insersionsCount%OPERATIONS_PER_TRANSACTION)==0) {
-				graph.stopTransaction(Conclusion.SUCCESS);
-			}			
+			addEdge(followerVertex, userVertex);	
 		}
-		graph.stopTransaction(Conclusion.SUCCESS);
 	}
 
 	@Override
-	public void addFriends(Long userId, List<Long> friendsIds) throws UserVertexNotPresent {
-		int insersionsCount = 0;		
+	public void addFriends(Long userId, List<Long> friendsIds) throws UserVertexNotPresent {		
 //		logger.info("adding "+friendsIds.size()+" friends for user "+userId);
 		Vertex userVertex = getUserVertex(userId);
 		if (userVertex == null)
@@ -123,15 +123,9 @@ public class Neo4jGraphFacade implements GraphFacade {
 				friendVertex = getUserVertex(friendId);
 			} catch (UserVertexNotPresent e) {
 				friendVertex = addUser(friendId);
-			}
-			graph.addEdge(null, userVertex, friendVertex, "follows");	
-			
-			insersionsCount++;
-			if (insersionsCount>0 && (insersionsCount%OPERATIONS_PER_TRANSACTION)==0) {
-				graph.stopTransaction(Conclusion.SUCCESS);
 			}	
+			addEdge( userVertex, friendVertex);
 		}
-		graph.stopTransaction(Conclusion.SUCCESS);
 	}
 	
 	public Vertex getUserVertex(Long userId) throws UserVertexNotPresent {
