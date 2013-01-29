@@ -2,8 +2,8 @@ package food46;
 
 import it.cybion.influencers.InfluencersDiscoverer;
 import it.cybion.influencers.filtering.FilterManager;
-import it.cybion.influencers.filtering.contentbased.DescriptionDictionaryFilterManager;
-import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
+import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
+import it.cybion.influencers.filtering.topologybased.InOrOutDegreeFilterManager;
 import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
@@ -26,9 +26,9 @@ import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
 
-public class Food46 {
+public class Food20 {
 	
-	private static final Logger logger = Logger.getLogger(Food46.class);
+	private static final Logger logger = Logger.getLogger(Food20.class);
 
 	
 	public static void main(String[] args) throws IOException, TwitterException {
@@ -45,7 +45,12 @@ public class Food46 {
 																				twitterFacade, 
 																				filterManagers);
 		List<Long> influencers = influencersDiscoverer.getInfluencers();
-		logger.info("Possible influencers = "+influencers);
+		
+		//logger.info("Possible influencers = "+influencers);
+		logger.info("");
+		logger.info("");
+		logger.info("####### Influencers #########");
+		logger.info("");
 		
 		for (Long userId : influencers) {
 			String description = twitterFacade.getDescription(userId).replace('\n', ' ').replace('\r',' ');
@@ -60,7 +65,7 @@ public class Food46 {
 	}
 
 	private static GraphFacade getGraphFacade() throws IOException {
-		String graphDirPath = "graphs/food46";
+		String graphDirPath = "graphs/food20";
 		FilesDeleter.delete(new File(graphDirPath));	
 		GraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
 		return graphFacade;
@@ -110,39 +115,39 @@ public class Food46 {
 		usersIds.add(57163636L); //fooders
 		usersIds.add(57283474L); //GialloZafferano
 		usersIds.add(191365206L); //giornaledelcibo
-		usersIds.add(75086891L); //carlo_spinelli
-		usersIds.add(416478534L); //CarloOttaviano
-		usersIds.add(70918724L); //slow_food_italy
-		usersIds.add(323154299L); //massimobottura
-		usersIds.add(342813082L); //barbierichef
-		usersIds.add(31935994L); //puntarellarossa
-		usersIds.add(28414979L); //morenocedroni
-		usersIds.add(96384661L); //soniaperonaci
-		usersIds.add(86961660L); //scattidigusto
-		usersIds.add(167406951L); //WineNewsIt
-		usersIds.add(368991338L); //TheBreakfastRev
-		usersIds.add(17007757L); //ci_polla
-		usersIds.add(135436730L); //ilgastronauta
-		usersIds.add(23306444L); //dissapore
-		usersIds.add(128564404L); //gianlucamorino
-		usersIds.add(20696734L); //cookaround
-		usersIds.add(7171022L); //cavoletto
-		usersIds.add(22147020L); //Cucina_Italiana
-		usersIds.add(426206087L); //DavideScabin0
-		usersIds.add(54157380L); //italiasquisita
-		usersIds.add(222491618L); //LaCuochina
-		usersIds.add(339541519L); //SingerFood
-		usersIds.add(130209798L); //GigiPadovani
-		usersIds.add(41074932L); //FeudiDSGregorio
-		usersIds.add(342677624L); //MartaTovaglieri
-		usersIds.add(81079701L); //elisiamenduni
+//		usersIds.add(75086891L); //carlo_spinelli
+//		usersIds.add(416478534L); //CarloOttaviano
+//		usersIds.add(70918724L); //slow_food_italy
+//		usersIds.add(323154299L); //massimobottura
+//		usersIds.add(342813082L); //barbierichef
+//		usersIds.add(31935994L); //puntarellarossa
+//		usersIds.add(28414979L); //morenocedroni
+//		usersIds.add(96384661L); //soniaperonaci
+//		usersIds.add(86961660L); //scattidigusto
+//		usersIds.add(167406951L); //WineNewsIt
+//		usersIds.add(368991338L); //TheBreakfastRev
+//		usersIds.add(17007757L); //ci_polla
+//		usersIds.add(135436730L); //ilgastronauta
+//		usersIds.add(23306444L); //dissapore
+//		usersIds.add(128564404L); //gianlucamorino
+//		usersIds.add(20696734L); //cookaround
+//		usersIds.add(7171022L); //cavoletto
+//		usersIds.add(22147020L); //Cucina_Italiana
+//		usersIds.add(426206087L); //DavideScabin0
+//		usersIds.add(54157380L); //italiasquisita
+//		usersIds.add(222491618L); //LaCuochina
+//		usersIds.add(339541519L); //SingerFood
+//		usersIds.add(130209798L); //GigiPadovani
+//		usersIds.add(41074932L); //FeudiDSGregorio
+//		usersIds.add(342677624L); //MartaTovaglieri
+//		usersIds.add(81079701L); //elisiamenduni
 		return usersIds;
 	}
 	
 	private static List<FilterManager> getFilterManagers() {
 		List<FilterManager> filters = new ArrayList<FilterManager>();
-		InAndOutDegreeFilterManager inAndOutDegree = new InAndOutDegreeFilterManager(0.05, 0.1);
-		OutDegreeFilterManager outDegree = new OutDegreeFilterManager(0.025);
+		InOrOutDegreeFilterManager inOrOutDegree = new InOrOutDegreeFilterManager(0.1, 0.2);
+		OutDegreeFilterManager outDegree = new OutDegreeFilterManager(0.01);
 		List<String> dictionary = new ArrayList<String>();
 		dictionary.add("food");
 		dictionary.add("cibo");
@@ -171,8 +176,8 @@ public class Food46 {
 		dictionary.add("sapor");
 		dictionary.add("agricol");
 		dictionary.add("mangi");
-		DescriptionDictionaryFilterManager descriptionFilter = new DescriptionDictionaryFilterManager(dictionary);
-		filters.add(0, inAndOutDegree);
+		DescriptionAndStatusDictionaryFilterManager descriptionFilter = new DescriptionAndStatusDictionaryFilterManager(dictionary);
+		filters.add(0, inOrOutDegree);
 		filters.add(1, descriptionFilter);
 		filters.add(2, outDegree);
 		filters.add(3, descriptionFilter);

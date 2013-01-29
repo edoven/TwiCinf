@@ -107,6 +107,44 @@ public class TwitterFacade {
 		return userToDescription;
 	}
 	
+	public Map<Long,String> getDescriptionsAndStatuses(List<Long> userIds) {
+		Map<Long,String> user2DescriptionAndStatus = new HashMap<Long,String>();
+		List<Long> usersToDownload = new ArrayList<Long>();		
+		for (Long userId : userIds) {			
+			try {
+				String descriptionAndStatus = persistanceFacade.getDescriptionAndStatus(userId);
+				user2DescriptionAndStatus.put(userId, descriptionAndStatus);
+			} catch (UserNotPresentException e) {
+				usersToDownload.add(userId);
+			} catch (UserNotProfileEnriched e) {
+				usersToDownload.add(userId);
+			}			
+		}		
+		List<String> downloadedUsersJsons = twitterWebFacade.getUsersJsons(usersToDownload);
+		for (String userJson : downloadedUsersJsons)
+			persistanceFacade.putUser(userJson);
+		for (String donwloadedUserJson : downloadedUsersJsons) {
+			/*
+			 * It's not good to use mongDb object (DBObject) to extract
+			 * the id from the user json string!
+			 * TODO: use another way to do this!
+			 */
+			DBObject downloadedUserObject = (DBObject) JSON.parse(donwloadedUserJson);
+			long userId = new Long ((Integer) downloadedUserObject.get("id"));
+			try {				
+				String descriptionAndStatus = persistanceFacade.getDescriptionAndStatus(userId);
+				user2DescriptionAndStatus.put(userId, descriptionAndStatus);
+			} catch (UserNotPresentException e) {
+				logger.info("ERROR! User with id "+userId+" can't be added to caching system.");
+				System.exit(0);
+			} catch (UserNotProfileEnriched e) {
+				logger.info("ERROR! User with id "+userId+" can't be added to caching system.");
+				System.exit(0);
+			}
+		}
+		return user2DescriptionAndStatus;
+	}
+	
 	public String getScreenName(Long userId) throws TwitterException  {
 		try {
 			String description = persistanceFacade.getScreenName(userId);
@@ -211,6 +249,19 @@ public class TwitterFacade {
 			}		
 			return getFriends(userId);
 		}
+	}
+	
+	public List<Long> getNotFollowersAndFriendsEnriched(List<Long> usersIds) {
+		List<Long> notEnriched = new ArrayList<Long>();
+		for (Long userId : usersIds) {
+			try {
+				persistanceFacade.getFollowers(userId);
+				persistanceFacade.getFriends(userId);
+			} catch (Exception e) {
+				notEnriched.add(userId);
+			} 
+		}
+		return notEnriched;
 	}
 	
 }

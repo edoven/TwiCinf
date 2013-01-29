@@ -163,13 +163,13 @@ public class Neo4jGraphFacade implements GraphFacade {
 	public Map<Long, Integer> getInDegrees(List<Long> usersToBeCalculated, List<Long> sourceUsers) throws UserVertexNotPresent {
 		logger.info("### calculateInDegree ###");
 		Map<Long, Integer> user2inDegree = new HashMap<Long, Integer>();
-		int percentCalculated = 0;
-		final int tenPercent = Math.round((float)usersToBeCalculated.size()/10);
+//		int percentCalculated = 0;
+//		final int tenPercent = Math.round((float)usersToBeCalculated.size()/10);
 		for (int i=0; i<usersToBeCalculated.size(); i++) {
-			if (i%tenPercent==0) {
-				logger.info("calculated inDegree for "+percentCalculated+"% of users");
-				percentCalculated = percentCalculated + 10;
-			}
+//			if (i%tenPercent==0) {
+//				logger.info("calculated inDegree for "+percentCalculated+"% of users");
+//				percentCalculated = percentCalculated + 10;
+//			}
 			long userId = usersToBeCalculated.get(i);
 			int inDegree = 0;
 			Vertex userVertex = getUserVertex(userId);
@@ -191,13 +191,13 @@ public class Neo4jGraphFacade implements GraphFacade {
 	public Map<Long, Integer> getOutDegrees(List<Long> usersToBeCalculated, List<Long> destinationUsers) throws UserVertexNotPresent {
 		logger.info("### calculateOutDegree ###");
 		Map<Long, Integer> user2outDegree = new HashMap<Long, Integer>();
-		int percentCalculated = 0;
-		final int tenPercent = Math.round((float)usersToBeCalculated.size()/10);
+//		int percentCalculated = 0;
+//		final int tenPercent = Math.round((float)usersToBeCalculated.size()/10);
 		for (int i=0; i<usersToBeCalculated.size(); i++) {
-			if (i%tenPercent==0) {
-				logger.info("calculated outDegree for "+percentCalculated+"% of users");
-				percentCalculated = percentCalculated + 10;
-			}
+//			if (i%tenPercent==0) {
+//				logger.info("calculated outDegree for "+percentCalculated+"% of users");
+//				percentCalculated = percentCalculated + 10;
+//			}
 			long userId = usersToBeCalculated.get(i);
 			int outDegree = 0;
 			Vertex userVertex = getUserVertex( userId);

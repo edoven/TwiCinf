@@ -1,7 +1,7 @@
 package it.cybion.influencers.filtering.contentbased;
 
 
-import it.cybion.influencers.filtering.contentbased.DescriptionDictionaryFilter;
+import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class DescriptionDictionaryFilterTEST {
 		dictionary.add("chef");
 		dictionary.add("ristorante");
 		
-		DescriptionDictionaryFilter filter = new DescriptionDictionaryFilter(dictionary,user2description);
+		DescriptionAndStatusDictionaryFilter filter = new DescriptionAndStatusDictionaryFilter(dictionary,user2description);
 		List<Long> goodUsers = filter.filter();
 		
 		assertEquals(goodUsers.size(), 3);

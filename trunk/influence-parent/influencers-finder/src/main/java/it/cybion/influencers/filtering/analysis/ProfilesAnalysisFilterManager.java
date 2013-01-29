@@ -60,7 +60,7 @@ public class ProfilesAnalysisFilterManager implements FilterManager {
 	}
 
 	private void printStats() {
-		for (Entry<Long,Integer> mapEntry : followersCount2usersCount)
+		//for (Entry<Long,Integer> mapEntry : followersCount2usersCount)
 			
 	}
 

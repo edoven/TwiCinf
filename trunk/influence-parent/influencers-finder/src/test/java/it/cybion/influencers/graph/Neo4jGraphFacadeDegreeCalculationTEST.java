@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.testng.Assert;
@@ -41,8 +42,8 @@ public class Neo4jGraphFacadeDegreeCalculationTEST {
 		
 		List<Long> usersToBeCalculated = new ArrayList<Long>();
 		usersToBeCalculated.add(userId);
-		graphFacade.calculateInDegree(usersToBeCalculated, followersIds);
-		int inDegree = graphFacade.getInDegree(userId);
+		Map<Long,Integer> inDegrees  = graphFacade.getInDegrees(usersToBeCalculated, followersIds);
+		int inDegree = inDegrees.get(userId);
 		Assert.assertEquals(inDegree, followersIds.size());
 		
 		delete(new File(graphDirPath));
@@ -71,9 +72,9 @@ public class Neo4jGraphFacadeDegreeCalculationTEST {
 		List<Long> destinationNodes = new ArrayList<Long>();
 		destinationNodes.add(userId);
 		
-		graphFacade.calculateOutDegree(followersIds, destinationNodes);
+		Map<Long,Integer> outDegrees  = graphFacade.getOutDegrees(followersIds, destinationNodes);
 		for (Long followerId : followersIds) {
-			int outDegree = graphFacade.getOutDegree(followerId);
+			int outDegree = outDegrees.get(followerId);
 			Assert.assertEquals(outDegree, 1);
 		}
 		

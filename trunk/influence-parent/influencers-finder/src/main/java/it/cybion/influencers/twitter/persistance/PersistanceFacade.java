@@ -17,6 +17,7 @@ public interface PersistanceFacade {
 	void removeUser(Long userId);
 	int getFollowersCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched;
 	int getFriendsCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched;
+	String getDescriptionAndStatus(Long userId) throws UserNotPresentException,	UserNotProfileEnriched;
 	
 		
 }

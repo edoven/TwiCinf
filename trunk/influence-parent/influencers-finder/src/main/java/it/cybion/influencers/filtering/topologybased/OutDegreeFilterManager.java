@@ -46,7 +46,8 @@ public class OutDegreeFilterManager implements FilterManager {
 		
 		@Override
 		public int compareTo(User userToCompare) {	
-			return  userToCompare.getFollowers().size() - this.getFollowers().size();	 
+			return  (userToCompare.getFollowers().size() + userToCompare.getFriends().size())
+					- (this.getFollowers().size() + this.getFriends().size());	 
 		}
 
 	};
@@ -69,8 +70,51 @@ public class OutDegreeFilterManager implements FilterManager {
 	@Override
 	public void setSeedUsers(List<Long> seedUsers) {
 		this.seedUsers = seedUsers;
+		/*
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+		
+		
+		if (seedUsers.size()>200) {
+			List<Long> alreadyEnriched = seedUsers;
+			alreadyEnriched.removeAll(twitterFacade.getNotFollowersAndFriendsEnriched(seedUsers));
+			if (alreadyEnriched.size()>200) {
+				Collections.shuffle(alreadyEnriched);
+				this.seedUsers = alreadyEnriched.subList(0,  200);
+			}
+			else {
+				List<Long> newSeedUsers = alreadyEnriched;
+				Collections.shuffle(seedUsers);
+				for (int i=0; i<seedUsers.size() || newSeedUsers.size()<200; i++) {
+					long userId = seedUsers.get(i);
+					if (!newSeedUsers.contains(userId))
+						newSeedUsers.add(userId);
+				}					
+			}				
+		}
+		
+//		if (seedUsers.size()>100) {
+//			Collections.shuffle(seedUsers);
+//			if (seedUsers.size()>200)
+//				this.seedUsers = seedUsers.subList(0,  200);
+//			else
+//				this.seedUsers = seedUsers.subList(0,  Math.round(seedUsers.size()/6));
+//		}
+		/*
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
 		//once seedUsers are set, absolute thresholds can be calculated
-		outDegreeAbsoluteThreshold = (int) Math.round((outDegreePercentageThreshold * seedUsers.size()));
+		outDegreeAbsoluteThreshold = (int) Math.round((outDegreePercentageThreshold * this.seedUsers.size()));
+		if (outDegreeAbsoluteThreshold<2)
+			outDegreeAbsoluteThreshold = 2;
 	}
 
 	@Override
@@ -84,6 +128,8 @@ public class OutDegreeFilterManager implements FilterManager {
 
 
 	private void solveDependencies() {	
+		logger.info("### enriching seed users ###");
+		getAndSetFollowersAndFriendsEnrichedUsers();	
 		logger.info("### creating graph ###");
 		createGraph();		
 		logger.info("### populating followers and friends big list###");
@@ -96,7 +142,7 @@ public class OutDegreeFilterManager implements FilterManager {
 		
 	private void createGraph() {		
 		graphFacade.addUsers(seedUsers);
-		getAndSetFollowersAndFriendsEnrichedUsers();		
+			
 		for (int i=0; i<enrichedSeedUsers.size(); i++) {	
 			User user = enrichedSeedUsers.get(i);
 			logger.info("createGraph user "+i+"/"+seedUsers.size()+
@@ -116,6 +162,7 @@ public class OutDegreeFilterManager implements FilterManager {
 	
 	
 	private void getAndSetFollowersAndFriendsEnrichedUsers() {
+		logger.info("Not enriched = "+twitterFacade.getNotFollowersAndFriendsEnriched(seedUsers).size());
 		enrichedSeedUsers = new ArrayList<User>();
 		int percentCompleted = 0;
 		int tenPercent = Math.round((float)seedUsers.size()/10);
@@ -182,11 +229,18 @@ public class OutDegreeFilterManager implements FilterManager {
 	}
 	
 
+
 	@Override
 	public String toString() {
-		return "###inAndOutDegreeFilterManager###" +
+		String inputSize = "NotSet";
+		String outDegreeAbsThreshold = "CannotBeCalculated";
+		if (seedUsers!=null ) {
+			inputSize = Integer.toString(seedUsers.size());
+			outDegreeAbsThreshold = Integer.toString(outDegreeAbsoluteThreshold);
+		}
+		return "OutDegreeFilterManager" +
 				" (outDegreePercentageThreshold="+outDegreePercentageThreshold*100+"%"+
-				" - outDegreeAbsoluteThreshold="+outDegreeAbsoluteThreshold+
-				" - inputSize="+seedUsers.size()+")";
+				" - outDegreeAbsoluteThreshold="+outDegreeAbsThreshold+
+				" - inputSize="+inputSize+")";
 	}
 }

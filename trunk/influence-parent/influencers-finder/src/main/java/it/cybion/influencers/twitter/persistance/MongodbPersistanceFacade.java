@@ -132,6 +132,32 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 		return description;		
 	}
 	
+	public String getStatus(Long userId)  throws UserNotPresentException, UserNotProfileEnriched {
+		String userJson = getUser(userId);
+		DBObject user = (DBObject) JSON.parse(userJson);		
+		if (!user.containsField("description"))
+			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
+		DBObject status = (DBObject) user.get("status");	
+		String text = (String) status.get("text");
+		if (text==null)
+			text = "";
+		return text;		
+	}
+		
+	@Override
+	public String getDescriptionAndStatus(Long userId) throws UserNotPresentException, UserNotProfileEnriched {
+		String userJson = getUser(userId);
+		DBObject user = (DBObject) JSON.parse(userJson);		
+		if (!user.containsField("description"))
+			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
+		String description = (String) user.get("description");
+		DBObject statusObject = (DBObject) user.get("status");	
+		String status = "";
+		if (statusObject!=null)
+			status = (String) statusObject.get("text");
+		return description + " " + status;		
+	}
+		
 	@Override
 	public int getFollowersCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched {
 		String userJson = getUser(userId);

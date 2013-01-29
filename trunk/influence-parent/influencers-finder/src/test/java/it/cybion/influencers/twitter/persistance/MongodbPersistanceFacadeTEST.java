@@ -1,7 +1,6 @@
 package it.cybion.influencers.twitter.persistance;
 
 import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
-import it.cybion.influencers.twitter.persistance.PersistanceFacade;
 import it.cybion.influencers.twitter.persistance.UserNotFollowersEnrichedException;
 import it.cybion.influencers.twitter.persistance.UserNotFriendsEnrichedException;
 import it.cybion.influencers.twitter.persistance.UserNotPresentException;
@@ -208,5 +207,14 @@ public class MongodbPersistanceFacadeTEST {
 		assertTrue(false);
 	}
 	
+	
+	@Test
+	public void getStatus() throws UserNotPresentException, UserNotProfileEnriched {
+		String userToInsertJson = "{\"name\": \"Twitter API\", \"id\": 6253282, \"description\":\"my description\", \"status\": {\"text\": \"this is my last status\"}}";
+		persistanceManager.putUser(userToInsertJson);
+		String retrievedStatus = persistanceManager.getStatus(6253282L);
+		Assert.assertEquals("this is my last status", retrievedStatus);
+		persistanceManager.removeUser(6253282L);
+	}
 
 }

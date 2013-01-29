@@ -7,12 +7,12 @@ import java.util.Map.Entry;
 
 import it.cybion.influencers.filtering.Filter;
 
-public class DescriptionDictionaryFilter implements Filter {
+public class DescriptionAndStatusDictionaryFilter implements Filter {
 
 	List<String> dictionary;
 	Map<Long,String> user2description;
 	
-	public DescriptionDictionaryFilter(List<String> dictionary,
+	public DescriptionAndStatusDictionaryFilter(List<String> dictionary,
 									   Map<Long,String> user2description) {
 		super();
 		this.dictionary = dictionary;	

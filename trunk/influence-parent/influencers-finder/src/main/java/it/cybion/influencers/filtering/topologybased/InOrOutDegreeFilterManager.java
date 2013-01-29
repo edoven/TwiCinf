@@ -15,9 +15,9 @@ import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.UserVertexNotPresent;
 import it.cybion.influencers.twitter.TwitterFacade;
 
-public class InAndOutDegreeFilterManagerNoExpansion implements FilterManager {
+public class InOrOutDegreeFilterManager implements FilterManager {
 	
-	private static final Logger logger = Logger.getLogger(InAndOutDegreeFilterManagerNoExpansion.class);
+	private static final Logger logger = Logger.getLogger(InOrOutDegreeFilterManager.class);
 
 	private List<Long> seedUsers;
 	private TwitterFacade twitterFacade;
@@ -55,7 +55,7 @@ public class InAndOutDegreeFilterManagerNoExpansion implements FilterManager {
 	};
 	
 
-	public InAndOutDegreeFilterManagerNoExpansion(	double inDegreePercentageThreshold,
+	public InOrOutDegreeFilterManager(	double inDegreePercentageThreshold,
 										double outDegreePercentageThreshold) {
 		this.inDegreePercentageThreshold = inDegreePercentageThreshold;
 		this.outDegreePercentageThreshold = outDegreePercentageThreshold;
@@ -88,13 +88,15 @@ public class InAndOutDegreeFilterManagerNoExpansion implements FilterManager {
 		NodeDegreeFilter outDegreeFilter = new NodeDegreeFilter(node2outDegree,outDegreeAbsoluteThreshold);
 		List<Long> outDegreeFiltered = outDegreeFilter.filter();
 		logger.info("outDegreeFiltered.size()="+outDegreeFiltered.size());		
-		List<Long> inAndOutDegreeFiltered = putListsInAnd(inDegreeFiltered,outDegreeFiltered);
-		logger.info("inAndOutDegreeFiltered.size()="+inAndOutDegreeFiltered.size());
-		return inAndOutDegreeFiltered;		
+		List<Long> inOrOutDegreeFiltered = putListsInOr(inDegreeFiltered,outDegreeFiltered);
+		logger.info("inAndOutDegreeFiltered.size()="+inOrOutDegreeFiltered.size());
+		return inOrOutDegreeFiltered;		
 	}
 
 
 	private void solveDependencies() {	
+		logger.info("### enriching seed users ###");
+		getAndSetFollowersAndFriendsEnrichedUsers();
 		logger.info("### creating graph ###");
 		createGraph();		
 		logger.info("### populating followers and friends big list###");
@@ -106,8 +108,7 @@ public class InAndOutDegreeFilterManagerNoExpansion implements FilterManager {
 
 		
 	private void createGraph() {		
-		graphFacade.addUsers(seedUsers);
-		getAndSetFollowersAndFriendsEnrichedUsers();		
+		graphFacade.addUsers(seedUsers);				
 		for (int i=0; i<enrichedSeedUsers.size(); i++) {	
 			User user = enrichedSeedUsers.get(i);
 			logger.info("createGraph user "+i+"/"+seedUsers.size()+
@@ -195,26 +196,28 @@ public class InAndOutDegreeFilterManagerNoExpansion implements FilterManager {
 		}			
 	}
 	
-	private List<Long> putListsInAnd(List<Long> listA,
-									 List<Long> listB) {
-		List<Long> andList = new ArrayList<Long>();
-		for (Long elementA : listA)
-			if (listB.contains(elementA))
-				andList.add(elementA);
-		for (Long elementB : listB)
-			if (listA.contains(elementB))
-				andList.add(elementB);
-		andList = new ArrayList<Long>( new HashSet<Long>(andList));
-		return andList;
+	private List<Long> putListsInOr(List<Long> listA,List<Long> listB) {		
+		List<Long> orList = listA;
+		orList.addAll(listB);
+		orList = new ArrayList<Long>(new HashSet<Long>(orList));
+		return orList;
 	}
 
 	@Override
 	public String toString() {
-		return "###inAndOutDegreeFilterManager###" +
+		String inputSize = "NotSet";
+		String inDegreeAbsThreshold = "CannotBeCalculated";
+		String outDegreeAbsThreshold = "CannotBeCalculated";
+		if (seedUsers!=null ) {
+			inputSize = Integer.toString(seedUsers.size());
+			inDegreeAbsThreshold = Integer.toString(inDegreeAbsoluteThreshold);
+			outDegreeAbsThreshold = Integer.toString(outDegreeAbsoluteThreshold);
+		}
+		return "InOrOutDegreeFilterManager" +
 				" (inDegreePercentageThreshold="+inDegreePercentageThreshold*100+"%"+
 				" - outDegreePercentageThreshold="+outDegreePercentageThreshold*100+"%"+
-				" - inDegreeAbsoluteThreshold="+inDegreeAbsoluteThreshold+
-				" - outDegreeAbsoluteThreshold="+outDegreeAbsoluteThreshold+
-				" - inputSize="+seedUsers.size()+")";
+				" - inDegreeAbsoluteThreshold="+inDegreeAbsThreshold+
+				" - outDegreeAbsoluteThreshold="+outDegreeAbsThreshold+
+				" - inputSize="+inputSize+")";
 	}
 }
