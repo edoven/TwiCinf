@@ -254,12 +254,20 @@ public class TwitterFacade {
 	public List<Long> getNotFollowersAndFriendsEnriched(List<Long> usersIds) {
 		List<Long> notEnriched = new ArrayList<Long>();
 		for (Long userId : usersIds) {
+			
 			try {
 				persistanceFacade.getFollowers(userId);
 				persistanceFacade.getFriends(userId);
-			} catch (Exception e) {
+			} catch (UserNotPresentException e) {
 				notEnriched.add(userId);
-			} 
+				continue;
+			} catch (UserNotFollowersEnrichedException e) {
+				notEnriched.add(userId);
+				continue;
+			}catch (UserNotFriendsEnrichedException e) {
+				notEnriched.add(userId);
+			}
+			
 		}
 		return notEnriched;
 	}

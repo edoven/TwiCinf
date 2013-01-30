@@ -189,6 +189,7 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 		enrichedSeedUsers = new ArrayList<User>();
 		int percentCompleted = 0;
 		int tenPercent = Math.round((float)seedUsers.size()/10);
+		
 		for (int i=0; i<seedUsers.size(); i++) {			
 			long userId = seedUsers.get(i);
 			try {					
@@ -205,7 +206,8 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 				logger.info("getFollowersAndFriendsEnrichedUsers completed for "+percentCompleted+"%");
 				percentCompleted = percentCompleted + 10;
 			}
-		}		
+		}	
+		logger.info("getFollowersAndFriendsEnrichedUsers completed for 100%");
 		Collections.sort(enrichedSeedUsers);		
 	}
 	
@@ -253,8 +255,7 @@ public class InAndOutDegreeFilterManager implements FilterManager {
 		}			
 	}
 	
-	private List<Long> putListsInAnd(List<Long> listA,
-									 List<Long> listB) {
+	private List<Long> putListsInAnd(List<Long> listA, List<Long> listB) {
 		List<Long> andList = new ArrayList<Long>();
 		for (Long elementA : listA)
 			if (listB.contains(elementA))

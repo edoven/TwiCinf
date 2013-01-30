@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 import it.cybion.influencers.filtering.Filter;
 
 
 public class NodeDegreeFilter implements Filter {
 	
-	private static final Logger logger = Logger.getLogger(NodeDegreeFilter.class);
+//	private static final Logger logger = Logger.getLogger(NodeDegreeFilter.class);
 	
 	private Map<Long, Integer> node2degree;
 	private int threshold;

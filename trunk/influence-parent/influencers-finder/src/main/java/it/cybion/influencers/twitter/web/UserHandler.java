@@ -27,12 +27,13 @@ public class UserHandler {
 	private static final Logger logger = Logger.getLogger(UserHandler.class);
 	
 	private Twitter twitter;
+	private Map<String, Integer> requestType2limit;
+	private int setRequestType2LimitTries = 0;
 	
 	public Twitter getTwitter() {
 		return twitter;
 	}
 
-	private Map<String, Integer> requestType2limit;
 
 	public UserHandler(Token applicationToken, Token userToken) throws TwitterException {	
 		ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -50,11 +51,7 @@ public class UserHandler {
 		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 		Runnable periodicTask = new Runnable() {
 		    public void run() {
-		    	try {
-					setRequestType2limit();
-				} catch (TwitterException e) {
-					e.printStackTrace();
-				}	
+		    	setRequestType2limit();	
 		    }
 		};			
 		
@@ -63,13 +60,32 @@ public class UserHandler {
 
 	}
 	
-	private void setRequestType2limit() throws TwitterException {
+	private void setRequestType2limit() {
 		logger.debug("setRequestType2limit");
-		Map<String, RateLimitStatus> requestType2limitStatus = twitter.getRateLimitStatus();
-		for (String requestType : requestType2limitStatus.keySet()) {
-			int limit = requestType2limitStatus.get(requestType).getRemaining();
-			requestType2limit.put(requestType , limit);
+		Map<String, RateLimitStatus> requestType2limitStatus;
+		try {
+			requestType2limitStatus = twitter.getRateLimitStatus();
+			for (String requestType : requestType2limitStatus.keySet()) {
+				int limit = requestType2limitStatus.get(requestType).getRemaining();
+				requestType2limit.put(requestType , limit);
+			}			
+		} catch (TwitterException e) {
+			logger.info("Problem with setRequestType2limit.");
+			if (setRequestType2LimitTries<2) {
+				logger.info("Let's wait for 10 sec and retry.");
+				try {
+					Thread.sleep(10*1000);
+				} catch (InterruptedException e1) {
+					logger.info("Problem in Thread.sleep(). Skipped.");
+					return;
+				}
+				setRequestType2LimitTries++;
+				setRequestType2limit();
+			}
+			else
+				logger.info("Skipped.");
 		}
+		setRequestType2LimitTries = 0;		
 	}
 	
 	public String getUserJson(long userId) throws LimitReachedForCurrentRequestException, TwitterException {
@@ -123,5 +139,9 @@ public class UserHandler {
 		IDs result = twitter.getFriendsIDs(userId, cursor);
 		requestType2limit.put(requestName, (limit-1) );
 		return result;
+	}
+	
+	public Map<String, Integer> getLimits() {
+		return requestType2limit;
 	}
 }

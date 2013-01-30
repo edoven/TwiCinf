@@ -41,7 +41,12 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 					userHandlers.add(userHandler);
 					break;
 				} catch (TwitterException e) {
-					logger.info("Can't create UserHandler for token = "+userToken+". Let's retry.");
+					logger.info("Can't create UserHandler for token = "+userToken+". Let's wait 1 min and then retry.");
+					try {
+						Thread.sleep(60*1000);
+					} catch (InterruptedException e1) {
+						logger.info("Problem in Thread.sleep");
+					}
 				}
 				logger.info("Can't create UserHandler for token = "+userToken+". Skipped.");
 			}
@@ -88,6 +93,10 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		//this point is reached if all tokens have reached the limit for this request
 		try {
 			logger.info("All handlers have reached the limit, let's wait for "+WAIT_TIME+" min");
+			logger.info("### LIMITS ###");
+			for (UserHandler userHandler : userHandlers)
+				logger.info(userHandler.getLimits());
+			logger.info("### ### ###");
 			Thread.sleep(WAIT_TIME*60*1000);
 			return executeRequest(requestName, requestParameters);
 		} catch (InterruptedException e1) {
