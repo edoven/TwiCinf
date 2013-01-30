@@ -4,7 +4,7 @@ import it.cybion.influencers.InfluencersDiscoverer;
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
-import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
+import it.cybion.influencers.filtering.topologybased.InDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.index.IndexType;
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -33,7 +34,15 @@ public class Trashion7 {
 	
 	public static void main(String[] args) throws IOException, TwitterException {
 
-		int iterations = 3;
+		int iterations = -1;
+		if (args.length == 2 && args[0].equals("-i")) {
+			iterations = Integer.parseInt(args[1]);	
+		}
+		else {
+			System.out.println("Error. Usage: filename.jar -i iteration_number");
+			System.exit(0);
+		}
+		
 		GraphFacade graphFacade = getGraphFacade();
 		TwitterFacade twitterFacade = getTwitterFacade();
 		List<Long> usersIds = getUsersIds();
@@ -46,15 +55,48 @@ public class Trashion7 {
 																				filterManagers);
 		List<Long> influencers = influencersDiscoverer.getInfluencers();
 		logger.info("Possible influencers = "+influencers);
+		logger.info("Possible influencers count = "+influencers.size());
 		
-		for (Long userId : influencers) {
-			String description = twitterFacade.getDescription(userId).replace('\n', ' ').replace('\r',' ');
+		
+		class User implements Comparable<User>{
+			public long id;
+			public int followersCount;
+			public int friendsCount;
+			public String description;
+			public String screenName;
+					
+			public User(long id, String screenName, int followersCount,  int friendsCount, String description) {
+				this.id = id;
+				this.screenName = screenName;
+				this.followersCount = followersCount;
+				this.friendsCount = friendsCount;
+				this.description = description;
+			}
+			
+			@Override
+			public int compareTo(User userToCompare) {	
+				return userToCompare.followersCount - this.followersCount;	 
+			}
+		};
+		
+		List<User> users = new ArrayList<User>();
+		for (Long userId : influencers) {	
+			String screenName = twitterFacade.getScreenName(userId);
 			int followersCount = twitterFacade.getFollowersCount(userId);
 			int friendsCount = twitterFacade.getFriendsCount(userId);
-			logger.info(twitterFacade.getScreenName(userId)+" - "+
-						followersCount+" - "+
-						friendsCount+" - "+
-						description);
+			String description = twitterFacade.getDescription(userId).replace('\n', ' ').replace('\r',' ');
+			users.add(new User(userId, screenName, followersCount, friendsCount, description));
+		}
+		Collections.sort(users);
+		
+		int count = 0;
+		for (User user : users) {
+			logger.info(count+") "+
+						user.screenName+" - "+
+						user.followersCount+" - "+
+						user.friendsCount+" - "+
+						user.description);
+			count++;
 		}
 		System.exit(0);
 	}
@@ -83,7 +125,7 @@ public class Trashion7 {
 		userTokens.add(userToken6);
 		
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "twitter", "users");
+		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "twitter");
 		TwitterFacade twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 		return twitterFacade;
 	}
@@ -105,7 +147,7 @@ public class Trashion7 {
 	private static List<FilterManager> getFilterManagers() {
 		List<FilterManager> filters = new ArrayList<FilterManager>();
 		InAndOutDegreeFilterManager inAndOutDegree = new InAndOutDegreeFilterManager(0.05, 0.1);
-		OutDegreeFilterManager outDegree = new OutDegreeFilterManager(0.025);
+		InDegreeFilterManager inDegree = new InDegreeFilterManager(0.025);
 		List<String> dictionary = new ArrayList<String>();	
 		dictionary.add("moda");
 		dictionary.add("fashion");
@@ -118,11 +160,13 @@ public class Trashion7 {
 		dictionary.add("dress");	
 		dictionary.add("eleganza");	
 		dictionary.add("lifestyle");	
+		dictionary.add("chic");
+		dictionary.add("glamour");
 		
 		DescriptionAndStatusDictionaryFilterManager descriptionFilter = new DescriptionAndStatusDictionaryFilterManager(dictionary);
 		filters.add(0, inAndOutDegree);
 		filters.add(1, descriptionFilter);
-		filters.add(2, outDegree);
+		filters.add(2, inDegree);
 		filters.add(3, descriptionFilter);
 		return filters;
 	}

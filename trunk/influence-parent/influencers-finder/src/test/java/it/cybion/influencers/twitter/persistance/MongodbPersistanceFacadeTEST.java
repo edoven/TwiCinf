@@ -28,22 +28,22 @@ public class MongodbPersistanceFacadeTEST {
 	
 	private static final Logger logger = Logger.getLogger(MongodbPersistanceFacadeTEST.class);
 	
-	private MongodbPersistanceFacade persistanceManager;
+	private MongodbPersistanceFacade persistanceFacade;
 	
 	@BeforeClass
 	public void init() throws UnknownHostException {
-		persistanceManager = new MongodbPersistanceFacade("localhost", "testdb", "mongodbpersistancetest");
+		persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb");
 	}
 		
 	@Test(enabled=true)
 	public void insertionAndRetrivalTEST() throws UnknownHostException , UserNotProfileEnriched, UserNotPresentException{
 		String originalUserJson = "{\"id\": 425699035,\"name\": \"PerugiaToday\",\"screenName\": \"PerugiaToday\",\"location\": \"Perugia\",\"description\": \"sono fatto cosi e cosa\",\"isContributorsEnabled\": false,\"profileImageUrl\": \"http://a0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"profileImageUrlHttps\": \"https://si0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"url\": \"http://www.perugiatoday.it/\",\"isProtected\": false,\"followersCount\": 123,\"profileBackgroundColor\": \"C0DEED\",\"profileTextColor\": \"333333\",\"profileLinkColor\": \"0084B4\",\"profileSidebarFillColor\": \"DDEEF6\",\"profileSidebarBorderColor\": \"C0DEED\",\"profileUseBackgroundImage\": true,\"showAllInlineMedia\": false,\"friendsCount\": 93,\"createdAt\": \"Dec 1, 2011 10:49:25 AM\",\"favouritesCount\": 0,\"utcOffset\": -1,\"profileBackgroundImageUrl\": \"http://a0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundImageUrlHttps\": \"https://si0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundTiled\": false,\"lang\": \"it\",\"statusesCount\": 996,\"isGeoEnabled\": false,\"isVerified\": false,\"translator\": false,\"listedCount\": 3,\"isFollowRequestSent\": false}";
-		persistanceManager.putUser(originalUserJson);
-		String retrievedUserJson = persistanceManager.getUser(425699035l);		
-		persistanceManager.removeUser(425699035l);
+		persistanceFacade.putUser(originalUserJson);
+		String retrievedUserJson = persistanceFacade.getUser(425699035l);		
+		persistanceFacade.removeUser(425699035l);
 		
 		try {
-			persistanceManager.getDescription(425699035l);
+			persistanceFacade.getDescription(425699035l);
 		} catch (UserNotPresentException e) {
 			assertEquals(true, true);
 			return;
@@ -68,8 +68,8 @@ public class MongodbPersistanceFacadeTEST {
 		logger.info("==1==");
 		int id = 1;
 		String userJson = "{\"id\": "+id+"}";
-		persistanceManager.putUser(userJson);
-		String retrievedUserJson = persistanceManager.getUser(new Long(id));	
+		persistanceFacade.putUser(userJson);
+		String retrievedUserJson = persistanceFacade.getUser(new Long(id));	
 		DBObject retrievedUser = (DBObject) JSON.parse(retrievedUserJson);	
 		logger.info(retrievedUser);
 		Assert.assertEquals(retrievedUser.get("id") , id);
@@ -77,8 +77,8 @@ public class MongodbPersistanceFacadeTEST {
 		
 		logger.info("==2==");
 		userJson = "{\"id\": "+id+" ,\"name\": \"Bob Dole\"}";
-		persistanceManager.putUser(userJson);		
-		retrievedUserJson = persistanceManager.getUser(new Long(id));				
+		persistanceFacade.putUser(userJson);		
+		retrievedUserJson = persistanceFacade.getUser(new Long(id));				
 		retrievedUser = (DBObject) JSON.parse(retrievedUserJson);	
 		logger.info(retrievedUser);
 		Assert.assertEquals(retrievedUser.get("id"), id);
@@ -88,8 +88,8 @@ public class MongodbPersistanceFacadeTEST {
 		logger.info("==3==");
 		//now let's check if the field "name" remains untouched
 		userJson = "{\"id\": "+id+"}";
-		persistanceManager.putUser(userJson);	
-		retrievedUserJson = persistanceManager.getUser(new Long(id));	
+		persistanceFacade.putUser(userJson);	
+		retrievedUserJson = persistanceFacade.getUser(new Long(id));	
 		retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		logger.info(retrievedUser);
 		Assert.assertEquals(retrievedUser.get("id"), id);
@@ -97,7 +97,7 @@ public class MongodbPersistanceFacadeTEST {
 		Assert.assertNotNull(retrievedUser.get("name"));
 		Assert.assertEquals(retrievedUser.get("name"), "Bob Dole");
 		
-		persistanceManager.removeUser((long)id);
+		persistanceFacade.removeUser((long)id);
 		
 	}
 		
@@ -113,19 +113,19 @@ public class MongodbPersistanceFacadeTEST {
 		Long friendTwoId = 2222l; friendsIds.add(friendTwoId);
 		Long friendThreeId = 2222l; friendsIds.add(friendThreeId);
 		//user insertion
-		persistanceManager.putUser(user.toString());
+		persistanceFacade.putUser(user.toString());
 		try {
-			persistanceManager.getUser(userId);
+			persistanceFacade.getUser(userId);
 			Assert.assertTrue(true);
 		} catch (UserNotPresentException e) {
 			Assert.assertTrue(false);
 		}
 		//friends insertion
-		persistanceManager.putFriends(userId, friendsIds);
+		persistanceFacade.putFriends(userId, friendsIds);
 		//check if all friends are inserted
 		for (Long friendId : friendsIds) {
 			try {
-				persistanceManager.getUser(friendId);
+				persistanceFacade.getUser(friendId);
 				Assert.assertTrue(true);
 			} catch (UserNotPresentException e) {
 				Assert.assertTrue(false);
@@ -133,14 +133,14 @@ public class MongodbPersistanceFacadeTEST {
 		}
 		
 		//test getFriends
-		List<Long> retrievedFriendsIds = persistanceManager.getFriends(userId);
+		List<Long> retrievedFriendsIds = persistanceFacade.getFriends(userId);
 		assertEquals( retrievedFriendsIds.size() , friendsIds.size() );
 		for (long friendId : retrievedFriendsIds) {
 			Assert.assertTrue(friendsIds.contains(friendId));
 		} 
 		
 		//getting user (it should have been enriched)
-		String retrievedUserJson = persistanceManager.getUser(userId);
+		String retrievedUserJson = persistanceFacade.getUser(userId);
 		DBObject retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		List<Integer> intList = (List<Integer>) retrievedUser.get("friends");
 		for (int intElement : intList) {
@@ -150,10 +150,10 @@ public class MongodbPersistanceFacadeTEST {
 		assertEquals( intList.size() , friendsIds.size() );
 
 		
-		persistanceManager.removeUser(userId);
-		persistanceManager.removeUser(friendOneId);
-		persistanceManager.removeUser(friendTwoId);
-		persistanceManager.removeUser(friendThreeId);		
+		persistanceFacade.removeUser(userId);
+		persistanceFacade.removeUser(friendOneId);
+		persistanceFacade.removeUser(friendTwoId);
+		persistanceFacade.removeUser(friendThreeId);		
 	}
 	
 	
@@ -172,16 +172,16 @@ public class MongodbPersistanceFacadeTEST {
 		Long followerTwoId = 2222l; followersIds.add(followerTwoId);
 		Long followerThreeId = 2222l; followersIds.add(followerThreeId);
 		//user insertion
-		persistanceManager.putUser(user.toString());
+		persistanceFacade.putUser(user.toString());
 		//friends insertion
-		persistanceManager.putFollowers(userId, followersIds);
+		persistanceFacade.putFollowers(userId, followersIds);
 		
 		//getting friends
-		List<Long> retrievedFollowersIds = persistanceManager.getFollowers(userId);
+		List<Long> retrievedFollowersIds = persistanceFacade.getFollowers(userId);
 		assertEquals( retrievedFollowersIds.size() , followersIds.size() );
 		
 		//getting user (it should have been enriched)
-		String retrievedUserJson = persistanceManager.getUser(userId);
+		String retrievedUserJson = persistanceFacade.getUser(userId);
 		DBObject retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		List<Integer> intList = (List<Integer>) retrievedUser.get("followers");
 		for (Integer intElement : intList) {
@@ -190,16 +190,16 @@ public class MongodbPersistanceFacadeTEST {
 		}
 		assertEquals( intList.size() , followersIds.size() );
 		
-		persistanceManager.removeUser(userId);
-		persistanceManager.removeUser(followerOneId);
-		persistanceManager.removeUser(followerTwoId);
-		persistanceManager.removeUser(followerThreeId);	
+		persistanceFacade.removeUser(userId);
+		persistanceFacade.removeUser(followerOneId);
+		persistanceFacade.removeUser(followerTwoId);
+		persistanceFacade.removeUser(followerThreeId);	
 	}
 	
 	@Test(enabled=true)
 	public void userNotPresentExceptionTEST(){
 		try {
-			persistanceManager.getUser(534529555443l);
+			persistanceFacade.getUser(534529555443l);
 		} catch (UserNotPresentException e) {
 			assertTrue(true);
 			return;
@@ -211,10 +211,18 @@ public class MongodbPersistanceFacadeTEST {
 	@Test
 	public void getStatus() throws UserNotPresentException, UserNotProfileEnriched {
 		String userToInsertJson = "{\"name\": \"Twitter API\", \"id\": 6253282, \"description\":\"my description\", \"status\": {\"text\": \"this is my last status\"}}";
-		persistanceManager.putUser(userToInsertJson);
-		String retrievedStatus = persistanceManager.getStatus(6253282L);
+		persistanceFacade.putUser(userToInsertJson);
+		String retrievedStatus = persistanceFacade.getStatus(6253282L);
 		Assert.assertEquals("this is my last status", retrievedStatus);
-		persistanceManager.removeUser(6253282L);
+		persistanceFacade.removeUser(6253282L);
+	}
+	
+	
+	@Test
+	public void getTweets()  {
+		String tweet = "{\"id\": 1,\"user\": {\"id\": 1 },\"text\": \"text1\" }";
+		persistanceFacade.putTweet(tweet);
+		Assert.assertTrue( persistanceFacade.getTweets(1L).size() > 0 );
 	}
 
 }

@@ -271,5 +271,23 @@ public class TwitterFacade {
 		}
 		return notEnriched;
 	}
+
+	public void donwloadUsersProfiles(List<Long> userIds) {
+		logger.info("donwloadUsersProfiles - Downloading profiles for "+userIds.size()+" users.");
+		List<Long> usersToDownload = new ArrayList<Long>();		
+		for (Long userId : userIds) {			
+			try {
+				persistanceFacade.getDescription(userId);
+			} catch (UserNotPresentException e) {
+				usersToDownload.add(userId);
+			} catch (UserNotProfileEnriched e) {
+				usersToDownload.add(userId);
+			}			
+		}	
+		logger.info("donwloadUsersProfiles - usersToDownload.size() = "+usersToDownload.size());
+		List<String> downloadedUsersJsons = twitterWebFacade.getUsersJsons(usersToDownload);
+		for (String userJson : downloadedUsersJsons)
+			persistanceFacade.putUser(userJson);
+	}
 	
 }

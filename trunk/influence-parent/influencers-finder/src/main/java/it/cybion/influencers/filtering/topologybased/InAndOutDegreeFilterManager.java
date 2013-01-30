@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import it.cybion.influencers.graph.UserVertexNotPresent;
 
-public class InAndOutDegreeFilterManager  extends DegreeFilterManager {
+public class InAndOutDegreeFilterManager extends DegreeFilterManager {
 	
 	private static final Logger logger = Logger.getLogger(InAndOutDegreeFilterManager.class);
 	private double inDegreePercentageThreshold;

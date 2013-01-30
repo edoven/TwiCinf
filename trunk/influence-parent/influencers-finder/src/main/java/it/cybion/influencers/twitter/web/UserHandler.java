@@ -13,8 +13,10 @@ import org.apache.log4j.Logger;
 
 
 import twitter4j.IDs;
+import twitter4j.Paging;
 import twitter4j.RateLimitStatus;
 import twitter4j.ResponseList;
+import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -141,7 +143,16 @@ public class UserHandler {
 		return result;
 	}
 	
-	public Map<String, Integer> getLimits() {
-		return requestType2limit;
+	public List<String> getLast200TweetsPostedByUser(long userId) throws LimitReachedForCurrentRequestException, TwitterException {
+		String requestName = "/statuses/user_timeline";
+		int limit = requestType2limit.get(requestName);
+		logger.debug("limit for getLast200TweetsPostedByUser="+limit);
+		if (limit<=0)
+			throw new LimitReachedForCurrentRequestException(requestType2limit);
+		List<Status> statuses = twitter.getUserTimeline(userId, new Paging(1, 200));
+		List<String> result = new ArrayList<String>();
+		for (Status status : statuses)
+			result.add( DataObjectFactory.getRawJSON(status) );
+		return result;
 	}
 }

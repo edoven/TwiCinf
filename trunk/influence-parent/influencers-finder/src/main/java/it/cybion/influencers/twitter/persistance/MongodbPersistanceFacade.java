@@ -24,14 +24,54 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 	
 	private static final Logger logger = Logger.getLogger(PersistanceFacade.class);
 
-	private DBCollection collection;
+	private DBCollection userCollection;
+	private DBCollection tweetsCollection;
+	
 
-	public MongodbPersistanceFacade(String host, String database, String collection) throws UnknownHostException {
+	public MongodbPersistanceFacade(String host, String database) throws UnknownHostException {
 		MongoClient mongoClient = new MongoClient( host );
 		DB db = mongoClient.getDB( database );
-		this.collection = db.getCollection( collection );
-		this.collection.createIndex( new BasicDBObject("id", 1) ); //if the index already exist this does nothing
+		this.userCollection = db.getCollection( "users" );
+		this.userCollection.createIndex( new BasicDBObject("id", 1) ); //if the index already exist this does nothing
+		this.tweetsCollection = db.getCollection( "tweets" );
+		this.tweetsCollection.createIndex( new BasicDBObject("id", 1) ); //if the index already exist this does nothing
 	}
+	
+	
+	public void putTweet(String tweetToInsertJson) {
+		DBObject tweetToInsert = (DBObject) JSON.parse(tweetToInsertJson);
+		long tweetId = new Long((Integer) tweetToInsert.get("id"));
+		logger.info("tweetId="+tweetId);
+		try {
+			getTweet(tweetId);
+		} catch (TweetNotPresentException e) {
+			logger.info("TweetNotPresentException catched");
+			tweetsCollection.insert(tweetToInsert);
+			return;
+		}	
+	}
+	
+	
+	private String getTweet(Long tweetId) throws TweetNotPresentException {
+		BasicDBObject keys = new BasicDBObject();
+		keys.put("id", tweetId);
+		DBObject tweet = userCollection.findOne(keys);
+		if (tweet == null)
+			throw new TweetNotPresentException("Tweet with id "+tweetId+" is not in the collection.");
+		return tweet.toString();
+	}
+	
+	public List<String> getTweets(Long userId) {
+		BasicDBObject keys = new BasicDBObject();
+		keys.put("\"user.id\"", userId);
+		DBCursor cursor = userCollection.find(keys);
+		logger.info(cursor);
+		List<String> tweets = new ArrayList<String>();
+		while (cursor.hasNext())
+			tweets.add((String)cursor.next().get("text"));
+		return tweets;
+	}
+	
 	
 	/*
 	 * If a user with the same id (beware: id!=_id) is already present, 
@@ -45,7 +85,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 		try {
 			userInDbJson = getUser(userId);
 		} catch (UserNotPresentException e) {
-			collection.insert(userToInsert);
+			userCollection.insert(userToInsert);
 			return;
 		}
 		DBObject userInDb = (DBObject) JSON.parse(userInDbJson);
@@ -59,7 +99,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 			updatedUser.put(field, field2value.get(field));		
 		DBObject query = new BasicDBObject();
 		query.put("id", userId);
-		collection.update(query, updatedUser);		
+		userCollection.update(query, updatedUser);		
 	}
 
 	@Override
@@ -94,10 +134,10 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 	public void removeUser(Long userId) {
 		BasicDBObject keys = new BasicDBObject();
 		keys.put("id", userId);
-		DBCursor cursor = collection.find(keys);
+		DBCursor cursor = userCollection.find(keys);
 		if (cursor.hasNext()) {	
 			DBObject json = cursor.next();
-			collection.remove(json);
+			userCollection.remove(json);
 		}
 	}
 	
@@ -105,7 +145,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 	public String getUser(Long userId) throws UserNotPresentException {
 		BasicDBObject keys = new BasicDBObject();
 		keys.put("id", userId);
-		DBObject user = collection.findOne(keys);
+		DBObject user = userCollection.findOne(keys);
 		if (user==null)
 			throw new UserNotPresentException("User with id "+userId+" is not in the collection.");
 		return user.toString();
@@ -114,7 +154,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 	private DBObject getUserDbObject(Long userId) throws UserNotPresentException {
 		BasicDBObject keys = new BasicDBObject();
 		keys.put("id", userId);
-		DBObject user = collection.findOne(keys);
+		DBObject user = userCollection.findOne(keys);
 		if (user==null)
 			throw new UserNotPresentException("User with id "+userId+" is not in the collection.");
 		return user;

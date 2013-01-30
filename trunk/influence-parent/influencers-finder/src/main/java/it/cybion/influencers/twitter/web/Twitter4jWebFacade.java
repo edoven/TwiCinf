@@ -27,7 +27,8 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		GET_UP_TO_100_USERS,
 		GET_FRIENDS_IDS_WITH_PAGINATION, 
 		GET_FOLLOWERS_IDS_WITH_PAGINATION, 
-		GET_USER_JSON
+		GET_USER_JSON,
+		GET_LAST_200_TWEETS
 	}
    
 	private List<UserHandler> userHandlers = new ArrayList<UserHandler>();    
@@ -83,6 +84,11 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 						String result = userHandler.getUserJson(userId);
 						return result;
 					}
+					case GET_LAST_200_TWEETS: {
+						long userId = (Long) requestParameters.get(0);
+						List<String> result = userHandler.getLast200TweetsPostedByUser(userId);
+						return result;
+					}
 				}
 			} catch (LimitReachedForCurrentRequestException e) {
 				logger.debug("Token "+i+" has reached request limit for "+requestName);
@@ -93,10 +99,6 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		//this point is reached if all tokens have reached the limit for this request
 		try {
 			logger.info("All handlers have reached the limit, let's wait for "+WAIT_TIME+" min");
-			logger.info("### LIMITS ###");
-			for (UserHandler userHandler : userHandlers)
-				logger.info(userHandler.getLimits());
-			logger.info("### ### ###");
 			Thread.sleep(WAIT_TIME*60*1000);
 			return executeRequest(requestName, requestParameters);
 		} catch (InterruptedException e1) {
@@ -222,6 +224,14 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		RequestName requestname = RequestName.GET_UP_TO_100_USERS;
 		List<Object> requestParameters = new ArrayList<Object>();
 		requestParameters.add(0, usersIds);		
+		return (List<String>) executeRequest(requestname, requestParameters);
+	}
+	
+	
+	private List<String> getLast200Tweets(long userId) throws MethodInputNotCorrectException, TwitterException {
+		RequestName requestname = RequestName.GET_LAST_200_TWEETS;
+		List<Object> requestParameters = new ArrayList<Object>();
+		requestParameters.add(0, userId);		
 		return (List<String>) executeRequest(requestname, requestParameters);
 	}
 

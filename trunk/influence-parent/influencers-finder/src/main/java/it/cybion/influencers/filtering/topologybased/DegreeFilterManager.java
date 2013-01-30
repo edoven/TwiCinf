@@ -67,7 +67,7 @@ public abstract class DegreeFilterManager implements FilterManager {
 		 *
 		 * 
 		 * 
-		 * *
+		 *
 		 * 
 		 * 
 		 * 
@@ -85,7 +85,7 @@ public abstract class DegreeFilterManager implements FilterManager {
 			else {
 				List<Long> newSeedUsers = alreadyEnriched;
 				Collections.shuffle(seedUsers);
-				for (int i=0; i<seedUsers.size() || newSeedUsers.size()<200; i++) {
+				for (int i=0; i<seedUsers.size() && newSeedUsers.size()<200; i++) {
 					long userId = seedUsers.get(i);
 					if (!newSeedUsers.contains(userId))
 						newSeedUsers.add(userId);
@@ -128,28 +128,44 @@ public abstract class DegreeFilterManager implements FilterManager {
 		calculateNodeDegrees();
 	}
 	
-	private void getAndSetFollowersAndFriendsEnrichedUsers() {
+	private void getAndSetFollowersAndFriendsEnrichedUsers()  {
 		logger.info("Not enriched = "+twitterFacade.getNotFollowersAndFriendsEnriched(seedUsers).size());
 		enrichedSeedUsers = new ArrayList<User>();
 		int percentCompleted = 0;
 		int tenPercent = Math.round((float)seedUsers.size()/10);
 		
+		
+		twitterFacade.donwloadUsersProfiles(seedUsers);
+		
 		for (int i=0; i<seedUsers.size(); i++) {			
 			long userId = seedUsers.get(i);
-			try {					
-				List<Long> followersIds = twitterFacade.getFollowers(userId);				
-				List<Long> friendsIds = twitterFacade.getFriends(userId);
-				User user = new User(userId, followersIds, friendsIds);
-				enrichedSeedUsers.add(user);
-			} 
-			catch (TwitterException e) {
-				logger.info("Problem with user with id "+userId+". User skipped.");
+			int followersCount;
+			int friendsCount;
+			try {
+				followersCount = twitterFacade.getFollowersCount(userId);
+				friendsCount = twitterFacade.getFriendsCount(userId);
+			} catch (TwitterException e1) {
+				logger.info("Problem with user with id="+userId+". Skipped.");
+				continue;
+			}			
+			if (followersCount<800000 && friendsCount<800000) {
+				try {					
+					List<Long> followersIds = twitterFacade.getFollowers(userId);				
+					List<Long> friendsIds = twitterFacade.getFriends(userId);
+					User user = new User(userId, followersIds, friendsIds);
+					enrichedSeedUsers.add(user);
+				} 
+				catch (TwitterException e) {
+					logger.info("Problem with user with id "+userId+". User skipped.");
+				}
+				
+				if (i%tenPercent == 0) {
+					logger.info("getFollowersAndFriendsEnrichedUsers completed for "+percentCompleted+"%");
+					percentCompleted = percentCompleted + 10;
+				}
 			}
-			
-			if (i%tenPercent == 0) {
-				logger.info("getFollowersAndFriendsEnrichedUsers completed for "+percentCompleted+"%");
-				percentCompleted = percentCompleted + 10;
-			}
+			else
+				logger.info("User with more than 800000 followers or friends. Skipped.");
 		}	
 		logger.info("getFollowersAndFriendsEnrichedUsers completed for 100%");
 		Collections.sort(enrichedSeedUsers);		
@@ -174,6 +190,8 @@ public abstract class DegreeFilterManager implements FilterManager {
 		}
 	}
 	
+	
+	//enrichedSeedUsers are used to create the graph
 	private void populateFollowersAndFriendsList() {
 		followersAndFriends = new ArrayList<Long>();
 		int percentCompleted = 0;
@@ -192,16 +210,6 @@ public abstract class DegreeFilterManager implements FilterManager {
 				percentCompleted = percentCompleted + 10;
 			}
 		}
-		//some user in seedUsers list can be follower or firend of another seedUsers user
-		//so let's remove them from followersAndFriends
-		//followersAndFriends.removeAll(seedUsers);
-		/*
-		 * 
-		 * BEWARE: removing "followersAndFriends.removeAll(seedUsers)" every seed user
-		 * can be in followersAndFriends
-		 * 
-		 */
-		
 		//let's remove duplicates
 		followersAndFriends = new ArrayList<Long>( new HashSet<Long>(followersAndFriends));
 	}
