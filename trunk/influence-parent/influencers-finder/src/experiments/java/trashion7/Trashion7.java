@@ -2,6 +2,7 @@ package trashion7;
 
 import it.cybion.influencers.InfluencersDiscoverer;
 import it.cybion.influencers.filtering.FilterManager;
+import it.cybion.influencers.filtering.aggregation.OrFilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.filtering.topologybased.InDegreeFilterManager;
@@ -33,14 +34,15 @@ public class Trashion7 {
 
 	
 	public static void main(String[] args) throws IOException, TwitterException {
+		
+		
 
-		int iterations = -1;
+		int iterations = 1;
 		if (args.length == 2 && args[0].equals("-i")) {
 			iterations = Integer.parseInt(args[1]);	
 		}
 		else {
-			System.out.println("Error. Usage: filename.jar -i iteration_number");
-			System.exit(0);
+			System.out.println("Error. Usage: filename.jar -i iteration_number. Launching with 1 iteration.");
 		}
 		
 		GraphFacade graphFacade = getGraphFacade();
@@ -59,14 +61,12 @@ public class Trashion7 {
 		
 		
 		class User implements Comparable<User>{
-			public long id;
 			public int followersCount;
 			public int friendsCount;
 			public String description;
 			public String screenName;
 					
-			public User(long id, String screenName, int followersCount,  int friendsCount, String description) {
-				this.id = id;
+			public User(String screenName, int followersCount,  int friendsCount, String description) {
 				this.screenName = screenName;
 				this.followersCount = followersCount;
 				this.friendsCount = friendsCount;
@@ -85,7 +85,7 @@ public class Trashion7 {
 			int followersCount = twitterFacade.getFollowersCount(userId);
 			int friendsCount = twitterFacade.getFriendsCount(userId);
 			String description = twitterFacade.getDescription(userId).replace('\n', ' ').replace('\r',' ');
-			users.add(new User(userId, screenName, followersCount, friendsCount, description));
+			users.add(new User(screenName, followersCount, friendsCount, description));
 		}
 		Collections.sort(users);
 		
@@ -147,7 +147,11 @@ public class Trashion7 {
 	private static List<FilterManager> getFilterManagers() {
 		List<FilterManager> filters = new ArrayList<FilterManager>();
 		InAndOutDegreeFilterManager inAndOutDegree = new InAndOutDegreeFilterManager(0.05, 0.1);
-		InDegreeFilterManager inDegree = new InDegreeFilterManager(0.025);
+		InDegreeFilterManager inDegree = new InDegreeFilterManager(0.15);
+		List<FilterManager> orFilters = new ArrayList<FilterManager>();
+		orFilters.add(inDegree);
+		orFilters.add(inAndOutDegree);
+		OrFilterManager orDegree = new OrFilterManager(orFilters);
 		List<String> dictionary = new ArrayList<String>();	
 		dictionary.add("moda");
 		dictionary.add("fashion");
@@ -164,10 +168,8 @@ public class Trashion7 {
 		dictionary.add("glamour");
 		
 		DescriptionAndStatusDictionaryFilterManager descriptionFilter = new DescriptionAndStatusDictionaryFilterManager(dictionary);
-		filters.add(0, inAndOutDegree);
+		filters.add(0, orDegree);
 		filters.add(1, descriptionFilter);
-		filters.add(2, inDegree);
-		filters.add(3, descriptionFilter);
 		return filters;
 	}
 	

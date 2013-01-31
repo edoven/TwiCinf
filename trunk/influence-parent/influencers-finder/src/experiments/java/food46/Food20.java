@@ -88,7 +88,7 @@ public class Food20 {
 		userTokens.add(userToken6);
 		
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "twitter", "users");
+		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "twitter");
 		TwitterFacade twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 		return twitterFacade;
 	}

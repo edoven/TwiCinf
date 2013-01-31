@@ -35,22 +35,21 @@ public class InfluencersDiscoverer {
 		this.filterManagers = filterManagers;
 	}
 
-	public List<Long> getInfluencers() throws IOException  {
+	public List<Long> getInfluencers() {
 		
 		printInfo();
 
 		for (int iterationIndex=0; iterationIndex<iterations; iterationIndex++) {
+			logger.info("");
+			logger.info("");
 			logger.info("#### ITERATION "+(iterationIndex+1)+" #####");
+			logger.info("");
 			for (int filterIndex=0; filterIndex<filterManagers.size(); filterIndex++) {
 				FilterManager filterManager = filterManagers.get(filterIndex);
 				logger.info("");	
 				logger.info("");
 				logger.info("#### filter "+(filterIndex+1)+"/"+filterManagers.size()+" ####");	
-				logger.info("");
-				if (filterIndex>0) {
-					logger.info("deleting old graph and recreating a new one");
-					graphFacade.eraseGraphAndRecreate();
-				}				
+				logger.info("");			
 				filterManager.setGraphFacade(graphFacade);
 				filterManager.setTwitterFacade(twitterFacade);
 				filterManager.setSeedUsers(users);
@@ -59,8 +58,7 @@ public class InfluencersDiscoverer {
 				logger.info("results from filtering = "+users);
 				logger.info("number of results from filtering = "+users.size());
 			}
-			resultsFromIterations.addAll(users);
-			
+			resultsFromIterations.addAll(users);			
 		}
 		return new ArrayList<Long>(resultsFromIterations);
 	}

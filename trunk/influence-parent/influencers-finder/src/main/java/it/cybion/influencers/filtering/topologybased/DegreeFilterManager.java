@@ -6,6 +6,7 @@ import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.UserVertexNotPresent;
 import it.cybion.influencers.twitter.TwitterFacade;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -51,11 +52,13 @@ public abstract class DegreeFilterManager implements FilterManager {
 	@Override
 	public void setTwitterFacade(TwitterFacade twitterFacade) {
 		this.twitterFacade = twitterFacade;
+		
 	}
 	
 	@Override
 	public void setGraphFacade(GraphFacade graphFacade) {
 		this.graphFacade = graphFacade;
+		this.graphFacade.eraseGraphAndRecreate();
 	}
 	
 	@Override
@@ -171,7 +174,8 @@ public abstract class DegreeFilterManager implements FilterManager {
 		Collections.sort(enrichedSeedUsers);		
 	}
 	
-	private void createGraph() {		
+	private void createGraph() {	
+		graphFacade.eraseGraphAndRecreate();
 		graphFacade.addUsers(seedUsers);		
 		for (int i=0; i<enrichedSeedUsers.size(); i++) {	
 			User user = enrichedSeedUsers.get(i);

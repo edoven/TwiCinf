@@ -50,7 +50,7 @@ public class Neo4jGraphFacade implements GraphFacade {
 	}
 	
 	@Override
-	public void eraseGraphAndRecreate() throws IOException {
+	public void eraseGraphAndRecreate() {
 		graph.dropIndex("vertexIndex");
 		graph.shutdown();
 		FilesDeleter.delete(new File(dirPath));
@@ -217,5 +217,29 @@ public class Neo4jGraphFacade implements GraphFacade {
 		return user2outDegree;
 	}
 
+//	@Override
+//	public void cleanGraphDirectory() {
+//		deleteFileRecoursively(new File(dirPath));
+//	}
+//	
+//	private void deleteFileRecoursively(File file){
+//		if (file.exists()) {
+//			if(file.isDirectory()){
+//		    	if(file.list().length==0)
+//		    		   file.delete();
+//		    	else{
+//		    		String files[] = file.list();	 
+//		    		for (String temp : files) {
+//		    			File fileDelete = new File(file, temp);
+//		    			deleteFileRecoursively(fileDelete);
+//		    		}
+//		        	if(file.list().length==0)
+//		        		file.delete();
+//		    	}	 
+//		    }
+//			else
+//		    	file.delete();
+//		}
+//	}
 
 }

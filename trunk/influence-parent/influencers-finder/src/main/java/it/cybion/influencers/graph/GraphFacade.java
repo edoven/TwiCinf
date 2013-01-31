@@ -36,6 +36,5 @@ public interface GraphFacade {
 //	 */
 //	void calculateTotalDegree(List<Long> usersToBeCalculated, List<Long> wrtUsers) throws UserVertexNotPresent;
 	int getVerticesCount();
-	void eraseGraphAndRecreate() throws IOException;
-
+	void eraseGraphAndRecreate();
 }
