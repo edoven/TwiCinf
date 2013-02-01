@@ -136,6 +136,8 @@ public abstract class DegreeFilterManager implements FilterManager {
 		enrichedSeedUsers = new ArrayList<User>();
 		int percentCompleted = 0;
 		int tenPercent = Math.round((float)seedUsers.size()/10);
+		if (tenPercent==0)
+			tenPercent=1;
 		
 		
 		twitterFacade.donwloadUsersProfiles(seedUsers);
@@ -200,6 +202,8 @@ public abstract class DegreeFilterManager implements FilterManager {
 		followersAndFriends = new ArrayList<Long>();
 		int percentCompleted = 0;
 		int tenPercent = Math.round((float)enrichedSeedUsers.size()/10);
+		if (tenPercent==0)
+			tenPercent=1;
 		for (int i=0; i<enrichedSeedUsers.size(); i++) {
 			User user = enrichedSeedUsers.get(i);
 			

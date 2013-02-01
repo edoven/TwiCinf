@@ -40,8 +40,7 @@ public class TestFrameworkFood5 {
 																				graphFacade, 
 																				twitterFacade, 
 																				filterManagers);
-		
-		
+				
 		TestFramework testFramework = new TestFramework(influencersDiscoverer, users46, twitterFacade);
 		testFramework.run();
 				

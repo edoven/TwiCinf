@@ -1,6 +1,8 @@
 package it.cybion.influencers.twitter.web;
 
 
+import it.cybion.influencers.twitter.persistance.UserWithNoTweetsException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +58,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 	}
 	
 	//Factorized method to execute a single request
-	private Object executeRequest(RequestName requestName, List<Object> requestParameters) throws MethodInputNotCorrectException, TwitterException {
+	private Object executeRequest(RequestName requestName, List<Object> requestParameters) throws TwitterException {
 		for (int i=0; i<userHandlers.size(); i++) {
 			//logger.info("Trying UserHandler "+i);
 			UserHandler userHandler = userHandlers.get(i);			
@@ -93,6 +95,9 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 			} catch (LimitReachedForCurrentRequestException e) {
 				logger.debug("Token "+i+" has reached request limit for "+requestName);
 				logger.debug("Limits = "+e.getLimits());
+			} catch (MethodInputNotCorrectException e) {
+				logger.info("ERROR: "+e.getStackTrace());
+				System.exit(0);
 			} 
 		}
 
@@ -113,13 +118,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		RequestName requestName = RequestName.GET_USER_JSON;
 		List<Object> requestParameters = new ArrayList<Object>();
 		requestParameters.add(0, userId);			
-		try {
-			return (String) executeRequest(requestName, requestParameters);
-		} catch (MethodInputNotCorrectException e) {
-			// this exception is never thrown
-			System.exit(0);
-			return null;
-		}
+		return (String) executeRequest(requestName, requestParameters); 
 	}
 	
 	@Override
@@ -140,13 +139,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		List<Object> requestParameters = new ArrayList<Object>();
 		requestParameters.add(0, userId);		
 		requestParameters.add(1, cursor);	
-		try {
-			return (IDs) executeRequest(requestName, requestParameters);
-		} catch (MethodInputNotCorrectException e) {
-			// this exception is never thrown
-			System.exit(0);
-			return null;
-		}
+		return (IDs) executeRequest(requestName, requestParameters);
 	}
 	
 	@Override
@@ -167,13 +160,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 		List<Object> requestParameters = new ArrayList<Object>();
 		requestParameters.add(0, userId);		
 		requestParameters.add(1, cursor);	
-		try {
-			return (IDs) executeRequest(requestName, requestParameters);
-		} catch (MethodInputNotCorrectException e) {
-			// this exception is never thrown
-			System.exit(0);
-			return null;
-		}
+		return (IDs) executeRequest(requestName, requestParameters);
 	}
 	
 	@Override
@@ -228,11 +215,16 @@ public class Twitter4jWebFacade implements TwitterWebFacade{
 	}
 	
 	
-	private List<String> getLast200Tweets(long userId) throws MethodInputNotCorrectException, TwitterException {
+	@Override
+	public List<String> getLast200Tweets(long userId) throws TwitterException, UserWithNoTweetsException {
+		logger.info("Downloading 200 tweets for user with id:"+userId);
 		RequestName requestname = RequestName.GET_LAST_200_TWEETS;
 		List<Object> requestParameters = new ArrayList<Object>();
-		requestParameters.add(0, userId);		
-		return (List<String>) executeRequest(requestname, requestParameters);
+		requestParameters.add(0, userId);	
+		List<String> tweets = (List<String>) executeRequest(requestname, requestParameters);
+		if (tweets.size() == 0)
+			throw new UserWithNoTweetsException();
+		return tweets;
 	}
 
 }

@@ -18,6 +18,8 @@ public interface PersistanceFacade {
 	int getFollowersCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched;
 	int getFriendsCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched;
 	String getDescriptionAndStatus(Long userId) throws UserNotPresentException,	UserNotProfileEnriched;
+	List<String> getUpTo200Tweets(long userId) throws UserWithNoTweetsException;
+	void putTweets(List<String> tweets);
 	
 		
 }

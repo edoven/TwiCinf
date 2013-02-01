@@ -5,6 +5,7 @@ import it.cybion.influencers.twitter.persistance.UserNotFollowersEnrichedExcepti
 import it.cybion.influencers.twitter.persistance.UserNotFriendsEnrichedException;
 import it.cybion.influencers.twitter.persistance.UserNotPresentException;
 import it.cybion.influencers.twitter.persistance.UserNotProfileEnriched;
+import it.cybion.influencers.twitter.persistance.UserWithNoTweetsException;
 import it.cybion.influencers.twitter.web.TwitterWebFacade;
 
 import java.util.ArrayList;
@@ -288,6 +289,19 @@ public class TwitterFacade {
 		List<String> downloadedUsersJsons = twitterWebFacade.getUsersJsons(usersToDownload);
 		for (String userJson : downloadedUsersJsons)
 			persistanceFacade.putUser(userJson);
+	}
+	
+	public List<String> getUpTo200Tweets(long userId) throws TwitterException{
+		try {
+			return persistanceFacade.getUpTo200Tweets(userId);
+		} catch (UserWithNoTweetsException e) {
+			try {
+				persistanceFacade.putTweets(twitterWebFacade.getLast200Tweets(userId));
+				return getUpTo200Tweets(userId);
+			} catch (UserWithNoTweetsException e1) {
+				return new ArrayList<String>();
+			}
+		}
 	}
 	
 }

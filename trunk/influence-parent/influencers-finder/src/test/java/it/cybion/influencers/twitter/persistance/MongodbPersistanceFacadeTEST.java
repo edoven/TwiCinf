@@ -220,9 +220,13 @@ public class MongodbPersistanceFacadeTEST {
 	
 	@Test
 	public void getTweets()  {
-		String tweet = "{\"id\": 1,\"user\": {\"id\": 1 },\"text\": \"text1\" }";
+		String tweet = "{\"id\": 1, \"user\": {\"id\": 1 }, \"text\": \"text1\" }";
 		persistanceFacade.putTweet(tweet);
-		Assert.assertTrue( persistanceFacade.getTweets(1L).size() > 0 );
+		try {
+			Assert.assertTrue( persistanceFacade.getUpTo200Tweets(1).size() > 0 );
+		} catch (UserWithNoTweetsException e) {
+			Assert.assertTrue(false);
+		}
 	}
 
 }

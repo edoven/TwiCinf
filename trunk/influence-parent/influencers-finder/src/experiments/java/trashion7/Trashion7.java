@@ -4,6 +4,7 @@ import it.cybion.influencers.InfluencersDiscoverer;
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.filtering.aggregation.OrFilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
+import it.cybion.influencers.filtering.language.LanguageDetectionFilterManager;
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.filtering.topologybased.InDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
@@ -48,13 +49,15 @@ public class Trashion7 {
 		GraphFacade graphFacade = getGraphFacade();
 		TwitterFacade twitterFacade = getTwitterFacade();
 		List<Long> usersIds = getUsersIds();
-		List<FilterManager> filterManagers = getFilterManagers();
+		List<FilterManager> iteratingFilters = getIteratingFilters();
+		List<FilterManager> finalizingFilters = getFinalizingFilters();
 		
 		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer(iterations, 
 																				usersIds, 
 																				graphFacade, 
 																				twitterFacade, 
-																				filterManagers);
+																				iteratingFilters,
+																				finalizingFilters);
 		List<Long> influencers = influencersDiscoverer.getInfluencers();
 		logger.info("Possible influencers = "+influencers);
 		logger.info("Possible influencers count = "+influencers.size());
@@ -132,19 +135,19 @@ public class Trashion7 {
 	
 	private static List<Long> getUsersIds() {
 		List<Long> usersIds = new ArrayList<Long>();
-		usersIds.add(92403540L); //lapinella
-		usersIds.add(24499591L); //filippala
-		usersIds.add(40090727L); //ChiaraFerragni
+//		usersIds.add(92403540L); //lapinella
+//		usersIds.add(24499591L); //filippala
+//		usersIds.add(40090727L); //ChiaraFerragni
 		usersIds.add(37491839L); //VeronicaFerraro
 		usersIds.add(132888646L); //elenabarolo		
 		usersIds.add(236857407L); //chiarabiasi		
-		usersIds.add(46164460L); //Eleonoracarisi
+//		usersIds.add(46164460L); //Eleonoracarisi
 
 
 		return usersIds;
 	}
 	
-	private static List<FilterManager> getFilterManagers() {
+	private static List<FilterManager> getIteratingFilters() {
 		List<FilterManager> filters = new ArrayList<FilterManager>();
 		InAndOutDegreeFilterManager inAndOutDegree = new InAndOutDegreeFilterManager(0.05, 0.1);
 		InDegreeFilterManager inDegree = new InDegreeFilterManager(0.15);
@@ -170,6 +173,14 @@ public class Trashion7 {
 		DescriptionAndStatusDictionaryFilterManager descriptionFilter = new DescriptionAndStatusDictionaryFilterManager(dictionary);
 		filters.add(0, orDegree);
 		filters.add(1, descriptionFilter);
+		return filters;
+	}
+	
+	
+	private static List<FilterManager> getFinalizingFilters() {
+		List<FilterManager> filters = new ArrayList<FilterManager>();
+		LanguageDetectionFilterManager languageFilter = new LanguageDetectionFilterManager("/home/godzy/Dropbox/universita/tesi/lib/langdetect-09-13-2011/profiles.sm");
+		filters.add(0,languageFilter);
 		return filters;
 	}
 	

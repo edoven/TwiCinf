@@ -35,7 +35,7 @@ public class InAndOutDegreeFilterManagerTEST {
 		FilesDeleter.delete(new File(graphPath));
 		
 		graphFacade = new Neo4jGraphFacade(graphPath, IndexType.TREEMAP);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "users", "users");
+		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb"); 
 		Token consumerToken = TokenBuilder.getTokenFromFile("/home/godzy/tokens/consumerToken.txt");
 		List<Token> userTokens = new ArrayList<Token>();
 		userTokens.add( TokenBuilder.getTokenFromFile("/home/godzy/tokens/token1.txt") );

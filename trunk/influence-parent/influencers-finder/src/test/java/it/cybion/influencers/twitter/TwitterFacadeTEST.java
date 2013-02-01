@@ -40,7 +40,7 @@ public class TwitterFacadeTEST {
 		userTokens.add(userToken6);
 		
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testds", "test");
+		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb" );
 		twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 	}
 
@@ -106,6 +106,13 @@ public class TwitterFacadeTEST {
 		ids.add(14230524l);
 		//ids.add(43246534L);
 		logger.info(twitterFacade.getDescriptions(ids));
+	}
+	
+	@Test
+	public void getUpTo200TweetsTEST() throws TwitterException {
+		logger.info("--start--");
+		logger.info(twitterFacade.getUpTo200Tweets(887469007l));
+		logger.info("--end--");
 	}
 
 }
