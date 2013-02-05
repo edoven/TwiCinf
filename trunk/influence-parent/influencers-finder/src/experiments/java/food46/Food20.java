@@ -38,6 +38,7 @@ public class Food20 {
 		TwitterFacade twitterFacade = getTwitterFacade();
 		List<Long> usersIds = getUsersIds();
 		List<FilterManager> filterManagers = getFilterManagers();
+
 		
 		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer(iterations, 
 																				usersIds, 
