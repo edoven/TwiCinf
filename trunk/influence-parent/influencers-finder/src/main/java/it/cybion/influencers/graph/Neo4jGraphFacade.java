@@ -8,7 +8,6 @@ import it.cybion.influencers.graph.index.TreeMapIndex;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
