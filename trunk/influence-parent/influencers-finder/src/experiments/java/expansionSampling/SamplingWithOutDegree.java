@@ -76,7 +76,7 @@ public class SamplingWithOutDegree {
 		userTokens.add(userToken6);
 		
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "users", "users");
+		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "users");
 		TwitterFacade twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 		return twitterFacade;
 	}

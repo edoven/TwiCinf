@@ -51,12 +51,12 @@ public class LuceneTweetsAnalyzerSingleDocument {
 		List<Long> indexedUsers = new ArrayList<Long>();
 		indexedUsers.add(200557647L); //cuocopersonale
 		indexedUsers.add(490182956L); //DarioBressanini
-		indexedUsers.add(6832662L); //burde
+//		indexedUsers.add(6832662L); //burde
 		
 		List<Long> testUsers = new ArrayList<Long>();
 		testUsers.add(46118391L); //Fiordifrolla
-		testUsers.add(272022405L); //Davide_Oltolini
-		testUsers.add(9762312L); //toccodizenzero
+//		testUsers.add(272022405L); //Davide_Oltolini
+//		testUsers.add(9762312L); //toccodizenzero
 
 		Set<String> urls = new HashSet<String>();
 		
@@ -80,8 +80,10 @@ public class LuceneTweetsAnalyzerSingleDocument {
 			}
 		}
 		
-		Map<String,String> urls2Titles = new HashMap<String,String>();
-		urls2Titles = MultithreadUrlsTitleExtractor.getTitles(new ArrayList<String>(urls));
+		Map<String,String> urls2Titles = MultithreadUrlsTitleExtractor.getTitles(new ArrayList<String>(urls));
+		for (String url : urls2Titles.keySet())
+			System.out.println(url + " - " + urls2Titles.get(url));
+		
 		
 
 		

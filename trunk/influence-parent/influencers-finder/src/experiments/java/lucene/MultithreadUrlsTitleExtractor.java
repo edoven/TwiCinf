@@ -15,18 +15,21 @@ public class MultithreadUrlsTitleExtractor extends Thread{
 	private static List<String> urls;
 	private static Map<String , String> ulrs2Titles = new HashMap<String,String>();
 	
-	
+	private int threadId;
 	private int fistElement;
-	private int lastElemen;
+	private int lastElement;
 	
 	
-	private MultithreadUrlsTitleExtractor(int fistElement, int lastElement) {
+	private MultithreadUrlsTitleExtractor(int threadId , int fistElement, int lastElement) {
+		System.out.println("Created thread with id="+threadId+" - fistElement="+fistElement+" - lastElement="+lastElement);
+		this.threadId = threadId;
 		this.fistElement = fistElement;
-		this.lastElemen = lastElement;
+		this.lastElement = lastElement;
 	}
 	
 	public void run() {        
-        for (int i=fistElement; i<lastElemen; i++) {
+        for (int i=fistElement; i<lastElement; i++) {
+        	System.out.println("(thread "+threadId+") "+(i-fistElement)+"/"+(lastElement-fistElement));
         	String url = urls.get(i);
         	String title = getTitleFromUrl(url);
         	synchronized (ulrs2Titles) {
@@ -39,25 +42,28 @@ public class MultithreadUrlsTitleExtractor extends Thread{
 		urls = urlsList;
 		
 		int threadCount;
-		if (urlsList.size()<10)
+		if (urlsList.size()<20)
 			threadCount = 2;
 		else
-			threadCount = 10;
+			threadCount = 20;
 		int resto = urls.size() % threadCount;
 		int elementsPerThread = (urls.size()-resto) / threadCount;
+		System.out.println("urlsCount=" + urlsList.size());
 		System.out.println("threadCount=" + threadCount);
-		System.out.println("resto="+resto);
 		System.out.println("elementsPerThread="+elementsPerThread);
+		System.out.println("resto="+resto);
+		
 		
 
 		List<Thread> threads = new ArrayList<Thread>();
+		int lastElement = 0;
     	for (int i=0; i<threadCount; i++) {
-    		int firstElement = i*elementsPerThread;
-    		int lastElement = i*elementsPerThread + elementsPerThread;
-    		if (i==(threadCount-1))
-    			lastElement = urls.size();
-    		System.out.println("("+i+") firstElement="+firstElement+" lastElement="+lastElement);
-    		Thread t = new MultithreadUrlsTitleExtractor(firstElement, lastElement);
+    		int elementsForCurrentThread = elementsPerThread;
+    		if (i<resto)
+    			elementsForCurrentThread++;
+    		System.out.println("("+i+") firstElement="+lastElement+" lastElement="+ (lastElement+elementsForCurrentThread));		
+    		Thread t = new MultithreadUrlsTitleExtractor(i, lastElement, (lastElement+elementsForCurrentThread));
+    		lastElement = (lastElement + elementsForCurrentThread);
     		threads.add(t);
     		t.start();   		
     	}
@@ -69,19 +75,26 @@ public class MultithreadUrlsTitleExtractor extends Thread{
 				e.printStackTrace();
 				System.exit(0);
 			}   
-    	}
-    	
-    	
+    	}	
     	return ulrs2Titles;
 	}
-	
-	
-	
-	
+		
 	private String getTitleFromUrl(String urlString) {		
+		if (urlString.contains("instagr"))
+			return getTitleFromInstagram(urlString);
 		try {
 			Document doc = Jsoup.connect(urlString).get();
 			return doc.getElementsByTag("title").text();
+		} catch (IOException e) {
+			return "";
+		}		
+	}
+		
+	//<span class="caption-text">commento</span>
+	private String getTitleFromInstagram(String urlString) {		
+		try {
+			Document doc = Jsoup.connect(urlString).get();
+			return doc.getElementsByClass("caption-text").text();
 		} catch (IOException e) {
 			return "";
 		}		

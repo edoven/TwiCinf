@@ -37,6 +37,20 @@ public class InfluencersDiscoverer {
 		this.finalizationFilters = finalizationFilters;
 	}
 
+	public InfluencersDiscoverer(int iterations, 
+			  List<Long> users,
+			  GraphFacade graphFacade, 
+			  TwitterFacade twitterFacade,
+			  List<FilterManager> toIterateFilters) {
+		this.iterations = iterations;
+		this.users = users;
+		this.graphFacade = graphFacade;
+		this.twitterFacade = twitterFacade;
+		this.toIterateFilters = toIterateFilters;
+		this.finalizationFilters = null;
+	}
+	
+	
 	public List<Long> getInfluencers() {
 		
 		printInfo();
@@ -64,26 +78,28 @@ public class InfluencersDiscoverer {
 		}
 		
 
-		logger.info("");
-		logger.info("");
-		logger.info("#### FINALIZING FILTERS #####");
-		logger.info("");
-		for (int filterIndex=0; filterIndex<finalizationFilters.size(); filterIndex++) {
-			FilterManager filterManager = finalizationFilters.get(filterIndex);
-			logger.info("");	
+		if (finalizationFilters != null) {		
 			logger.info("");
-			logger.info("#### filter "+(filterIndex+1)+"/"+toIterateFilters.size()+" ####");	
-			logger.info("");			
-			filterManager.setGraphFacade(graphFacade);
-			filterManager.setTwitterFacade(twitterFacade);
-			if (filterIndex==0)
-				filterManager.setSeedUsers(new ArrayList<Long>(resultsFromIterations));
-			else
-				filterManager.setSeedUsers(users);
-			logger.info(filterManager.toString());
-			users = filterManager.filter();
-			logger.info("results from filtering = "+users);
-			logger.info("number of results from filtering = "+users.size());
+			logger.info("");
+			logger.info("#### FINALIZING FILTERS #####");
+			logger.info("");
+			for (int filterIndex=0; filterIndex<finalizationFilters.size(); filterIndex++) {
+				FilterManager filterManager = finalizationFilters.get(filterIndex);
+				logger.info("");	
+				logger.info("");
+				logger.info("#### filter "+(filterIndex+1)+"/"+toIterateFilters.size()+" ####");	
+				logger.info("");			
+				filterManager.setGraphFacade(graphFacade);
+				filterManager.setTwitterFacade(twitterFacade);
+				if (filterIndex==0)
+					filterManager.setSeedUsers(new ArrayList<Long>(resultsFromIterations));
+				else
+					filterManager.setSeedUsers(users);
+				logger.info(filterManager.toString());
+				users = filterManager.filter();
+				logger.info("results from filtering = "+users);
+				logger.info("number of results from filtering = "+users.size());
+			}
 		}
 		
 		return users;
@@ -98,10 +114,12 @@ public class InfluencersDiscoverer {
 			logger.info(filterIndex+") "+filterManager.toString());
 		}
 		
-		logger.info("--Finalization Filters--");
-		for (int filterIndex=0; filterIndex<finalizationFilters.size(); filterIndex++) {
-			FilterManager filterManager = finalizationFilters.get(filterIndex);
-			logger.info(filterIndex+") "+filterManager.toString());
+		if (finalizationFilters != null) {		
+			logger.info("--Finalization Filters--");
+			for (int filterIndex=0; filterIndex<finalizationFilters.size(); filterIndex++) {
+				FilterManager filterManager = finalizationFilters.get(filterIndex);
+				logger.info(filterIndex+") "+filterManager.toString());
+			}
 		}
 		logger.info("############################################");
 		logger.info("");

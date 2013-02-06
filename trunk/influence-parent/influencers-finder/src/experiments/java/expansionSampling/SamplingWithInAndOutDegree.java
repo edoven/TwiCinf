@@ -1,7 +1,6 @@
 package expansionSampling;
 
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
-import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.index.IndexType;
@@ -16,9 +15,8 @@ import it.cybion.influencers.utils.FilesDeleter;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SamplingWithInAndOutDegree {
 	
@@ -83,7 +81,7 @@ public class SamplingWithInAndOutDegree {
 		userTokens.add(userToken6);
 		
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "users", "users");
+		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "users");
 		TwitterFacade twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 		return twitterFacade;
 	}

@@ -9,6 +9,7 @@ import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.index.IndexType;
 import it.cybion.influencers.twitter.TwitterFacade;
+import it.cybion.influencers.twitter.TwitterFacadeFactory;
 import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
 import it.cybion.influencers.twitter.web.Token;
@@ -35,7 +36,7 @@ public class Food20 {
 
 		int iterations = 1;
 		GraphFacade graphFacade = getGraphFacade();
-		TwitterFacade twitterFacade = getTwitterFacade();
+		TwitterFacade twitterFacade = TwitterFacadeFactory.getTwitterFacade();
 		List<Long> usersIds = getUsersIds();
 		List<FilterManager> filterManagers = getFilterManagers();
 
@@ -72,27 +73,7 @@ public class Food20 {
 		return graphFacade;
 	}
 	
-	private static TwitterFacade getTwitterFacade() throws UnknownHostException {
-		Token applicationToken = new Token("tokens/consumerToken.txt");
-		List<Token> userTokens = new ArrayList<Token>();
-		Token userToken1 = new Token("tokens/token1.txt"); 
-		userTokens.add(userToken1);
-		Token userToken2 = new Token("tokens/token2.txt");
-		userTokens.add(userToken2);
-		Token userToken3 = new Token("tokens/token3.txt");
-		userTokens.add(userToken3);
-		Token userToken4 = new Token("tokens/token4.txt");
-		userTokens.add(userToken4);
-		Token userToken5 = new Token("tokens/token5.txt");
-		userTokens.add(userToken5);
-		Token userToken6 = new Token("tokens/token6.txt");
-		userTokens.add(userToken6);
-		
-		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "twitter");
-		TwitterFacade twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
-		return twitterFacade;
-	}
+	
 	
 	private static List<Long> getUsersIds() {
 		List<Long> usersIds = new ArrayList<Long>();
