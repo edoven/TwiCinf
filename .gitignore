@@ -58,3 +58,7 @@ Thumbs.db
 #Generated Graphs#
 trunk/influence-parent/influence-model/src/test/resources/graphs/*
 trunk/influence-parent/influencers-finder/graphs/*
+
+#lucene indexes
+trunk/influence-parent/influencers-finder/lucene/*
+

@@ -37,13 +37,13 @@ public class TwitterFacadeFactory {
 		return twitterFacade;
 	}
 	
-	private static TwitterFacade getTwitterFacadeForTests() throws UnknownHostException {
+	public static TwitterFacade getTwitterFacadeForTests() throws UnknownHostException {
 		Token applicationToken = new Token(applicationTokenPath);
 		List<Token> userTokens = new ArrayList<Token>();
 		for (int i = 0; i < tokens.length; i++)
 			userTokens.add( new Token(tokens[i]));				
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade(mongoDbHost, mongoDbTwitterDb);
+		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade(mongoDbHost, mongoDbTestDb);
 		TwitterFacade twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
 		return twitterFacade;
 	}

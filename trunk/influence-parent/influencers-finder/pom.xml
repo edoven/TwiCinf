@@ -64,43 +64,39 @@
   			<artifactId>blueprints-neo4j-graph</artifactId>
    			<version>2.1.0</version>
 		</dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-kernel</artifactId>
-            <type>test-jar</type>
-            <version>1.8.M06</version>
-            <scope>test</scope>
-    	</dependency>
- 
 
   	
     	<!--    LUCENE   -->
+    	<!--  lucene-core-3.5.0 is already imported by blueprints-neo4j-graph
     	<dependency>
 			<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-core</artifactId>
-			<version>4.0.0</version>
+			<version>3.5.0</version>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-analyzers</artifactId>
 			<version>3.6.2</version>
 		</dependency>
 		
+		<!-- 
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-analyzers-common</artifactId>
-			<version>4.0.0</version>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>3.6.2</version>
 		</dependency>
+		 -->
 		 
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queries</artifactId>
-			<version>4.0.0</version>
+			<version>3.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queryparser</artifactId>
-			<version>4.0.0</version>
+			<version>3.6.2</version>
 		</dependency> 
 
 
