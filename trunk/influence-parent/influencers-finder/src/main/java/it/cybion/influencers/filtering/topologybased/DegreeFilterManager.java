@@ -6,7 +6,6 @@ import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.UserVertexNotPresent;
 import it.cybion.influencers.twitter.TwitterFacade;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -15,6 +14,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
+
 
 public abstract class DegreeFilterManager implements FilterManager {
 	

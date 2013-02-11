@@ -7,7 +7,7 @@ import it.cybion.influencers.filtering.topologybased.InOrOutDegreeFilterManager;
 import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.index.IndexType;
+import it.cybion.influencers.graph.indexes.IndexType;
 import it.cybion.influencers.twitter.TwitterFacade;
 import it.cybion.influencers.twitter.TwitterFacadeFactory;
 import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;

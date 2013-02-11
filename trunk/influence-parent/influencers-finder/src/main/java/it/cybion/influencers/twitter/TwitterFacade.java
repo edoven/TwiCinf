@@ -274,7 +274,7 @@ public class TwitterFacade {
 	}
 
 	public void donwloadUsersProfiles(List<Long> userIds) {
-		logger.info("donwloadUsersProfiles - Downloading profiles for "+userIds.size()+" users.");
+		
 		List<Long> usersToDownload = new ArrayList<Long>();		
 		for (Long userId : userIds) {			
 			try {
@@ -285,7 +285,7 @@ public class TwitterFacade {
 				usersToDownload.add(userId);
 			}			
 		}	
-		logger.info("donwloadUsersProfiles - usersToDownload.size() = "+usersToDownload.size());
+		logger.info("donwloadUsersProfiles - Downloading profiles for "+usersToDownload.size()+" users.");
 		List<String> downloadedUsersJsons = twitterWebFacade.getUsersJsons(usersToDownload);
 		for (String userJson : downloadedUsersJsons)
 			persistanceFacade.putUser(userJson);

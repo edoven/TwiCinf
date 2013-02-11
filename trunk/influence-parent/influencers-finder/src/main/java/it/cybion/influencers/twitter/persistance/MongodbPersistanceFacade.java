@@ -45,12 +45,16 @@ public class MongodbPersistanceFacade implements PersistanceFacade {
 	
 	public void putTweet(String tweetToInsertJson) {		
 		DBObject tweetToInsert = (DBObject) JSON.parse(tweetToInsertJson);
-		long tweetId = (Long) tweetToInsert.get("id");
-//		logger.info("tweetId="+tweetId);
+		long tweetId = -1;
+		try {
+			tweetId = (Long) tweetToInsert.get("id");
+		} catch (ClassCastException e) {
+			logger.info("ERROR: problem extracting id from "+tweetToInsertJson);
+			return;
+		}
 		try {
 			getTweet(tweetId);
 		} catch (TweetNotPresentException e) {
-//			logger.info("TweetNotPresentException catched");
 			tweetsCollection.insert(tweetToInsert);
 		}			
 	}

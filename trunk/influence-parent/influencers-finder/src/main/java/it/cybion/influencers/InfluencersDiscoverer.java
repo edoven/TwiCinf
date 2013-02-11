@@ -78,7 +78,10 @@ public class InfluencersDiscoverer {
 		}
 		
 
-		if (finalizationFilters != null) {		
+		if (finalizationFilters != null) {	
+			logger.info("");
+			logger.info("results before finalization filters = "+resultsFromIterations);
+			logger.info("results before finalization filters size = "+resultsFromIterations.size());
 			logger.info("");
 			logger.info("");
 			logger.info("#### FINALIZING FILTERS #####");

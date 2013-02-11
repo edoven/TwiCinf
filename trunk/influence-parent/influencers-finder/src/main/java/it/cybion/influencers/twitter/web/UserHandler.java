@@ -59,7 +59,6 @@ public class UserHandler {
 		
 		executor.scheduleAtFixedRate(periodicTask, 0, 10, TimeUnit.SECONDS);
 		logger.debug(requestType2limit);
-
 	}
 	
 	private void setRequestType2limit() {

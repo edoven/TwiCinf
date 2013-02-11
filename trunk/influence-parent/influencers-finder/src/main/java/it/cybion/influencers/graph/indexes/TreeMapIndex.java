@@ -1,4 +1,4 @@
-package it.cybion.influencers.graph.index;
+package it.cybion.influencers.graph.indexes;
 
 import it.cybion.influencers.graph.UserVertexNotPresent;
 

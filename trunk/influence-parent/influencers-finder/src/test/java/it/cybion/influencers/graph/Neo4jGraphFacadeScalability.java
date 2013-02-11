@@ -1,6 +1,6 @@
 package it.cybion.influencers.graph;
 
-import it.cybion.influencers.graph.index.IndexType;
+import it.cybion.influencers.graph.indexes.IndexType;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;

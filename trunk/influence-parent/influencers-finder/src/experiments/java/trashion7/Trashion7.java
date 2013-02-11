@@ -9,7 +9,7 @@ import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager
 import it.cybion.influencers.filtering.topologybased.InDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.index.IndexType;
+import it.cybion.influencers.graph.indexes.IndexType;
 import it.cybion.influencers.twitter.TwitterFacade;
 import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
@@ -36,8 +36,6 @@ public class Trashion7 {
 	
 	public static void main(String[] args) throws IOException, TwitterException {
 		
-		
-
 		int iterations = 1;
 		if (args.length == 2 && args[0].equals("-i")) {
 			iterations = Integer.parseInt(args[1]);	
@@ -135,13 +133,13 @@ public class Trashion7 {
 	
 	private static List<Long> getUsersIds() {
 		List<Long> usersIds = new ArrayList<Long>();
-//		usersIds.add(92403540L); //lapinella
-//		usersIds.add(24499591L); //filippala
-//		usersIds.add(40090727L); //ChiaraFerragni
+		usersIds.add(92403540L); //lapinella
+		usersIds.add(24499591L); //filippala
+		usersIds.add(40090727L); //ChiaraFerragni
 		usersIds.add(37491839L); //VeronicaFerraro
 		usersIds.add(132888646L); //elenabarolo		
 		usersIds.add(236857407L); //chiarabiasi		
-//		usersIds.add(46164460L); //Eleonoracarisi
+		usersIds.add(46164460L); //Eleonoracarisi
 
 
 		return usersIds;

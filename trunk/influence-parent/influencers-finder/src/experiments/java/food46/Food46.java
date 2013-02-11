@@ -7,7 +7,7 @@ import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager
 import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.index.IndexType;
+import it.cybion.influencers.graph.indexes.IndexType;
 import it.cybion.influencers.twitter.TwitterFacade;
 import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
@@ -95,47 +95,47 @@ public class Food46 {
 		usersIds.add(6832662L); //burde
 		usersIds.add(45168679L); //Ricette20
 		usersIds.add(76901354L); //spylong
-//		usersIds.add(138387593L); //giuliagraglia
-//		usersIds.add(136681167L); //ele_cozzella
-//		usersIds.add(416427021L); //FilLaMantia
-//		usersIds.add(444712353L); //ChiaraMaci
-//		usersIds.add(472363994L); //LucaVissani
-//		usersIds.add(7077572L); //maghetta
-//		usersIds.add(16694823L); //paperogiallo
-//		usersIds.add(991704536L); //craccocarlo
-//		usersIds.add(46118391L); //Fiordifrolla
-//		usersIds.add(272022405L); //Davide_Oltolini
-//		usersIds.add(9762312L); //toccodizenzero
-//		usersIds.add(96738439L); //oloapmarchi
-//		usersIds.add(57163636L); //fooders
-//		usersIds.add(57283474L); //GialloZafferano
-//		usersIds.add(191365206L); //giornaledelcibo
-//		usersIds.add(75086891L); //carlo_spinelli
-//		usersIds.add(416478534L); //CarloOttaviano
-//		usersIds.add(70918724L); //slow_food_italy
-//		usersIds.add(323154299L); //massimobottura
-//		usersIds.add(342813082L); //barbierichef
-//		usersIds.add(31935994L); //puntarellarossa
-//		usersIds.add(28414979L); //morenocedroni
-//		usersIds.add(96384661L); //soniaperonaci
-//		usersIds.add(86961660L); //scattidigusto
-//		usersIds.add(167406951L); //WineNewsIt
-//		usersIds.add(368991338L); //TheBreakfastRev
-//		usersIds.add(17007757L); //ci_polla
-//		usersIds.add(135436730L); //ilgastronauta
-//		usersIds.add(23306444L); //dissapore
-//		usersIds.add(128564404L); //gianlucamorino
-//		usersIds.add(20696734L); //cookaround
-//		usersIds.add(7171022L); //cavoletto
-//		usersIds.add(22147020L); //Cucina_Italiana
-//		usersIds.add(426206087L); //DavideScabin0
-//		usersIds.add(54157380L); //italiasquisita
-//		usersIds.add(222491618L); //LaCuochina
-//		usersIds.add(339541519L); //SingerFood
-//		usersIds.add(130209798L); //GigiPadovani
-//		usersIds.add(41074932L); //FeudiDSGregorio
-//		usersIds.add(342677624L); //MartaTovaglieri
-//		usersIds.add(81079701L); //elisiamenduni
+		usersIds.add(138387593L); //giuliagraglia
+		usersIds.add(136681167L); //ele_cozzella
+		usersIds.add(416427021L); //FilLaMantia
+		usersIds.add(444712353L); //ChiaraMaci
+		usersIds.add(472363994L); //LucaVissani
+		usersIds.add(7077572L); //maghetta
+		usersIds.add(16694823L); //paperogiallo
+		usersIds.add(991704536L); //craccocarlo
+		usersIds.add(46118391L); //Fiordifrolla
+		usersIds.add(272022405L); //Davide_Oltolini
+		usersIds.add(9762312L); //toccodizenzero
+		usersIds.add(96738439L); //oloapmarchi
+		usersIds.add(57163636L); //fooders
+		usersIds.add(57283474L); //GialloZafferano
+		usersIds.add(191365206L); //giornaledelcibo
+		usersIds.add(75086891L); //carlo_spinelli
+		usersIds.add(416478534L); //CarloOttaviano
+		usersIds.add(70918724L); //slow_food_italy
+		usersIds.add(323154299L); //massimobottura
+		usersIds.add(342813082L); //barbierichef
+		usersIds.add(31935994L); //puntarellarossa
+		usersIds.add(28414979L); //morenocedroni
+		usersIds.add(96384661L); //soniaperonaci
+		usersIds.add(86961660L); //scattidigusto
+		usersIds.add(167406951L); //WineNewsIt
+		usersIds.add(368991338L); //TheBreakfastRev
+		usersIds.add(17007757L); //ci_polla
+		usersIds.add(135436730L); //ilgastronauta
+		usersIds.add(23306444L); //dissapore
+		usersIds.add(128564404L); //gianlucamorino
+		usersIds.add(20696734L); //cookaround
+		usersIds.add(7171022L); //cavoletto
+		usersIds.add(22147020L); //Cucina_Italiana
+		usersIds.add(426206087L); //DavideScabin0
+		usersIds.add(54157380L); //italiasquisita
+		usersIds.add(222491618L); //LaCuochina
+		usersIds.add(339541519L); //SingerFood
+		usersIds.add(130209798L); //GigiPadovani
+		usersIds.add(41074932L); //FeudiDSGregorio
+		usersIds.add(342677624L); //MartaTovaglieri
+		usersIds.add(81079701L); //elisiamenduni
 		return usersIds;
 	}
 	

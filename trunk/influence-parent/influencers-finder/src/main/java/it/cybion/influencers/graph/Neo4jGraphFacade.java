@@ -1,10 +1,10 @@
 package it.cybion.influencers.graph;
 
 
-import it.cybion.influencers.graph.index.GraphIndex;
-import it.cybion.influencers.graph.index.IndexType;
-import it.cybion.influencers.graph.index.LuceneIndex;
-import it.cybion.influencers.graph.index.TreeMapIndex;
+import it.cybion.influencers.graph.indexes.GraphIndex;
+import it.cybion.influencers.graph.indexes.IndexType;
+import it.cybion.influencers.graph.indexes.LuceneIndex;
+import it.cybion.influencers.graph.indexes.TreeMapIndex;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
@@ -95,7 +95,6 @@ public class Neo4jGraphFacade implements GraphFacade {
 		
 	@Override
 	public void addFollowers(Long userId, List<Long> followersIds) throws UserVertexNotPresent {	
-//		logger.info("adding "+followersIds.size()+" followers for user "+userId);
 		Vertex userVertex = getUserVertex(userId);
 		if (userVertex == null)
 			throw new UserVertexNotPresent("Trying to add followers for user with id "+userId+" but user vertex is not in the graph.");
@@ -112,7 +111,6 @@ public class Neo4jGraphFacade implements GraphFacade {
 
 	@Override
 	public void addFriends(Long userId, List<Long> friendsIds) throws UserVertexNotPresent {		
-//		logger.info("adding "+friendsIds.size()+" friends for user "+userId);
 		Vertex userVertex = getUserVertex(userId);
 		if (userVertex == null)
 			throw new UserVertexNotPresent("Trying to add followers for user with id "+userId+" but user vertex is not in the graph.");
@@ -216,29 +214,6 @@ public class Neo4jGraphFacade implements GraphFacade {
 		return user2outDegree;
 	}
 
-//	@Override
-//	public void cleanGraphDirectory() {
-//		deleteFileRecoursively(new File(dirPath));
-//	}
-//	
-//	private void deleteFileRecoursively(File file){
-//		if (file.exists()) {
-//			if(file.isDirectory()){
-//		    	if(file.list().length==0)
-//		    		   file.delete();
-//		    	else{
-//		    		String files[] = file.list();	 
-//		    		for (String temp : files) {
-//		    			File fileDelete = new File(file, temp);
-//		    			deleteFileRecoursively(fileDelete);
-//		    		}
-//		        	if(file.list().length==0)
-//		        		file.delete();
-//		    	}	 
-//		    }
-//			else
-//		    	file.delete();
-//		}
-//	}
+
 
 }
