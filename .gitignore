@@ -62,3 +62,6 @@ trunk/influence-parent/influencers-finder/graphs/*
 #lucene indexes
 trunk/influence-parent/influencers-finder/lucene/*
 
+trunk/influence-parent/influence-model/test-output/*
+trunk/influence-parent/influence-model/target/*
+
