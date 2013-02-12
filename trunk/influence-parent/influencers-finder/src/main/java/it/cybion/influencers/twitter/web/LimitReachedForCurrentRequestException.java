@@ -29,12 +29,6 @@ public class LimitReachedForCurrentRequestException extends Exception {
 		// TODO Auto-generated constructor stub
 	}
 
-	public LimitReachedForCurrentRequestException(String message, Throwable cause,
-			boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-		// TODO Auto-generated constructor stub
-	}
-
 	public LimitReachedForCurrentRequestException(
 			Map<String, Integer> requestType2limit) {
 		this.limits=requestType2limit;
