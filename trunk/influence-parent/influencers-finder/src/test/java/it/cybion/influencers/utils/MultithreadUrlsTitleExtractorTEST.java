@@ -1,15 +1,20 @@
 package it.cybion.influencers.utils;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.testng.annotations.Test;
 
-public class MultithreadUrlsTitleExtractorTEST {
-	
+
+
+public class MultithreadUrlsTitleExtractorTEST
+{
+
 	@Test
-	public void getTitlesTEST() {
+	public void getTitlesTEST()
+	{
 		String url1 = "http://www.repubblica.it";
 		String url2 = "http://www.yahoo.it";
 		String url3 = "http://www.google.com";
@@ -17,11 +22,11 @@ public class MultithreadUrlsTitleExtractorTEST {
 		urls.add(url1);
 		urls.add(url2);
 		urls.add(url3);
-		
-		Map<String,String> urls2titles = MultithreadUrlsTitleExtractor.getTitles(urls);
-		System.out.println("urls2titles="+urls2titles);
-//		for (String url : urls2titles.keySet()) {
-//			System.out.println(url + " - " + urls2titles.get(url));
-//		}
+
+		Map<String, String> urls2titles = MultithreadUrlsTitleExtractor.getTitles(urls);
+		System.out.println("urls2titles=" + urls2titles);
+		// for (String url : urls2titles.keySet()) {
+		// System.out.println(url + " - " + urls2titles.get(url));
+		// }
 	}
 }

@@ -35,20 +35,15 @@ public class ExpansionExperiment {
 		}
 	};
 	
-	class ComparatorByFollowers implements Comparator {
-		@Override
-		public int compare(Object o1, Object o2) {
-			User u1 = (User)o1;
-			User u2 = (User)o2;
+	class ComparatorByFollowers implements Comparator<User> {
+		public int compare(User u1, User u2)
+		{
 			return u2.followersCount - u1.followersCount;
 		}			
 	};
 	
-	class ComparatorByFriends implements Comparator {
-		@Override
-		public int compare(Object o1, Object o2) {
-			User u1 = (User)o1;
-			User u2 = (User)o2;
+	class ComparatorByFriends implements Comparator<User> {
+		public int compare(User u1, User u2) {
 			return u2.friendsCount - u1.friendsCount;
 		}			
 	};

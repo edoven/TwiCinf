@@ -1,5 +1,6 @@
 package it.cybion.influencers.filtering.language;
 
+
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
@@ -13,80 +14,102 @@ import twitter4j.TwitterException;
 
 import com.google.gson.Gson;
 
-public class LanguageDetectionFilterManager implements FilterManager{
+
+
+public class LanguageDetectionFilterManager implements FilterManager
+{
 
 	private TwitterFacade twitterFacade;
 	private List<Long> seedUsers;
 	private Map<Long, List<String>> user2tweets = new HashMap<Long, List<String>>();
 	private String languageProfilesDir;
-	
-	public LanguageDetectionFilterManager(String languageProfilesDir) {
+
+	public LanguageDetectionFilterManager(String languageProfilesDir)
+	{
 		this.languageProfilesDir = languageProfilesDir;
 	}
 
 	@Override
-	public void setTwitterFacade(TwitterFacade twitterFacade) {
-		this.twitterFacade = twitterFacade;		
-	}
-	
-	@Override
-	public void setGraphFacade(GraphFacade graphFacade) {
-		// useless
-	}
-	
-	@Override
-	public void setSeedUsers(List<Long> seedUsers) {
-		this.seedUsers = seedUsers;
-	}
-		
-	@Override
-	public List<Long> filter() {
-		solveDependencies();
-		return new LanguageDetectionFilter(user2tweets, languageProfilesDir).filter();
-		//return null;
-	}
-	
-	private class Tweet {		
-		public String text;
-		public Entities entities;	
-		
-		public class Hashtag {String text;}		
-		public class UserMention { String screen_name;}
-		
-		public class Entities {
-			List<Hashtag> hashtags;
-			List<UserMention> user_mentions;
-		}			
+	public void setTwitterFacade(TwitterFacade twitterFacade)
+	{
+		this.twitterFacade = twitterFacade;
 	}
 
-	private void solveDependencies() {
-		Gson gson = new Gson();	
-		for (Long userId : seedUsers) {
+	@Override
+	public void setGraphFacade(GraphFacade graphFacade)
+	{
+		// useless
+	}
+
+	@Override
+	public void setSeedUsers(List<Long> seedUsers)
+	{
+		this.seedUsers = seedUsers;
+	}
+
+	@Override
+	public List<Long> filter()
+	{
+		solveDependencies();
+		return new LanguageDetectionFilter(user2tweets, languageProfilesDir).filter();
+		// return null;
+	}
+
+	private class Tweet
+	{
+		public String text;
+		public Entities entities;
+
+		public class Hashtag
+		{
+			String text;
+		}
+
+		public class UserMention
+		{
+			String screen_name;
+		}
+
+		public class Entities
+		{
+			List<Hashtag> hashtags;
+			List<UserMention> user_mentions;
+		}
+	}
+
+	private void solveDependencies()
+	{
+		Gson gson = new Gson();
+		for (Long userId : seedUsers)
+		{
 			List<String> tweetsText = new ArrayList<String>();
-			try {
+			try
+			{
 				List<String> tweetsJsons = twitterFacade.getUpTo200Tweets(userId);
-				for (String tweetJson : tweetsJsons) {
+				for (String tweetJson : tweetsJsons)
+				{
 					Tweet tweet = gson.fromJson(tweetJson, Tweet.class);
 					String tweetText = tweet.text;
-					
+
 					tweetText = tweetText.replaceAll("\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "");
 					tweetText = tweetText.replaceAll("http", "");
-			
+
 					for (Tweet.Hashtag hashtag : tweet.entities.hashtags)
 						tweetText = tweetText.replace(hashtag.text, "");
 					for (Tweet.UserMention userMention : tweet.entities.user_mentions)
-						tweetText = tweetText.replace(userMention.screen_name, "");	
+						tweetText = tweetText.replace(userMention.screen_name, "");
 					tweetText = tweetText.replace('#', ' ');
 					tweetText = tweetText.replace('@', ' ');
 					tweetText = tweetText.replace('\n', ' ');
-					tweetText = tweetText.replace("RT", " ");		
-					
+					tweetText = tweetText.replace("RT", " ");
+
 					tweetsText.add(tweetText);
 				}
 				user2tweets.put(userId, tweetsText);
-			} catch (TwitterException e) {
+			} catch (TwitterException e)
+			{
 				continue;
-			}		
+			}
 		}
 	}
 

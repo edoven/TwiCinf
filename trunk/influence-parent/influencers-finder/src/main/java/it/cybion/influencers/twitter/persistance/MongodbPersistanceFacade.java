@@ -20,260 +20,302 @@ import java.util.HashMap;
 
 
 
-public class MongodbPersistanceFacade implements PersistanceFacade {
-	
+public class MongodbPersistanceFacade implements PersistanceFacade
+{
+
 	private static final Logger logger = Logger.getLogger(MongodbPersistanceFacade.class);
 
 	private DBCollection userCollection;
 	private DBCollection tweetsCollection;
-	
 
-	public MongodbPersistanceFacade(String host, String database) throws UnknownHostException {
-		MongoClient mongoClient = new MongoClient( host );
-		DB db = mongoClient.getDB( database );
-		this.userCollection = db.getCollection( "users" );
-		this.userCollection.createIndex( new BasicDBObject("id", 1) ); //if the index already exist this does nothing
-		this.tweetsCollection = db.getCollection( "tweets" );
-		this.tweetsCollection.createIndex( new BasicDBObject("id", 1) ); //if the index already exist this does nothing
+	public MongodbPersistanceFacade(String host, String database) throws UnknownHostException
+	{
+		MongoClient mongoClient = new MongoClient(host);
+		DB db = mongoClient.getDB(database);
+		this.userCollection = db.getCollection("users");
+		this.userCollection.createIndex(new BasicDBObject("id", 1)); // if the
+																		// index
+																		// already
+																		// exist
+																		// this
+																		// does
+																		// nothing
+		this.tweetsCollection = db.getCollection("tweets");
+		this.tweetsCollection.createIndex(new BasicDBObject("id", 1)); // if the
+																		// index
+																		// already
+																		// exist
+																		// this
+																		// does
+																		// nothing
 	}
-		
+
 	@Override
-	public void putTweets(List<String> tweets) {		
+	public void putTweets(List<String> tweets)
+	{
 		for (String tweet : tweets)
 			putTweet(tweet);
 	}
-	
-	public void putTweet(String tweetToInsertJson) {		
+
+	public void putTweet(String tweetToInsertJson)
+	{
 		DBObject tweetToInsert = (DBObject) JSON.parse(tweetToInsertJson);
 		long tweetId = -1;
-		try {
+		try
+		{
 			tweetId = (Long) tweetToInsert.get("id");
-		} catch (ClassCastException e) {
-			logger.info("ERROR: problem extracting id from "+tweetToInsertJson);
+		} catch (ClassCastException e)
+		{
+			logger.info("ERROR: problem extracting id from " + tweetToInsertJson);
 			return;
 		}
-		try {
+		try
+		{
 			getTweet(tweetId);
-		} catch (TweetNotPresentException e) {
+		} catch (TweetNotPresentException e)
+		{
 			tweetsCollection.insert(tweetToInsert);
-		}			
+		}
 	}
-	
-	private String getTweet(long tweetId) throws TweetNotPresentException {
+
+	private String getTweet(long tweetId) throws TweetNotPresentException
+	{
 		BasicDBObject keys = new BasicDBObject();
 		keys.put("id", tweetId);
 		DBObject tweet = tweetsCollection.findOne(keys);
 		if (tweet == null)
-			throw new TweetNotPresentException("Tweet with id "+tweetId+" is not in the collection.");
+			throw new TweetNotPresentException("Tweet with id " + tweetId + " is not in the collection.");
 		return tweet.toString();
 	}
-	
-//	public List<String> getTweets(long userId) {
-//		logger.info("--begin--");
-//		DBCursor cursor = tweetsCollection.find(new BasicDBObject("user.id", userId));
-//		List<String> tweets = new ArrayList<String>();
-//		while (cursor.hasNext()) {
-//			DBObject tweet =  cursor.next();
-//			tweets.add(tweet.toString());
-//			logger.info(tweet.toString());
-//		}
-//		logger.info("--end--");
-//		return tweets;
-//	}
-	
+
+	// public List<String> getTweets(long userId) {
+	// logger.info("--begin--");
+	// DBCursor cursor = tweetsCollection.find(new BasicDBObject("user.id",
+	// userId));
+	// List<String> tweets = new ArrayList<String>();
+	// while (cursor.hasNext()) {
+	// DBObject tweet = cursor.next();
+	// tweets.add(tweet.toString());
+	// logger.info(tweet.toString());
+	// }
+	// logger.info("--end--");
+	// return tweets;
+	// }
+
 	@Override
-	public List<String> getUpTo200Tweets(long userId) throws UserWithNoTweetsException {
+	public List<String> getUpTo200Tweets(long userId) throws UserWithNoTweetsException
+	{
 		DBCursor cursor = tweetsCollection.find(new BasicDBObject("user.id", userId));
 		List<String> tweets = new ArrayList<String>();
-		while (cursor.hasNext() && tweets.size()<200) {
-			DBObject tweet =  cursor.next();
+		while (cursor.hasNext() && tweets.size() < 200)
+		{
+			DBObject tweet = cursor.next();
 			tweets.add(tweet.toString());
 		}
 		if (tweets.size() == 0)
 			throw new UserWithNoTweetsException();
-		//logger.info("getUpTo200Tweets  - tweets="+tweets);
+		// logger.info("getUpTo200Tweets  - tweets="+tweets);
 		return tweets;
 	}
-	
+
 	/*
-	 * If a user with the same id (beware: id!=_id) is already present, 
-	 * the new fields (if exist) are added.
-	 */		
+	 * If a user with the same id (beware: id!=_id) is already present, the new
+	 * fields (if exist) are added.
+	 */
 	@Override
-	public void putUser(String userToInsertJson) {
+	public void putUser(String userToInsertJson)
+	{
 		DBObject userToInsert = (DBObject) JSON.parse(userToInsertJson);
 		long userId = new Long((Integer) userToInsert.get("id"));
 		String userInDbJson;
-		try {
+		try
+		{
 			userInDbJson = getUser(userId);
-		} catch (UserNotPresentException e) {
+		} catch (UserNotPresentException e)
+		{
 			userCollection.insert(userToInsert);
 			return;
 		}
 		DBObject userInDb = (DBObject) JSON.parse(userInDbJson);
-		Map<String, Object> field2value = new HashMap<String,Object>();		
+		Map<String, Object> field2value = new HashMap<String, Object>();
 		for (String field : userInDb.keySet())
 			field2value.put(field, userInDb.get(field));
 		for (String field : userToInsert.keySet())
-			field2value.put(field, userToInsert.get(field));		
+			field2value.put(field, userToInsert.get(field));
 		DBObject updatedUser = new BasicDBObject();
 		for (String field : field2value.keySet())
-			updatedUser.put(field, field2value.get(field));		
+			updatedUser.put(field, field2value.get(field));
 		DBObject query = new BasicDBObject();
 		query.put("id", userId);
-		userCollection.update(query, updatedUser);		
+		userCollection.update(query, updatedUser);
 	}
 
 	@Override
-	public void putFriends(Long userId, List<Long> friendsIds) throws UserNotPresentException{
-		logger.info("writing "+friendsIds.size()+" friends for user with id="+userId);
+	public void putFriends(Long userId, List<Long> friendsIds) throws UserNotPresentException
+	{
+		logger.info("writing " + friendsIds.size() + " friends for user with id=" + userId);
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		user.put("friends", friendsIds);
 		putUser(user.toString());
-		for (Long friendId : friendsIds) {
+		for (Long friendId : friendsIds)
+		{
 			DBObject friend = new BasicDBObject();
 			friend.put("id", friendId);
 			putUser(friend.toString());
-		}	
+		}
 	}
 
 	@Override
-	public void putFollowers(Long userId, List<Long> followersIds) throws UserNotPresentException {
-		logger.info("writing "+followersIds.size()+" followers for user with id="+userId);
+	public void putFollowers(Long userId, List<Long> followersIds) throws UserNotPresentException
+	{
+		logger.info("writing " + followersIds.size() + " followers for user with id=" + userId);
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		user.put("followers", followersIds);
 		putUser(user.toString());
-		for (Long followerId : followersIds) {
+		for (Long followerId : followersIds)
+		{
 			DBObject follower = new BasicDBObject();
 			follower.put("id", followerId);
 			putUser(follower.toString());
-		}			
+		}
 	}
-	
+
 	@Override
-	public void removeUser(Long userId) {
+	public void removeUser(Long userId)
+	{
 		BasicDBObject keys = new BasicDBObject();
 		keys.put("id", userId);
 		DBCursor cursor = userCollection.find(keys);
-		if (cursor.hasNext()) {	
+		if (cursor.hasNext())
+		{
 			DBObject json = cursor.next();
 			userCollection.remove(json);
 		}
 	}
-	
+
 	@Override
-	public String getUser(Long userId) throws UserNotPresentException {
+	public String getUser(Long userId) throws UserNotPresentException
+	{
 		DBObject user = userCollection.findOne(new BasicDBObject("id", userId));
-		if (user==null)
-			throw new UserNotPresentException("User with id "+userId+" is not in the collection.");
+		if (user == null)
+			throw new UserNotPresentException("User with id " + userId + " is not in the collection.");
 		return user.toString();
 	}
-		
-	private DBObject getUserDbObject(Long userId) throws UserNotPresentException {
+
+	private DBObject getUserDbObject(Long userId) throws UserNotPresentException
+	{
 		DBObject user = userCollection.findOne(new BasicDBObject("id", userId));
-		if (user==null)
-			throw new UserNotPresentException("User with id "+userId+" is not in the collection.");
+		if (user == null)
+			throw new UserNotPresentException("User with id " + userId + " is not in the collection.");
 		return user;
 	}
 
 	@Override
-	public String getDescription(Long userId) throws UserNotPresentException, UserNotProfileEnriched {
+	public String getDescription(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	{
 		String userJson = getUser(userId);
-		DBObject user = (DBObject) JSON.parse(userJson);		
+		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("description"))
-			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
+			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
 		String description = (String) user.get("description");
-		if (description==null)
+		if (description == null)
 			description = "";
-		return description;		
+		return description;
 	}
-	
-	public String getStatus(Long userId)  throws UserNotPresentException, UserNotProfileEnriched {
+
+	public String getStatus(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	{
 		String userJson = getUser(userId);
-		DBObject user = (DBObject) JSON.parse(userJson);		
+		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("description"))
-			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
-		DBObject status = (DBObject) user.get("status");	
+			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
+		DBObject status = (DBObject) user.get("status");
 		String text = (String) status.get("text");
-		if (text==null)
+		if (text == null)
 			text = "";
-		return text;		
+		return text;
 	}
-		
+
 	@Override
-	public String getDescriptionAndStatus(Long userId) throws UserNotPresentException, UserNotProfileEnriched {
+	public String getDescriptionAndStatus(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	{
 		String userJson = getUser(userId);
-		DBObject user = (DBObject) JSON.parse(userJson);		
+		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("description"))
-			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
+			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
 		String description = (String) user.get("description");
-		DBObject statusObject = (DBObject) user.get("status");	
+		DBObject statusObject = (DBObject) user.get("status");
 		String status = "";
-		if (statusObject!=null)
+		if (statusObject != null)
 			status = (String) statusObject.get("text");
-		return description + " " + status;		
+		return description + " " + status;
 	}
-		
+
 	@Override
-	public int getFollowersCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched {
+	public int getFollowersCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	{
 		String userJson = getUser(userId);
-		DBObject user = (DBObject) JSON.parse(userJson);		
+		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("followers_count"))
-			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
-		int followersCount = (Integer)user.get("followers_count");
-		return followersCount;		
+			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
+		int followersCount = (Integer) user.get("followers_count");
+		return followersCount;
 	}
-	
+
 	@Override
-	public int getFriendsCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched {
+	public int getFriendsCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	{
 		String userJson = getUser(userId);
-		DBObject user = (DBObject) JSON.parse(userJson);		
+		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("friends_count"))
-			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
-		int followersCount = (Integer)user.get("friends_count");
-		return followersCount;		
+			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
+		int followersCount = (Integer) user.get("friends_count");
+		return followersCount;
 	}
-	
+
 	@Override
-	public String getScreenName(Long userId) throws UserNotPresentException, UserNotProfileEnriched {
+	public String getScreenName(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	{
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("screen_name"))
-			throw new UserNotProfileEnriched("User with id "+userId+" is not profile-eniched.");
+			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
 		String screenName = (String) user.get("screen_name");
-		if (screenName==null)
+		if (screenName == null)
 			screenName = "";
-		return screenName;			
+		return screenName;
 	}
 
 	@Override
-	public List<Long> getFollowers(Long userId) throws  UserNotPresentException, UserNotFollowersEnrichedException {
-		DBObject userJson = getUserDbObject(userId);		
-		if (userJson.containsField("followers")) {	
-			List<Integer> intList = (List<Integer>)userJson.get("followers");
-			List<Long> longList = new ArrayList<Long>();
-			for (int intElement : intList)
-				longList.add( (long)intElement );
-			return longList;
-		}
-		else
-			throw new UserNotFollowersEnrichedException("User with id "+userId+" is not followers/friends-eniched.");			
-	}
-
-	@Override
-	public List<Long> getFriends(Long userId) throws UserNotFriendsEnrichedException, UserNotPresentException {
+	public List<Long> getFollowers(Long userId) throws UserNotPresentException, UserNotFollowersEnrichedException
+	{
 		DBObject userJson = getUserDbObject(userId);
-		if (userJson.containsField("friends")) {
-			List<Integer> intList = (List<Integer>)userJson.get("friends");
+		if (userJson.containsField("followers"))
+		{
+			List<Integer> intList = (List<Integer>) userJson.get("followers");
 			List<Long> longList = new ArrayList<Long>();
 			for (int intElement : intList)
-				longList.add( (long)intElement );
+				longList.add((long) intElement);
 			return longList;
-		}
-		else
-			throw new UserNotFriendsEnrichedException("User with id "+userId+" is not friends-eniched.");			
+		} else
+			throw new UserNotFollowersEnrichedException("User with id " + userId + " is not followers/friends-eniched.");
 	}
-	
+
+	@Override
+	public List<Long> getFriends(Long userId) throws UserNotFriendsEnrichedException, UserNotPresentException
+	{
+		DBObject userJson = getUserDbObject(userId);
+		if (userJson.containsField("friends"))
+		{
+			List<Integer> intList = (List<Integer>) userJson.get("friends");
+			List<Long> longList = new ArrayList<Long>();
+			for (int intElement : intList)
+				longList.add((long) intElement);
+			return longList;
+		} else
+			throw new UserNotFriendsEnrichedException("User with id " + userId + " is not friends-eniched.");
+	}
+
 }

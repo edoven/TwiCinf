@@ -1,5 +1,6 @@
 package it.cybion.influencers.filtering.topologybased;
 
+
 import it.cybion.influencers.graph.UserVertexNotPresent;
 
 import java.util.List;
@@ -7,55 +8,63 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-public class InDegreeFilterManager extends DegreeFilterManager {
-	
+
+
+public class InDegreeFilterManager extends DegreeFilterManager
+{
+
 	private static final Logger logger = Logger.getLogger(InDegreeFilterManager.class);
 
-	private double inDegreePercentageThreshold;	
+	private float inDegreePercentageThreshold;
 	private int inDegreeAbsoluteThreshold;
-	private Map<Long, Integer> node2inDegree;	
+	private Map<Long, Integer> node2inDegree;
 
-	public InDegreeFilterManager(double inDegreePercentageThreshold) {
+	public InDegreeFilterManager(float inDegreePercentageThreshold)
+	{
 		this.inDegreePercentageThreshold = inDegreePercentageThreshold;
 	}
-	
-	protected void setAbsoluteThresholds() {
+
+	protected void setAbsoluteThresholds()
+	{
 		inDegreeAbsoluteThreshold = (int) Math.round((inDegreePercentageThreshold * this.seedUsers.size()));
-		if (inDegreeAbsoluteThreshold<2)
+		if (inDegreeAbsoluteThreshold < 2)
 			inDegreeAbsoluteThreshold = 2;
 	}
 
 	@Override
-	public List<Long> filter()  {
-		solveDependencies();	
-		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(node2inDegree,inDegreeAbsoluteThreshold);
+	public List<Long> filter()
+	{
+		solveDependencies();
+		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(node2inDegree, inDegreeAbsoluteThreshold);
 		List<Long> inDegreeFiltered = inDegreeFilter.filter();
-		logger.info("inDegreeFiltered.size()="+inDegreeFiltered.size());		
-		return inDegreeFiltered;		
+		logger.info("inDegreeFiltered.size()=" + inDegreeFiltered.size());
+		return inDegreeFiltered;
 	}
 
-	
-	protected void calculateNodeDegrees() {
-		try {
-			//this sets an outDegree label in the graph for each node of followersAndFriends set
-			node2inDegree = graphFacade.getInDegrees(followersAndFriends, seedUsers);	
-		} catch (UserVertexNotPresent e) {			
+	protected void calculateNodeDegrees()
+	{
+		try
+		{
+			// this sets an outDegree label in the graph for each node of
+			// followersAndFriends set
+			node2inDegree = graphFacade.getInDegrees(followersAndFriends, seedUsers);
+		} catch (UserVertexNotPresent e)
+		{
 			e.printStackTrace();
 			System.exit(0);
-		}			
+		}
 	}
-	
+
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		String inputSize = "NotSet";
 		String inDegreeAbsThreshold = "CannotBeCalculated";
-		if (seedUsers!=null ) {
+		if (seedUsers != null)
+		{
 			inputSize = Integer.toString(seedUsers.size());
 			inDegreeAbsThreshold = Integer.toString(inDegreeAbsoluteThreshold);
 		}
-		return "InDegreeFilterManager" +
-				" (inDegreePercentageThreshold="+inDegreePercentageThreshold*100+"%"+
-				" - inDegreeAbsoluteThreshold="+inDegreeAbsThreshold+
-				" - inputSize="+inputSize+")";
+		return "InDegreeFilterManager" + " (inDegreePercentageThreshold=" + inDegreePercentageThreshold * 100 + "%" + " - inDegreeAbsoluteThreshold=" + inDegreeAbsThreshold + " - inputSize=" + inputSize + ")";
 	}
 }

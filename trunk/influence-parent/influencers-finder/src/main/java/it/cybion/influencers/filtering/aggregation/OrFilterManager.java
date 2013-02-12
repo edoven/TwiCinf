@@ -1,5 +1,6 @@
 package it.cybion.influencers.filtering.aggregation;
 
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,22 +10,28 @@ import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
 
-public class OrFilterManager implements FilterManager{
-	
+
+
+public class OrFilterManager implements FilterManager
+{
+
 	private List<FilterManager> filterMangers;
 	private GraphFacade graphFacade;
 	private List<Long> users;
 	private TwitterFacade twitterManager;
-	
-	public OrFilterManager(List<FilterManager> filterMangers) {
+
+	public OrFilterManager(List<FilterManager> filterMangers)
+	{
 		this.filterMangers = filterMangers;
 	}
 
 	@Override
-	public List<Long> filter() {
+	public List<Long> filter()
+	{
 		Set<Long> filtered = new HashSet<Long>();
-		for (FilterManager filterManager : filterMangers) {
-			filterManager.setGraphFacade(graphFacade); 
+		for (FilterManager filterManager : filterMangers)
+		{
+			filterManager.setGraphFacade(graphFacade);
 			filterManager.setSeedUsers(users);
 			filterManager.setTwitterFacade(twitterManager);
 			filtered.addAll(filterManager.filter());
@@ -33,22 +40,26 @@ public class OrFilterManager implements FilterManager{
 	}
 
 	@Override
-	public void setTwitterFacade(TwitterFacade twitterManager) {
+	public void setTwitterFacade(TwitterFacade twitterManager)
+	{
 		this.twitterManager = twitterManager;
 	}
 
 	@Override
-	public void setGraphFacade(GraphFacade graphFacade) {
+	public void setGraphFacade(GraphFacade graphFacade)
+	{
 		this.graphFacade = graphFacade;
 	}
 
 	@Override
-	public void setSeedUsers(List<Long> users) {
-		this.users = users;			
+	public void setSeedUsers(List<Long> users)
+	{
+		this.users = users;
 	}
-	
+
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		String description = "OrFilter = (  ";
 		for (FilterManager filterManager : filterMangers)
 			description = description + " ### " + filterManager.toString();

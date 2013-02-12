@@ -1,30 +1,35 @@
 package it.cybion.influencers.twitter.web;
 
-public class MethodInputNotCorrectException extends Exception {
+
+public class MethodInputNotCorrectException extends Exception
+{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -3723734735347839890L;
 
-	public MethodInputNotCorrectException() {
+	public MethodInputNotCorrectException()
+	{
 		// TODO Auto-generated constructor stub
 	}
 
-	public MethodInputNotCorrectException(String message) {
+	public MethodInputNotCorrectException(String message)
+	{
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
-	public MethodInputNotCorrectException(Throwable cause) {
+	public MethodInputNotCorrectException(Throwable cause)
+	{
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public MethodInputNotCorrectException(String message, Throwable cause) {
+	public MethodInputNotCorrectException(String message, Throwable cause)
+	{
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
-
 
 }

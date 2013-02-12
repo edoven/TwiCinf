@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import twitter4j.TwitterException;
 
 public class Trashion7 {
-	
+        	
 	private static final Logger logger = Logger.getLogger(Trashion7.class);
 
 	
@@ -74,7 +74,6 @@ public class Trashion7 {
 				this.description = description;
 			}
 			
-			@Override
 			public int compareTo(User userToCompare) {	
 				return userToCompare.followersCount - this.followersCount;	 
 			}
