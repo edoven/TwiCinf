@@ -1,4 +1,4 @@
-package properties;
+
 
 
 import it.cybion.influencers.filtering.FilterManager;

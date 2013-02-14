@@ -1,4 +1,4 @@
-package console;
+
 
 import java.io.Console;
 
