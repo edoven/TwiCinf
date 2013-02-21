@@ -1,7 +1,8 @@
 package it.cybion.influencers.graph;
 
 
-import it.cybion.influencers.graph.indexes.IndexType;
+import it.cybion.influencers.graph.exceptions.UserVertexNotPresentException;
+import it.cybion.influencers.graph.indexes.GraphIndexType;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
@@ -20,11 +21,11 @@ public class Neo4jGraphFacadeScalability
 	private int USERS_COUNT = 1000000;
 
 	@Test(enabled = false)
-	public void massiveInsertionsWithLucene() throws IOException, UserVertexNotPresent
+	public void massiveInsertionsWithLucene() throws IOException, UserVertexNotPresentException
 	{
 		String graphDirPath = "src/test/resources/graphs/massiveInsertionsTEST";
 		FilesDeleter.delete(new File(graphDirPath));
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.LUCENE_INDEX);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.LUCENE_INDEX);
 		int tenPercent = Math.round((float) USERS_COUNT / 10);
 		int percentCompleted = 0;
 		long start = System.currentTimeMillis();
@@ -43,11 +44,11 @@ public class Neo4jGraphFacadeScalability
 	}
 
 	@Test(enabled = true)
-	public void massiveInsertionsWithTreeMap() throws IOException, UserVertexNotPresent
+	public void massiveInsertionsWithTreeMap() throws IOException, UserVertexNotPresentException
 	{
 		String graphDirPath = "src/test/resources/graphs/massiveInsertionsTEST";
 		FilesDeleter.delete(new File(graphDirPath));
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 		int tenPercent = Math.round((float) USERS_COUNT / 10);
 		int percentCompleted = 0;
 		long start = System.currentTimeMillis();

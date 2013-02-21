@@ -2,10 +2,11 @@ package it.cybion.influencers.twitter.persistance;
 
 
 import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
-import it.cybion.influencers.twitter.persistance.UserNotFollowersEnrichedException;
-import it.cybion.influencers.twitter.persistance.UserNotFriendsEnrichedException;
-import it.cybion.influencers.twitter.persistance.UserNotPresentException;
-import it.cybion.influencers.twitter.persistance.UserNotProfileEnriched;
+import it.cybion.influencers.twitter.persistance.exceptions.UserNotFollowersEnrichedException;
+import it.cybion.influencers.twitter.persistance.exceptions.UserNotFriendsEnrichedException;
+import it.cybion.influencers.twitter.persistance.exceptions.UserNotPresentException;
+import it.cybion.influencers.twitter.persistance.exceptions.UserNotProfileEnrichedException;
+import it.cybion.influencers.twitter.persistance.exceptions.UserWithNoTweetsException;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class MongodbPersistanceFacadeTEST
 	}
 
 	@Test(enabled = true)
-	public void insertionAndRetrivalTEST() throws UnknownHostException, UserNotProfileEnriched, UserNotPresentException
+	public void insertionAndRetrivalTEST() throws UnknownHostException, UserNotProfileEnrichedException, UserNotPresentException
 	{
 		String originalUserJson = "{\"id\": 425699035,\"name\": \"PerugiaToday\",\"screenName\": \"PerugiaToday\",\"location\": \"Perugia\",\"description\": \"sono fatto cosi e cosa\",\"isContributorsEnabled\": false,\"profileImageUrl\": \"http://a0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"profileImageUrlHttps\": \"https://si0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"url\": \"http://www.perugiatoday.it/\",\"isProtected\": false,\"followersCount\": 123,\"profileBackgroundColor\": \"C0DEED\",\"profileTextColor\": \"333333\",\"profileLinkColor\": \"0084B4\",\"profileSidebarFillColor\": \"DDEEF6\",\"profileSidebarBorderColor\": \"C0DEED\",\"profileUseBackgroundImage\": true,\"showAllInlineMedia\": false,\"friendsCount\": 93,\"createdAt\": \"Dec 1, 2011 10:49:25 AM\",\"favouritesCount\": 0,\"utcOffset\": -1,\"profileBackgroundImageUrl\": \"http://a0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundImageUrlHttps\": \"https://si0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundTiled\": false,\"lang\": \"it\",\"statusesCount\": 996,\"isGeoEnabled\": false,\"isVerified\": false,\"translator\": false,\"listedCount\": 3,\"isFollowRequestSent\": false}";
 		persistanceFacade.putUser(originalUserJson);
@@ -67,7 +68,7 @@ public class MongodbPersistanceFacadeTEST
 	}
 
 	@Test(enabled = true)
-	public void insertionAndUpdatingTEST() throws UnknownHostException, UserNotProfileEnriched, UserNotPresentException
+	public void insertionAndUpdatingTEST() throws UnknownHostException, UserNotProfileEnrichedException, UserNotPresentException
 	{
 
 		logger.info("==1==");
@@ -228,7 +229,7 @@ public class MongodbPersistanceFacadeTEST
 	}
 
 	@Test
-	public void getStatus() throws UserNotPresentException, UserNotProfileEnriched
+	public void getStatus() throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userToInsertJson = "{\"name\": \"Twitter API\", \"id\": 6253282, \"description\":\"my description\", \"status\": {\"text\": \"this is my last status\"}}";
 		persistanceFacade.putUser(userToInsertJson);

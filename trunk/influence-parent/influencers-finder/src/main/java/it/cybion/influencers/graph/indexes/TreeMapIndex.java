@@ -1,7 +1,7 @@
 package it.cybion.influencers.graph.indexes;
 
 
-import it.cybion.influencers.graph.UserVertexNotPresent;
+import it.cybion.influencers.graph.exceptions.UserVertexNotPresentException;
 
 import java.util.TreeMap;
 
@@ -28,11 +28,11 @@ public class TreeMapIndex implements GraphIndex
 	}
 
 	@Override
-	public Vertex getVertex(Neo4jGraph graph, Long userId) throws UserVertexNotPresent
+	public Vertex getVertex(Neo4jGraph graph, Long userId) throws UserVertexNotPresentException
 	{
 		if (userId2vertexId.containsKey(userId))
 			return graph.getVertex(userId2vertexId.get(userId));
 		else
-			throw new UserVertexNotPresent("Trying to get node for user with id=" + userId + " but node is not in the graph");
+			throw new UserVertexNotPresentException("Trying to get node for user with id=" + userId + " but node is not in the graph");
 	}
 }

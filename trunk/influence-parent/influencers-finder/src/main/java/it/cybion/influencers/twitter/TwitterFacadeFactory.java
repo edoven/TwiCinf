@@ -20,9 +20,11 @@ public class TwitterFacadeFactory
 	private static String mongoDbTwitterDb = "twitter";
 	private static String mongoDbTestDb = "testDb";
 
-	private static String applicationTokenPath = "tokens/consumerToken.txt";
+	private static String applicationTokenPath = "/home/godzy/tokens/consumerToken.txt";
 	private static String[] tokens =
-	{ "tokens/token1.txt", "tokens/token2.txt", "tokens/token3.txt", "tokens/token4.txt", "tokens/token5.txt", "tokens/token6.txt" };
+	{ "/home/godzy/tokens/token1.txt", "/home/godzy/tokens/token2.txt", 
+	  "/home/godzy/tokens/token3.txt", "/home/godzy/tokens/token4.txt", 
+	  "/home/godzy/tokens/token5.txt", "/home/godzy/tokens/token6.txt" };
 
 	public static TwitterFacade getTwitterFacade() throws UnknownHostException
 	{

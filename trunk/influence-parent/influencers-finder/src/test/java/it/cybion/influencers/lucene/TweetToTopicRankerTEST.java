@@ -1,6 +1,8 @@
 package it.cybion.influencers.lucene;
 
 
+import it.cybion.influencers.ranking.topic.lucene.TweetToTopicSimilarityCalculator;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

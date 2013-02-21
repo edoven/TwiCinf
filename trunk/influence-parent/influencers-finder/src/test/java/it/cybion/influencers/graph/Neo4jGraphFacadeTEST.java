@@ -2,8 +2,8 @@ package it.cybion.influencers.graph;
 
 
 import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.UserVertexNotPresent;
-import it.cybion.influencers.graph.indexes.IndexType;
+import it.cybion.influencers.graph.exceptions.UserVertexNotPresentException;
+import it.cybion.influencers.graph.indexes.GraphIndexType;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
@@ -27,12 +27,12 @@ public class Neo4jGraphFacadeTEST
 	private static final Logger logger = Logger.getLogger(Neo4jGraphFacadeTEST.class);
 
 	@Test(enabled = false)
-	public void insertAndRetrieveTEST() throws IOException, UserVertexNotPresent
+	public void insertAndRetrieveTEST() throws IOException, UserVertexNotPresentException
 	{
 		String graphDirPath = "src/test/resources/graphs/addUserTEST";
 		FilesDeleter.delete(new File(graphDirPath));
 
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		Long userId = 1111l;
 		graphFacade.addUser(userId);
@@ -45,12 +45,12 @@ public class Neo4jGraphFacadeTEST
 	}
 
 	@Test(enabled = false)
-	public void addUsersTEST() throws IOException, UserVertexNotPresent
+	public void addUsersTEST() throws IOException, UserVertexNotPresentException
 	{
 		String graphDirPath = "src/test/resources/graphs/addUsersTESTgraph";
 		FilesDeleter.delete(new File(graphDirPath));
 
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		List<Long> usersIds = new ArrayList<Long>();
 		usersIds.add(111l);
@@ -69,12 +69,12 @@ public class Neo4jGraphFacadeTEST
 	}
 
 	@Test(enabled = false)
-	public void addFollowersTEST() throws IOException, UserVertexNotPresent
+	public void addFollowersTEST() throws IOException, UserVertexNotPresentException
 	{
 		String graphDirPath = "src/test/resources/graphs/addFollowersTEST";
 		FilesDeleter.delete(new File(graphDirPath));
 
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		long userId = 111;
 		graphFacade.addUser(userId);
@@ -102,12 +102,12 @@ public class Neo4jGraphFacadeTEST
 	}
 
 	@Test(enabled = false)
-	public void addFriendsTEST() throws IOException, UserVertexNotPresent
+	public void addFriendsTEST() throws IOException, UserVertexNotPresentException
 	{
 		String graphDirPath = "src/test/resources/graphs/addFriendsTEST";
 		FilesDeleter.delete(new File(graphDirPath));
 
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		long userId = 111;
 		graphFacade.addUser(userId);

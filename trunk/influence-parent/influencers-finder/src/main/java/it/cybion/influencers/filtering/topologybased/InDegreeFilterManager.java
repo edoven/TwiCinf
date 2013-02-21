@@ -1,7 +1,7 @@
 package it.cybion.influencers.filtering.topologybased;
 
 
-import it.cybion.influencers.graph.UserVertexNotPresent;
+import it.cybion.influencers.graph.exceptions.UserVertexNotPresentException;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class InDegreeFilterManager extends DegreeFilterManager
 			// this sets an outDegree label in the graph for each node of
 			// followersAndFriends set
 			node2inDegree = graphFacade.getInDegrees(followersAndFriends, seedUsers);
-		} catch (UserVertexNotPresent e)
+		} catch (UserVertexNotPresentException e)
 		{
 			e.printStackTrace();
 			System.exit(0);

@@ -1,6 +1,13 @@
 package it.cybion.influencers.twitter.persistance;
 
 
+import it.cybion.influencers.twitter.persistance.exceptions.TweetNotPresentException;
+import it.cybion.influencers.twitter.persistance.exceptions.UserNotFollowersEnrichedException;
+import it.cybion.influencers.twitter.persistance.exceptions.UserNotFriendsEnrichedException;
+import it.cybion.influencers.twitter.persistance.exceptions.UserNotPresentException;
+import it.cybion.influencers.twitter.persistance.exceptions.UserNotProfileEnrichedException;
+import it.cybion.influencers.twitter.persistance.exceptions.UserWithNoTweetsException;
+
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -203,6 +210,15 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 			throw new UserNotPresentException("User with id " + userId + " is not in the collection.");
 		return user.toString();
 	}
+	
+	@Override
+	public String getUser(String screenName) throws UserNotPresentException
+	{
+		DBObject user = userCollection.findOne(new BasicDBObject("screen_name", screenName));
+		if (user == null)
+			throw new UserNotPresentException("User with screenName " + screenName + " is not in the collection.");
+		return user.toString();
+	}
 
 	private DBObject getUserDbObject(Long userId) throws UserNotPresentException
 	{
@@ -213,24 +229,24 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 	}
 
 	@Override
-	public String getDescription(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	public String getDescription(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("description"))
-			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
+			throw new UserNotProfileEnrichedException("User with id " + userId + " is not profile-eniched.");
 		String description = (String) user.get("description");
 		if (description == null)
 			description = "";
 		return description;
 	}
 
-	public String getStatus(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	public String getStatus(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("description"))
-			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
+			throw new UserNotProfileEnrichedException("User with id " + userId + " is not profile-eniched.");
 		DBObject status = (DBObject) user.get("status");
 		String text = (String) status.get("text");
 		if (text == null)
@@ -239,12 +255,12 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 	}
 
 	@Override
-	public String getDescriptionAndStatus(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	public String getDescriptionAndStatus(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("description"))
-			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
+			throw new UserNotProfileEnrichedException("User with id " + userId + " is not profile-eniched.");
 		String description = (String) user.get("description");
 		DBObject statusObject = (DBObject) user.get("status");
 		String status = "";
@@ -254,34 +270,34 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 	}
 
 	@Override
-	public int getFollowersCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	public int getFollowersCount(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("followers_count"))
-			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
+			throw new UserNotProfileEnrichedException("User with id " + userId + " is not profile-eniched.");
 		int followersCount = (Integer) user.get("followers_count");
 		return followersCount;
 	}
 
 	@Override
-	public int getFriendsCount(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	public int getFriendsCount(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("friends_count"))
-			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
+			throw new UserNotProfileEnrichedException("User with id " + userId + " is not profile-eniched.");
 		int followersCount = (Integer) user.get("friends_count");
 		return followersCount;
 	}
 
 	@Override
-	public String getScreenName(Long userId) throws UserNotPresentException, UserNotProfileEnriched
+	public String getScreenName(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		if (!user.containsField("screen_name"))
-			throw new UserNotProfileEnriched("User with id " + userId + " is not profile-eniched.");
+			throw new UserNotProfileEnrichedException("User with id " + userId + " is not profile-eniched.");
 		String screenName = (String) user.get("screen_name");
 		if (screenName == null)
 			screenName = "";
@@ -316,6 +332,14 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 			return longList;
 		} else
 			throw new UserNotFriendsEnrichedException("User with id " + userId + " is not friends-eniched.");
+	}
+
+	@Override
+	public Long getUserId(String screenName) throws UserNotPresentException
+	{
+		String userJson = getUser(screenName);
+		DBObject user = (DBObject) JSON.parse(userJson);
+		return new Long((Integer)user.get("id"));
 	}
 
 }

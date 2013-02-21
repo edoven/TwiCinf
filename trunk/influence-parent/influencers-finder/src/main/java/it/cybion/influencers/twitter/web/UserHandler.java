@@ -1,6 +1,9 @@
 package it.cybion.influencers.twitter.web;
 
 
+import it.cybion.influencers.twitter.web.exceptions.LimitReachedForCurrentRequestException;
+import it.cybion.influencers.twitter.web.exceptions.MethodInputNotCorrectException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -166,6 +169,18 @@ public class UserHandler
 		List<String> result = new ArrayList<String>();
 		for (Status status : statuses)
 			result.add(DataObjectFactory.getRawJSON(status));
+		return result;
+	}
+
+	public String getUserJson(String screenName) throws LimitReachedForCurrentRequestException, TwitterException
+	{
+		String requestName = "/users/show/:id";
+		int limit = requestType2limit.get(requestName);
+		logger.debug("limit for getUserJson=" + limit);
+		if (limit <= 0)
+			throw new LimitReachedForCurrentRequestException(requestType2limit);
+		String result = DataObjectFactory.getRawJSON(twitter.showUser(screenName));
+		requestType2limit.put(requestName, (limit - 1));
 		return result;
 	}
 }

@@ -21,8 +21,8 @@
     </properties>
 
     <modules>
-        <module>influence-model</module>
 		<module>influencers-finder</module>
+		<module>spread-maximization</module>
     </modules>
 
     <dependencyManagement>

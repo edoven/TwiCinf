@@ -7,7 +7,7 @@ import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictiona
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.indexes.IndexType;
+import it.cybion.influencers.graph.indexes.GraphIndexType;
 import it.cybion.influencers.twitter.TwitterFacade;
 import it.cybion.influencers.twitter.TwitterFacadeFactory;
 import it.cybion.influencers.utils.FilesDeleter;
@@ -59,8 +59,11 @@ public class ConfigurationFileParser
 		List<FilterManager> iteratingFilters = getIteratingFilters(properties);
 		//System.out.println(iteratingFilters);
 
-		//public InfluencersDiscoverer(int iterations, List<Long> users, GraphFacade graphFacade, TwitterFacade twitterFacade, List<FilterManager> toIterateFilters)
-		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer(iterations, seedUsers, graphFacade, twitterFacade, iteratingFilters);
+		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer().setItarations(iterations)
+																				 .setUsersIds(seedUsers)
+																				 .setGraphFacade(graphFacade)
+																				 .setToIterateFilters(iteratingFilters)
+																				 .setTwitterFacade(twitterFacade);
 		return influencersDiscoverer;
 	}
 
@@ -73,7 +76,7 @@ public class ConfigurationFileParser
 	{
 		String graphDirPath = (String) properties.get("graph_dir_path");
 		FilesDeleter.delete(new File(graphDirPath));
-		GraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath,IndexType.TREEMAP);
+		GraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath,GraphIndexType.TREEMAP);
 		return graphFacade;
 	}
 	

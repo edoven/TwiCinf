@@ -8,7 +8,7 @@ import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager
 import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.indexes.IndexType;
+import it.cybion.influencers.graph.indexes.GraphIndexType;
 import it.cybion.influencers.twitter.TwitterFacade;
 import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
@@ -67,7 +67,7 @@ public class Food46
 		String graphDirPath = "graphs/food46";
 		FilesDeleter.delete(new File(graphDirPath));
 		GraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath,
-				IndexType.TREEMAP);
+				GraphIndexType.TREEMAP);
 		return graphFacade;
 	}
 

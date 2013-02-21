@@ -1,11 +1,11 @@
 package it.cybion.influencers.graph;
 
 
-import it.cybion.influencers.graph.InDegreeNotSetException;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.OutDegreeNotSetException;
-import it.cybion.influencers.graph.UserVertexNotPresent;
-import it.cybion.influencers.graph.indexes.IndexType;
+import it.cybion.influencers.graph.exceptions.InDegreeNotSetException;
+import it.cybion.influencers.graph.exceptions.OutDegreeNotSetException;
+import it.cybion.influencers.graph.exceptions.UserVertexNotPresentException;
+import it.cybion.influencers.graph.indexes.GraphIndexType;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,12 +25,12 @@ public class Neo4jGraphFacadeDegreeCalculationTEST
 	private static final Logger logger = Logger.getLogger(Neo4jGraphFacadeDegreeCalculationTEST.class);
 
 	@Test(enabled = true)
-	public void calculateInDegreeTEST() throws IOException, UserVertexNotPresent, InDegreeNotSetException
+	public void calculateInDegreeTEST() throws IOException, UserVertexNotPresentException, InDegreeNotSetException
 	{
 		String graphDirPath = "src/test/resources/graphs/calculateInDegreeTEST";
 		delete(new File(graphDirPath));
 
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		long userId = 111;
 		graphFacade.addUser(userId);
@@ -54,12 +54,12 @@ public class Neo4jGraphFacadeDegreeCalculationTEST
 	}
 
 	@Test(enabled = true)
-	public void calculateOutDegreeTEST() throws IOException, UserVertexNotPresent, OutDegreeNotSetException
+	public void calculateOutDegreeTEST() throws IOException, UserVertexNotPresentException, OutDegreeNotSetException
 	{
 		String graphDirPath = "src/test/resources/graphs/calculateOutDegreeTEST";
 		delete(new File(graphDirPath));
 
-		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, IndexType.TREEMAP);
+		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		long userId = 111;
 		graphFacade.addUser(userId);

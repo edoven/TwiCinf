@@ -12,6 +12,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import twitter4j.TwitterException;
+
 
 
 public class InfluencersDiscoverer
@@ -27,26 +29,81 @@ public class InfluencersDiscoverer
 	private List<FilterManager> finalizationFilters;
 	private Set<Long> resultsFromIterations = new HashSet<Long>();
 
-	public InfluencersDiscoverer(int iterations, List<Long> users, GraphFacade graphFacade, TwitterFacade twitterFacade, List<FilterManager> toIterateFilters, List<FilterManager> finalizationFilters)
+//	public InfluencersDiscoverer(int iterations, List<Long> users, GraphFacade graphFacade, TwitterFacade twitterFacade, List<FilterManager> toIterateFilters, List<FilterManager> finalizationFilters)
+//	{
+//		this.iterations = iterations;
+//		this.users = users;
+//		this.graphFacade = graphFacade;
+//		this.twitterFacade = twitterFacade;
+//		this.toIterateFilters = toIterateFilters;
+//		this.finalizationFilters = finalizationFilters;
+//	}
+//
+////	public InfluencersDiscoverer(int iterations, List<Long> users, GraphFacade graphFacade, TwitterFacade twitterFacade, List<FilterManager> toIterateFilters)
+////	{
+////		this.iterations = iterations;
+////		this.users = users;
+////		this.graphFacade = graphFacade;
+////		this.twitterFacade = twitterFacade;
+////		this.toIterateFilters = toIterateFilters;
+////		this.finalizationFilters = null;
+////	}
+//	
+//	public InfluencersDiscoverer(List<?> users, int iterations , GraphFacade graphFacade, TwitterFacade twitterFacade, List<FilterManager> toIterateFilters)
+//	{
+//		
+//		this.iterations = iterations;	
+//		this.graphFacade = graphFacade;
+//		this.twitterFacade = twitterFacade;
+//		this.toIterateFilters = toIterateFilters;
+//		this.finalizationFilters = null;
+
+	
+	public InfluencersDiscoverer() 
+	{
+		this.toIterateFilters = null;
+		this.twitterFacade = null;
+	}
+	
+	public InfluencersDiscoverer setItarations(int iterations)
 	{
 		this.iterations = iterations;
-		this.users = users;
-		this.graphFacade = graphFacade;
-		this.twitterFacade = twitterFacade;
-		this.toIterateFilters = toIterateFilters;
-		this.finalizationFilters = finalizationFilters;
+		return this;
 	}
-
-	public InfluencersDiscoverer(int iterations, List<Long> users, GraphFacade graphFacade, TwitterFacade twitterFacade, List<FilterManager> toIterateFilters)
+	public InfluencersDiscoverer setGraphFacade(GraphFacade graphFacade)
 	{
-		this.iterations = iterations;
-		this.users = users;
 		this.graphFacade = graphFacade;
+		return this;
+	}	
+	public InfluencersDiscoverer setTwitterFacade(TwitterFacade twitterFacade)
+	{
 		this.twitterFacade = twitterFacade;
-		this.toIterateFilters = toIterateFilters;
-		this.finalizationFilters = null;
+		return this;
 	}
+	public InfluencersDiscoverer setToIterateFilters(List<FilterManager> toIterateFilters)
+	{
+		this.toIterateFilters = toIterateFilters;
+		return this;
+	}
+	public InfluencersDiscoverer setUsersIds(List<Long> usersIds)
+	{
+		this.users = usersIds;
+		return this;
+	}
+	public InfluencersDiscoverer setUsersScreenNames(List<String> screenNames)
+	{
+		if (twitterFacade==null)
+		{
+			logger.info("Error! You can't call setUsersScreenName if twitterFacade is not set!");
+			System.exit(0);
+		}
+		this.users = twitterFacade.getUserIds(screenNames);
+		return this;
+	}
+	
+	
 
+	
 	public List<Long> getInfluencers()
 	{
 
@@ -75,14 +132,17 @@ public class InfluencersDiscoverer
 			}
 			resultsFromIterations.addAll(users);
 		}
+		
+		logger.info("");
+		logger.info("");
+		logger.info("results of iteration filters = " + resultsFromIterations);
+		logger.info("results of iteration filters size = " + resultsFromIterations.size());
+		logger.info("");
+		logger.info("");
+			
 
 		if (finalizationFilters != null)
-		{
-			logger.info("");
-			logger.info("results before finalization filters = " + resultsFromIterations);
-			logger.info("results before finalization filters size = " + resultsFromIterations.size());
-			logger.info("");
-			logger.info("");
+		{			
 			logger.info("#### FINALIZING FILTERS #####");
 			logger.info("");
 			for (int filterIndex = 0; filterIndex < finalizationFilters.size(); filterIndex++)
@@ -102,9 +162,8 @@ public class InfluencersDiscoverer
 				users = filterManager.filter();
 				logger.info("results from filtering = " + users);
 				logger.info("number of results from filtering = " + users.size());
-			}
-		}
-
+			}		
+		}		
 		return users;
 	}
 

@@ -1,7 +1,9 @@
 package it.cybion.influencers.twitter.web;
 
 
-import it.cybion.influencers.twitter.persistance.UserWithNoTweetsException;
+import it.cybion.influencers.twitter.persistance.exceptions.UserWithNoTweetsException;
+import it.cybion.influencers.twitter.web.exceptions.LimitReachedForCurrentRequestException;
+import it.cybion.influencers.twitter.web.exceptions.MethodInputNotCorrectException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,12 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 
 	private enum RequestName
 	{
-		GET_UP_TO_100_USERS, GET_FRIENDS_IDS_WITH_PAGINATION, GET_FOLLOWERS_IDS_WITH_PAGINATION, GET_USER_JSON, GET_LAST_200_TWEETS
+		GET_UP_TO_100_USERS, 
+		GET_FRIENDS_IDS_WITH_PAGINATION, 
+		GET_FOLLOWERS_IDS_WITH_PAGINATION, 
+		GET_USER_JSON_FROM_SCREENNAME, 
+		GET_USER_JSON_FROM_ID, 
+		GET_LAST_200_TWEETS
 	}
 
 	private List<UserHandler> userHandlers = new ArrayList<UserHandler>();
@@ -95,10 +102,16 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 					IDs result = userHandler.getFollowersWithPagination(userId, cursor);
 					return result;
 				}
-				case GET_USER_JSON:
+				case GET_USER_JSON_FROM_ID:
 				{
 					long userId = (Long) requestParameters.get(0);
 					String result = userHandler.getUserJson(userId);
+					return result;
+				}
+				case GET_USER_JSON_FROM_SCREENNAME:
+				{
+					String screenName = (String) requestParameters.get(0);
+					String result = userHandler.getUserJson(screenName);
 					return result;
 				}
 				case GET_LAST_200_TWEETS:
@@ -137,7 +150,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 	@Override
 	public String getUserJson(long userId) throws TwitterException
 	{
-		RequestName requestName = RequestName.GET_USER_JSON;
+		RequestName requestName = RequestName.GET_USER_JSON_FROM_ID;
 		List<Object> requestParameters = new ArrayList<Object>();
 		requestParameters.add(0, userId);
 		return (String) executeRequest(requestName, requestParameters);
@@ -261,6 +274,15 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		if (tweets.size() == 0)
 			throw new UserWithNoTweetsException();
 		return tweets;
+	}
+
+	@Override
+	public String getUserJson(String screenName) throws TwitterException
+	{
+		RequestName requestName = RequestName.GET_USER_JSON_FROM_SCREENNAME;
+		List<Object> requestParameters = new ArrayList<Object>();
+		requestParameters.add(0, screenName);
+		return (String) executeRequest(requestName, requestParameters);
 	}
 
 }

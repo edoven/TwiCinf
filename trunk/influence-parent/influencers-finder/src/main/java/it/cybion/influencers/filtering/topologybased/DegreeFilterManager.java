@@ -3,7 +3,7 @@ package it.cybion.influencers.filtering.topologybased;
 
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.graph.GraphFacade;
-import it.cybion.influencers.graph.UserVertexNotPresent;
+import it.cybion.influencers.graph.exceptions.UserVertexNotPresentException;
 import it.cybion.influencers.twitter.TwitterFacade;
 
 import java.util.ArrayList;
@@ -166,38 +166,40 @@ public abstract class DegreeFilterManager implements FilterManager
 
 		for (int i = 0; i < seedUsers.size(); i++)
 		{
-			long userId = seedUsers.get(i);
-			int followersCount;
-			int friendsCount;
+			long userId = seedUsers.get(i);		
+			List<Long> followersIds;
+			List<Long> friendsIds;
 			try
 			{
-				followersCount = twitterFacade.getFollowersCount(userId);
-				friendsCount = twitterFacade.getFriendsCount(userId);
-			} catch (TwitterException e1)
+				if (twitterFacade.getFollowersCount(userId) < 800000)
+					followersIds = twitterFacade.getFollowers(userId);
+				else
+				{
+					followersIds = new ArrayList<Long>();
+					logger.info("User with more than 800000 followers. Followers kipped.");
+				}
+					
+				if (twitterFacade.getFriendsCount(userId) < 800000)
+					friendsIds = twitterFacade.getFriends(userId);
+				else 
+				{
+					friendsIds = new ArrayList<Long>();
+					logger.info("User with more than 800000 friends. Friends kipped.");
+				}
+				User user = new User(userId, followersIds, friendsIds);
+				enrichedSeedUsers.add(user);
+					
+			} catch (TwitterException e)
 			{
-				logger.info("Problem with user with id=" + userId + ". Skipped.");
-				continue;
+				logger.info("Problem with user with id " + userId + ". User skipped.");
+			}	
+							
+			
+			if (i % tenPercent == 0)
+			{
+				logger.info("getFollowersAndFriendsEnrichedUsers completed for " + percentCompleted + "%");
+				percentCompleted = percentCompleted + 10;
 			}
-			if (followersCount < 800000 && friendsCount < 800000)
-			{
-				try
-				{
-					List<Long> followersIds = twitterFacade.getFollowers(userId);
-					List<Long> friendsIds = twitterFacade.getFriends(userId);
-					User user = new User(userId, followersIds, friendsIds);
-					enrichedSeedUsers.add(user);
-				} catch (TwitterException e)
-				{
-					logger.info("Problem with user with id " + userId + ". User skipped.");
-				}
-
-				if (i % tenPercent == 0)
-				{
-					logger.info("getFollowersAndFriendsEnrichedUsers completed for " + percentCompleted + "%");
-					percentCompleted = percentCompleted + 10;
-				}
-			} else
-				logger.info("User with more than 800000 followers or friends. Skipped.");
 		}
 		logger.info("getFollowersAndFriendsEnrichedUsers completed for 100%");
 		Collections.sort(enrichedSeedUsers);
@@ -210,13 +212,16 @@ public abstract class DegreeFilterManager implements FilterManager
 		for (int i = 0; i < enrichedSeedUsers.size(); i++)
 		{
 			User user = enrichedSeedUsers.get(i);
-			logger.info("createGraph user " + i + "/" + seedUsers.size() + " flwrs=" + user.getFollowers().size() + " frnds=" + user.getFriends().size() + " (freeMem= " + Runtime.getRuntime().freeMemory() / (1024 * 1024) + " MB - " + "vertices="
-					+ graphFacade.getVerticesCount() + ")");
+			logger.info("createGraph user " + i + "/" + seedUsers.size() +
+						" flwrs=" + user.getFollowers().size() +
+						" frnds=" + user.getFriends().size() +
+						" (freeMem= " + Runtime.getRuntime().freeMemory() / (1024 * 1024) + " MB - " +
+						"vertices="	+ graphFacade.getVerticesCount() + ")");
 			try
 			{
 				graphFacade.addFollowers(user.getId(), user.getFollowers());
 				graphFacade.addFriends(user.getId(), user.getFriends());
-			} catch (UserVertexNotPresent e)
+			} catch (UserVertexNotPresentException e)
 			{
 				logger.info("Error! User should be in the graph but vertex is not present.");
 				System.exit(0);

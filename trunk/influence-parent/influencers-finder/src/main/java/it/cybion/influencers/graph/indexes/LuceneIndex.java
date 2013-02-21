@@ -3,7 +3,7 @@ package it.cybion.influencers.graph.indexes;
 
 import java.util.Iterator;
 
-import it.cybion.influencers.graph.UserVertexNotPresent;
+import it.cybion.influencers.graph.exceptions.UserVertexNotPresentException;
 
 import com.tinkerpop.blueprints.Index;
 import com.tinkerpop.blueprints.Vertex;
@@ -28,12 +28,12 @@ public class LuceneIndex implements GraphIndex
 	}
 
 	@Override
-	public Vertex getVertex(Neo4jGraph graph, Long userId) throws UserVertexNotPresent
+	public Vertex getVertex(Neo4jGraph graph, Long userId) throws UserVertexNotPresentException
 	{
 		Iterator<Vertex> iterator = index.get("userId", userId).iterator();
 		if (iterator.hasNext())
 			return iterator.next();
 		else
-			throw new UserVertexNotPresent("Trying to get node for user with id=" + userId + " but node is not in the graph");
+			throw new UserVertexNotPresentException("Trying to get node for user with id=" + userId + " but node is not in the graph");
 	}
 }

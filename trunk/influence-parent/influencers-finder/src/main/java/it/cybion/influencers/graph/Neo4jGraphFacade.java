@@ -1,8 +1,9 @@
 package it.cybion.influencers.graph;
 
 
+import it.cybion.influencers.graph.exceptions.UserVertexNotPresentException;
 import it.cybion.influencers.graph.indexes.GraphIndex;
-import it.cybion.influencers.graph.indexes.IndexType;
+import it.cybion.influencers.graph.indexes.GraphIndexType;
 import it.cybion.influencers.graph.indexes.LuceneIndex;
 import it.cybion.influencers.graph.indexes.TreeMapIndex;
 import it.cybion.influencers.utils.FilesDeleter;
@@ -32,11 +33,11 @@ public class Neo4jGraphFacade implements GraphFacade
 	private int vericesCount = 0;
 	private int edgeCount = 0;
 	private GraphIndex vertexIndex;
-	private IndexType indexType;
+	private GraphIndexType indexType;
 
 	private final int OPERATIONS_PER_TRANSACTION = 20000;
 
-	public Neo4jGraphFacade(String dirPath, IndexType indexType)
+	public Neo4jGraphFacade(String dirPath, GraphIndexType indexType)
 	{
 		this.dirPath = dirPath;
 		graph = new Neo4jGraph(dirPath);
@@ -77,7 +78,7 @@ public class Neo4jGraphFacade implements GraphFacade
 		try
 		{
 			return getUserVertex(userId);
-		} catch (UserVertexNotPresent e)
+		} catch (UserVertexNotPresentException e)
 		{
 			Vertex vertex = graph.addVertex(null);
 			vertex.setProperty("userId", userId);
@@ -105,18 +106,18 @@ public class Neo4jGraphFacade implements GraphFacade
 	}
 
 	@Override
-	public void addFollowers(Long userId, List<Long> followersIds) throws UserVertexNotPresent
+	public void addFollowers(Long userId, List<Long> followersIds) throws UserVertexNotPresentException
 	{
 		Vertex userVertex = getUserVertex(userId);
 		if (userVertex == null)
-			throw new UserVertexNotPresent("Trying to add followers for user with id " + userId + " but user vertex is not in the graph.");
+			throw new UserVertexNotPresentException("Trying to add followers for user with id " + userId + " but user vertex is not in the graph.");
 		for (Long followerId : followersIds)
 		{
 			Vertex followerVertex;
 			try
 			{
 				followerVertex = getUserVertex(followerId);
-			} catch (UserVertexNotPresent e)
+			} catch (UserVertexNotPresentException e)
 			{
 				followerVertex = addUser(followerId);
 			}
@@ -125,18 +126,18 @@ public class Neo4jGraphFacade implements GraphFacade
 	}
 
 	@Override
-	public void addFriends(Long userId, List<Long> friendsIds) throws UserVertexNotPresent
+	public void addFriends(Long userId, List<Long> friendsIds) throws UserVertexNotPresentException
 	{
 		Vertex userVertex = getUserVertex(userId);
 		if (userVertex == null)
-			throw new UserVertexNotPresent("Trying to add followers for user with id " + userId + " but user vertex is not in the graph.");
+			throw new UserVertexNotPresentException("Trying to add followers for user with id " + userId + " but user vertex is not in the graph.");
 		for (Long friendId : friendsIds)
 		{
 			Vertex friendVertex;
 			try
 			{
 				friendVertex = getUserVertex(friendId);
-			} catch (UserVertexNotPresent e)
+			} catch (UserVertexNotPresentException e)
 			{
 				friendVertex = addUser(friendId);
 			}
@@ -144,7 +145,7 @@ public class Neo4jGraphFacade implements GraphFacade
 		}
 	}
 
-	public Vertex getUserVertex(Long userId) throws UserVertexNotPresent
+	public Vertex getUserVertex(Long userId) throws UserVertexNotPresentException
 	{
 		return vertexIndex.getVertex(graph, userId);
 	}
@@ -183,7 +184,7 @@ public class Neo4jGraphFacade implements GraphFacade
 	// }
 
 	@Override
-	public Map<Long, Integer> getInDegrees(List<Long> usersToBeCalculated, List<Long> sourceUsers) throws UserVertexNotPresent
+	public Map<Long, Integer> getInDegrees(List<Long> usersToBeCalculated, List<Long> sourceUsers) throws UserVertexNotPresentException
 	{
 		logger.info("### calculateInDegree ###");
 		Map<Long, Integer> user2inDegree = new HashMap<Long, Integer>();
@@ -201,7 +202,7 @@ public class Neo4jGraphFacade implements GraphFacade
 			Vertex userVertex = getUserVertex(userId);
 			if (userVertex == null)
 			{
-				throw new UserVertexNotPresent("Trying to get user with id " + userId + " but user vertex is not in the graph.");
+				throw new UserVertexNotPresentException("Trying to get user with id " + userId + " but user vertex is not in the graph.");
 			}
 			Iterator<Vertex> iterator = userVertex.getVertices(Direction.IN, "follows").iterator();
 			while (iterator.hasNext())
@@ -216,7 +217,7 @@ public class Neo4jGraphFacade implements GraphFacade
 	}
 
 	@Override
-	public Map<Long, Integer> getOutDegrees(List<Long> usersToBeCalculated, List<Long> destinationUsers) throws UserVertexNotPresent
+	public Map<Long, Integer> getOutDegrees(List<Long> usersToBeCalculated, List<Long> destinationUsers) throws UserVertexNotPresentException
 	{
 		logger.info("### calculateOutDegree ###");
 		Map<Long, Integer> user2outDegree = new HashMap<Long, Integer>();
@@ -234,7 +235,7 @@ public class Neo4jGraphFacade implements GraphFacade
 			Vertex userVertex = getUserVertex(userId);
 			if (userVertex == null)
 			{
-				throw new UserVertexNotPresent("Trying to get user with id " + userId + " but user vertex is not in the graph.");
+				throw new UserVertexNotPresentException("Trying to get user with id " + userId + " but user vertex is not in the graph.");
 			}
 			Iterator<Vertex> iterator = userVertex.getVertices(Direction.OUT, "follows").iterator();
 			while (iterator.hasNext())

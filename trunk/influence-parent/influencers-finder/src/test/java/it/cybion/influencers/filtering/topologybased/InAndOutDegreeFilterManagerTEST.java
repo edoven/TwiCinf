@@ -4,14 +4,14 @@ package it.cybion.influencers.filtering.topologybased;
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.indexes.IndexType;
+import it.cybion.influencers.graph.indexes.GraphIndexType;
 import it.cybion.influencers.twitter.TwitterFacade;
+import it.cybion.influencers.twitter.TwitterFacadeFactory;
 import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.twitter.persistance.PersistanceFacade;
 import it.cybion.influencers.twitter.web.Token;
 import it.cybion.influencers.twitter.web.Twitter4jWebFacade;
 import it.cybion.influencers.utils.FilesDeleter;
-import it.cybion.influencers.utils.TokenBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,21 +34,7 @@ public class InAndOutDegreeFilterManagerTEST
 
 	public static void init() throws IOException
 	{
-		String graphPath = "src/test/resources/graphs/test1";
-		FilesDeleter.delete(new File(graphPath));
-
-		graphFacade = new Neo4jGraphFacade(graphPath, IndexType.TREEMAP);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb");
-		Token consumerToken = TokenBuilder.getTokenFromFile("/home/godzy/tokens/consumerToken.txt");
-		List<Token> userTokens = new ArrayList<Token>();
-		userTokens.add(TokenBuilder.getTokenFromFile("/home/godzy/tokens/token1.txt"));
-		userTokens.add(TokenBuilder.getTokenFromFile("/home/godzy/tokens/token2.txt"));
-		userTokens.add(TokenBuilder.getTokenFromFile("/home/godzy/tokens/token3.txt"));
-		userTokens.add(TokenBuilder.getTokenFromFile("/home/godzy/tokens/token4.txt"));
-		userTokens.add(TokenBuilder.getTokenFromFile("/home/godzy/tokens/token5.txt"));
-		userTokens.add(TokenBuilder.getTokenFromFile("/home/godzy/tokens/token6.txt"));
-		Twitter4jWebFacade webFacade = new Twitter4jWebFacade(consumerToken, userTokens);
-		twitterFacade = new TwitterFacade(webFacade, persistanceFacade);
+		twitterFacade = TwitterFacadeFactory.getTwitterFacadeForTests();
 	}
 
 	public static void main(String args[]) throws IOException, TwitterException

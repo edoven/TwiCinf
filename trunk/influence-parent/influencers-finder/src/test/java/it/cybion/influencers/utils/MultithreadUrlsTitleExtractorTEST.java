@@ -1,6 +1,8 @@
 package it.cybion.influencers.utils;
 
 
+import it.cybion.influencers.utils.text_extractor.MultithreadUrlsTitleExtractor;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
