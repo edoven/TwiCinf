@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -43,45 +44,56 @@ public class InAndOutDegreeFilterManager extends DegreeFilterManager
 	public List<Long> filter()
 	{
 		super.solveDependencies();
+		try
+		{
+			node2inDegree = graphFacade.getInDegrees(followersAndFriends, seedUsers);
+		}
+		catch (UserVertexNotPresentException e)
+		{
+			//unexpected error
+			e.printStackTrace();
+			System.exit(0);
+		}
 		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(node2inDegree, inDegreeAbsoluteThreshold);
+		node2inDegree = null;
 		List<Long> inDegreeFiltered = inDegreeFilter.filter();
+		inDegreeFilter = null;
 		logger.info("inDegreeFiltered.size()=" + inDegreeFiltered.size());
+		
+		try
+		{
+			node2outDegree = graphFacade.getOutDegrees(followersAndFriends, seedUsers);
+		}
+		catch (UserVertexNotPresentException e)
+		{
+			//unexpected error
+			e.printStackTrace();
+			System.exit(0);
+		}
 		NodeDegreeFilter outDegreeFilter = new NodeDegreeFilter(node2outDegree, outDegreeAbsoluteThreshold);
+		node2outDegree = null;
 		List<Long> outDegreeFiltered = outDegreeFilter.filter();
+		outDegreeFilter = null;	
 		logger.info("outDegreeFiltered.size()=" + outDegreeFiltered.size());
+		
 		List<Long> inAndOutDegreeFiltered = putListsInAnd(inDegreeFiltered, outDegreeFiltered);
 		logger.info("inAndOutDegreeFiltered.size()=" + inAndOutDegreeFiltered.size());
 		return inAndOutDegreeFiltered;
 	}
 
-	protected void calculateNodeDegrees()
-	{
-		try
-		{
-			// this sets an inDegree label in the graph for each node of
-			// followersAndFriends set
-			node2inDegree = graphFacade.getInDegrees(followersAndFriends, seedUsers);
-			// this sets an outDegree label in the graph for each node of
-			// followersAndFriends set
-			node2outDegree = graphFacade.getOutDegrees(followersAndFriends, seedUsers);
-		} catch (UserVertexNotPresentException e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
-	}
 
 	private List<Long> putListsInAnd(List<Long> listA, List<Long> listB)
 	{
-		List<Long> andList = new ArrayList<Long>();
+		Set<Long> andSet = new HashSet<Long>();
+				
 		for (Long elementA : listA)
 			if (listB.contains(elementA))
-				andList.add(elementA);
+				andSet.add(elementA);
 		for (Long elementB : listB)
-			if (listA.contains(elementB) && !andList.contains(elementB))
-				andList.add(elementB);
-		andList = new ArrayList<Long>(new HashSet<Long>(andList));
-		return andList;
+			if (listA.contains(elementB))
+				andSet.add(elementB);
+		
+		return new ArrayList<Long>(andSet);
 	}
 
 	@Override
@@ -98,6 +110,12 @@ public class InAndOutDegreeFilterManager extends DegreeFilterManager
 		}
 		return "InAndOutDegreeFilterManager" + " (inDegreePercentageThreshold=" + inDegreePercentageThreshold * 100 + "%" + " - outDegreePercentageThreshold=" + outDegreePercentageThreshold * 100 + "%" + " - inDegreeAbsoluteThreshold="
 				+ inDegreeAbsThreshold + " - outDegreeAbsoluteThreshold=" + outDegreeAbsThreshold + " - inputSize=" + inputSize + ")";
+	}
+
+	@Override
+	protected void calculateNodeDegrees()
+	{
+		//due to optimization problems nodeDegrees are calculate inside filter() method
 	}
 
 }

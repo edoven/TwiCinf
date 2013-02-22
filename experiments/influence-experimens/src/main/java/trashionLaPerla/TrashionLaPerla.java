@@ -3,11 +3,8 @@ package trashionLaPerla;
 
 import it.cybion.influencers.InfluencersDiscoverer;
 import it.cybion.influencers.filtering.FilterManager;
-import it.cybion.influencers.filtering.aggregation.OrFilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
-import it.cybion.influencers.filtering.language.LanguageDetectionFilterManager;
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
-import it.cybion.influencers.filtering.topologybased.InDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.indexes.GraphIndexType;
@@ -133,11 +130,11 @@ public class TrashionLaPerla
 	{
 		List<FilterManager> filters = new ArrayList<FilterManager>();
 		InAndOutDegreeFilterManager inAndOutDegree = new InAndOutDegreeFilterManager(0.05F, 0.1F);
-		InDegreeFilterManager inDegree = new InDegreeFilterManager(0.15F);
-		List<FilterManager> orFilters = new ArrayList<FilterManager>();
-		orFilters.add(inDegree);
-		orFilters.add(inAndOutDegree);
-		OrFilterManager orDegree = new OrFilterManager(orFilters);
+//		InDegreeFilterManager inDegree = new InDegreeFilterManager(0.15F);
+//		List<FilterManager> orFilters = new ArrayList<FilterManager>();
+//		orFilters.add(inDegree);
+//		orFilters.add(inAndOutDegree);
+//		OrFilterManager orDegree = new OrFilterManager(orFilters);
 		List<String> dictionary = new ArrayList<String>();
 		dictionary.add("moda");
 		dictionary.add("fashion");
@@ -158,18 +155,10 @@ public class TrashionLaPerla
 
 		DescriptionAndStatusDictionaryFilterManager descriptionFilter = 
 				new DescriptionAndStatusDictionaryFilterManager(dictionary);
-		filters.add(0, orDegree);
+		filters.add(0, inAndOutDegree);
 		filters.add(1, descriptionFilter);
 		return filters;
 	}
 
-	private static List<FilterManager> getFinalizingFilters()
-	{
-		List<FilterManager> filters = new ArrayList<FilterManager>();
-		LanguageDetectionFilterManager languageFilter = new LanguageDetectionFilterManager(
-				"/home/godzy/Dropbox/universita/tesi/lib/langdetect-09-13-2011/profiles.sm");
-		filters.add(0, languageFilter);
-		return filters;
-	}
 
 }
