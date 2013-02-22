@@ -1,4 +1,4 @@
-package it.cybion.info.simulated_annealing;
+package it.cybion.info.simulatedannealing;
 
 import java.util.Random;
 

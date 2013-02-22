@@ -34,27 +34,16 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 
 	private DBCollection userCollection;
 	private DBCollection tweetsCollection;
-
+	
 	public MongodbPersistanceFacade(String host, String database) throws UnknownHostException
 	{
 		MongoClient mongoClient = new MongoClient(host);
 		DB db = mongoClient.getDB(database);
 		this.userCollection = db.getCollection("users");
-		this.userCollection.createIndex(new BasicDBObject("id", 1)); // if the
-																		// index
-																		// already
-																		// exist
-																		// this
-																		// does
-																		// nothing
+		//if the index already exists this does nothing
+		this.userCollection.createIndex(new BasicDBObject("id", 1));
 		this.tweetsCollection = db.getCollection("tweets");
-		this.tweetsCollection.createIndex(new BasicDBObject("id", 1)); // if the
-																		// index
-																		// already
-																		// exist
-																		// this
-																		// does
-																		// nothing
+		this.tweetsCollection.createIndex(new BasicDBObject("id", 1));
 	}
 
 	@Override
@@ -70,7 +59,17 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		long tweetId = -1;
 		try
 		{
-			tweetId = (Long) tweetToInsert.get("id");
+			Object id = tweetToInsert.get("id");
+			if (id instanceof Integer)
+				tweetId = new Long((Integer) id);
+			else
+				if (id instanceof Long)
+					tweetId = (Long) id;
+				else
+				{
+					logger.info("problem with twitter id "+id);
+					System.exit(0);
+				}
 		} catch (ClassCastException e)
 		{
 			logger.info("ERROR: problem extracting id from " + tweetToInsertJson);
