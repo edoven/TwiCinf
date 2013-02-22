@@ -12,8 +12,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import twitter4j.TwitterException;
-
 
 
 public class InfluencersDiscoverer
@@ -29,35 +27,16 @@ public class InfluencersDiscoverer
 	private List<FilterManager> finalizationFilters;
 	private Set<Long> resultsFromIterations = new HashSet<Long>();
 
-//	public InfluencersDiscoverer(int iterations, List<Long> users, GraphFacade graphFacade, TwitterFacade twitterFacade, List<FilterManager> toIterateFilters, List<FilterManager> finalizationFilters)
-//	{
-//		this.iterations = iterations;
-//		this.users = users;
-//		this.graphFacade = graphFacade;
-//		this.twitterFacade = twitterFacade;
-//		this.toIterateFilters = toIterateFilters;
-//		this.finalizationFilters = finalizationFilters;
-//	}
-//
-////	public InfluencersDiscoverer(int iterations, List<Long> users, GraphFacade graphFacade, TwitterFacade twitterFacade, List<FilterManager> toIterateFilters)
-////	{
-////		this.iterations = iterations;
-////		this.users = users;
-////		this.graphFacade = graphFacade;
-////		this.twitterFacade = twitterFacade;
-////		this.toIterateFilters = toIterateFilters;
-////		this.finalizationFilters = null;
-////	}
-//	
-//	public InfluencersDiscoverer(List<?> users, int iterations , GraphFacade graphFacade, TwitterFacade twitterFacade, List<FilterManager> toIterateFilters)
-//	{
-//		
-//		this.iterations = iterations;	
-//		this.graphFacade = graphFacade;
-//		this.twitterFacade = twitterFacade;
-//		this.toIterateFilters = toIterateFilters;
-//		this.finalizationFilters = null;
 
+	/*
+	 * The costructor is empty and parameters are passed by builder pattern:
+	 * 
+	 * new InfluencersDiscoverer().setItarations(iterations)
+	 * 							  .setGraphFacade(graphFacade)
+								  .setToIterateFilters(iteratingFilters)
+								  .setTwitterFacade(twitterFacade)
+								  .setUsersScreenNames(screenNames);
+	 */
 	
 	public InfluencersDiscoverer() 
 	{
@@ -98,6 +77,12 @@ public class InfluencersDiscoverer
 			System.exit(0);
 		}
 		this.users = twitterFacade.getUserIds(screenNames);
+		return this;
+	}
+	
+	public InfluencersDiscoverer setFinalizationFilters(List<FilterManager> finalizationFilters)
+	{
+		this.finalizationFilters = finalizationFilters;
 		return this;
 	}
 	

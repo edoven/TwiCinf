@@ -23,11 +23,15 @@ public class LanguageDetectionFilter implements Filter
 
 	private Map<Long, List<String>> user2tweets;
 	private String profilesDir;
+	private String language; //it, en, fs, es,...
+	
+	private int TWEETS_THRESHOLD = 5;
 
-	public LanguageDetectionFilter(Map<Long, List<String>> user2tweets, String profilesDir)
+	public LanguageDetectionFilter(Map<Long, List<String>> user2tweets, String profilesDir, String language)
 	{
 		this.user2tweets = user2tweets;
 		this.profilesDir = profilesDir;
+		this.language = language;
 	}
 
 	@Override
@@ -73,7 +77,7 @@ public class LanguageDetectionFilter implements Filter
 				else
 					languages2TweetsCount.put(language, (languages2TweetsCount.get(language) + 1));
 			}
-			if (languages2TweetsCount.containsKey("it") && languages2TweetsCount.get("it") > 5)
+			if (languages2TweetsCount.containsKey(language) && languages2TweetsCount.get(language) > TWEETS_THRESHOLD)
 				goodUsers.add(userId);
 		}
 		return goodUsers;

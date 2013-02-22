@@ -4,6 +4,7 @@ package it.cybion.influencers;
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.filtering.aggregation.OrFilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
+import it.cybion.influencers.filtering.language.LanguageDetectionFilterManager;
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
@@ -24,6 +25,41 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 
 
+/*
+ * EXAMPLE FILE:
+ * 
+ * 
+ * iterations=2
+ * seed_users_ids=4324,46643,4556234,3554634,435341
+ * graph_dir_path=/home/user/temp/graphs
+ * 
+ * 
+ * iterating_filters_count=3
+ * 
+ * iterating_filter_0_name=InAndOutDegreeFilterManager
+ * iterating_filter_0_inDegreePercentageThreshold=0.01
+ * iterating_filter_0_outDegreePercentageThreshold=0.05
+ * 
+ * iterating_filter_1_name=DescriptionAndStatusDictionaryFilterManager
+ * iterating_filter_1_dictionary=word1,word2,word3
+ * 
+ * iterating_filter_2_name=OrFilterManager
+ * iterating_filter_2.0_name=InAndOutDegreeFilterManager
+ * iterating_filter_2_filters_count=2
+ * iterating_filter_2.0_inDegreePercentageThreshold=0.01
+ * iterating_filter_2.0_outDegreePercentageThreshold=0.05
+ * iterating_filter_2.1_name=DescriptionAndStatusDictionaryFilterManager
+ * iterating_filter_2.1_dictionary=word1,word2,word3
+ * 
+ * 
+ * finalizing_filters_count=1
+ * 
+ * finalizing_filter_0_name=LanguageDetectionFilterManager
+ * finalizing_filter_0_language=it
+ * finalizing_filter_0_languageProfilesDir=/opt/langDetect/profiles
+ * 
+ */
+
 
 public class ConfigurationFileParser
 {
@@ -34,36 +70,33 @@ public class ConfigurationFileParser
 	{
 		InAndOutDegreeFilterManager,
 		DescriptionAndStatusDictionaryFilterManager,
-		OrFilterManager
+		OrFilterManager,
+		LanguageDetectionFilterManager
 	}
 
-	public static void main(String[] args) throws IOException
-	{
-				
-	}
-	
 	public static InfluencersDiscoverer getInfluencersDiscovererFromConfiguration(String configFilePath) throws IOException
 	{
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(configFilePath));
 		
-		int iterations = getIterations(properties);
-		
-		TwitterFacade twitterFacade = getTwitterFacade();
-		
+		int iterations = getIterations(properties);		
+		TwitterFacade twitterFacade = getTwitterFacade();	
 		GraphFacade graphFacade = getGraphFacade(properties);
-
-		List<Long> seedUsers = getSeedUsers(properties);
-		//System.out.println(usersIds);
-
+		List<Long> seedUsersIds = getSeedUsersIds(properties);
+		System.out.println(seedUsersIds);
 		List<FilterManager> iteratingFilters = getIteratingFilters(properties);
-		//System.out.println(iteratingFilters);
-
+		System.out.println(iteratingFilters);	
+		List<FilterManager> finalizingFilters = getFinalizingFilters(properties);
+		System.out.println(finalizingFilters);
 		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer().setItarations(iterations)
-																				 .setUsersIds(seedUsers)
+																				 .setUsersIds(seedUsersIds)
 																				 .setGraphFacade(graphFacade)
 																				 .setToIterateFilters(iteratingFilters)
 																				 .setTwitterFacade(twitterFacade);
+		if (finalizingFilters.size()>0)
+			influencersDiscoverer.setFinalizationFilters(finalizingFilters);
+																				 
+																				 
 		return influencersDiscoverer;
 	}
 
@@ -85,9 +118,9 @@ public class ConfigurationFileParser
 		return Integer.parseInt( (String) properties.get("iterations") );
 	}
 
-	private static List<Long> getSeedUsers(Properties properties)
+	private static List<Long> getSeedUsersIds(Properties properties)
 	{
-		String usersIdsString = (String) properties.get("seed_users");
+		String usersIdsString = (String) properties.get("seed_users_ids");
 		List<String> usersIdsStringList = Arrays.asList(usersIdsString.split(","));
 		List<Long> usersIds = new ArrayList<Long>();
 		for (String userIdString : usersIdsStringList)
@@ -102,17 +135,29 @@ public class ConfigurationFileParser
 		List<FilterManager> filterManagers = new ArrayList<FilterManager>();
 		int iteratingFiltersCount = Integer.parseInt((String) properties.get("iterating_filters_count"));
 		for (int i = 0; i < iteratingFiltersCount; i++)
-			filterManagers.add(i, getIteratingFilter(properties, i, -1));
+			filterManagers.add(i, getFilter("iterating", properties, i, -1));
 		return filterManagers;
 	}
 
-	private static FilterManager getIteratingFilter(Properties properties, int filterIndex, int aggregatorFilterIndex)
+	
+	private static List<FilterManager> getFinalizingFilters(Properties properties)
+	{
+		List<FilterManager> filterManagers = new ArrayList<FilterManager>();
+		if (!properties.containsKey("finalizing_filters_count"))
+			return filterManagers;
+		int iteratingFiltersCount = Integer.parseInt((String) properties.get("finalizing_filters_count"));
+		for (int i = 0; i < iteratingFiltersCount; i++)
+			filterManagers.add(i, getFilter("finalizing", properties, i, -1));
+		return filterManagers;
+	}
+	
+	private static FilterManager getFilter(String filterType, Properties properties, int filterIndex, int aggregatorFilterIndex)
 	{
 		//the basic first part filter string is iterating_filter_<filterIndex>
-		String filterStringFirstPart = "itrating_filter_" + filterIndex + "_";
+		String filterStringFirstPart = filterType+"_filter_" + filterIndex + "_";
 		//the first part filter of an aggregated filter is iterating_filter_<aggregatorFilterIndex>.<filterIndex>
 		if (aggregatorFilterIndex!=-1)
-			filterStringFirstPart = "itrating_filter_" + aggregatorFilterIndex + "." + filterIndex+ "_";
+			filterStringFirstPart = filterType+"_filter_" + aggregatorFilterIndex + "." + filterIndex+ "_";
 		
 		String filterManagerNameKeyString = filterStringFirstPart + "name";
 		String filterManagerName = (String) properties.get(filterManagerNameKeyString);
@@ -144,9 +189,16 @@ public class ConfigurationFileParser
 				int filtersCount = Integer.parseInt( (String)properties.getProperty(aggregationFiltersCount));
 				List<FilterManager> filterManagers = new ArrayList<FilterManager>();
 				for (int i=0; i<filtersCount; i++)
-					filterManagers.add(getIteratingFilter(properties, i, filterIndex));
+					filterManagers.add(getFilter(filterType, properties, i, filterIndex));
 				FilterManager orFilterManager = new OrFilterManager(filterManagers);
 				return orFilterManager;
+			}
+			case LanguageDetectionFilterManager:
+			{
+				String languageProfilesDir = filterStringFirstPart + "languageProfilesDir";
+				String language = filterStringFirstPart + "language";			
+				FilterManager languageDetectionFilterManager = new LanguageDetectionFilterManager(languageProfilesDir,language);
+				return languageDetectionFilterManager;
 			}
 			default: 
 			{
@@ -155,7 +207,5 @@ public class ConfigurationFileParser
 				return null;
 			}
 		}
-		
-
 	}
 }

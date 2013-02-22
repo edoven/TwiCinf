@@ -23,10 +23,12 @@ public class LanguageDetectionFilterManager implements FilterManager
 	private List<Long> seedUsers;
 	private Map<Long, List<String>> user2tweets = new HashMap<Long, List<String>>();
 	private String languageProfilesDir;
+	private String language;
 
-	public LanguageDetectionFilterManager(String languageProfilesDir)
+	public LanguageDetectionFilterManager(String languageProfilesDir, String language)
 	{
 		this.languageProfilesDir = languageProfilesDir;
+		this.language = language;
 	}
 
 	@Override
@@ -51,7 +53,7 @@ public class LanguageDetectionFilterManager implements FilterManager
 	public List<Long> filter()
 	{
 		solveDependencies();
-		return new LanguageDetectionFilter(user2tweets, languageProfilesDir).filter();
+		return new LanguageDetectionFilter(user2tweets, languageProfilesDir, language).filter();
 		// return null;
 	}
 

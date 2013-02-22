@@ -10,13 +10,14 @@ public class InfluenceDiscovererLauncher
 	
 	public static void main(String[] args) throws IOException
 	{
-		if (args.length<1)
-		{
-			logger.info("ERROR! Usage: java -jar <runnable_jar> <configuration_file>");
-			System.exit(0);
-		}
-			
-		String configurationFile = args[0];
+//		if (args.length<1)
+//		{
+//			logger.info("ERROR! Usage: java -jar <runnable_jar> <configuration_file>");
+//			System.exit(0);
+//		}
+//			
+//		String configurationFile = args[0];
+		String configurationFile = "/home/godzy/Desktop/crawling_settings.properties";
 		InfluencersDiscoverer influencersDiscoverer = ConfigurationFileParser.getInfluencersDiscovererFromConfiguration(configurationFile);
 		influencersDiscoverer.getInfluencers();
 	}
