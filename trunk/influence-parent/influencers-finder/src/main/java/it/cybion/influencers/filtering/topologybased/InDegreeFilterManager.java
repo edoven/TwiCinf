@@ -45,8 +45,6 @@ public class InDegreeFilterManager extends DegreeFilterManager
 	{
 		try
 		{
-			// this sets an outDegree label in the graph for each node of
-			// followersAndFriends set
 			node2inDegree = graphFacade.getInDegrees(followersAndFriends, seedUsers);
 		} catch (UserVertexNotPresentException e)
 		{

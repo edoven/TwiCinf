@@ -16,7 +16,8 @@ import org.apache.log4j.Logger;
 
 public class InfluencersDiscoverer
 {
-
+	
+		
 	private static final Logger logger = Logger.getLogger(InfluencersDiscoverer.class);
 
 	private int iterations;
@@ -28,66 +29,15 @@ public class InfluencersDiscoverer
 	private Set<Long> resultsFromIterations = new HashSet<Long>();
 
 
-	/*
-	 * The costructor is empty and parameters are passed by builder pattern:
-	 * 
-	 * new InfluencersDiscoverer().setItarations(iterations)
-	 * 							  .setGraphFacade(graphFacade)
-								  .setToIterateFilters(iteratingFilters)
-								  .setTwitterFacade(twitterFacade)
-								  .setUsersScreenNames(screenNames);
-	 */
+	public InfluencersDiscoverer() 	{	}	
+	public void setItarations(int iterations){this.iterations = iterations;	}
+	public void setGraphFacade(GraphFacade graphFacade){this.graphFacade = graphFacade;}	
+	public void setTwitterFacade(TwitterFacade twitterFacade){this.twitterFacade = twitterFacade;}
+	public void setToIterateFilters(List<FilterManager> toIterateFilters){this.toIterateFilters = toIterateFilters;}
+	public void setUsersIds(List<Long> usersIds){this.users = usersIds;}
+	public void setUsersScreenNames(List<String> screenNames){this.users = twitterFacade.getUserIds(screenNames);}
+	public void setFinalizationFilters(List<FilterManager> finalizationFilters){this.finalizationFilters = finalizationFilters;}
 	
-	public InfluencersDiscoverer() 
-	{
-		this.toIterateFilters = null;
-		this.twitterFacade = null;
-	}
-	
-	public InfluencersDiscoverer setItarations(int iterations)
-	{
-		this.iterations = iterations;
-		return this;
-	}
-	public InfluencersDiscoverer setGraphFacade(GraphFacade graphFacade)
-	{
-		this.graphFacade = graphFacade;
-		return this;
-	}	
-	public InfluencersDiscoverer setTwitterFacade(TwitterFacade twitterFacade)
-	{
-		this.twitterFacade = twitterFacade;
-		return this;
-	}
-	public InfluencersDiscoverer setToIterateFilters(List<FilterManager> toIterateFilters)
-	{
-		this.toIterateFilters = toIterateFilters;
-		return this;
-	}
-	public InfluencersDiscoverer setUsersIds(List<Long> usersIds)
-	{
-		this.users = usersIds;
-		return this;
-	}
-	public InfluencersDiscoverer setUsersScreenNames(List<String> screenNames)
-	{
-		if (twitterFacade==null)
-		{
-			logger.info("Error! You can't call setUsersScreenName if twitterFacade is not set!");
-			System.exit(0);
-		}
-		this.users = twitterFacade.getUserIds(screenNames);
-		return this;
-	}
-	
-	public InfluencersDiscoverer setFinalizationFilters(List<FilterManager> finalizationFilters)
-	{
-		this.finalizationFilters = finalizationFilters;
-		return this;
-	}
-	
-	
-
 	
 	public List<Long> getInfluencers()
 	{
@@ -96,6 +46,7 @@ public class InfluencersDiscoverer
 
 		for (int iterationIndex = 0; iterationIndex < iterations; iterationIndex++)
 		{
+			logger.info("");
 			logger.info("");
 			logger.info("");
 			logger.info("#### ITERATION " + (iterationIndex + 1) + " #####");
@@ -148,8 +99,12 @@ public class InfluencersDiscoverer
 				logger.info("results from filtering = " + users);
 				logger.info("number of results from filtering = " + users.size());
 			}		
-		}		
-		return users;
+			
+		}	
+		else
+			users = new ArrayList<Long>(resultsFromIterations);
+		
+		return users;		
 	}
 
 	private void printInfo()

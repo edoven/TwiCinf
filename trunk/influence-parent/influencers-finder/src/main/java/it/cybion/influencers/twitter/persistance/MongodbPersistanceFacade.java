@@ -182,13 +182,9 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		DBCursor cursor = tweetsCollection.find(new BasicDBObject("user.id", userId));
 		List<String> tweets = new ArrayList<String>();
 		while (cursor.hasNext() && tweets.size() < 200)
-		{
-			DBObject tweet = cursor.next();
-			tweets.add(tweet.toString());
-		}
+			tweets.add(cursor.next().toString());
 		if (tweets.size() == 0)
 			throw new UserWithNoTweetsException();
-		// logger.info("getUpTo200Tweets  - tweets="+tweets);
 		return tweets;
 	}
 

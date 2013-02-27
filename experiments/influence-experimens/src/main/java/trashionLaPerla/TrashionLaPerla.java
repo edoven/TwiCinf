@@ -2,9 +2,12 @@ package trashionLaPerla;
 
 
 import it.cybion.influencers.InfluencersDiscoverer;
+import it.cybion.influencers.InfluencersDiscovererBuilder;
 import it.cybion.influencers.filtering.FilterManager;
+import it.cybion.influencers.filtering.aggregation.OrFilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
+import it.cybion.influencers.filtering.topologybased.InDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.indexes.GraphIndexType;
@@ -46,11 +49,15 @@ public class TrashionLaPerla
 		List<FilterManager> iteratingFilters = getIteratingFilters();
 		List<String> screenNames = getUsers();
 
-		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer().setItarations(iterations)
-																				 .setGraphFacade(graphFacade)
-																				 .setToIterateFilters(iteratingFilters)
-																				 .setTwitterFacade(twitterFacade)
-																				 .setUsersScreenNames(screenNames);
+		InfluencersDiscoverer influencersDiscoverer = 
+				new InfluencersDiscovererBuilder()
+					.buildAnInfluenceDiscoverer()
+						.iteratingFor(iterations)
+						.startingFromScreenNames(screenNames)
+						.usingGraphFacade(graphFacade)
+						.usingTwitterFacade(twitterFacade)
+						.iteratingWith(iteratingFilters)
+						.build();
 		List<Long> influencers = influencersDiscoverer.getInfluencers();
 		logger.info("Possible influencers = " + influencers);
 		logger.info("Possible influencers count = " + influencers.size());
@@ -130,11 +137,11 @@ public class TrashionLaPerla
 	{
 		List<FilterManager> filters = new ArrayList<FilterManager>();
 		InAndOutDegreeFilterManager inAndOutDegree = new InAndOutDegreeFilterManager(0.05F, 0.1F);
-//		InDegreeFilterManager inDegree = new InDegreeFilterManager(0.15F);
-//		List<FilterManager> orFilters = new ArrayList<FilterManager>();
-//		orFilters.add(inDegree);
-//		orFilters.add(inAndOutDegree);
-//		OrFilterManager orDegree = new OrFilterManager(orFilters);
+		InDegreeFilterManager inDegree = new InDegreeFilterManager(0.15F);
+		List<FilterManager> orFilters = new ArrayList<FilterManager>();
+		orFilters.add(inDegree);
+		orFilters.add(inAndOutDegree);
+		OrFilterManager orDegree = new OrFilterManager(orFilters);
 		List<String> dictionary = new ArrayList<String>();
 		dictionary.add("moda");
 		dictionary.add("fashion");
@@ -155,7 +162,7 @@ public class TrashionLaPerla
 
 		DescriptionAndStatusDictionaryFilterManager descriptionFilter = 
 				new DescriptionAndStatusDictionaryFilterManager(dictionary);
-		filters.add(0, inAndOutDegree);
+		filters.add(0, orDegree);
 		filters.add(1, descriptionFilter);
 		return filters;
 	}

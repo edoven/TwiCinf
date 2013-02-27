@@ -88,11 +88,16 @@ public class ConfigurationFileParser
 		System.out.println(iteratingFilters);	
 		List<FilterManager> finalizingFilters = getFinalizingFilters(properties);
 		System.out.println(finalizingFilters);
-		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer().setItarations(iterations)
-																				 .setUsersIds(seedUsersIds)
-																				 .setGraphFacade(graphFacade)
-																				 .setToIterateFilters(iteratingFilters)
-																				 .setTwitterFacade(twitterFacade);
+		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscovererBuilder()
+														.giveMeAnInfluenceDiscoverer()
+														.iteratingFor(iterations)
+														.startingFromUserIds(seedUsersIds)
+														.usingGraphFacade(graphFacade)
+														.usingTwitterFacade(twitterFacade)
+														.iteratingWith(iteratingFilters)
+														.finalizingWith(finalizingFilters)
+														.build();
+														
 		if (finalizingFilters.size()>0)
 			influencersDiscoverer.setFinalizationFilters(finalizingFilters);
 																				 

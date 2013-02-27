@@ -53,25 +53,25 @@ public class Neo4jGraphFacade implements GraphFacade
 		}
 	}
 
-	@Override
-	public void eraseGraphAndRecreate()
-	{
-		graph.dropIndex("vertexIndex");
-		graph.shutdown();
-		FilesDeleter.delete(new File(dirPath));
-		graph = new Neo4jGraph(dirPath);
-		switch (indexType)
-		{
-		case LUCENE_INDEX:
-			vertexIndex = new LuceneIndex(graph.createIndex("vertexIndex", Vertex.class));
-			break;
-		case TREEMAP:
-			vertexIndex = new TreeMapIndex();
-			break;
-		}
-		vericesCount = 0;
-		edgeCount = 0;
-	}
+//	@Override
+//	public void eraseGraphAndRecreate()
+//	{
+//		graph.dropIndex("vertexIndex");
+//		graph.shutdown();
+//		FilesDeleter.delete(new File(dirPath));
+//		graph = new Neo4jGraph(dirPath);
+//		switch (indexType)
+//		{
+//		case LUCENE_INDEX:
+//			vertexIndex = new LuceneIndex(graph.createIndex("vertexIndex", Vertex.class));
+//			break;
+//		case TREEMAP:
+//			vertexIndex = new TreeMapIndex();
+//			break;
+//		}
+//		vericesCount = 0;
+//		edgeCount = 0;
+//	}
 
 	public Vertex addUser(Long userId)
 	{
@@ -111,6 +111,8 @@ public class Neo4jGraphFacade implements GraphFacade
 		Vertex userVertex = getUserVertex(userId);
 		if (userVertex == null)
 			throw new UserVertexNotPresentException("Trying to add followers for user with id " + userId + " but user vertex is not in the graph.");
+		if (userVertex.getProperty("isFollowersEnriched")!=null)
+			return;	
 		for (Long followerId : followersIds)
 		{
 			Vertex followerVertex;
@@ -123,6 +125,7 @@ public class Neo4jGraphFacade implements GraphFacade
 			}
 			addEdge(followerVertex, userVertex);
 		}
+		userVertex.setProperty("isFollowersEnriched", true);
 	}
 
 	@Override
@@ -131,6 +134,8 @@ public class Neo4jGraphFacade implements GraphFacade
 		Vertex userVertex = getUserVertex(userId);
 		if (userVertex == null)
 			throw new UserVertexNotPresentException("Trying to add followers for user with id " + userId + " but user vertex is not in the graph.");
+		if (userVertex.getProperty("isFriendsEnriched")!=null)
+			return;	
 		for (Long friendId : friendsIds)
 		{
 			Vertex friendVertex;
@@ -143,6 +148,7 @@ public class Neo4jGraphFacade implements GraphFacade
 			}
 			addEdge(userVertex, friendVertex);
 		}
+		userVertex.setProperty("isFriendsEnriched", true);
 	}
 
 	public Vertex getUserVertex(Long userId) throws UserVertexNotPresentException

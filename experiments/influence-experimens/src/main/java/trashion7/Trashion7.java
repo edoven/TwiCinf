@@ -2,6 +2,7 @@ package trashion7;
 
 
 import it.cybion.influencers.InfluencersDiscoverer;
+import it.cybion.influencers.InfluencersDiscovererBuilder;
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.filtering.aggregation.OrFilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
@@ -48,14 +49,18 @@ public class Trashion7
 		TwitterFacade twitterFacade = TwitterFacadeFactory.getTwitterFacade();
 		List<Long> usersIds = getUsersIds();
 		List<FilterManager> iteratingFilters = getIteratingFilters();
-//		List<FilterManager> finalizingFilters = getFinalizingFilters();
+		List<FilterManager> finalizingFilters = getFinalizingFilters();
 
-//		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer(
-//				iterations, usersIds, graphFacade, twitterFacade,
-//				iteratingFilters, finalizingFilters);
-		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer(
-				iterations, usersIds, graphFacade, twitterFacade,
-				iteratingFilters);
+		InfluencersDiscoverer influencersDiscoverer = 
+				new InfluencersDiscovererBuilder()
+					.buildAnInfluenceDiscoverer()
+						.iteratingFor(iterations)
+						.startingFromUserIds(usersIds)
+						.usingGraphFacade(graphFacade)
+						.usingTwitterFacade(twitterFacade)
+						.iteratingWith(iteratingFilters)
+						.finalizingWith(finalizingFilters)
+						.build();
 		List<Long> influencers = influencersDiscoverer.getInfluencers();
 		logger.info("Possible influencers = " + influencers);
 		logger.info("Possible influencers count = " + influencers.size());
@@ -167,8 +172,10 @@ public class Trashion7
 	private static List<FilterManager> getFinalizingFilters()
 	{
 		List<FilterManager> filters = new ArrayList<FilterManager>();
-		LanguageDetectionFilterManager languageFilter = new LanguageDetectionFilterManager(
-				"/home/godzy/Dropbox/universita/tesi/lib/langdetect-09-13-2011/profiles.sm");
+		LanguageDetectionFilterManager languageFilter = 
+				new LanguageDetectionFilterManager(
+				"/home/godzy/Dropbox/universita/tesi/lib/langdetect-09-13-2011/profiles.sm",
+				"it");
 		filters.add(0, languageFilter);
 		return filters;
 	}

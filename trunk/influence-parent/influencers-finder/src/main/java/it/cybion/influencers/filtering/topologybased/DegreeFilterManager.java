@@ -15,7 +15,13 @@ import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
 
-
+/*
+ * 
+ * BEWARE: in setSeedUsers(List<Long> seedUsers) if
+ * 		   seedUsers are more than 200, only 200 users are taken.
+ *         This is done to speed-up the process and for the "sampling theory".
+ * 
+ */
 
 public abstract class DegreeFilterManager implements FilterManager
 {
@@ -75,70 +81,40 @@ public abstract class DegreeFilterManager implements FilterManager
 	public void setGraphFacade(GraphFacade graphFacade)
 	{
 		this.graphFacade = graphFacade;
-		this.graphFacade.eraseGraphAndRecreate();
 	}
 
 	@Override
 	public void setSeedUsers(List<Long> seedUsers)
 	{
 		this.seedUsers = seedUsers;
-		/*
-		 * 
-		 * 
-		 *
-		 * 
-		 * 
-		 *
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
-
 		if (seedUsers.size() > 200)
-		{
-			List<Long> alreadyEnriched = seedUsers;
-			alreadyEnriched.removeAll(twitterFacade.getNotFollowersAndFriendsEnriched(seedUsers));
-			if (alreadyEnriched.size() > 200)
-			{
-				Collections.shuffle(alreadyEnriched);
-				this.seedUsers = alreadyEnriched.subList(0, 200);
-			} else
-			{
-				List<Long> newSeedUsers = alreadyEnriched;
-				Collections.shuffle(seedUsers);
-				for (int i = 0; i < seedUsers.size() && newSeedUsers.size() < 200; i++)
-				{
-					long userId = seedUsers.get(i);
-					if (!newSeedUsers.contains(userId))
-						newSeedUsers.add(userId);
-				}
-			}
-		}
-
-		// if (seedUsers.size()>100) {
-		// Collections.shuffle(seedUsers);
-		// if (seedUsers.size()>200)
-		// this.seedUsers = seedUsers.subList(0, 200);
-		// else
-		// this.seedUsers = seedUsers.subList(0,
-		// Math.round(seedUsers.size()/6));
-		// }
-		/*
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
-
+			this.seedUsers = get200SeedUsers(seedUsers);
 		// once seedUsers are set, absolute thresholds can be calculated
 		setAbsoluteThresholds();
+	}
+
+	private List<Long> get200SeedUsers(List<Long> seedUsers)
+	{
+		List<Long> seedUsersNotAlreadyEnriched = twitterFacade.getNotFollowersAndFriendsEnriched(seedUsers);
+		List<Long> seedUsersAlreadyEnriched = seedUsers;
+		seedUsersAlreadyEnriched.removeAll(seedUsersNotAlreadyEnriched);
+		if (seedUsersAlreadyEnriched.size() > 200)
+		{
+			Collections.shuffle(seedUsersAlreadyEnriched);
+			return seedUsersAlreadyEnriched.subList(0, 200);
+		} 
+		else
+		{
+			List<Long> SeedUsers200 = seedUsersAlreadyEnriched;
+			Collections.shuffle(seedUsers);
+			for (int i = 0; i < seedUsers.size() && SeedUsers200.size() < 200; i++)
+			{
+				long userId = seedUsers.get(i);
+				if (!SeedUsers200.contains(userId))
+					SeedUsers200.add(userId);
+			}
+			return SeedUsers200;
+		}
 	}
 
 	protected void solveDependencies()
@@ -207,7 +183,7 @@ public abstract class DegreeFilterManager implements FilterManager
 
 	private void createGraph()
 	{
-		graphFacade.eraseGraphAndRecreate();
+//		graphFacade.eraseGraphAndRecreate();
 		graphFacade.addUsers(seedUsers);
 		for (int i = 0; i < enrichedSeedUsers.size(); i++)
 		{

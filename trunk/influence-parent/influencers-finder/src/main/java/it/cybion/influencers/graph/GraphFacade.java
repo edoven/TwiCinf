@@ -54,5 +54,5 @@ public interface GraphFacade
 	// wrtUsers) throws UserVertexNotPresent;
 	int getVerticesCount();
 
-	void eraseGraphAndRecreate();
+//	void eraseGraphAndRecreate();
 }
