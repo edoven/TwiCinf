@@ -89,7 +89,7 @@ public class ConfigurationFileParser
 		List<FilterManager> finalizingFilters = getFinalizingFilters(properties);
 		System.out.println(finalizingFilters);
 		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscovererBuilder()
-														.giveMeAnInfluenceDiscoverer()
+														.buildAnInfluenceDiscoverer()
 														.iteratingFor(iterations)
 														.startingFromUserIds(seedUsersIds)
 														.usingGraphFacade(graphFacade)
