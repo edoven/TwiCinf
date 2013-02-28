@@ -30,34 +30,30 @@ import org.apache.log4j.Logger;
  * CONFIGURATION EXAMPLE FILE:
  * 
  * 
- * iterations=2
- * seed_users_ids=4324,46643,4556234,3554634,435341
- * graph_dir_path=/home/user/temp/graphs
- * 
- * 
- * iterating_filters_count=3
- * 
- * iterating_filter_0_name=InAndOutDegreeFilterManager
- * iterating_filter_0_inDegreePercentageThreshold=0.01
- * iterating_filter_0_outDegreePercentageThreshold=0.05
- * 
- * iterating_filter_1_name=DescriptionAndStatusDictionaryFilterManager
- * iterating_filter_1_dictionary=word1,word2,word3
- * 
- * iterating_filter_2_name=OrFilterManager
- * iterating_filter_2.0_name=InAndOutDegreeFilterManager
- * iterating_filter_2_filters_count=2
- * iterating_filter_2.0_inDegreePercentageThreshold=0.01
- * iterating_filter_2.0_outDegreePercentageThreshold=0.05
- * iterating_filter_2.1_name=DescriptionAndStatusDictionaryFilterManager
- * iterating_filter_2.1_dictionary=word1,word2,word3
- * 
- * 
- * finalizing_filters_count=1
- * 
- * finalizing_filter_0_name=LanguageDetectionFilterManager
- * finalizing_filter_0_language=it
- * finalizing_filter_0_languageProfilesDir=/opt/langDetect/profiles
+
+iterations=2
+seed_users_screenNames=Fashionista_com,voguemagazine,ELLEmagazine,marieclaire,RachelZoe,TwitterFashion
+graph_dir_path=/home/godzy/Desktop/laPerlaTempGraphs
+
+
+iterating_filters_count=2
+iterating_filter_0_name=OrFilterManager
+iterating_filter_0_filters_count=2
+iterating_filter_0.0_name=InAndOutDegreeFilterManager
+iterating_filter_0.0_inDegreePercentageThreshold=0.05
+iterating_filter_0.0_outDegreePercentageThreshold=0.1
+iterating_filter_0.1_name=InDegreeFilterManager
+iterating_filter_0.1_inDegreePercentageThreshold=0.15
+iterating_filter_1_name=DescriptionAndStatusDictionaryFilterManager
+iterating_filter_1_dictionary=moda,fashion,outfit,street style,cool hunter,scarpe,shoes,accessori,abito,dress,eleganza,elegance,lifestyle,chic,glamour,lingerie
+
+
+finalizing_filters_count=1
+finalizing_filter_0_name=LanguageDetectionFilterManager
+finalizing_filter_0_language=it
+finalizing_filter_0_languageProfilesDir=/opt/langDetect/profiles
+
+
  * 
  */
 

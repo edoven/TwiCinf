@@ -32,8 +32,7 @@ public class OrFilterManager implements FilterManager
 		for (FilterManager filterManager : filterMangers)
 		{
 			filterManager.setGraphFacade(graphFacade);		
-			filterManager.setTwitterFacade(twitterFacade);
-			
+			filterManager.setTwitterFacade(twitterFacade);		
 			filterManager.setSeedUsers(users);
 			List<Long> resultFromFilter = filterManager.filter();
 			filtered.addAll(resultFromFilter);
