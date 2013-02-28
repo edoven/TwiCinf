@@ -2,6 +2,7 @@ package it.cybion.influencers;
 
 
 import it.cybion.influencers.filtering.FilterManager;
+import it.cybion.influencers.filtering.FilterManagerDescription;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
 
@@ -15,79 +16,67 @@ import org.apache.log4j.Logger;
 
 
 public class InfluencersDiscoverer
-{
-	
-		
+{	
 	private static final Logger logger = Logger.getLogger(InfluencersDiscoverer.class);
 
 	private int iterations;
 	private List<Long> users;
 	private GraphFacade graphFacade;
 	private TwitterFacade twitterFacade;
-	private List<FilterManager> toIterateFilters;
-	private List<FilterManager> finalizationFilters;
+	private List<FilterManagerDescription> iteratingFiltersDescriptions;
+	private List<FilterManagerDescription> finalizationFiltersDescriptions;
 	private Set<Long> resultsFromIterations = new HashSet<Long>();
 
 
-	public InfluencersDiscoverer() 	{	}	
+	public InfluencersDiscoverer() {}
+	
 	public void setItarations(int iterations){this.iterations = iterations;	}
 	public void setGraphFacade(GraphFacade graphFacade){this.graphFacade = graphFacade;}	
 	public void setTwitterFacade(TwitterFacade twitterFacade){this.twitterFacade = twitterFacade;}
-	public void setToIterateFilters(List<FilterManager> toIterateFilters){this.toIterateFilters = toIterateFilters;}
+	public void setIteratingFiltersDescriptions(List<FilterManagerDescription> iteratingFiltersDescriptions){this.iteratingFiltersDescriptions = iteratingFiltersDescriptions;}
 	public void setUsersIds(List<Long> usersIds){this.users = usersIds;}
 	public void setUsersScreenNames(List<String> screenNames){this.users = twitterFacade.getUserIds(screenNames);}
-	public void setFinalizationFilters(List<FilterManager> finalizationFilters){this.finalizationFilters = finalizationFilters;}
+	public void setFinalizationFiltersDescriptions(List<FilterManagerDescription> finalizationFiltersDescriptions){this.finalizationFiltersDescriptions = finalizationFiltersDescriptions;}
 	
 	
 	public List<Long> getInfluencers()
 	{
-
-		printInfo();
-
+		printInitInfo();
 		for (int iterationIndex = 0; iterationIndex < iterations; iterationIndex++)
 		{
-			logger.info("");
-			logger.info("");
-			logger.info("");
-			logger.info("#### ITERATION " + (iterationIndex + 1) + " #####");
-			logger.info("");
-			for (int filterIndex = 0; filterIndex < toIterateFilters.size(); filterIndex++)
+			printInfoOnIteration(iterationIndex);
+			for (int filterIndex = 0; filterIndex < iteratingFiltersDescriptions.size(); filterIndex++)
 			{
-				FilterManager filterManager = toIterateFilters.get(filterIndex);
-				logger.info("");
-				logger.info("");
-				logger.info("#### filter " + (filterIndex + 1) + "/" + toIterateFilters.size() + " ####");
-				logger.info("");
+				FilterManagerDescription filterManagerDescription = iteratingFiltersDescriptions.get(filterIndex);
+				FilterManager filterManager = FilterManagerDescriptionInterpreter.getFilterManagerFromDescription(filterManagerDescription);
+				printInfoOnFilter(filterIndex, iteratingFiltersDescriptions.size());		
 				filterManager.setGraphFacade(graphFacade);
 				filterManager.setTwitterFacade(twitterFacade);
 				filterManager.setSeedUsers(users);
 				logger.info(filterManager.toString());
 				users = filterManager.filter();
-				logger.info("results from filtering = " + users);
-				logger.info("number of results from filtering = " + users.size());
+				printInfoOnResultFromFilter(users);				
 			}
 			resultsFromIterations.addAll(users);
-		}
-		
-		logger.info("");
-		logger.info("");
-		logger.info("results of iteration filters = " + resultsFromIterations);
-		logger.info("results of iteration filters size = " + resultsFromIterations.size());
-		logger.info("");
-		logger.info("");
 			
-
-		if (finalizationFilters != null)
-		{			
+			logger.info("### ITERATION "+(iterationIndex+1)+" is finished ###");
+			logger.info("users.size()="+users.size());
+			logger.info("resultsFromIterations.size()="+resultsFromIterations.size());
+		}
+		printInfoAfterIterationsAreFinished(resultsFromIterations);
+		
+		
+		if (finalizationFiltersDescriptions == null)
+			return new ArrayList<Long>(resultsFromIterations);
+		else
+		{				
 			logger.info("#### FINALIZING FILTERS #####");
 			logger.info("");
-			for (int filterIndex = 0; filterIndex < finalizationFilters.size(); filterIndex++)
+			for (int filterIndex = 0; filterIndex < finalizationFiltersDescriptions.size(); filterIndex++)
 			{
-				FilterManager filterManager = finalizationFilters.get(filterIndex);
-				logger.info("");
-				logger.info("");
-				logger.info("#### filter " + (filterIndex + 1) + "/" + toIterateFilters.size() + " ####");
-				logger.info("");
+				FilterManagerDescription filterManagerDescription = finalizationFiltersDescriptions.get(filterIndex);
+				FilterManager filterManager = FilterManagerDescriptionInterpreter.getFilterManagerFromDescription(filterManagerDescription);
+				printInfoOnFilter(filterIndex, finalizationFiltersDescriptions.size());
 				filterManager.setGraphFacade(graphFacade);
 				filterManager.setTwitterFacade(twitterFacade);
 				if (filterIndex == 0)
@@ -96,34 +85,34 @@ public class InfluencersDiscoverer
 					filterManager.setSeedUsers(users);
 				logger.info(filterManager.toString());
 				users = filterManager.filter();
-				logger.info("results from filtering = " + users);
-				logger.info("number of results from filtering = " + users.size());
+				printInfoOnResultFromFilter(users);
 			}		
-			
-		}	
-		else
-			users = new ArrayList<Long>(resultsFromIterations);
-		
-		return users;		
+			return users;		
+		}
 	}
 
-	private void printInfo()
+	
+	
+	
+	private void printInitInfo()
 	{
 		logger.info("############################################");
 		logger.info("Iterations =  " + iterations);
 		logger.info("--Iteration Filters--");
-		for (int filterIndex = 0; filterIndex < toIterateFilters.size(); filterIndex++)
+		for (int filterIndex = 0; filterIndex < iteratingFiltersDescriptions.size(); filterIndex++)
 		{
-			FilterManager filterManager = toIterateFilters.get(filterIndex);
+			FilterManagerDescription filterManagerDescription = iteratingFiltersDescriptions.get(filterIndex);
+			FilterManager filterManager = FilterManagerDescriptionInterpreter.getFilterManagerFromDescription(filterManagerDescription);
 			logger.info(filterIndex + ") " + filterManager.toString());
 		}
 
-		if (finalizationFilters != null)
+		if (finalizationFiltersDescriptions != null)
 		{
 			logger.info("--Finalization Filters--");
-			for (int filterIndex = 0; filterIndex < finalizationFilters.size(); filterIndex++)
+			for (int filterIndex = 0; filterIndex < finalizationFiltersDescriptions.size(); filterIndex++)
 			{
-				FilterManager filterManager = finalizationFilters.get(filterIndex);
+				FilterManagerDescription filterManagerDescription = finalizationFiltersDescriptions.get(filterIndex);
+				FilterManager filterManager = FilterManagerDescriptionInterpreter.getFilterManagerFromDescription(filterManagerDescription);
 				logger.info(filterIndex + ") " + filterManager.toString());
 			}
 		}
@@ -131,4 +120,35 @@ public class InfluencersDiscoverer
 		logger.info("");
 		logger.info("");
 	}
+	private void printInfoOnIteration(int iterationIndex)
+	{
+		logger.info("");
+		logger.info("");
+		logger.info("");
+		logger.info("#### ITERATION " + (iterationIndex + 1) + " #####");
+		logger.info("");	
+	}
+	private void printInfoOnFilter(int filterIndex, int size)
+	{
+		logger.info("");
+		logger.info("");
+		logger.info("#### filter " + (filterIndex + 1) + "/" + size + " ####");
+		logger.info("");
+	}
+	private void printInfoAfterIterationsAreFinished(Set<Long> resultsFromIterations)
+	{
+
+		logger.info("");
+		logger.info("");
+		logger.info("results of iteration filters = " + resultsFromIterations);
+		logger.info("results of iteration filters size = " + resultsFromIterations.size());
+		logger.info("");
+		logger.info("");	
+	}
+	private void printInfoOnResultFromFilter(List<Long> users)
+	{
+		logger.info("results from filtering = " + users);
+		logger.info("number of results from filtering = " + users.size());
+	}
+	
 }

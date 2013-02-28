@@ -10,12 +10,9 @@ import java.util.List;
 
 public interface FilterManager
 {
-
-	public List<Long> filter();
-
 	public void setTwitterFacade(TwitterFacade twitterManager);
-
 	public void setGraphFacade(GraphFacade graphFacade);
-
 	public void setSeedUsers(List<Long> users);
+	
+	public List<Long> filter();
 }

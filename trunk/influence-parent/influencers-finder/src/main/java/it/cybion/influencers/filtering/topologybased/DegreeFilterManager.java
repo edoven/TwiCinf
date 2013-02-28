@@ -86,13 +86,26 @@ public abstract class DegreeFilterManager implements FilterManager
 	@Override
 	public void setSeedUsers(List<Long> seedUsers)
 	{
-		this.seedUsers = seedUsers;
+		this.seedUsers = seedUsers;	
+	}
+
+	protected void solveDependencies()
+	{
+		logger.info("### if seed user are more than 200, let's use 200 random users ###");
 		if (seedUsers.size() > 200)
 			this.seedUsers = get200SeedUsers(seedUsers);
 		// once seedUsers are set, absolute thresholds can be calculated
 		setAbsoluteThresholds();
+		logger.info("### enriching seed users ###");
+		getAndSetFollowersAndFriendsEnrichedUsers();
+		logger.info("### creating graph ###");
+		createGraph();
+		logger.info("### populating followers and friends big list###");
+		populateFollowersAndFriendsList();
+		logger.info("### calculating node degrees ###");
+		calculateNodeDegrees();
 	}
-
+	
 	private List<Long> get200SeedUsers(List<Long> seedUsers)
 	{
 		List<Long> seedUsersNotAlreadyEnriched = twitterFacade.getNotFollowersAndFriendsEnriched(seedUsers);
@@ -115,18 +128,6 @@ public abstract class DegreeFilterManager implements FilterManager
 			}
 			return SeedUsers200;
 		}
-	}
-
-	protected void solveDependencies()
-	{
-		logger.info("### enriching seed users ###");
-		getAndSetFollowersAndFriendsEnrichedUsers();
-		logger.info("### creating graph ###");
-		createGraph();
-		logger.info("### populating followers and friends big list###");
-		populateFollowersAndFriendsList();
-		logger.info("### calculating node degrees ###");
-		calculateNodeDegrees();
 	}
 
 	private void getAndSetFollowersAndFriendsEnrichedUsers()

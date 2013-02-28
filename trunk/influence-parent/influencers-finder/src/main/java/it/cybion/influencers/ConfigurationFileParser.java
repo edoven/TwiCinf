@@ -1,11 +1,7 @@
 package it.cybion.influencers;
 
 
-import it.cybion.influencers.filtering.FilterManager;
-import it.cybion.influencers.filtering.aggregation.OrFilterManager;
-import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
-import it.cybion.influencers.filtering.language.LanguageDetectionFilterManager;
-import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
+import it.cybion.influencers.filtering.FilterManagerDescription;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.indexes.GraphIndexType;
@@ -19,14 +15,19 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
 
 /*
- * EXAMPLE FILE:
+ * This class parses a configuration file and returns an InfluencersDiscoverer
+ * 
+ * 
+ * CONFIGURATION EXAMPLE FILE:
  * 
  * 
  * iterations=2
@@ -71,7 +72,9 @@ public class ConfigurationFileParser
 		InAndOutDegreeFilterManager,
 		DescriptionAndStatusDictionaryFilterManager,
 		OrFilterManager,
-		LanguageDetectionFilterManager
+		LanguageDetectionFilterManager,
+		InDegreeFilterManager,
+		OutDegreeFilterManager
 	}
 
 	public static InfluencersDiscoverer getInfluencersDiscovererFromConfiguration(String configFilePath) throws IOException
@@ -83,23 +86,52 @@ public class ConfigurationFileParser
 		TwitterFacade twitterFacade = getTwitterFacade();	
 		GraphFacade graphFacade = getGraphFacade(properties);
 		List<Long> seedUsersIds = getSeedUsersIds(properties);
-		System.out.println(seedUsersIds);
-		List<FilterManager> iteratingFilters = getIteratingFilters(properties);
-		System.out.println(iteratingFilters);	
-		List<FilterManager> finalizingFilters = getFinalizingFilters(properties);
-		System.out.println(finalizingFilters);
-		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscovererBuilder()
-														.buildAnInfluenceDiscoverer()
-														.iteratingFor(iterations)
-														.startingFromUserIds(seedUsersIds)
-														.usingGraphFacade(graphFacade)
-														.usingTwitterFacade(twitterFacade)
-														.iteratingWith(iteratingFilters)
-														.finalizingWith(finalizingFilters)
-														.build();
+		List<FilterManagerDescription> iteratingFiltersDescriptions = getIteratingFiltersDescriptions(properties);
+		List<FilterManagerDescription> finalizingFiltersDescriptions = getFinalizingFiltersDescriptions(properties);
+		List<String> seedUsersScreenNames = getSeedUsersScreenNames(properties);
+		InfluencersDiscoverer influencersDiscoverer = null;
+		
+		if (seedUsersIds==null && seedUsersScreenNames==null)
+		{
+			logger.info("Error. You can't set both user ids and screen-names. Chose one.");
+			System.exit(0);
+		}
+		else
+		{
+			if (seedUsersIds!=null)
+				influencersDiscoverer = new InfluencersDiscovererBuilder()
+					.buildAnInfluenceDiscoverer()
+						.startingFromUserIds(seedUsersIds)
+						.iteratingFor(iterations)
+						.usingGraphFacade(graphFacade)
+						.usingTwitterFacade(twitterFacade)
+						.iteratingWith(iteratingFiltersDescriptions)
+					.build();
+			else
+			{
+				if (seedUsersScreenNames!=null)
+					influencersDiscoverer = new InfluencersDiscovererBuilder()
+						.buildAnInfluenceDiscoverer()
+							.startingFromScreenNames(seedUsersScreenNames)
+							.iteratingFor(iterations)
+							.usingGraphFacade(graphFacade)
+							.usingTwitterFacade(twitterFacade)
+							.iteratingWith(iteratingFiltersDescriptions)
+						.build();
+				else
+				{
+					logger.info("Error. You must set user ids or screen-names.");
+					System.exit(0);
+				}
+					
+			}
+		}
+		
 														
-		if (finalizingFilters.size()>0)
-			influencersDiscoverer.setFinalizationFilters(finalizingFilters);
+		if (finalizingFiltersDescriptions.size()>0)
+			influencersDiscoverer.setFinalizationFiltersDescriptions(finalizingFiltersDescriptions);
+		else
+			influencersDiscoverer.setFinalizationFiltersDescriptions(null);
 																				 
 																				 
 		return influencersDiscoverer;
@@ -126,6 +158,8 @@ public class ConfigurationFileParser
 	private static List<Long> getSeedUsersIds(Properties properties)
 	{
 		String usersIdsString = (String) properties.get("seed_users_ids");
+		if (usersIdsString==null)
+			return null;
 		List<String> usersIdsStringList = Arrays.asList(usersIdsString.split(","));
 		List<Long> usersIds = new ArrayList<Long>();
 		for (String userIdString : usersIdsStringList)
@@ -134,29 +168,38 @@ public class ConfigurationFileParser
 		}
 		return usersIds;
 	}
-
-	private static List<FilterManager> getIteratingFilters(Properties properties)
+	
+	private static List<String> getSeedUsersScreenNames(Properties properties)
 	{
-		List<FilterManager> filterManagers = new ArrayList<FilterManager>();
+		String usersIdsString = (String) properties.get("seed_users_screenNames");
+		if (usersIdsString==null)
+			return null;
+		List<String> usersScreenNames = Arrays.asList(usersIdsString.split(","));
+		return usersScreenNames;
+	}
+
+	private static List<FilterManagerDescription> getIteratingFiltersDescriptions(Properties properties)
+	{
+		List<FilterManagerDescription> filterManagersDescriptions = new ArrayList<FilterManagerDescription>();
 		int iteratingFiltersCount = Integer.parseInt((String) properties.get("iterating_filters_count"));
 		for (int i = 0; i < iteratingFiltersCount; i++)
-			filterManagers.add(i, getFilter("iterating", properties, i, -1));
-		return filterManagers;
+			filterManagersDescriptions.add(i, getFilterDescription("iterating", properties, i, -1));
+		return filterManagersDescriptions;
 	}
 
 	
-	private static List<FilterManager> getFinalizingFilters(Properties properties)
+	private static List<FilterManagerDescription> getFinalizingFiltersDescriptions(Properties properties)
 	{
-		List<FilterManager> filterManagers = new ArrayList<FilterManager>();
+		List<FilterManagerDescription> filterManagersDescriptions = new ArrayList<FilterManagerDescription>();
 		if (!properties.containsKey("finalizing_filters_count"))
-			return filterManagers;
+			return filterManagersDescriptions;
 		int iteratingFiltersCount = Integer.parseInt((String) properties.get("finalizing_filters_count"));
 		for (int i = 0; i < iteratingFiltersCount; i++)
-			filterManagers.add(i, getFilter("finalizing", properties, i, -1));
-		return filterManagers;
+			filterManagersDescriptions.add(i, getFilterDescription("finalizing", properties, i, -1));
+		return filterManagersDescriptions;
 	}
 	
-	private static FilterManager getFilter(String filterType, Properties properties, int filterIndex, int aggregatorFilterIndex)
+	private static FilterManagerDescription getFilterDescription(String filterType, Properties properties, int filterIndex, int aggregatorFilterIndex)
 	{
 		//the basic first part filter string is iterating_filter_<filterIndex>
 		String filterStringFirstPart = filterType+"_filter_" + filterIndex + "_";
@@ -166,6 +209,7 @@ public class ConfigurationFileParser
 		
 		String filterManagerNameKeyString = filterStringFirstPart + "name";
 		String filterManagerName = (String) properties.get(filterManagerNameKeyString);
+		Map<String,Object> parameterName2ParameterValue = new HashMap<String,Object>();
 
 		switch (filtersManagers.valueOf(filterManagerName))
 		{
@@ -176,35 +220,53 @@ public class ConfigurationFileParser
 				float inDegreePercentageThreshold = Float.parseFloat(inDegreePercentageThresholdString);
 				String outDegreePercentageThresholdKeyString = filterStringFirstPart + "outDegreePercentageThreshold";
 				String outDegreePercentageThresholdString = (String) properties.get(outDegreePercentageThresholdKeyString);
-				float outDegreePercentageThreshold = Float.parseFloat(outDegreePercentageThresholdString);
-				FilterManager inAndOutDegreeFilterManager = new InAndOutDegreeFilterManager(inDegreePercentageThreshold, outDegreePercentageThreshold);
-				return inAndOutDegreeFilterManager;
+				float outDegreePercentageThreshold = Float.parseFloat(outDegreePercentageThresholdString);			
+				parameterName2ParameterValue.put("inDegreePercentageThreshold", inDegreePercentageThreshold);
+				parameterName2ParameterValue.put("outDegreePercentageThreshold", outDegreePercentageThreshold);	
+				return new FilterManagerDescription(filterManagerName, parameterName2ParameterValue);
+			}
+			case InDegreeFilterManager:
+			{
+				String inDegreePercentageThresholdKeyString = filterStringFirstPart + "inDegreePercentageThreshold";
+				String inDegreePercentageThresholdString = (String) properties.get(inDegreePercentageThresholdKeyString);
+				float inDegreePercentageThreshold = Float.parseFloat(inDegreePercentageThresholdString);					
+				parameterName2ParameterValue.put("inDegreePercentageThreshold", inDegreePercentageThreshold);
+				return new FilterManagerDescription(filterManagerName, parameterName2ParameterValue);
+			}
+			case OutDegreeFilterManager:
+			{
+				String outDegreePercentageThresholdKeyString = filterStringFirstPart + "outDegreePercentageThreshold";
+				String outDegreePercentageThresholdString = (String) properties.get(outDegreePercentageThresholdKeyString);
+				float outDegreePercentageThreshold = Float.parseFloat(outDegreePercentageThresholdString);			
+				parameterName2ParameterValue.put("outDegreePercentageThreshold", outDegreePercentageThreshold);	
+				return new FilterManagerDescription(filterManagerName, parameterName2ParameterValue);
 			}
 			case DescriptionAndStatusDictionaryFilterManager:
 			{
 				String dictionaryKeyString = filterStringFirstPart + "dictionary";
 				String dictionaryString = (String) properties.get(dictionaryKeyString);
 				List<String> dictionary = Arrays.asList(dictionaryString.split(","));
-				FilterManager descriptionAndStatusDictionaryFilterManager = new DescriptionAndStatusDictionaryFilterManager(dictionary);
-				return descriptionAndStatusDictionaryFilterManager;
+				parameterName2ParameterValue.put("dictionary", dictionary);
+				return new FilterManagerDescription(filterManagerName, parameterName2ParameterValue);
 			}
 			case OrFilterManager:
 			{
 				String aggregationFiltersCount = filterStringFirstPart + "filters_count";
 				int filtersCount = Integer.parseInt( (String)properties.getProperty(aggregationFiltersCount));
-				List<FilterManager> filterManagers = new ArrayList<FilterManager>();
+				List<FilterManagerDescription> filterManagersDescriptions = new ArrayList<FilterManagerDescription>();
 				for (int i=0; i<filtersCount; i++)
-					filterManagers.add(getFilter(filterType, properties, i, filterIndex));
-				FilterManager orFilterManager = new OrFilterManager(filterManagers);
-				return orFilterManager;
+					filterManagersDescriptions.add(getFilterDescription(filterType, properties, i, filterIndex));
+				parameterName2ParameterValue.put("filterManagersDescriptions", filterManagersDescriptions);
+				return new FilterManagerDescription(filterManagerName, parameterName2ParameterValue);
 			}
 			case LanguageDetectionFilterManager:
 			{
 				String languageProfilesDir = filterStringFirstPart + "languageProfilesDir";
 				String language = filterStringFirstPart + "language";			
-				FilterManager languageDetectionFilterManager = new LanguageDetectionFilterManager(languageProfilesDir,language);
-				return languageDetectionFilterManager;
-			}
+				parameterName2ParameterValue.put("languageProfilesDir", languageProfilesDir);
+				parameterName2ParameterValue.put("language", language);
+				return new FilterManagerDescription(filterManagerName, parameterName2ParameterValue);
+			}		
 			default: 
 			{
 				logger.info("ERROR: Type of filter unknown:" + filterManagerName);

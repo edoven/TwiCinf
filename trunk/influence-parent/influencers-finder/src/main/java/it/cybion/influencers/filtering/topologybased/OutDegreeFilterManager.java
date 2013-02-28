@@ -19,7 +19,7 @@ public class OutDegreeFilterManager extends DegreeFilterManager
 	private int outDegreeAbsoluteThreshold;
 	private Map<Long, Integer> node2outDegree;
 
-	public OutDegreeFilterManager(float outDegreePercentageThreshold)
+	public OutDegreeFilterManager(Float outDegreePercentageThreshold)
 	{
 		this.outDegreePercentageThreshold = outDegreePercentageThreshold;
 	}

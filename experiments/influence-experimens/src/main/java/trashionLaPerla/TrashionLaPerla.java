@@ -8,6 +8,7 @@ import it.cybion.influencers.filtering.aggregation.OrFilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
 import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.filtering.topologybased.InDegreeFilterManager;
+import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.indexes.GraphIndexType;
@@ -34,14 +35,14 @@ public class TrashionLaPerla
 	public static void main(String[] args) throws IOException, TwitterException
 	{
 
-		int iterations = 1;
+		int iterations = 2;
 		if (args.length == 2 && args[0].equals("-i"))
 		{
 			iterations = Integer.parseInt(args[1]);
 		} else
 		{
 			System.out
-					.println("Error. Usage: filename.jar -i iteration_number. Launching with 1 iteration.");
+					.println("Error. Usage: filename.jar -i iteration_number. Launching with "+iterations+" iteration.");
 		}
 
 		GraphFacade graphFacade = getGraphFacade();
@@ -113,8 +114,7 @@ public class TrashionLaPerla
 	{
 		String graphDirPath = "graphs/trashion7";
 		FilesDeleter.delete(new File(graphDirPath));
-		GraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath,
-				GraphIndexType.TREEMAP);
+		GraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath,GraphIndexType.TREEMAP);
 		return graphFacade;
 	}
 
@@ -162,7 +162,9 @@ public class TrashionLaPerla
 
 		DescriptionAndStatusDictionaryFilterManager descriptionFilter = 
 				new DescriptionAndStatusDictionaryFilterManager(dictionary);
-		filters.add(0, orDegree);
+//		filters.add(0, orDegree);
+		OutDegreeFilterManager outDegree = new OutDegreeFilterManager(0.3F);
+		filters.add(0, outDegree);
 		filters.add(1, descriptionFilter);
 		return filters;
 	}

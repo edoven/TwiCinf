@@ -1,6 +1,6 @@
 package it.cybion.influencers;
 
-import it.cybion.influencers.filtering.FilterManager;
+import it.cybion.influencers.filtering.FilterManagerDescription;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
 
@@ -9,20 +9,23 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /*
+ * This class is used to build InfluenceDiscoverer object with fluent-builder patter.
+ * 
+ * 
  * Usage:
  * 
  * InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscovererBuilder()
- * 														.withIterations(interations)
- * 														.usingGraphFacade(graphFacade)
- * 														.usingTwitterFacade(twitterFacade)
- * 														.startingFromScreenNames(screenNames)
- * 														.iteratingWith(iteratingFilters)
+ * 														.withIterations(int)
+ * 														.usingGraphFacade(GraphFacade)
+ * 														.usingTwitterFacade(TwitterFacade)
+ * 														.startingFromScreenNames(List<String>) // or .startingFromUserIds(List<Long>)
+ * 														.iteratingWith(List<FilterManagerDescription>)
+ * 														.iteratingWith(List<FilterManagerDescription>)
  * 														.build();
  * 
  */
 public class InfluencersDiscovererBuilder 
 {
-	
 	private static final Logger logger = Logger.getLogger(InfluencersDiscovererBuilder.class);
 	
 	private InfluencersDiscoverer influencersDiscoverer;
@@ -85,16 +88,16 @@ public class InfluencersDiscovererBuilder
 		return this;
 	}
 	
-	public InfluencersDiscovererBuilder iteratingWith(List<FilterManager> iteratingFilters)
+	public InfluencersDiscovererBuilder iteratingWith(List<FilterManagerDescription> iteratingFiltersDescriptions)
 	{
-		influencersDiscoverer.setToIterateFilters(iteratingFilters);
+		influencersDiscoverer.setIteratingFiltersDescriptions(iteratingFiltersDescriptions);
 		iteratingFiltersSet = true;
 		return this;
 	}
 	
-	public InfluencersDiscovererBuilder finalizingWith(List<FilterManager> finalizingFilters)
+	public InfluencersDiscovererBuilder finalizingWith(List<FilterManagerDescription> finalizingFiltersDescriptions)
 	{
-		influencersDiscoverer.setFinalizationFilters(finalizingFilters);
+		influencersDiscoverer.setFinalizationFiltersDescriptions(finalizingFiltersDescriptions);
 		finalizingFiltersSet = true;
 		return this;
 	}
@@ -133,7 +136,7 @@ public class InfluencersDiscovererBuilder
 			System.exit(0);
 		}
 		if (finalizingFiltersSet==false)
-			influencersDiscoverer.setFinalizationFilters(null);
+			influencersDiscoverer.setFinalizationFiltersDescriptions(null);
 			 
 	}
 }

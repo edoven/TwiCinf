@@ -24,7 +24,7 @@ public class InAndOutDegreeFilterManager extends DegreeFilterManager
 	private Map<Long, Integer> node2inDegree;
 	private Map<Long, Integer> node2outDegree;
 
-	public InAndOutDegreeFilterManager(float inDegreePercentageThreshold, float outDegreePercentageThreshold)
+	public InAndOutDegreeFilterManager(Float inDegreePercentageThreshold, Float outDegreePercentageThreshold)
 	{
 		super();
 		this.inDegreePercentageThreshold = inDegreePercentageThreshold;

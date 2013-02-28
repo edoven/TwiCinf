@@ -11,14 +11,14 @@ import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.twitter.TwitterFacade;
 
 
-
+			 
 public class OrFilterManager implements FilterManager
 {
 
 	private List<FilterManager> filterMangers;
 	private GraphFacade graphFacade;
 	private List<Long> users;
-	private TwitterFacade twitterManager;
+	private TwitterFacade twitterFacade;
 
 	public OrFilterManager(List<FilterManager> filterMangers)
 	{
@@ -31,18 +31,20 @@ public class OrFilterManager implements FilterManager
 		Set<Long> filtered = new HashSet<Long>();
 		for (FilterManager filterManager : filterMangers)
 		{
-			filterManager.setGraphFacade(graphFacade);
+			filterManager.setGraphFacade(graphFacade);		
+			filterManager.setTwitterFacade(twitterFacade);
+			
 			filterManager.setSeedUsers(users);
-			filterManager.setTwitterFacade(twitterManager);
-			filtered.addAll(filterManager.filter());
+			List<Long> resultFromFilter = filterManager.filter();
+			filtered.addAll(resultFromFilter);
 		}
 		return new ArrayList<Long>(filtered);
 	}
 
 	@Override
-	public void setTwitterFacade(TwitterFacade twitterManager)
+	public void setTwitterFacade(TwitterFacade twitterFacade)
 	{
-		this.twitterManager = twitterManager;
+		this.twitterFacade = twitterFacade;
 	}
 
 	@Override

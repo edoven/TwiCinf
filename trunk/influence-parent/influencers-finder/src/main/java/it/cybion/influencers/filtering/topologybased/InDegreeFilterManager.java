@@ -19,7 +19,7 @@ public class InDegreeFilterManager extends DegreeFilterManager
 	private int inDegreeAbsoluteThreshold;
 	private Map<Long, Integer> node2inDegree;
 
-	public InDegreeFilterManager(float inDegreePercentageThreshold)
+	public InDegreeFilterManager(Float inDegreePercentageThreshold)
 	{
 		this.inDegreePercentageThreshold = inDegreePercentageThreshold;
 	}
