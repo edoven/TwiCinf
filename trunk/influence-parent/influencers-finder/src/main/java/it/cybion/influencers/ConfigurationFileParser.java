@@ -6,7 +6,11 @@ import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.indexes.GraphIndexType;
 import it.cybion.influencers.twitter.TwitterFacade;
-import it.cybion.influencers.twitter.TwitterFacadeFactory;
+import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
+import it.cybion.influencers.twitter.persistance.PersistanceFacade;
+import it.cybion.influencers.twitter.web.Token;
+import it.cybion.influencers.twitter.web.Twitter4jWebFacade;
+import it.cybion.influencers.twitter.web.TwitterWebFacade;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
@@ -31,12 +35,51 @@ import org.apache.log4j.Logger;
  * 
  * 
 
-iterations=2
-seed_users_screenNames=Fashionista_com,voguemagazine,ELLEmagazine,marieclaire,RachelZoe,TwitterFashion
+#
+#
+#	MONGODB CONFIG
+#
+#
+mongodb_host=localhost
+mongodb_db=twitter
+
+
+#
+#
+#	TWITTER WEB FACADE CONFIG
+#
+#
+application_token_path=/home/godzy/tokens/consumerToken.properties
+user_token_0_path=/home/godzy/tokens/token0.properties
+user_token_1_path=/home/godzy/tokens/token1.properties
+user_token_2_path=/home/godzy/tokens/token2.properties
+user_token_3_path=/home/godzy/tokens/token3.properties
+user_token_4_path=/home/godzy/tokens/token4.properties
+user_token_5_path=/home/godzy/tokens/token5.properties
+
+#
+#
+#	GRAPHDB CONFIG
+#
+#
 graph_dir_path=/home/godzy/Desktop/laPerlaTempGraphs
 
 
+#
+#
+#	APPLICATION CONFIG
+#
+#
+iterations=2
+seed_users_screenNames=Fashionista_com,voguemagazine,ELLEmagazine,marieclaire,RachelZoe,TwitterFashion
+
+
+
+#
+#	ITERATING FILTERS CONFIG
+#
 iterating_filters_count=2
+
 iterating_filter_0_name=OrFilterManager
 iterating_filter_0_filters_count=2
 iterating_filter_0.0_name=InAndOutDegreeFilterManager
@@ -47,11 +90,16 @@ iterating_filter_0.1_inDegreePercentageThreshold=0.15
 iterating_filter_1_name=DescriptionAndStatusDictionaryFilterManager
 iterating_filter_1_dictionary=moda,fashion,outfit,street style,cool hunter,scarpe,shoes,accessori,abito,dress,eleganza,elegance,lifestyle,chic,glamour,lingerie
 
+#
+#	FINALIZING FILTERS CONFIG
+#
 
-finalizing_filters_count=1
-finalizing_filter_0_name=LanguageDetectionFilterManager
-finalizing_filter_0_language=it
-finalizing_filter_0_languageProfilesDir=/opt/langDetect/profiles
+#finalizing_filters_count=1
+
+#finalizing_filter_0_name=LanguageDetectionFilterManager
+#finalizing_filter_0_language=it
+#finalizing_filter_0_languageProfilesDir=/opt/langDetect/profiles
+
 
 
  * 
@@ -79,7 +127,7 @@ public class ConfigurationFileParser
 		properties.load(new FileInputStream(configFilePath));
 		
 		int iterations = getIterations(properties);		
-		TwitterFacade twitterFacade = getTwitterFacade();	
+		TwitterFacade twitterFacade = getTwitterFacade(properties);	
 		GraphFacade graphFacade = getGraphFacade(properties);
 		List<Long> seedUsersIds = getSeedUsersIds(properties);
 		List<FilterManagerDescription> iteratingFiltersDescriptions = getIteratingFiltersDescriptions(properties);
@@ -133,9 +181,27 @@ public class ConfigurationFileParser
 		return influencersDiscoverer;
 	}
 
-	private static TwitterFacade getTwitterFacade() throws UnknownHostException
+	private static TwitterFacade getTwitterFacade(Properties properties) throws UnknownHostException
 	{
-		return TwitterFacadeFactory.getTwitterFacade();
+		
+		String mongodbHost = properties.getProperty("mongodb_host");
+		String mongodbTwitterDb = properties.getProperty("mongodb_db");
+		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade(mongodbHost, mongodbTwitterDb);
+
+		String applicationTokenPath = properties.getProperty("application_token_path");
+		Token applicationToken = new Token(applicationTokenPath);	
+		List<Token> userTokens = new ArrayList<Token>();	
+		int i=0;
+		String userTokenPath;
+		while ((userTokenPath =  properties.getProperty("user_token_"+i+"_path")) != null)
+		{
+			userTokens.add(new Token(userTokenPath));
+			i++;
+		}
+		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
+			
+		return new TwitterFacade(twitterWebFacade, persistanceFacade);
+		
 	}
 	
 	private static GraphFacade getGraphFacade(Properties properties) throws IOException

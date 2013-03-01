@@ -1,15 +1,24 @@
 package it.cybion.influencers.twitter.web;
 
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
+import org.apache.log4j.Logger;
 
+/*
+ * File format is (property-like):
+ * 
+ * token_string=xxxx
+ * token_secret=yyyy
+ * 
+ */
 
 public class Token
 {
-
+	private static final Logger logger = Logger.getLogger(Token.class);
+	
 	private String tokenString;
 	private String secretString;
 
@@ -19,57 +28,39 @@ public class Token
 		this.secretString = secretString;
 	}
 
-	/*
-	 * file format is one single line: token,secret. = token<COMMA>secret<POINT>
-	 */
+	
 	public Token(String filePath)
 	{
-		Token token = getTokenFromFile(filePath);
+		Token token = buildTokenFromFile(filePath);
 		if (token != null)
 		{
 			this.tokenString = token.getTokenString();
 			this.secretString = token.getSecretString();
 		}
-
 	}
 
-	private Token getTokenFromFile(String filePath)
+	private Token buildTokenFromFile(String filePath)
 	{
-		BufferedReader reader = null;
-		String line = "";
+		Properties properties = new Properties();
 		try
 		{
-			reader = new BufferedReader(new FileReader(filePath));
-			line = reader.readLine();
-			reader.close();
-		} catch (IOException e)
+			properties.load(new FileInputStream(filePath));
+		}
+		catch (IOException e)
 		{
+			logger.info("Error with file "+filePath);
 			e.printStackTrace();
+			System.exit(0);
 		}
-		if (line == "")
-			return null;
-		return getTokenFromFormattedString(line);
-	}
-
-	// line format is "token,secret."
-	private Token getTokenFromFormattedString(String line)
-	{
-		int i = 0;
-		char c;
-		String tokenString = "", secretString = "";
-		while ((c = line.charAt(i)) != ',')
+		String tokenString = properties.getProperty("token_string");
+		String tokenSecret = properties.getProperty("token_secret");
+		if (tokenString==null || tokenSecret==null)
 		{
-			tokenString = tokenString + c;
-			i++;
+			logger.info("Error, token_string or token_secret not present in "+filePath);
+			System.exit(0);
 		}
-		i++;
-		while ((c = line.charAt(i)) != '.')
-		{
-			secretString = secretString + c;
-			i++;
-		}
-		return new Token(tokenString, secretString);
-
+		return new Token(tokenString, tokenSecret);
+		
 	}
 
 	public String getTokenString()
