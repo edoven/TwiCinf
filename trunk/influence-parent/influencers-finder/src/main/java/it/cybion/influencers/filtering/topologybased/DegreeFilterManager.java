@@ -183,12 +183,8 @@ public abstract class DegreeFilterManager implements FilterManager
 				logger.info("Problem with user with id " + userId + ". User skipped.");
 			}	
 							
-			
-			if (i % tenPercent == 0)
-			{
-				logger.info("getFollowersAndFriendsEnrichedUsers completed for " + percentCompleted + "%");
-				percentCompleted = percentCompleted + 10;
-			}
+			logger.info("enriched user " + i + "/" +seedUsers.size());
+				
 		}
 		logger.info("getFollowersAndFriendsEnrichedUsers completed for 100%");
 		Collections.sort(enrichedSeedUsers);

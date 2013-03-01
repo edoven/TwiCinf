@@ -13,18 +13,18 @@ import java.util.List;
 
 
 
-public class TwitterFacadeFactory_notUsed
+public class TwitterFacadeFactory
 {
 
 	private static String mongoDbHost = "localhost";
 	private static String mongoDbTwitterDb = "twitter";
 	private static String mongoDbTestDb = "testDb";
 
-	private static String applicationTokenPath = "/home/godzy/tokens/consumerToken.txt";
+	private static String applicationTokenPath = "/home/godzy/tokens/consumerToken.properties";
 	private static String[] tokens =
-	{ "/home/godzy/tokens/token1.txt", "/home/godzy/tokens/token2.txt", 
-	  "/home/godzy/tokens/token3.txt", "/home/godzy/tokens/token4.txt", 
-	  "/home/godzy/tokens/token5.txt", "/home/godzy/tokens/token6.txt" };
+	{ "/home/godzy/tokens/token0.properties", "/home/godzy/tokens/token1.properties", 
+	  "/home/godzy/tokens/token2.properties", "/home/godzy/tokens/token3.properties", 
+      "/home/godzy/tokens/token4.properties", "/home/godzy/tokens/token5.properties",  };
 
 	public static TwitterFacade getTwitterFacade() throws UnknownHostException
 	{

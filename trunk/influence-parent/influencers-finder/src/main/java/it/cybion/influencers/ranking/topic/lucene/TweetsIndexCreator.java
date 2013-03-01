@@ -2,12 +2,10 @@ package it.cybion.influencers.ranking.topic.lucene;
 
 
 import it.cybion.influencers.twitter.TwitterFacade;
-import it.cybion.influencers.twitter.TwitterFacadeFactory;
 import it.cybion.influencers.utils.text_extractor.TweetsTextExtractor;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,16 +25,16 @@ import twitter4j.TwitterException;
 public class TweetsIndexCreator
 {
 
-	public static List<Directory> createSingleDocumentIndexesForUsers(String indexesRootDirPath, List<Long> usersIds)
-	{
-		List<Directory> indexes = new ArrayList<Directory>();
-		for (Long userId : usersIds)
-		{
-			String indexDir = indexesRootDirPath + "/" + userId;
-			indexes.add(createSingleDocumentIndexForUser(indexDir, userId));
-		}
-		return indexes;
-	}
+//	public static List<Directory> createSingleDocumentIndexesForUsers(TwitterFacade twitterFacade, String indexesRootDirPath, List<Long> usersIds)
+//	{
+//		List<Directory> indexes = new ArrayList<Directory>();
+//		for (Long userId : usersIds)
+//		{
+//			String indexDir = indexesRootDirPath + "/" + userId;
+//			indexes.add(createSingleDocumentIndexForUser(twitterFacade,indexDir, userId));
+//		}
+//		return indexes;
+//	}
 
 	public static List<Directory> createSingleDocumentIndexesForUsers(TwitterFacade twitterFacade, String indexesRootDirPath, List<Long> usersIds)
 	{
@@ -49,29 +47,21 @@ public class TweetsIndexCreator
 		return indexes;
 	}
 
-	public static Directory createSingleDocumentIndexForUser(String indexPath, long userId)
-	{
-		TwitterFacade twitterFacade = null;
-		try
-		{
-			twitterFacade = TwitterFacadeFactory.getTwitterFacade();
-		} catch (UnknownHostException e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
-		List<String> tweetsJsons = null;
-		try
-		{
-			tweetsJsons = twitterFacade.getUpTo200Tweets(userId);
-		} catch (TwitterException e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
-		List<String> tweetsTexts = TweetsTextExtractor.getUrlsExpandedText(tweetsJsons);
-		return createSingleDocumentIndex(indexPath, tweetsTexts);
-	}
+//	public static Directory createSingleDocumentIndexForUser(TwitterFacade twitterFacade, String indexPath, long userId)
+//	{
+//		
+//		List<String> tweetsJsons = null;
+//		try
+//		{
+//			tweetsJsons = twitterFacade.getUpTo200Tweets(userId);
+//		} catch (TwitterException e)
+//		{
+//			e.printStackTrace();
+//			System.exit(0);
+//		}
+//		List<String> tweetsTexts = TweetsTextExtractor.getUrlsExpandedText(tweetsJsons);
+//		return createSingleDocumentIndex(indexPath, tweetsTexts);
+//	}
 
 	public static Directory createSingleDocumentIndexForUser(TwitterFacade twitterFacade, String indexPath, long userId)
 	{

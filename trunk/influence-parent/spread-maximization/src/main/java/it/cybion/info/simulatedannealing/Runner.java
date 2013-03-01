@@ -5,13 +5,13 @@ import java.util.Random;
 public class Runner {
 	public static void main(String[] args) 
 	{
-		float[][] adiacentMatrix = createAdiacentMatrix(5);
+		float[][] adiacentMatrix = createAdiacentMatrix(100);
 		//printMatrix(adiacentMatrix);
 		
 //		getSolution(float[][] matrix, int solutionDim, 
 //				    float TStart, float TFinal, 
 //				    float TReductionScale, int iterations)
-		int solutionDim = 2;
+		int solutionDim = 4;
 		float TStart = 3.0F;
 		float TFinal = 0.2F;
 		float TReductionScale = 0.98F;
