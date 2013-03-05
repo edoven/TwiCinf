@@ -2,27 +2,34 @@ package it.cybion.info.simulatedannealing;
 
 import java.util.Random;
 
+
 public class Runner {
 	public static void main(String[] args) 
 	{
-		float[][] adiacentMatrix = createAdiacentMatrix(100);
-		//printMatrix(adiacentMatrix);
+		float[][] adjacencyMatrix = createAdiacentMatrix(5000);
+//		Float[][] floatObjAdjacencyMatrix = (Float[][])SerializationManager.deserializeObject("/home/godzy/Desktop/graphBuilder/serialization/probabilityGraphMatrix.data");
+//		
+//		float[][] adjacencyMatrix = new float[floatObjAdjacencyMatrix.length][floatObjAdjacencyMatrix.length];
+//		for (int i = 0; i < floatObjAdjacencyMatrix.length; i++)
+//			for (int j = 0; j < floatObjAdjacencyMatrix.length; j++)
+//				adjacencyMatrix[i][j] = floatObjAdjacencyMatrix[i][j];
 		
-//		getSolution(float[][] matrix, int solutionDim, 
-//				    float TStart, float TFinal, 
-//				    float TReductionScale, int iterations)
-		int solutionDim = 4;
+		//printMatrix(adiacentMatrix);
+	
+		
+		int solutionDim = 300;
 		float TStart = 3.0F;
 		float TFinal = 0.2F;
 		float TReductionScale = 0.98F;
 		int innerIterations = 1000;
-		printMatrix(adiacentMatrix);
-		new SimulatedAnnealingLinearized().getSolution(adiacentMatrix, solutionDim, 
+		
+		
+		
+		//printMatrix(adjacencyMatrix);
+		new SimulatedAnnealingLinearized().getSolution(adjacencyMatrix, solutionDim, 
 											 TStart, TFinal,
 											 TReductionScale, innerIterations);
-//		new SimulatedAnnealingCompressed().getSolution(adiacentMatrix, solutionDim, 
-//				 TStart, TFinal,
-//				 TReductionScale, innerIterations);
+
 
 	}
 	
@@ -36,10 +43,10 @@ public class Runner {
 		{
 			for (int j = 0; j < adiacentMatrix.length; j++) 
 			{
-				if (i!=j && random.nextFloat()>0.5)
+				if (i!=j && random.nextFloat()>0.8)
 					adiacentMatrix[i][j] = random.nextFloat()/2;
 				else
-					adiacentMatrix[i][j] = -1;
+					adiacentMatrix[i][j] = 0;
 			}
 		}
 		return adiacentMatrix;

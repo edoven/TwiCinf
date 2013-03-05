@@ -21,32 +21,36 @@ public class SimulatedAnnealingLinearized
 	private float currentSolutionStrength;
 	private Random random = new Random();
 	private int[][] nodesToDistOneNodes;
-	private float[] singleNodeStrengths;
+	private int[][] node2InNodes;
+//	private float[] singleNodeStrengths;
 	
 
 	public List<Integer> getSolution(float[][] matrix, int solutionDim,
 									 float TStart, float TFinal, 
 									 float TReductionScale,	int innerIterations)
-	{
-		float maxSolutionStrength = -1;
-		linearizeMatrix(matrix);		
+	{			
 		this.solutionDim = solutionDim;
 		this.matrixDim = matrix.length;
+		linearizeMatrix(matrix);
+		float maxSolutionStrength = -1;
 		nodesToDistOneNodes = getNodesToDistOneNodes();
+		node2InNodes = getNode2InNodes(matrix);
 		currentSolution = getRandomSolution();
 		currentSolutionStrength = getSolutionStrength(currentSolution);
 		
-		singleNodeStrengths = new float[matrixDim];
-		calculateSingleNodeStrengths();
+		
+//		singleNodeStrengths = new float[matrixDim];
+//		calculateSingleNodeStrengths();
 		
 		float TCurrent = TStart;
 		while (TCurrent > TFinal)
 		{
 			logger.info("####### TCurrent=" + TCurrent + " #######");
 			logger.info(currentSolution + " - " + currentSolutionStrength);
-			logger.info("freeMen=" + Runtime.getRuntime().freeMemory()/(1024*1024));
+//			logger.info("freeMen=" + Runtime.getRuntime().freeMemory()/(1024*1024));
 			for (int iterationCount = 0; iterationCount < innerIterations; iterationCount++)
 			{
+				long startTime = System.currentTimeMillis();
 				List<Integer> tweakedSolution = getTweakedSolution(currentSolution, matrixDim);
 				float tweakedSolutionStrength = getSolutionStrength(tweakedSolution);
 				if (tweakedSolutionStrength > currentSolutionStrength)
@@ -57,8 +61,8 @@ public class SimulatedAnnealingLinearized
 				{
 					double jumpProbability = 1.0 / Math.exp((currentSolutionStrength - tweakedSolutionStrength)/ TCurrent);
 
-					// logger.info("delta="+(currentSolutionStrength-tweakedSolutionStrength));
-					// logger.info("jumpProbability="+jumpProbability);
+//					logger.info("delta="+(currentSolutionStrength-tweakedSolutionStrength));
+//					logger.info("jumpProbability="+jumpProbability);
 					if (jumpProbability > random.nextDouble())
 					{				
 						currentSolution = tweakedSolution;
@@ -67,6 +71,11 @@ public class SimulatedAnnealingLinearized
 				}
 				if (currentSolutionStrength > maxSolutionStrength)
 					maxSolutionStrength = currentSolutionStrength;
+				
+				logger.info("currentSolutionStrength="+currentSolutionStrength);
+				
+				long endTime = System.currentTimeMillis();
+				logger.info("Iteration time = "+(endTime-startTime));
 
 			}
 			TCurrent = TCurrent * TReductionScale;
@@ -77,17 +86,36 @@ public class SimulatedAnnealingLinearized
 	}
 	
 	
-	private void calculateSingleNodeStrengths()
+//	private void calculateSingleNodeStrengths()
+//	{
+//		List<Integer> singleNodeSolution = new ArrayList<Integer>();
+//		for (int i=0; i<matrixDim; i++)
+//		{
+//			if (i!=0)
+//				singleNodeSolution.remove(0);
+//			singleNodeSolution.add(0,i);
+//			singleNodeStrengths[i] = getSolutionStrength(singleNodeSolution);
+//			logger.info(singleNodeStrengths[i]);
+//		}
+//	}
+
+
+	private int[][] getNode2InNodes(float[][] matrix)
 	{
-		List<Integer> singleNodeSolution = new ArrayList<Integer>();
-		for (int i=0; i<matrixDim; i++)
+		node2InNodes = new int[matrixDim][];
+		for (int i=0; i<matrix.length; i++)
 		{
-			if (i!=0)
-				singleNodeSolution.remove(0);
-			singleNodeSolution.add(0,i);
-			singleNodeStrengths[i] = getSolutionStrength(singleNodeSolution);
-			logger.info(singleNodeStrengths[i]);
+			List<Integer> inNodes = new ArrayList<Integer>();
+			for (int j=0; j<matrix.length; j++)
+				if (linearizedMatrix[i*matrixDim + j] != 0)
+					inNodes.add(j);			
+			int[] inNodesArray = new int[inNodes.size()];
+			int arrayIndex=0;
+			for (Integer inNode : inNodes)
+				inNodesArray[arrayIndex++] = inNode;
+			node2InNodes[i] = inNodesArray;
 		}
+		return node2InNodes;
 	}
 
 
@@ -103,22 +131,23 @@ public class SimulatedAnnealingLinearized
 	
 	private float getSolutionStrength(List<Integer> solution)
 	{
-		Set<Integer> distOneNodes = getDistOneNodes(solution);
-		distOneNodes.removeAll(solution);
-
+		long startTime = System.currentTimeMillis();
 		float strength = solution.size();
-		for (Integer nodeIndex : distOneNodes)
+		Set<Integer> distOneNodes = getDistOneNodes(solution);
+			
+		for (Integer distOneNodeIndex : distOneNodes)
 		{
 			float edgesTotalProbability = 1;
-			for (int i = 0; i < matrixDim; i++)
+			int[] inNodesIndexes = node2InNodes[distOneNodeIndex];
+			for (int i=0; i<inNodesIndexes.length; i++)
 			{
-//				if (solution.contains(i) && matrix[i][nodeIndex] != -1)
-//					edgesTotalProbability = edgesTotalProbability	* (1 - matrix[i][nodeIndex]);
-				if (solution.contains(i) && linearizedMatrix[i*matrixDim + nodeIndex] != -1)
-					edgesTotalProbability = edgesTotalProbability	* (1 - linearizedMatrix[i*matrixDim + nodeIndex]);
+				if (solution.contains(i) && linearizedMatrix[i*matrixDim + distOneNodeIndex] != 0) 
+					edgesTotalProbability = edgesTotalProbability	* (1 - linearizedMatrix[i*matrixDim + distOneNodeIndex]);
 			}
 			strength = strength + (1 - edgesTotalProbability);
 		}
+		long endTime = System.currentTimeMillis();
+		logger.info("getSolutionStrength time = "+(endTime-startTime));
 		return strength;
 	}
 	
@@ -132,6 +161,7 @@ public class SimulatedAnnealingLinearized
 			for (int i = 0; i < neighbors.length; i++)
 				distOneNodes.add(neighbors[i]);
 		}
+		distOneNodes.removeAll(solution);
 		return distOneNodes;
 	}
 
@@ -144,8 +174,7 @@ public class SimulatedAnnealingLinearized
 		{
 			List<Integer> distOneNodes = new ArrayList<Integer>();
 			for (int neighbor=0; neighbor<matrixDim; neighbor++)
-//				if ((matrix[node][neighbor] != -1))
-				if ((linearizedMatrix[node*matrixDim + neighbor] != -1))
+				if ((linearizedMatrix[node*matrixDim + neighbor] != 0))
 					distOneNodes.add(neighbor);
 			nodesToDistOneNodes[node] = new int[distOneNodes.size()];
 			for (int i = 0; i < distOneNodes.size(); i++)
@@ -154,13 +183,14 @@ public class SimulatedAnnealingLinearized
 		return nodesToDistOneNodes;
 	}	
 
+	//this is used to generate the starting solution
 	private List<Integer> getRandomSolution()
 	{
 		List<Integer> randomSolution = new ArrayList<Integer>();
 		for (int i = 0; i < solutionDim; i++)
 		{
 			int element = random.nextInt(matrixDim);
-			while (randomSolution.contains(element) == true)
+			while (randomSolution.contains(element))
 				element = random.nextInt(matrixDim);
 			randomSolution.add(element);
 		}
@@ -169,11 +199,12 @@ public class SimulatedAnnealingLinearized
 
 	//this creates a tweaked solution removing a node in the solution
 	//for a node that is not in the solution
-	public List<Integer> getTweakedSolution(List<Integer> currentSolution, int matrixDim)
+	private List<Integer> getTweakedSolution(List<Integer> currentSolution, int matrixDim)
 	{
 		List<Integer> tweakedSolution = new ArrayList<Integer>();
 		tweakedSolution.addAll(currentSolution);
-		tweakedSolution.remove(random.nextInt(tweakedSolution.size()));
+		int elementToRemove = random.nextInt(tweakedSolution.size());
+		tweakedSolution.remove(elementToRemove);
 		int elementToAdd = random.nextInt(matrixDim);
 		while (currentSolution.contains(elementToAdd))
 			elementToAdd = random.nextInt(matrixDim);
