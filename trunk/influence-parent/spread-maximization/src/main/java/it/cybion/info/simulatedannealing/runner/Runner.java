@@ -11,15 +11,18 @@ import java.util.Map;
 public class Runner {
 	public static void main(String[] args) 
 	{
-//		float[][] adjacencyMatrix = MatrixGenerator.getRandomAdiacentMatrix(2000, 10000);	
-		float[][] adjacencyMatrix = getMatrixFromSerializedMatrix("/home/godzy/Desktop/graphBuilder/serialization/probabilityGraphMatrix.data");
-			
+//		float[][] adjacencyMatrix = MatrixGenerator.getRandomAdiacentMatrix(10, 30);	
+//		printMatrix(adjacencyMatrix);
 		
-		float TStart = 2.0F;
-		float TFinal = 0.001F;
+		
+		
+		float[][] adjacencyMatrix = getMatrixFromSerializedMatrix("/home/godzy/Desktop/graphBuilder/serialization/probabilityGraphMatrix.data");
+		
+		float TStart = 0.07F;
+		float TFinal = 0.0001F;
 		float TReductionScale = 0.99F;
 		
-		int innerIterations = 6000;
+		int innerIterations = 5000;
 		int solutionDim = 5;
 		
 		
@@ -47,7 +50,7 @@ public class Runner {
 		for (int i = 0; i < matrix.length; i++) 
 		{
 			for (int j = 0; j < matrix.length; j++) 
-				if ( matrix[i][j]==-1)
+				if ( matrix[i][j]==0)
 					System.out.printf("-----\t");
 				else
 					System.out.printf("%.3f \t", matrix[i][j]);

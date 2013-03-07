@@ -9,9 +9,9 @@ public class TemperatureReductionTest
 {
 	public static void main(String[] args)
 	{
-		float TStart = 2.0F;
-		float TFinal = 0.005F;
-		float TReductionScale = 0.995F;
+		float TStart = 0.07F;
+		float TFinal = 0.0001F;
+		float TReductionScale = 0.998F;
 		
 		
 		
