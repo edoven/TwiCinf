@@ -1,5 +1,7 @@
 package it.cybion.info.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Random;
 
 public class MatrixGenerator
@@ -20,7 +22,11 @@ public class MatrixGenerator
 				randomJ=random.nextInt(dim);
 			if (adiacentMatrix[randomI][randomJ] == 0)
 			{
-				adiacentMatrix[randomI][randomJ] = random.nextFloat();
+				float probability = random.nextFloat();
+				BigDecimal fd = new BigDecimal(probability);
+				BigDecimal cutted = fd.setScale(1, RoundingMode.DOWN);
+				probability = cutted.floatValue();
+				adiacentMatrix[randomI][randomJ] = probability;
 				edgesCount--;
 			}						
 		}

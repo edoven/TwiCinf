@@ -21,62 +21,70 @@ public class SimulatedAnnealingLinearized
 	private Random random = new Random();
 	private int[][] node2InNodes;
 	private float[] singleNodeStrengths;
-	Map<Integer,Float> solutionsStrengths;
+	private Map<Double,Double> solutionsStrengths = new HashMap<Double,Double>();
+	private int addedNode;
+	private int removedNode;
 
 	
-	public Map<Integer,Float> getSolution(float[][] matrix, int solutionDim,
-									 float TStart, float TFinal, 
-									 float TReductionScale,	int innerIterations)
-	{			
-		
+	public Map<Double,Double> getSolution(float[][] matrix, int solutionDim,
+									 double TStart, double TFinal, 
+									 int temperatureReductions,	int innerIterations)
+	{					
 		this.matrixDim = matrix.length;
 		linearizeMatrix(matrix); //this has to do before other initiliazation methods
-		this.node2InNodes = getNode2InNodes(matrixDim);	
-		SolutionStrengthCalculator solutionStrengthCalculator 
-			= new SolutionStrengthCalculator(linearizedMatrix,matrixDim);				
+		this.node2InNodes = getNode2InNodes(matrixDim);		
+		SolutionStrengthCalculatorOptimized solutionStrengthCalculatorOptimized = new SolutionStrengthCalculatorOptimized(linearizedMatrix,matrixDim);
 		singleNodeStrengths = new float[matrixDim];
 		calculateSingleNodeNormalizedStrengths();
 		
 		currentSolution = getBestStartingSolution(solutionDim);
-		currentSolutionStrength = solutionStrengthCalculator.getSolutionStrengthUnoptimized(currentSolution);	
-		
-		
-		solutionsStrengths = new HashMap<Integer,Float>();	
-		
-		int temperatureReductions = getTemperatureReductionsCount(TStart, TFinal, TReductionScale);
+		currentSolutionStrength = solutionStrengthCalculatorOptimized.getStartingSolutionStrength(currentSolution);
+			
+				
+//		int temperatureReductions = getTemperatureReductionsCount(TStart, TFinal, TReductionScale);
 		int solutionsCount = 0;
 		float maxSolutionStrength = -1;
+		List<Integer> tweakedSolution;
+		float tweakedSolutionStrength;
+		double jumpProbability;
+		boolean solutionChanged;
 		
-		float TCurrent = TStart;
-		while (TCurrent > TFinal)
+		double TCurrent = getCurrentTemperature(0.0, TStart, TFinal, temperatureReductions);
+		for (int i=0; i<temperatureReductions; i++)
 		{
-			logger.info(String.format("T=%5f (reductionsLeft=%d) - value=%7f - solution=%s",TCurrent, (temperatureReductions--), currentSolutionStrength, currentSolution ));
+			logger.info(String.format("T=%5f (reductionsLeft=%d) - value=%7f - solution=%s",TCurrent, (temperatureReductions-i), currentSolutionStrength, currentSolution ));
 			for (int iterationCount = 0; iterationCount < innerIterations; iterationCount++)
 			{
-				List<Integer> tweakedSolution = getTweakedSolution(currentSolution, matrixDim);	
-				float tweakedSolutionStrength = solutionStrengthCalculator.getSolutionStrengthUnoptimized(tweakedSolution);
-//				getTweakedSolutionStrengthOptimized(tweakedSolution);
-
+				tweakedSolution = getTweakedSolution(currentSolution, matrixDim);	
+				tweakedSolutionStrength = solutionStrengthCalculatorOptimized.getSolutionStrength(currentSolution,
+						  tweakedSolution, 
+						  addedNode, 
+						  removedNode);
+				solutionChanged = false;
 				if (tweakedSolutionStrength >= currentSolutionStrength)
 				{
 					currentSolution = tweakedSolution;
 					currentSolutionStrength = tweakedSolutionStrength;
-				} else
+					solutionChanged = true;
+				} 
+				else
 				{
-					double jumpProbability = 1.0 / Math.exp((currentSolutionStrength - tweakedSolutionStrength)/ TCurrent);
+					jumpProbability = 1.0 / Math.exp((currentSolutionStrength - tweakedSolutionStrength)/ TCurrent);
 //					logger.info("delta="+(currentSolutionStrength-tweakedSolutionStrength)+" - JP="+jumpProbability);
 					if (jumpProbability > random.nextDouble())
 					{				
 						currentSolution = tweakedSolution;
 						currentSolutionStrength = tweakedSolutionStrength;
+						solutionChanged = true;
 					}
 				}
 				if (currentSolutionStrength > maxSolutionStrength)
 					maxSolutionStrength = currentSolutionStrength;
-				
+				if (solutionChanged == true)
+					solutionStrengthCalculatorOptimized.setCurrentSolutionAsLastMeasuredSolution();
 			}
-			solutionsStrengths.put(solutionsCount++, currentSolutionStrength);
-			TCurrent = TCurrent * TReductionScale;
+			solutionsStrengths.put(new Double(solutionsCount++), new Double(currentSolutionStrength)); //this is for solutions graph plotting
+			TCurrent = getCurrentTemperature(i, TStart, TFinal, temperatureReductions);
 		}
 		logger.info("maxSolutionStrength=" + maxSolutionStrength);
 		
@@ -159,8 +167,9 @@ public class SimulatedAnnealingLinearized
 	{
 		List<Integer> tweakedSolution = new ArrayList<Integer>();
 		tweakedSolution.addAll(currentSolution);
-		int elementToRemove = random.nextInt(tweakedSolution.size());
-		tweakedSolution.remove(elementToRemove);
+		int elementToRemoveIndex = random.nextInt(tweakedSolution.size());
+		int elementToRemove = tweakedSolution.get(elementToRemoveIndex);
+		tweakedSolution.remove(elementToRemoveIndex);
 		int elementToAdd = random.nextInt(matrixDim);
 		while (
 			   singleNodeStrengths[elementToAdd] == 0 ||
@@ -170,6 +179,8 @@ public class SimulatedAnnealingLinearized
 			   )
 			elementToAdd = random.nextInt(matrixDim);
 		tweakedSolution.add(elementToAdd);
+		this.removedNode = elementToRemove;
+		this.addedNode = elementToAdd;
 		return tweakedSolution;
 	}
 
@@ -200,6 +211,14 @@ public class SimulatedAnnealingLinearized
 		for (int i=0; i<matrix.length; i++)
 			for (int j=0; j<matrix.length; j++)
 				linearizedMatrix[linearixedIndex++] = matrix[i][j];
+	}
+	
+	
+	private static double getCurrentTemperature(double currentIteration, double TStart, double TFinal, double iterationsCount)
+	{
+		double a = (1.0/(iterationsCount*iterationsCount))*Math.log(TStart/TFinal);
+		System.out.println(a);
+		return TStart*Math.pow(Math.E, -a*currentIteration*currentIteration);
 	}
 	
 }

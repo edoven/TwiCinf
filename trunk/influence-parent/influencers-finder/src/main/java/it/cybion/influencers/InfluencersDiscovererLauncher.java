@@ -12,7 +12,7 @@ public class InfluencersDiscovererLauncher
 	{
 		if (args.length<1)
 		{
-			logger.info("ERROR! Usage: java -jar <runnable_jar> <configuration_file>");
+			logger.info("ERROR! Usage: java -jar <this_jar> <configuration_file>");
 			System.exit(0);
 		}
 			

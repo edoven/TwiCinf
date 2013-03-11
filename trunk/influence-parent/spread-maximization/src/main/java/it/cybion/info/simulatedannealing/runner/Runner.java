@@ -11,27 +11,28 @@ import java.util.Map;
 public class Runner {
 	public static void main(String[] args) 
 	{
-//		float[][] adjacencyMatrix = MatrixGenerator.getRandomAdiacentMatrix(10, 30);	
+		float[][] adjacencyMatrix = MatrixGenerator.getRandomAdiacentMatrix(2000,4000);	
 //		printMatrix(adjacencyMatrix);
 		
 		
+//		float[][] adjacencyMatrix = getMatrixFromSerializedMatrix("/home/godzy/Desktop/graphBuilder/serialization/probabilityGraphMatrix.data");
 		
-		float[][] adjacencyMatrix = getMatrixFromSerializedMatrix("/home/godzy/Desktop/graphBuilder/serialization/probabilityGraphMatrix.data");
 		
-		float TStart = 0.07F;
+		float TStart = 1.0F;
 		float TFinal = 0.0001F;
-		float TReductionScale = 0.99F;
+		
+		int temperatureReductions = 100;
 		
 		int innerIterations = 5000;
-		int solutionDim = 5;
+		int solutionDim = 20;
 		
 		
-		Map<Integer,Float> solutionsStrengths = new SimulatedAnnealingLinearized().getSolution(adjacencyMatrix, solutionDim, 
-											 TStart, TFinal,
-											 TReductionScale, innerIterations);
+		Map<Double,Double> solutionsStrengths = new SimulatedAnnealingLinearized().getSolution(adjacencyMatrix, solutionDim, 
+											 													TStart, TFinal,
+											 													temperatureReductions, innerIterations);
 
 	
-    	Plotter.drawPlot(solutionsStrengths);
+    	Plotter.drawPlot(solutionsStrengths, "Solution Strength Evolution");
 	}
 	
 	

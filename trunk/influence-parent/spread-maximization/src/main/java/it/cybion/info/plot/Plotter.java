@@ -1,8 +1,12 @@
 package it.cybion.info.plot;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JFrame;
 import de.erichseifert.gral.data.DataTable;
@@ -16,17 +20,16 @@ public class Plotter extends JFrame {
 	
 	private static final long serialVersionUID = 2580402542323574380L;
 
-	public Plotter(Map<Integer,Float> points) {
+	private Plotter(Map<Double,Double> points) {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(600, 400);
 
         DataTable data = new DataTable(Double.class, Double.class);
         double y;
-        for (int x=0; x<points.size(); x++)
-        {
-        	y = new Double(points.get(x));
-        	data.add(new Double(x), y);
-        }
+        List<Double> xList = new ArrayList<Double>(points.keySet());
+        Collections.sort(xList);
+        for (Double x : xList)
+        	data.add(x, points.get(x));
         XYPlot plot = new XYPlot(data);
         getContentPane().add(new InteractivePanel(plot));
         LineRenderer lines = new DefaultLineRenderer2D();
@@ -36,20 +39,21 @@ public class Plotter extends JFrame {
         plot.getLineRenderer(data).setSetting(LineRenderer.COLOR, color);
     }
 
-    public static void drawPlot(Map<Integer,Float> points)
+    public static void drawPlot(Map<Double,Double> points, String title)
     {
     	Plotter frame = new Plotter(points);
         frame.setVisible(true);
+        frame.setTitle(title);
     }
     
     public static void main(String[] args)
 	{
-    	Map<Integer,Float> points = new HashMap<Integer,Float>();
-    	points.put(0, 0.32F);
-    	points.put(1, 0.62F);
-    	points.put(2, 0.92F);
-    	points.put(3, 1.32F);
-    	drawPlot(points);
+    	Map<Double,Double> points = new HashMap<Double,Double>();
+    	points.put(0.0, 0.32);
+    	points.put(1.0, 0.62);
+    	points.put(2.0, 0.92);
+    	points.put(3.0, 1.32);
+    	drawPlot(points, "titolo");
 	}
    
 }
