@@ -21,9 +21,8 @@
     </properties>
 
     <modules>
-        <module>influence-model</module>
-		<module>influencers-finder</module>
-		<module>spread-maximization</module>
+		<module>twitter-crawler</module>
+		<module>influence-maximization</module>
     </modules>
 
     <dependencyManagement>
