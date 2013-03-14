@@ -10,8 +10,8 @@ import twitter4j.TwitterException;
 
 import com.google.gson.Gson;
 
-import it.cybion.influencers.twitter.TwitterFacade;
-import it.cybion.influencers.twitter.TwitterFacadeFactory;
+import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterFacadeFactory;
 
 
 

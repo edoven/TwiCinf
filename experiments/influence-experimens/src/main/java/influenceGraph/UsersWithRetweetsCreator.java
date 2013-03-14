@@ -1,6 +1,6 @@
 package influenceGraph;
 
-import it.cybion.influencers.twitter.TwitterFacade;
+import it.cybion.influencers.cache.TwitterFacade;
 
 import java.util.ArrayList;
 import java.util.HashMap;

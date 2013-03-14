@@ -1,7 +1,7 @@
 package experiments.laperla2800;
 
 import it.cybion.influencers.cache.TwitterFacade;
-import it.cybion.influencers.twitter.TwitterFacadeFactory;
+import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.info.utils.ListFileReader;
 
 import java.net.UnknownHostException;

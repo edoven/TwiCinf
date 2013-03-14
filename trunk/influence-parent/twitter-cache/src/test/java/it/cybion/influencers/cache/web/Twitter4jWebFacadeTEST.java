@@ -1,4 +1,4 @@
-package it.cybion.influencers.twitter.web;
+package it.cybion.influencers.cache.web;
 
 
 import static org.testng.AssertJUnit.assertTrue;

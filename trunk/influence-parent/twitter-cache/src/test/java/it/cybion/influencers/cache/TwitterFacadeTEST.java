@@ -1,4 +1,4 @@
-package it.cybion.influencers.twitter;
+package it.cybion.influencers.cache;
 
 
 import java.net.UnknownHostException;

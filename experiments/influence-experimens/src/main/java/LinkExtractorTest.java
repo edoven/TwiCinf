@@ -3,7 +3,7 @@ import java.util.List;
 
 import twitter4j.TwitterException;
 
-import it.cybion.influencers.twitter.TwitterFacadeFactory;
+import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.influencers.utils.link_extractor.LinkExtractor;
 
 

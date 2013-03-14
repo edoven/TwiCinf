@@ -2,6 +2,13 @@ package food46;
 
 
 import it.cybion.influencers.InfluencersDiscoverer;
+import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterFacadeFactory;
+import it.cybion.influencers.cache.persistance.MongodbPersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.web.Token;
+import it.cybion.influencers.cache.web.Twitter4jWebFacade;
+import it.cybion.influencers.cache.web.TwitterWebFacade;
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
 import it.cybion.influencers.filtering.topologybased.InOrOutDegreeFilterManager;
@@ -9,13 +16,6 @@ import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
 import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.indexes.GraphIndexType;
-import it.cybion.influencers.twitter.TwitterFacade;
-import it.cybion.influencers.twitter.TwitterFacadeFactory;
-import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
-import it.cybion.influencers.twitter.persistance.PersistanceFacade;
-import it.cybion.influencers.twitter.web.Token;
-import it.cybion.influencers.twitter.web.Twitter4jWebFacade;
-import it.cybion.influencers.twitter.web.TwitterWebFacade;
 import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;

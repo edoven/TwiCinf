@@ -1,7 +1,7 @@
 package it.cybion.info.graph;
 
 import it.cybion.influencers.cache.TwitterFacade;
-import it.cybion.influencers.twitter.TwitterFacadeFactory;
+import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.info.utils.SerializationManager;
 
 import java.net.UnknownHostException;
