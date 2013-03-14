@@ -1,20 +1,19 @@
 package trashionLaPerla;
 
 
-import it.cybion.influencers.InfluencersDiscoverer;
-import it.cybion.influencers.InfluencersDiscovererBuilder;
-import it.cybion.influencers.filtering.FilterManager;
-import it.cybion.influencers.filtering.aggregation.OrFilterManager;
-import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
-import it.cybion.influencers.filtering.topologybased.InAndOutDegreeFilterManager;
-import it.cybion.influencers.filtering.topologybased.InDegreeFilterManager;
-import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
-import it.cybion.influencers.graph.GraphFacade;
-import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.indexes.GraphIndexType;
-import it.cybion.influencers.twitter.TwitterFacade;
+
+import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.crawler.InfluencersDiscoverer;
+import it.cybion.influencers.crawler.InfluencersDiscovererBuilder;
+import it.cybion.influencers.crawler.filtering.FilterManager;
+import it.cybion.influencers.crawler.filtering.aggregation.OrFilterManager;
+import it.cybion.influencers.crawler.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
+import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilterManager;
+import it.cybion.influencers.crawler.filtering.topologybased.InDegreeFilterManager;
+import it.cybion.influencers.crawler.filtering.topologybased.OutDegreeFilterManager;
+import it.cybion.influencers.crawler.graph.GraphFacade;
+import it.cybion.influencers.crawler.utils.FilesDeleter;
 import it.cybion.influencers.twitter.TwitterFacadeFactory;
-import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
 import java.io.IOException;

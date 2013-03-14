@@ -26,15 +26,18 @@ public class SimulatedAnnealingLinearized
 	private Map<Double,Double> solutionsStrengths = new HashMap<Double,Double>();
 	private int addedNode;
 	private int removedNode;
+	private List<Integer> blacklist;
 
 	
 	public Map<Double,Double> getSolution(float[][] matrix, int solutionDim,
 									 double TStart, double TFinal, 
-									 int temperatureReductions,	int innerIterations)
+									 int temperatureReductions,	int innerIterations,
+									 List<Integer> blacklist)
 	{					
 		this.matrixDim = matrix.length;
 		linearizeMatrix(matrix); //this has to do before other initiliazation methods
 		this.node2InNodes = getNode2InNodes(matrixDim);		
+		this.blacklist = blacklist;
 		SolutionStrengthCalculatorOptimized solutionStrengthCalculatorOptimized = new SolutionStrengthCalculatorOptimized(linearizedMatrix,matrixDim);
 		singleNodeStrengths = new float[matrixDim];
 		calculateSingleNodeNormalizedStrengths();
@@ -51,10 +54,13 @@ public class SimulatedAnnealingLinearized
 		double jumpProbability;
 		boolean solutionChanged;
 		
+		logger.info(String.format("INITIAL SOLUTION: value=%7f - solution=%s",currentSolutionStrength, currentSolution ));
+		
 		double TCurrent = getCurrentTemperature(0.0, TStart, TFinal, temperatureReductions);
 		for (int i=0; i<temperatureReductions; i++)
 		{
-			logger.info(String.format("T=%5f (reductionsLeft=%d) - value=%7f - solution=%s",TCurrent, (temperatureReductions-i), currentSolutionStrength, currentSolution ));
+			if (i!=0)
+				logger.info(String.format("T=%5f (reductionsLeft=%d) - value=%7f - solution=%s",TCurrent, (temperatureReductions-i), currentSolutionStrength, currentSolution ));
 			for (int iterationCount = 0; iterationCount < innerIterations; iterationCount++)
 			{
 				tweakedSolution = getTweakedSolution(currentSolution, matrixDim);	
@@ -94,18 +100,6 @@ public class SimulatedAnnealingLinearized
 	}
 	
 	
-	private int getTemperatureReductionsCount(float TStart, float TFinal, float reductionScale)
-	{
-		int reductions = 0;
-		while (TStart>TFinal) 
-		{		
-			TStart = TStart * reductionScale;	
-			reductions++;
-		}
-		return reductions;
-	}
-	
-	
 	private void calculateSingleNodeNormalizedStrengths()
 	{
 		float nodeStrength;
@@ -139,9 +133,11 @@ public class SimulatedAnnealingLinearized
 		for (int i = 0; i < solutionDim; i++)
 		{
 			int element = getNodeWithMaxStrength(singleNodeStrengthsCopy);
-			while (solution.contains(element))
+			while (solution.contains(element) || blacklist.contains(element))
+			{
 				element = getNodeWithMaxStrength(singleNodeStrengthsCopy);			
-			singleNodeStrengthsCopy[element] = -1;
+				singleNodeStrengthsCopy[element] = -1;
+			}
 			solution.add(element);
 		}
 		return solution;
@@ -177,7 +173,8 @@ public class SimulatedAnnealingLinearized
 			   singleNodeStrengths[elementToAdd] == 0 ||
 			   currentSolution.contains(elementToAdd) || 		   		   
 			   elementToAdd==elementToRemove ||
-			   singleNodeStrengths[elementToAdd]<random.nextFloat() 
+			   singleNodeStrengths[elementToAdd]<random.nextFloat() ||
+			   blacklist.contains(elementToAdd)
 			   )
 			elementToAdd = random.nextInt(matrixDim);
 		tweakedSolution.add(elementToAdd);
@@ -219,7 +216,6 @@ public class SimulatedAnnealingLinearized
 	private static double getCurrentTemperature(double currentIteration, double TStart, double TFinal, double iterationsCount)
 	{
 		double a = (1.0/(iterationsCount*iterationsCount))*Math.log(TStart/TFinal);
-		System.out.println(a);
 		return TStart*Math.pow(Math.E, -a*currentIteration*currentIteration);
 	}
 	

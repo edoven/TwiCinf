@@ -1,8 +1,8 @@
 package it.cybion.influence.ranking.topic.lucene;
 
 
-import it.cybion.influence.ranking.utils.text_extractor.TweetsTextExtractor;
-import it.cybion.influencers.twitter.TwitterFacade;
+import it.cybion.influence.ranking.tweets.enriching.UrlsExapandedTweetsTextExtractor;
+import it.cybion.influencers.cache.TwitterFacade;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,18 +24,6 @@ import twitter4j.TwitterException;
 
 public class TweetsIndexCreator
 {
-
-//	public static List<Directory> createSingleDocumentIndexesForUsers(TwitterFacade twitterFacade, String indexesRootDirPath, List<Long> usersIds)
-//	{
-//		List<Directory> indexes = new ArrayList<Directory>();
-//		for (Long userId : usersIds)
-//		{
-//			String indexDir = indexesRootDirPath + "/" + userId;
-//			indexes.add(createSingleDocumentIndexForUser(twitterFacade,indexDir, userId));
-//		}
-//		return indexes;
-//	}
-
 	public static List<Directory> createSingleDocumentIndexesForUsers(TwitterFacade twitterFacade, String indexesRootDirPath, List<Long> usersIds)
 	{
 		List<Directory> indexes = new ArrayList<Directory>();
@@ -46,22 +34,6 @@ public class TweetsIndexCreator
 		}
 		return indexes;
 	}
-
-//	public static Directory createSingleDocumentIndexForUser(TwitterFacade twitterFacade, String indexPath, long userId)
-//	{
-//		
-//		List<String> tweetsJsons = null;
-//		try
-//		{
-//			tweetsJsons = twitterFacade.getUpTo200Tweets(userId);
-//		} catch (TwitterException e)
-//		{
-//			e.printStackTrace();
-//			System.exit(0);
-//		}
-//		List<String> tweetsTexts = TweetsTextExtractor.getUrlsExpandedText(tweetsJsons);
-//		return createSingleDocumentIndex(indexPath, tweetsTexts);
-//	}
 
 	public static Directory createSingleDocumentIndexForUser(TwitterFacade twitterFacade, String indexPath, long userId)
 	{
@@ -74,7 +46,7 @@ public class TweetsIndexCreator
 			e.printStackTrace();
 			System.exit(0);
 		}
-		List<String> tweetsTexts = TweetsTextExtractor.getUrlsExpandedText(tweetsJsons);
+		List<String> tweetsTexts = UrlsExapandedTweetsTextExtractor.getUrlsExpandedText(tweetsJsons);
 		return createSingleDocumentIndex(indexPath, tweetsTexts);
 	}
 

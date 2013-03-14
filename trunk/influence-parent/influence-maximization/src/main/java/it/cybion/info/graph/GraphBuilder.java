@@ -1,19 +1,16 @@
 package it.cybion.info.graph;
 
-import it.cybion.influencers.InfluencersDiscoverer;
-import it.cybion.influencers.twitter.TwitterFacade;
+import it.cybion.influencers.cache.TwitterFacade;
 import it.cybion.influencers.twitter.TwitterFacadeFactory;
 import it.cybion.info.utils.SerializationManager;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-
 
 import twitter4j.TwitterException;
 

@@ -1,7 +1,7 @@
 package it.cybion.influencers.filtering.contentbased;
 
 
-import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilter;
+import it.cybion.influencers.crawler.filtering.contentbased.DescriptionAndStatusDictionaryFilter;
 
 import java.util.ArrayList;
 import java.util.List;

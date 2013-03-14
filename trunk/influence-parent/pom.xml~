@@ -23,6 +23,8 @@
     <modules>
 		<module>twitter-crawler</module>
 		<module>influence-maximization</module>
+		<module>twitter-ranker</module>
+		<module>utils</module>
     </modules>
 
     <dependencyManagement>

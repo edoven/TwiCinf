@@ -5,6 +5,8 @@ import it.cybion.info.simulatedannealing.SimulatedAnnealingLinearized;
 import it.cybion.info.utils.MatrixGenerator;
 import it.cybion.info.utils.SerializationManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -26,10 +28,11 @@ public class Runner {
 		int innerIterations = 5000;
 		int solutionDim = 20;
 		
-		
+		List<Integer> blacklist = new ArrayList<Integer>();
 		Map<Double,Double> solutionsStrengths = new SimulatedAnnealingLinearized().getSolution(adjacencyMatrix, solutionDim, 
 											 													TStart, TFinal,
-											 													temperatureReductions, innerIterations);
+											 													temperatureReductions, innerIterations,
+											 													blacklist);
 
 	
     	Plotter.drawPlot(solutionsStrengths, "Solution Strength Evolution");

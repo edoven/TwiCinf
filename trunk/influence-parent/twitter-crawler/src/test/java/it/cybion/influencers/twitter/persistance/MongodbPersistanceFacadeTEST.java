@@ -1,12 +1,12 @@
 package it.cybion.influencers.twitter.persistance;
 
 
-import it.cybion.influencers.twitter.persistance.MongodbPersistanceFacade;
-import it.cybion.influencers.twitter.persistance.exceptions.UserNotFollowersEnrichedException;
-import it.cybion.influencers.twitter.persistance.exceptions.UserNotFriendsEnrichedException;
-import it.cybion.influencers.twitter.persistance.exceptions.UserNotPresentException;
-import it.cybion.influencers.twitter.persistance.exceptions.UserNotProfileEnrichedException;
-import it.cybion.influencers.twitter.persistance.exceptions.UserWithNoTweetsException;
+import it.cybion.influencers.cache.persistance.MongodbPersistanceFacade;
+import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
+import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
+import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
+import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
+import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;

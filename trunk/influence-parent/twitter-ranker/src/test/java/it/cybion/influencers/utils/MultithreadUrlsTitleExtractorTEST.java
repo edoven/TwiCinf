@@ -1,7 +1,7 @@
 package it.cybion.influencers.utils;
 
 
-import it.cybion.influence.ranking.utils.text_extractor.MultithreadUrlsTitleExtractor;
+import it.cybion.influence.ranking.tweets.enriching.MultithreadUrlsTitleExtractor;
 
 import java.util.ArrayList;
 import java.util.List;

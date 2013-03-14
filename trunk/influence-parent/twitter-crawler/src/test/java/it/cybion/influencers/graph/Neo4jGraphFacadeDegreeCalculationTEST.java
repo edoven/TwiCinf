@@ -1,11 +1,11 @@
 package it.cybion.influencers.graph;
 
 
-import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.exceptions.InDegreeNotSetException;
-import it.cybion.influencers.graph.exceptions.OutDegreeNotSetException;
-import it.cybion.influencers.graph.exceptions.UserVertexNotPresentException;
-import it.cybion.influencers.graph.indexes.GraphIndexType;
+import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
+import it.cybion.influencers.crawler.graph.exceptions.InDegreeNotSetException;
+import it.cybion.influencers.crawler.graph.exceptions.OutDegreeNotSetException;
+import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
+import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
 
 import java.io.File;
 import java.io.IOException;

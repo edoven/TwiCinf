@@ -2,8 +2,8 @@ package it.cybion.influencers.twitter.web;
 
 
 import static org.testng.AssertJUnit.assertTrue;
-import it.cybion.influencers.twitter.web.Token;
-import it.cybion.influencers.twitter.web.Twitter4jWebFacade;
+import it.cybion.influencers.cache.web.Token;
+import it.cybion.influencers.cache.web.Twitter4jWebFacade;
 
 import java.util.ArrayList;
 import java.util.List;

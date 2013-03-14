@@ -1,10 +1,10 @@
 package it.cybion.influencers.graph;
 
 
-import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.exceptions.UserVertexNotPresentException;
-import it.cybion.influencers.graph.indexes.GraphIndexType;
-import it.cybion.influencers.utils.FilesDeleter;
+import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
+import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
+import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
+import it.cybion.influencers.crawler.utils.FilesDeleter;
 
 import java.io.File;
 import java.io.IOException;

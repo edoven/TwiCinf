@@ -7,16 +7,33 @@ import it.cybion.info.utils.SerializationManager;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 public class CommandLineRunner
 {
+	/**
+	 * 
+	 * PROPERTIES FILE EXAMPLE:
+	 * 
+	adjacentMatrixFile=/home/godzy/Desktop/graphBuilder/serialization/probabilityGraphMatrix.data
+	TStart = 1.0
+	TFinal = 0.0001
+	temperatureReductions = 100
+	innerIterations = 5000
+	solutionDim = 20
+	 * 
+	 * 
+	 */
+	
+	
 	public static void main(String[] args) throws FileNotFoundException, IOException
 	{
 //		args = new String[1];
-//		args[0] = "/home/godzy/Desktop/simulated.properties";
-//		
+//		args[0] = "/home/godzy/Desktop/laPerlaSimulated.properties";
+
 		
 		if (args.length!=1)
 		{
@@ -34,12 +51,18 @@ public class CommandLineRunner
 		int innerIterations = Integer.parseInt((String)properties.get("innerIterations"));
 		int solutionDim = Integer.parseInt((String)properties.get("solutionDim"));
 		
-		
+		String blacklistString = (String)properties.get("blacklist");
+		String[] blacklistElements = blacklistString.split(",");
+		List<Integer> blacklist = new ArrayList<Integer>();
+		for (String blacklistElement : blacklistElements)
+			blacklist.add(Integer.parseInt(blacklistElement));
+	
 		float[][] adjacencyMatrix = getMatrixFromSerializedMatrix(adjacentMatrixFile);
 		
 		Map<Double,Double> solutionsStrengths = new SimulatedAnnealingLinearized().getSolution(adjacencyMatrix, solutionDim, 
 																								TStart, TFinal,
-																								temperatureReductions, innerIterations);
+																								temperatureReductions, innerIterations,
+																								blacklist);
 
 
 		Plotter.drawPlot(solutionsStrengths, "Solution Strength Evolution");
