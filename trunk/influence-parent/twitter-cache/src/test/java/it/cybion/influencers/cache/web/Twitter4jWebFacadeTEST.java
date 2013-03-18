@@ -2,16 +2,27 @@ package it.cybion.influencers.cache.web;
 
 
 import static org.testng.AssertJUnit.assertTrue;
+import it.cybion.influencers.cache.model.Tweet;
+import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.Twitter4jWebFacade;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import twitter4j.TwitterException;
 
@@ -34,9 +45,11 @@ public class Twitter4jWebFacadeTEST
 	@BeforeClass
 	public void init()
 	{
-		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.txt");
+		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.properties");
 		List<Token> userTokens = new ArrayList<Token>();
 
+		Token userToken0 = new Token("/home/godzy/tokens/token0.properties");
+		userTokens.add(userToken0);
 		// Token userToken1 = new Token("/home/godzy/tokens/token1.txt");
 		// userTokens.add(userToken1);
 		// Token userToken2 = new Token("/home/godzy/tokens/token2.txt");
@@ -45,10 +58,9 @@ public class Twitter4jWebFacadeTEST
 		// userTokens.add(userToken3);
 		// Token userToken4 = new Token("/home/godzy/tokens/token4.txt");
 		// userTokens.add(userToken4);
-		Token userToken5 = new Token("/home/godzy/tokens/token5.txt");
+		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
 		userTokens.add(userToken5);
-		Token userToken6 = new Token("/home/godzy/tokens/token6.txt");
-		userTokens.add(userToken6);
+		
 
 		twitter4jFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 	}
@@ -124,5 +136,123 @@ public class Twitter4jWebFacadeTEST
 			followerIds.add(435668609 + i);
 		twitter4jFacade.getUsersJsons(followerIds);
 	}
-
+	
+	@Test(enabled = false)
+	public void deserializeTweetDate()
+	{
+		Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                			// "Wed Oct 17 19:59:40 +0000 2012"
+                .setDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy").create();
+		
+		String jsonTweet = "{\"created_at\": \"Wed Jun 06 20:07:10 +0000 2012\"}";
+		
+		Tweet tweet = gson.fromJson(jsonTweet, Tweet.class);
+		Date tweetDate = tweet.created_at;
+		Assert.assertEquals(tweetDate.getDate(), 6);
+		Assert.assertEquals(tweetDate.getMonth(), 5);
+		Assert.assertEquals(tweetDate.getYear(), 2012-1900 );
+	}
+	
+	@Test(enabled = false)
+	public void getUserTweetsWithMaxId() throws TwitterException
+	{
+		List<String> tweets = twitter4jFacade.getTweetsWithMaxId(887469007L, -1);
+		Assert.assertTrue(tweets.size()>0);
+	}
+	
+	
+	@Test(enabled = false)
+	public void getTweetsFromDate1() throws TwitterException, UserWithNoTweetsException
+	{
+		long userId = 887469007L; //edoventurini
+		int fromYear = 2012,
+			toYear = 2012;
+		int fromMonth = 12,
+			toMonth = 12;
+		int fromDay = 13,
+			toDay = 15;
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsFromDate(userId,
+																	fromYear, fromMonth, fromDay,
+																	toYear, 	toMonth,   toDay);
+		List<String> tweets = resultContainer.getGoodTweets();
+		Assert.assertEquals(tweets.size(), 2);
+		for (String tweet : tweets)
+		{
+			logger.info(tweet);
+		}
+	}
+	
+	
+	@Test(enabled = true)
+	public void getTweetsFromDate2() throws TwitterException, UserWithNoTweetsException
+	{
+		long userId = 517903407L; //profdalimonte
+		int fromYear = 2013,
+			toYear = 2013;
+		int fromMonth = 2,
+			toMonth = 2;
+		int fromDay = 4,
+			toDay = 5;
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsFromDate(userId,
+																	fromYear, fromMonth, fromDay,
+																	toYear, 	toMonth,   toDay);
+		List<String> tweets = resultContainer.getGoodTweets();
+		Assert.assertEquals(tweets.size(),4);
+		for (String tweetJson : tweets)
+		{
+			Tweet tweet = Tweet.buildTweetFromJson(tweetJson);
+			logger.info(tweet.id+" - "+tweet.created_at+" - "+tweet.originalJson);
+		}
+	}
+	
+	
+	@Test(enabled = false)
+	public void getTweetsFromDateCheckIfContainsDuplicates() throws TwitterException, UserWithNoTweetsException
+	{
+		long userId = 813286L; //BarackObama
+		int fromYear = 2012,
+			toYear = 2013;
+		int fromMonth = 12,
+			toMonth = 1;
+		int fromDay = 1,
+			toDay = 1;
+		Date fromDate = new Date(fromYear-1900,fromMonth-1,fromDay);
+		Date toDate = new Date(toYear-1900,toMonth-1,toDay);
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsFromDate(userId,
+																	fromYear, fromMonth, fromDay,
+																	toYear, 	toMonth,   toDay);
+		List<String> tweetJsons = resultContainer.getGoodTweets();
+		Set<String> tweetJsonsSet = new HashSet<String>(tweetJsons);
+		Assert.assertTrue(tweetJsons.size()>20);
+		Assert.assertEquals(tweetJsons.size(), tweetJsonsSet.size());
+	}
+	
+	@Test(enabled = false)
+	public void getTweetsFromDateCheckIfDateIsCorrect() throws TwitterException, UserWithNoTweetsException
+	{
+		long userId = 813286L; //BarackObama
+		int fromYear = 2013,
+			toYear = 2013;
+		int fromMonth = 1,
+			toMonth = 3;
+		int fromDay = 1,
+			toDay = 1;
+		Date fromDate = new Date(fromYear-1900,fromMonth-1,fromDay);
+		Date toDate = new Date(toYear-1900,toMonth-1,toDay);
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsFromDate(userId,
+																	fromYear, fromMonth, fromDay,
+																	toYear, 	toMonth,   toDay);
+		List<String> tweetJsons = resultContainer.getGoodTweets();
+		for (String tweetJson : tweetJsons)
+		{
+			Gson gson = new GsonBuilder()
+						.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+									// "Wed Oct 17 19:59:40 +0000 2012"
+						.setDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy").create();
+			Tweet tweet = gson.fromJson(tweetJson, Tweet.class);
+			logger.info(tweet.created_at);
+			Assert.assertTrue(tweet.created_at.compareTo(fromDate)>0);
+			Assert.assertTrue(tweet.created_at.compareTo(toDate)<0);			
+		}
+	}
 }

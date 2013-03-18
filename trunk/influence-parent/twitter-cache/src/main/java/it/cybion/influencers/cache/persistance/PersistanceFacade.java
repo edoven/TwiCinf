@@ -47,4 +47,6 @@ public interface PersistanceFacade
 
 	String getUser(String screenName) throws UserNotPresentException;
 
+	void removeTweet(Long tweetId);
+
 }

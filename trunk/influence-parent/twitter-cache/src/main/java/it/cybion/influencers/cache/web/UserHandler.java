@@ -171,6 +171,7 @@ public class UserHandler
 		List<String> result = new ArrayList<String>();
 		for (Status status : statuses)
 			result.add(DataObjectFactory.getRawJSON(status));
+		requestType2limit.put(requestName, (limit - 1));
 		return result;
 	}
 
@@ -182,6 +183,26 @@ public class UserHandler
 		if (limit <= 0)
 			throw new LimitReachedForCurrentRequestException(requestType2limit);
 		String result = DataObjectFactory.getRawJSON(twitter.showUser(screenName));
+		requestType2limit.put(requestName, (limit - 1));
+		return result;
+	}
+
+	public List<String> getTweetsWithMaxId(long userId, long maxId) throws LimitReachedForCurrentRequestException, TwitterException
+	{
+		String requestName = "/statuses/user_timeline";
+		int limit = requestType2limit.get(requestName);
+		logger.debug("limit for getLast200TweetsPostedByUser=" + limit);
+		if (limit <= 0)
+			throw new LimitReachedForCurrentRequestException(requestType2limit);
+		Paging paging = new Paging();
+		paging.setCount(200);
+		paging.setPage(1);
+		if (maxId!=-1)
+			paging.setMaxId(maxId);
+		List<Status> statuses = twitter.getUserTimeline(userId, paging);
+		List<String> result = new ArrayList<String>();
+		for (Status status : statuses)
+			result.add(DataObjectFactory.getRawJSON(status));
 		requestType2limit.put(requestName, (limit - 1));
 		return result;
 	}

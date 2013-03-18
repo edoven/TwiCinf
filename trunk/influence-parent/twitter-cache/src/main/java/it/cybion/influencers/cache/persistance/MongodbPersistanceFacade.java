@@ -337,5 +337,18 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 			userCollection.remove(json);
 		}
 	}
+	
+	@Override
+	public void removeTweet(Long tweetId)
+	{
+		BasicDBObject keys = new BasicDBObject();
+		keys.put("id", tweetId);
+		DBCursor cursor = tweetsCollection.find(keys);
+		if (cursor.hasNext())
+		{
+			DBObject json = cursor.next();
+			tweetsCollection.remove(json);
+		}
+	}
 
 }

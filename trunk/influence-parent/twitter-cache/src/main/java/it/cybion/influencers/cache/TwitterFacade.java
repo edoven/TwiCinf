@@ -339,15 +339,9 @@ public class TwitterFacade
 			return persistanceFacade.getUpTo200Tweets(userId);
 		} catch (UserWithNoTweetsException e)
 		{
-			try
-			{
-				List<String> jsonTweets = twitterWebFacade.getLast200Tweets(userId);
-				persistanceFacade.putTweets(jsonTweets);
-				return getUpTo200Tweets(userId);
-			} catch (UserWithNoTweetsException e1)
-			{
-				return new ArrayList<String>();
-			}
+			List<String> jsonTweets = twitterWebFacade.getLast200Tweets(userId);
+			persistanceFacade.putTweets(jsonTweets);
+			return getUpTo200Tweets(userId);
 		}
 	}
 

@@ -1,8 +1,6 @@
 package it.cybion.influencers.cache.web;
 
 
-import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
-
 import java.util.List;
 
 import twitter4j.TwitterException;
@@ -20,7 +18,7 @@ public interface TwitterWebFacade
 
 	List<String> getUsersJsons(List<Long> usersIds);
 
-	List<String> getLast200Tweets(long userId) throws TwitterException, UserWithNoTweetsException;
+	List<String> getLast200Tweets(long userId) throws TwitterException;
 
 	String getUserJson(String screenName) throws TwitterException;
 
