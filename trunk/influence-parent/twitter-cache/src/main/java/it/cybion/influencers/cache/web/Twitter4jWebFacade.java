@@ -182,17 +182,6 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		return (IDs) userHandlersManager.executeRequest(requestName, requestParameters);
 	}
 
-	@Override
-	public List<String> getLast200Tweets(long userId) throws TwitterException
-	{
-		logger.info("Downloading 200 tweets for user with id:" + userId);
-		RequestName requestname = RequestName.GET_LAST_200_TWEETS;
-		List<Object> requestParameters = new ArrayList<Object>();
-		requestParameters.add(0, userId);
-		List<String> tweets = (List<String>) userHandlersManager.executeRequest(requestname, requestParameters);
-		return tweets;
-	}
-
 	private List<Tweet> getTweetsFromJsons(List<String> tweetsJsons)
 	{
 		List<Tweet> tweets = new ArrayList<Tweet>();
@@ -210,6 +199,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		return tweets;
 	}
 
+	@Override
 	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException
 	{
 		logger.info("Downloading 200 tweets for user with id:" + userId);

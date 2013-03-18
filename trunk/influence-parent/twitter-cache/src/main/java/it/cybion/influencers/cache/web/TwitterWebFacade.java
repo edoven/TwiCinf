@@ -18,9 +18,11 @@ public interface TwitterWebFacade
 
 	List<String> getUsersJsons(List<Long> usersIds);
 
-	List<String> getLast200Tweets(long userId) throws TwitterException;
+//	List<String> getLast200Tweets(long userId) throws TwitterException;
 
 	String getUserJson(String screenName) throws TwitterException;
+
+	List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException;
 
 	// String getUserJson(String screenName) throws TwitterApiException;
 	// List<Long> getFollowersIds(String screenName) throws TwitterApiException;

@@ -103,12 +103,6 @@ public class UserHandlersManager
 					String result = userHandler.getUserJson(screenName);
 					return result;
 				}
-				case GET_LAST_200_TWEETS:
-				{
-					long userId = (Long) requestParameters.get(0);
-					List<String> result = userHandler.getLast200TweetsPostedByUser(userId);
-					return result;
-				}
 				case GET_USER_TWEETS_WITH_MAX_ID:
 				{
 					long userId = (Long) requestParameters.get(0);
