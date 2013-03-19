@@ -171,7 +171,7 @@ public class Twitter4jWebFacadeTEST
 			toMonth = 12;
 		int fromDay = 13,
 			toDay = 15;
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsFromDate(userId,
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsByDate(userId,
 																	fromYear, fromMonth, fromDay,
 																	toYear, 	toMonth,   toDay);
 		List<String> tweets = resultContainer.getGoodTweets();
@@ -193,7 +193,7 @@ public class Twitter4jWebFacadeTEST
 			toMonth = 2;
 		int fromDay = 4,
 			toDay = 5;
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsFromDate(userId,
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsByDate(userId,
 																	fromYear, fromMonth, fromDay,
 																	toYear, 	toMonth,   toDay);
 		List<String> tweets = resultContainer.getGoodTweets();
@@ -218,7 +218,7 @@ public class Twitter4jWebFacadeTEST
 			toDay = 1;
 		Date fromDate = new Date(fromYear-1900,fromMonth-1,fromDay);
 		Date toDate = new Date(toYear-1900,toMonth-1,toDay);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsFromDate(userId,
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsByDate(userId,
 																	fromYear, fromMonth, fromDay,
 																	toYear, 	toMonth,   toDay);
 		List<String> tweetJsons = resultContainer.getGoodTweets();
@@ -239,7 +239,7 @@ public class Twitter4jWebFacadeTEST
 			toDay = 1;
 		Date fromDate = new Date(fromYear-1900,fromMonth-1,fromDay);
 		Date toDate = new Date(toYear-1900,toMonth-1,toDay);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsFromDate(userId,
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsByDate(userId,
 																	fromYear, fromMonth, fromDay,
 																	toYear, 	toMonth,   toDay);
 		List<String> tweetJsons = resultContainer.getGoodTweets();

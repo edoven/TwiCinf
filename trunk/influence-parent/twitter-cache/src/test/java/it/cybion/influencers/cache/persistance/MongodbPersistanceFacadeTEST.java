@@ -1,12 +1,12 @@
 package it.cybion.influencers.cache.persistance;
 
 
-import it.cybion.influencers.cache.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
+import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;

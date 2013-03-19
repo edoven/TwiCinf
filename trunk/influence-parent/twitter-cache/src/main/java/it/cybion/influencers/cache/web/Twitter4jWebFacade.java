@@ -272,7 +272,8 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		return usersJsons;
 	}
 	
-	public SearchedByDateTweetsResultContainer getuserTweetsFromDate(
+	@Override
+	public SearchedByDateTweetsResultContainer getuserTweetsByDate(
 											long userId, 
 											int fromYear, int fromMonth, int fromDay, 
 											int toYear,	  int toMonth,   int toDay) throws TwitterException

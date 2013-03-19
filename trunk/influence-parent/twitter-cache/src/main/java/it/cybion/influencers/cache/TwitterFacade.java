@@ -344,6 +344,11 @@ public class TwitterFacade
 			return getUpTo200Tweets(userId);
 		}
 	}
+		
+	public List<String> getTweetsByDate(long userId, int day, int month, int year) throws TwitterException
+	{
+		persistanceFacade.getTweetsByDate(userId, day, month, year);
+	}
 
 	public String getUser(Long userId) throws TwitterException
 	{

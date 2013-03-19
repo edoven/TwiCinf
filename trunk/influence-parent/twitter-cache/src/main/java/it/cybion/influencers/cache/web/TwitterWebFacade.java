@@ -24,6 +24,10 @@ public interface TwitterWebFacade
 
 	List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException;
 
+	SearchedByDateTweetsResultContainer getuserTweetsByDate(long userId,
+			int fromYear, int fromMonth, int fromDay, int toYear, int toMonth,
+			int toDay) throws TwitterException;
+
 	// String getUserJson(String screenName) throws TwitterApiException;
 	// List<Long> getFollowersIds(String screenName) throws TwitterApiException;
 	// List<Long> getFriendsIds(String screenName) throws TwitterApiException;

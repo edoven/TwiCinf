@@ -1,53 +1,36 @@
-package it.cybion.influencers.cache.persistance;
+package it.cybion.influencers.cache.persistance.mongodb;
 
-
-import it.cybion.influencers.cache.persistance.exceptions.TweetNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
 
-
-import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 
-import java.util.Map;
-import java.util.HashMap;
-
-
-
-public class MongodbPersistanceFacade implements PersistanceFacade
+public class UsersMongodbPersistanceFacade
 {
-
-	private static final Logger logger = Logger.getLogger(MongodbPersistanceFacade.class);
-
-	private DBCollection userCollection;
-	private DBCollection tweetsCollection;
+	private final Logger logger = Logger.getLogger(UsersMongodbPersistanceFacade.class);
 	
-	public MongodbPersistanceFacade(String host, String database) throws UnknownHostException
+	
+	private DBCollection userCollection;
+	
+	public UsersMongodbPersistanceFacade(DBCollection userCollection)
 	{
-		MongoClient mongoClient = new MongoClient(host);
-		DB db = mongoClient.getDB(database);
-		this.userCollection = db.getCollection("users");
-		//if the index already exists this does nothing
-		this.userCollection.createIndex(new BasicDBObject("id", 1));
-		this.tweetsCollection = db.getCollection("tweets");
-		this.tweetsCollection.createIndex(new BasicDBObject("id", 1));
+		this.userCollection = userCollection;
 	}
-
-	@Override
+	
+	
 	public String getDescription(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
@@ -60,7 +43,6 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		return description;
 	}
 
-	@Override
 	public String getDescriptionAndStatus(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
@@ -75,7 +57,6 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		return description + " " + status;
 	}
 
-	@Override
 	public List<Long> getFollowers(Long userId) throws UserNotPresentException, UserNotFollowersEnrichedException
 	{
 		DBObject userJson = getUserDbObject(userId);
@@ -90,21 +71,6 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 			throw new UserNotFollowersEnrichedException("User with id " + userId + " is not followers/friends-eniched.");
 	}
 
-	// public List<String> getTweets(long userId) {
-	// logger.info("--begin--");
-	// DBCursor cursor = tweetsCollection.find(new BasicDBObject("user.id",
-	// userId));
-	// List<String> tweets = new ArrayList<String>();
-	// while (cursor.hasNext()) {
-	// DBObject tweet = cursor.next();
-	// tweets.add(tweet.toString());
-	// logger.info(tweet.toString());
-	// }
-	// logger.info("--end--");
-	// return tweets;
-	// }
-
-	@Override
 	public int getFollowersCount(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
@@ -115,7 +81,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		return followersCount;
 	}
 
-	@Override
+
 	public List<Long> getFriends(Long userId) throws UserNotFriendsEnrichedException, UserNotPresentException
 	{
 		DBObject userJson = getUserDbObject(userId);
@@ -130,7 +96,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 			throw new UserNotFriendsEnrichedException("User with id " + userId + " is not friends-eniched.");
 	}
 
-	@Override
+	
 	public int getFriendsCount(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
@@ -141,7 +107,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		return followersCount;
 	}
 
-	@Override
+	
 	public String getScreenName(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userJson = getUser(userId);
@@ -166,30 +132,8 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 			text = "";
 		return text;
 	}
-
-	private String getTweet(long tweetId) throws TweetNotPresentException
-	{
-		BasicDBObject keys = new BasicDBObject();
-		keys.put("id", tweetId);
-		DBObject tweet = tweetsCollection.findOne(keys);
-		if (tweet == null)
-			throw new TweetNotPresentException("Tweet with id " + tweetId + " is not in the collection.");
-		return tweet.toString();
-	}
 	
-	@Override
-	public List<String> getUpTo200Tweets(long userId) throws UserWithNoTweetsException
-	{
-		DBCursor cursor = tweetsCollection.find(new BasicDBObject("user.id", userId));
-		List<String> tweets = new ArrayList<String>();
-		while (cursor.hasNext() && tweets.size() < 200)
-			tweets.add(cursor.next().toString());
-		if (tweets.size() == 0)
-			throw new UserWithNoTweetsException();
-		return tweets;
-	}
-
-	@Override
+	
 	public String getUser(Long userId) throws UserNotPresentException
 	{
 		DBObject user = userCollection.findOne(new BasicDBObject("id", userId));
@@ -197,8 +141,14 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 			throw new UserNotPresentException("User with id " + userId + " is not in the collection.");
 		return user.toString();
 	}
-
-	@Override
+	
+	public Long getUserId(String screenName) throws UserNotPresentException
+	{
+		String userJson = getUser(screenName);
+		DBObject user = (DBObject) JSON.parse(userJson);
+		return new Long((Integer)user.get("id"));
+	}
+	
 	public String getUser(String screenName) throws UserNotPresentException
 	{
 		DBObject user = userCollection.findOne(new BasicDBObject("screen_name", screenName));
@@ -206,24 +156,8 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 			throw new UserNotPresentException("User with screenName " + screenName + " is not in the collection.");
 		return user.toString();
 	}
-
-	private DBObject getUserDbObject(Long userId) throws UserNotPresentException
-	{
-		DBObject user = userCollection.findOne(new BasicDBObject("id", userId));
-		if (user == null)
-			throw new UserNotPresentException("User with id " + userId + " is not in the collection.");
-		return user;
-	}
-
-	@Override
-	public Long getUserId(String screenName) throws UserNotPresentException
-	{
-		String userJson = getUser(screenName);
-		DBObject user = (DBObject) JSON.parse(userJson);
-		return new Long((Integer)user.get("id"));
-	}
-
-	@Override
+	
+	
 	public void putFollowers(Long userId, List<Long> followersIds) throws UserNotPresentException
 	{
 		logger.info("writing " + followersIds.size() + " followers for user with id=" + userId);
@@ -239,7 +173,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		}
 	}
 
-	@Override
+	
 	public void putFriends(Long userId, List<Long> friendsIds) throws UserNotPresentException
 	{
 		logger.info("writing " + friendsIds.size() + " friends for user with id=" + userId);
@@ -254,50 +188,16 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 			putUser(friend.toString());
 		}
 	}
+	
 
-	public void putTweet(String tweetToInsertJson)
+	private DBObject getUserDbObject(Long userId) throws UserNotPresentException
 	{
-		DBObject tweetToInsert = (DBObject) JSON.parse(tweetToInsertJson);
-		long tweetId = -1;
-		try
-		{
-			Object id = tweetToInsert.get("id");		
-			if (id instanceof Long)
-				tweetId = (Long) id;
-			else
-				if (id instanceof Integer)
-					tweetId = new Long((Integer) id);
-				else
-				{
-					logger.info("problem with twitter id "+id);
-					System.exit(0);
-				}
-		} catch (ClassCastException e)
-		{
-			logger.info("ERROR: problem extracting id from " + tweetToInsertJson);
-			return;
-		}
-		try
-		{
-			getTweet(tweetId);
-		} catch (TweetNotPresentException e)
-		{
-			tweetsCollection.insert(tweetToInsert);
-		}
+		DBObject user = userCollection.findOne(new BasicDBObject("id", userId));
+		if (user == null)
+			throw new UserNotPresentException("User with id " + userId + " is not in the collection.");
+		return user;
 	}
-
-	@Override
-	public void putTweets(List<String> tweets)
-	{
-		for (String tweet : tweets)
-			putTweet(tweet);
-	}
-
-	/*
-	 * If a user with the same id (beware: id!=_id) is already present, the new
-	 * fields (if exist) are added.
-	 */
-	@Override
+	
 	public void putUser(String userToInsertJson)
 	{
 		DBObject userToInsert = (DBObject) JSON.parse(userToInsertJson);
@@ -325,7 +225,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		userCollection.update(query, updatedUser);
 	}
 
-	@Override
+	
 	public void removeUser(Long userId)
 	{
 		BasicDBObject keys = new BasicDBObject();
@@ -338,17 +238,6 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		}
 	}
 	
-	@Override
-	public void removeTweet(Long tweetId)
-	{
-		BasicDBObject keys = new BasicDBObject();
-		keys.put("id", tweetId);
-		DBCursor cursor = tweetsCollection.find(keys);
-		if (cursor.hasNext())
-		{
-			DBObject json = cursor.next();
-			tweetsCollection.remove(json);
-		}
-	}
-
+	
+	
 }

@@ -12,8 +12,8 @@ import org.testng.annotations.Test;
 import twitter4j.TwitterException;
 
 import it.cybion.influencers.cache.TwitterFacade;
-import it.cybion.influencers.cache.persistance.MongodbPersistanceFacade;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.Twitter4jWebFacade;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
