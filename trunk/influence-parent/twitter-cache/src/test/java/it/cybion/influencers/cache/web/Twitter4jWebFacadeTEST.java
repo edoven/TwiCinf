@@ -171,7 +171,7 @@ public class Twitter4jWebFacadeTEST
 			toMonth = 12;
 		int fromDay = 13,
 			toDay = 15;
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsByDate(userId,
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,
 																	fromYear, fromMonth, fromDay,
 																	toYear, 	toMonth,   toDay);
 		List<String> tweets = resultContainer.getGoodTweets();
@@ -193,7 +193,7 @@ public class Twitter4jWebFacadeTEST
 			toMonth = 2;
 		int fromDay = 4,
 			toDay = 5;
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsByDate(userId,
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,
 																	fromYear, fromMonth, fromDay,
 																	toYear, 	toMonth,   toDay);
 		List<String> tweets = resultContainer.getGoodTweets();
@@ -210,15 +210,18 @@ public class Twitter4jWebFacadeTEST
 	public void getTweetsFromDateCheckIfContainsDuplicates() throws TwitterException, UserWithNoTweetsException
 	{
 		long userId = 813286L; //BarackObama
-		int fromYear = 2012,
-			toYear = 2013;
-		int fromMonth = 12,
-			toMonth = 1;
-		int fromDay = 1,
-			toDay = 1;
+		
+		int fromYear = 2012;
+		int fromMonth = 12;
+		int fromDay = 1;
+		
+		int	toYear = 2013;
+		int	toMonth = 1;
+		int	toDay = 1;
+		
 		Date fromDate = new Date(fromYear-1900,fromMonth-1,fromDay);
 		Date toDate = new Date(toYear-1900,toMonth-1,toDay);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsByDate(userId,
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,
 																	fromYear, fromMonth, fromDay,
 																	toYear, 	toMonth,   toDay);
 		List<String> tweetJsons = resultContainer.getGoodTweets();
@@ -239,7 +242,7 @@ public class Twitter4jWebFacadeTEST
 			toDay = 1;
 		Date fromDate = new Date(fromYear-1900,fromMonth-1,fromDay);
 		Date toDate = new Date(toYear-1900,toMonth-1,toDay);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getuserTweetsByDate(userId,
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,
 																	fromYear, fromMonth, fromDay,
 																	toYear, 	toMonth,   toDay);
 		List<String> tweetJsons = resultContainer.getGoodTweets();

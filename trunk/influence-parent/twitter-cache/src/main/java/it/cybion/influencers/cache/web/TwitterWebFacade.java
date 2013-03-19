@@ -24,7 +24,7 @@ public interface TwitterWebFacade
 
 	List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException;
 
-	SearchedByDateTweetsResultContainer getuserTweetsByDate(long userId,
+	SearchedByDateTweetsResultContainer getTweetsByDate(long userId,
 			int fromYear, int fromMonth, int fromDay, int toYear, int toMonth,
 			int toDay) throws TwitterException;
 

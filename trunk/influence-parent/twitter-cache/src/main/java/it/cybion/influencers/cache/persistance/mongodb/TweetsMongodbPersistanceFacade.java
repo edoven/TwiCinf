@@ -1,9 +1,11 @@
 package it.cybion.influencers.cache.persistance.mongodb;
 
+import it.cybion.influencers.cache.model.Tweet;
 import it.cybion.influencers.cache.persistance.exceptions.TweetNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -41,6 +43,17 @@ public class TweetsMongodbPersistanceFacade
 		DBCursor cursor = tweetsCollection.find(new BasicDBObject("user.id", userId));
 		List<String> tweets = new ArrayList<String>();
 		while (cursor.hasNext() && tweets.size() < 200)
+			tweets.add(cursor.next().toString());
+		if (tweets.size() == 0)
+			throw new UserWithNoTweetsException();
+		return tweets;
+	}
+	
+	public List<String> getTweets(long userId) throws UserWithNoTweetsException
+	{
+		DBCursor cursor = tweetsCollection.find(new BasicDBObject("user.id", userId));
+		List<String> tweets = new ArrayList<String>();
+		while (cursor.hasNext())
 			tweets.add(cursor.next().toString());
 		if (tweets.size() == 0)
 			throw new UserWithNoTweetsException();
@@ -99,10 +112,22 @@ public class TweetsMongodbPersistanceFacade
 	}
 
 	
-	public List<String> getTweetsByDate(long userId, int day, int month,
-			int year)
+	
+	public List<String> getTweetsByDate(long userId, 
+										int fromYear, int fromMonth , int fromDay,
+										int toYear, int toMonth, int toDay) throws UserWithNoTweetsException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		Date fromDate = new Date(fromYear-1900, fromMonth-1, fromDay);
+		Date toDate = new Date(toYear-1900, toMonth-1, toDay);
+		List<String> userTweets = getTweets(userId);
+		List<String> goodTweets = new ArrayList<String>();
+		Tweet tweet;
+		for (String tweetJson : userTweets)
+		{
+			tweet = Tweet.buildTweetFromJson(tweetJson);
+			if (fromDate.compareTo(tweet.created_at)<0 && toDate.compareTo(tweet.created_at)>0)
+				goodTweets.add(tweetJson);
+		}
+		return goodTweets;
 	}
 }

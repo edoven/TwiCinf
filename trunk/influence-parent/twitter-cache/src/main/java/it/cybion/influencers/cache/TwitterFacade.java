@@ -7,6 +7,7 @@ import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnriched
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
+import it.cybion.influencers.cache.web.SearchedByDateTweetsResultContainer;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
 
 import java.util.ArrayList;
@@ -345,9 +346,35 @@ public class TwitterFacade
 		}
 	}
 		
-	public List<String> getTweetsByDate(long userId, int day, int month, int year) throws TwitterException
+	public List<String> getTweetsByDate(long userId, 
+										int fromYear, int fromMonth , int fromDay,
+										int toYear, int toMonth, int toDay) throws TwitterException
 	{
-		persistanceFacade.getTweetsByDate(userId, day, month, year);
+		try
+		{
+			List<String> tweets = persistanceFacade.getTweetsByDate(userId, 
+					fromYear, fromMonth,  fromDay, 
+					toYear,  toMonth, toDay );
+			logger.info("tweets get from mongodb");
+			return tweets;
+		}
+		catch (UserWithNoTweetsException e)
+		{
+			logger.info("downloading tweets");
+			SearchedByDateTweetsResultContainer result = twitterWebFacade.getTweetsByDate(userId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
+			persistanceFacade.putTweets(result.getBadTweets());
+			persistanceFacade.putTweets(result.getGoodTweets());
+			try
+			{
+				return persistanceFacade.getTweetsByDate(userId, 
+						fromYear, fromMonth,  fromDay, 
+						toYear,  toMonth, toDay );
+			}
+			catch (UserWithNoTweetsException e1)
+			{
+				return new ArrayList<String>();
+			}
+		}
 	}
 
 	public String getUser(Long userId) throws TwitterException

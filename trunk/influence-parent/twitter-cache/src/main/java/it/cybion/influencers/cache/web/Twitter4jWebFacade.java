@@ -273,15 +273,15 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 	}
 	
 	@Override
-	public SearchedByDateTweetsResultContainer getuserTweetsByDate(
+	public SearchedByDateTweetsResultContainer getTweetsByDate(
 											long userId, 
 											int fromYear, int fromMonth, int fromDay, 
 											int toYear,	  int toMonth,   int toDay) throws TwitterException
 	{
 		
-		Date startDate = new Date(fromYear-1900, fromMonth-1, fromDay);
-		Date endDate = new Date(toYear-1900, toMonth-1, toDay);
-		if (endDate.compareTo(startDate)<0)
+		Date fromDate = new Date(fromYear-1900, fromMonth-1, fromDay);
+		Date toDate = new Date(toYear-1900, toMonth-1, toDay);
+		if (toDate.compareTo(fromDate)<0)
 		{
 			logger.info("ERROR! endDate can't be smaller than startDate.");
 			System.exit(0);
@@ -290,7 +290,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		List<Tweet> tweets = getTweetsFromJsons(tweetsJsons);				
 		List<String> goodTweets = new ArrayList<String>();
 		List<String> badTweets = new ArrayList<String>();
-		ResultContainer resultContainer = filterTweetsByDate(tweets, startDate, endDate);	
+		ResultContainer resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
 		goodTweets.addAll(resultContainer.goodTweets);
 		badTweets.addAll(resultContainer.badTweets);
 		if (resultContainer.isFinished==false)
@@ -299,7 +299,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 				long oldestId = resultContainer.oldestId;
 				tweetsJsons = getTweetsWithMaxId(userId,oldestId);
 				tweets = getTweetsFromJsons(tweetsJsons);
-				resultContainer = filterTweetsByDate(tweets, startDate, endDate);	
+				resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
 				goodTweets.addAll(resultContainer.goodTweets);
 				badTweets.addAll(resultContainer.badTweets);
 			}

@@ -167,8 +167,12 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 	}
 
 	@Override
-	public List<String> getTweetsByDate(long userId, int day, int month,int year)
+	public List<String> getTweetsByDate(long userId, 
+								int fromYear, int fromMonth , int fromDay,
+								int toYear, int toMonth, int toDay) throws UserWithNoTweetsException
 	{
-		return tweetsMongodbPersistanceFacade.getTweetsByDate(userId, day, month, year);
+		return tweetsMongodbPersistanceFacade.getTweetsByDate(userId, 
+														fromYear, fromMonth, fromDay,
+														toYear, toMonth, toDay );
 	}
 }

@@ -49,6 +49,8 @@ public interface PersistanceFacade
 
 	void removeTweet(Long tweetId);
 
-	List<String> getTweetsByDate(long userId, int day, int month, int year);
+	List<String> getTweetsByDate(long userId, 
+			int fromYear, int fromMonth , int fromDay,
+			int toYear, int toMonth, int toDay) throws UserWithNoTweetsException;
 
 }
