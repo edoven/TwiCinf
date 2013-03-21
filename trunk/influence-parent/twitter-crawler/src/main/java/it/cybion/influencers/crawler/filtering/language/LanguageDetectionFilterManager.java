@@ -3,7 +3,7 @@ package it.cybion.influencers.crawler.filtering.language;
 
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class LanguageDetectionFilterManager implements FilterManager
 	
 	private static final Logger logger = Logger.getLogger(LanguageDetectionFilterManager.class);
 
-	private TwitterFacade twitterFacade;
+	private TwitterCache twitterFacade;
 	private List<Long> seedUsers;
 	private Map<Long, List<String>> user2tweets = new HashMap<Long, List<String>>();
 	private String languageProfilesDir;
@@ -37,7 +37,7 @@ public class LanguageDetectionFilterManager implements FilterManager
 	}
 
 	@Override
-	public void setTwitterFacade(TwitterFacade twitterFacade)
+	public void setTwitterFacade(TwitterCache twitterFacade)
 	{
 		this.twitterFacade = twitterFacade;
 	}

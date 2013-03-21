@@ -2,7 +2,7 @@ package food46;
 
 
 import it.cybion.influencers.InfluencersDiscoverer;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
@@ -35,7 +35,7 @@ public class TestFrameworkFood20
 	{
 		int iterations = 1;
 		GraphFacade graphFacade = getGraphFacade();
-		TwitterFacade twitterFacade = getTwitterFacade();
+		TwitterCache twitterFacade = getTwitterFacade();
 		List<Long> users46 = get46UsersIds();
 		List<Long> users20 = get20UsersIds();
 		List<FilterManager> filterManagers = getFilterManagers();
@@ -59,7 +59,7 @@ public class TestFrameworkFood20
 		return graphFacade;
 	}
 
-	private static TwitterFacade getTwitterFacade() throws UnknownHostException
+	private static TwitterCache getTwitterFacade() throws UnknownHostException
 	{
 		Token applicationToken = new Token("tokens/consumerToken.txt");
 		List<Token> userTokens = new ArrayList<Token>();
@@ -80,7 +80,7 @@ public class TestFrameworkFood20
 				applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade(
 				"localhost", "twitter");
-		TwitterFacade twitterFacade = new TwitterFacade(twitterWebFacade,
+		TwitterCache twitterFacade = new TwitterCache(twitterWebFacade,
 				persistanceFacade);
 		return twitterFacade;
 	}

@@ -4,7 +4,7 @@ package it.cybion.influencers.crawler;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
 import it.cybion.influencers.crawler.graph.GraphFacade;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,7 +22,7 @@ public class InfluencersDiscoverer
 	private int iterations;
 	private List<Long> users;
 	private GraphFacade graphFacade;
-	private TwitterFacade twitterFacade;
+	private TwitterCache twitterFacade;
 	private List<FilterManagerDescription> iteratingFiltersDescriptions;
 	private List<FilterManagerDescription> finalizationFiltersDescriptions;
 	private Set<Long> resultsFromIterations = new HashSet<Long>();
@@ -32,7 +32,7 @@ public class InfluencersDiscoverer
 	
 	public void setItarations(int iterations){this.iterations = iterations;	}
 	public void setGraphFacade(GraphFacade graphFacade){this.graphFacade = graphFacade;}	
-	public void setTwitterFacade(TwitterFacade twitterFacade){this.twitterFacade = twitterFacade;}
+	public void setTwitterFacade(TwitterCache twitterFacade){this.twitterFacade = twitterFacade;}
 	public void setIteratingFiltersDescriptions(List<FilterManagerDescription> iteratingFiltersDescriptions){this.iteratingFiltersDescriptions = iteratingFiltersDescriptions;}
 	public void setUsersIds(List<Long> usersIds){this.users = usersIds;}
 	public void setUsersScreenNames(List<String> screenNames){this.users = twitterFacade.getUserIds(screenNames);}

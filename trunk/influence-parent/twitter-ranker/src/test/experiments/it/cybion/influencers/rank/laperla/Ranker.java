@@ -1,7 +1,7 @@
 package it.cybion.influencers.rank.laperla;
 
 
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class Ranker
 	
 	public static void main(String[] args) throws UnknownHostException
 	{
-		TwitterFacade twitterFacade;
+		TwitterCache twitterFacade;
 		twitterFacade = TwitterFacadeFactory.getTwitterFacade();
 		List<Long> laPerla2800UserIds = ListFileReader.readLongListFile("/home/godzy/Desktop/laPerla2800UsersIds.txt");
 		Collections.sort(laPerla2800UserIds);

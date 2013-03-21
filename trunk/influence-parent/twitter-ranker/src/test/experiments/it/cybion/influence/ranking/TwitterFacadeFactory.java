@@ -1,7 +1,7 @@
 package it.cybion.influence.ranking;
 
 
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
@@ -27,7 +27,7 @@ public class TwitterFacadeFactory
 	  "/home/godzy/tokens/token2.properties", "/home/godzy/tokens/token3.properties", 
       "/home/godzy/tokens/token4.properties", "/home/godzy/tokens/token5.properties" };
 
-	public static TwitterFacade getTwitterFacade() throws UnknownHostException
+	public static TwitterCache getTwitterFacade() throws UnknownHostException
 	{
 		Token applicationToken = new Token(applicationTokenPath);
 		List<Token> userTokens = new ArrayList<Token>();
@@ -35,11 +35,11 @@ public class TwitterFacadeFactory
 			userTokens.add(new Token(tokens[i]));
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade(mongoDbHost, mongoDbTwitterDb);
-		TwitterFacade twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
+		TwitterCache twitterFacade = new TwitterCache(twitterWebFacade, persistanceFacade);
 		return twitterFacade;
 	}
 
-	public static TwitterFacade getTwitterFacadeForTests() throws UnknownHostException
+	public static TwitterCache getTwitterFacadeForTests() throws UnknownHostException
 	{
 		Token applicationToken = new Token(applicationTokenPath);
 		List<Token> userTokens = new ArrayList<Token>();
@@ -47,7 +47,7 @@ public class TwitterFacadeFactory
 			userTokens.add(new Token(tokens[i]));
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade(mongoDbHost, mongoDbTestDb);
-		TwitterFacade twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
+		TwitterCache twitterFacade = new TwitterCache(twitterWebFacade, persistanceFacade);
 		return twitterFacade;
 	}
 }

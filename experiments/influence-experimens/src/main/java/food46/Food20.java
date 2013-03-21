@@ -1,7 +1,7 @@
 package food46;
 
 
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.influencers.crawler.InfluencersDiscoverer;
 import it.cybion.influencers.crawler.filtering.FilterManager;
@@ -34,7 +34,7 @@ public class Food20
 
 		int iterations = 1;
 		GraphFacade graphFacade = getGraphFacade();
-		TwitterFacade twitterFacade = TwitterFacadeFactory.getTwitterFacade();
+		TwitterCache twitterFacade = TwitterFacadeFactory.getTwitterFacade();
 		List<Long> usersIds = getUsersIds();
 		List<FilterManager> filterManagers = getFilterManagers();
 

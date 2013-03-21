@@ -2,7 +2,7 @@ package it.cybion.influencers.crawler;
 
 
 
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
@@ -129,7 +129,7 @@ public class ConfigurationFileParser
 		properties.load(new FileInputStream(configFilePath));
 		
 		int iterations = getIterations(properties);		
-		TwitterFacade twitterFacade = getTwitterFacade(properties);	
+		TwitterCache twitterFacade = getTwitterFacade(properties);	
 		GraphFacade graphFacade = getGraphFacade(properties);
 		List<Long> seedUsersIds = getSeedUsersIds(properties);
 		List<FilterManagerDescription> iteratingFiltersDescriptions = getIteratingFiltersDescriptions(properties);
@@ -183,7 +183,7 @@ public class ConfigurationFileParser
 		return influencersDiscoverer;
 	}
 
-	private static TwitterFacade getTwitterFacade(Properties properties) throws UnknownHostException
+	private static TwitterCache getTwitterFacade(Properties properties) throws UnknownHostException
 	{
 		
 		String mongodbHost = properties.getProperty("mongodb_host");
@@ -202,7 +202,7 @@ public class ConfigurationFileParser
 		}
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 			
-		return new TwitterFacade(twitterWebFacade, persistanceFacade);
+		return new TwitterCache(twitterWebFacade, persistanceFacade);
 		
 	}
 	

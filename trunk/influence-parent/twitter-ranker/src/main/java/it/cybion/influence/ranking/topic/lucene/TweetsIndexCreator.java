@@ -2,7 +2,7 @@ package it.cybion.influence.ranking.topic.lucene;
 
 
 import it.cybion.influence.ranking.topic.lucene.enriching.UrlsExapandedTweetsTextExtractor;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.io.File;
@@ -28,7 +28,7 @@ public class TweetsIndexCreator
 {
 	private static final Logger logger = Logger.getLogger(TweetsIndexCreator.class);
 	
-	public static List<Directory> createSingleDocumentIndexesForUsers(TwitterFacade twitterFacade, String indexesRootDirPath, List<Long> usersIds)
+	public static List<Directory> createSingleDocumentIndexesForUsers(TwitterCache twitterFacade, String indexesRootDirPath, List<Long> usersIds)
 	{
 		List<Directory> indexes = new ArrayList<Directory>();
 		int indexesCount = 0;
@@ -48,7 +48,7 @@ public class TweetsIndexCreator
 		return indexes;
 	}
 
-	public static Directory createSingleDocumentIndexForUser(TwitterFacade twitterFacade, String indexPath, long userId) throws ProtectedUserException
+	public static Directory createSingleDocumentIndexForUser(TwitterCache twitterFacade, String indexPath, long userId) throws ProtectedUserException
 	{
 		List<String> tweetsJsons = null;
 		try

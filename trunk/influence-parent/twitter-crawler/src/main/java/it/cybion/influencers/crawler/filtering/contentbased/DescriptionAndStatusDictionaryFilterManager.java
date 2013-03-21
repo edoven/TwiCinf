@@ -10,7 +10,7 @@ import java.util.Map;
 
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 
 
 
@@ -19,7 +19,7 @@ public class DescriptionAndStatusDictionaryFilterManager implements FilterManage
 
 	private static final Logger logger = Logger.getLogger(DescriptionAndStatusDictionaryFilterManager.class);
 
-	TwitterFacade twitterFacade;
+	TwitterCache twitterFacade;
 	GraphFacade graphFacade;
 	List<Long> seedUsers;
 	Map<Long, String> users2descriptions;
@@ -125,7 +125,7 @@ public class DescriptionAndStatusDictionaryFilterManager implements FilterManage
 	}
 
 	@Override
-	public void setTwitterFacade(TwitterFacade twitterFacade)
+	public void setTwitterFacade(TwitterCache twitterFacade)
 	{
 		this.twitterFacade = twitterFacade;
 	}

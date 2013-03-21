@@ -4,7 +4,7 @@ package it.cybion.influencers.crawler.filtering.topologybased;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
 import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +29,7 @@ public abstract class DegreeFilterManager implements FilterManager
 	private static final Logger logger = Logger.getLogger(DegreeFilterManager.class);
 
 	protected List<Long> seedUsers;
-	private TwitterFacade twitterFacade;
+	private TwitterCache twitterFacade;
 	protected GraphFacade graphFacade;
 	protected List<User> enrichedSeedUsers;
 	protected List<Long> followersAndFriends;
@@ -71,7 +71,7 @@ public abstract class DegreeFilterManager implements FilterManager
 	};
 
 	@Override
-	public void setTwitterFacade(TwitterFacade twitterFacade)
+	public void setTwitterFacade(TwitterCache twitterFacade)
 	{
 		this.twitterFacade = twitterFacade;
 

@@ -31,15 +31,15 @@ import twitter4j.TwitterException;
  * They are less "performance-oriented"...but so elegant. :)  
  */
 
-public class TwitterFacade
+public class TwitterCache
 {
 
-	private static final Logger logger = Logger.getLogger(TwitterFacade.class);
+	private static final Logger logger = Logger.getLogger(TwitterCache.class);
 
 	TwitterWebFacade twitterWebFacade;
 	PersistanceFacade persistanceFacade;
 
-	public TwitterFacade(TwitterWebFacade twitterWebFacade, PersistanceFacade persistanceFacade)
+	public TwitterCache(TwitterWebFacade twitterWebFacade, PersistanceFacade persistanceFacade)
 	{
 		this.twitterWebFacade = twitterWebFacade;
 		this.persistanceFacade = persistanceFacade;

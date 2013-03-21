@@ -3,7 +3,7 @@ package trashion7;
 
 import it.cybion.influencers.InfluencersDiscoverer;
 import it.cybion.influencers.InfluencersDiscovererBuilder;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.filtering.aggregation.OrFilterManager;
@@ -46,7 +46,7 @@ public class Trashion7
 		}
 
 		GraphFacade graphFacade = getGraphFacade();
-		TwitterFacade twitterFacade = TwitterFacadeFactory.getTwitterFacade();
+		TwitterCache twitterFacade = TwitterFacadeFactory.getTwitterFacade();
 		List<Long> usersIds = getUsersIds();
 		List<FilterManager> iteratingFilters = getIteratingFilters();
 		List<FilterManager> finalizingFilters = getFinalizingFilters();

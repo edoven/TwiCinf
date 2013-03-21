@@ -2,7 +2,6 @@ package it.cybion.influencers.cache.web;
 
 
 import it.cybion.influencers.cache.model.Tweet;
-import it.cybion.influencers.cache.web.exceptions.MethodInputNotCorrectException;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
@@ -24,7 +23,8 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 {
 	private final Logger logger = Logger.getLogger(Twitter4jWebFacade.class);
 
-	private UserHandlersManager userHandlersManager;
+	private List<UserHandler> userHandlers;
+	private final int WAIT_TIME = 1; 
 	
 	
 	private class ResultContainer
@@ -47,8 +47,54 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 
 	public Twitter4jWebFacade(Token consumerToken, List<Token> userTokens)
 	{
-		this.userHandlersManager = new UserHandlersManager(consumerToken, userTokens);
+		userHandlers = new ArrayList<UserHandler>();
+		for (Token userToken : userTokens)
+		{
+			logger.info("Creating UserHandler");
+			for (int i = 0; i < 3; i++)
+			{ // 3 tries
+				try
+				{
+					UserHandler userHandler = new UserHandler(consumerToken, userToken);
+					userHandlers.add(userHandler);
+					break;
+				} catch (TwitterException e)
+				{
+					logger.info("Can't create UserHandler for token = " + userToken + ". Let's wait 1 min and then retry.");
+					try
+					{
+						Thread.sleep(60 * 1000);
+					} catch (InterruptedException e1)
+					{
+						logger.info("Problem in Thread.sleep");
+					}
+				}			
+				logger.info("Can't create UserHandler for token = " + userToken + ". Skipped.");
+			}
+		}
+		logger.info("UserHandlers created");
 	}
+	
+	public UserHandler getUserHandler(String requestName)
+	{
+		for (UserHandler userHandler : userHandlers)
+		{
+			if (!userHandler.requestLimitReached(requestName))
+				return userHandler;
+		}
+		try
+		{
+			logger.info("All handlers have reached the limit, let's wait for " + WAIT_TIME + " min");
+			Thread.sleep(WAIT_TIME * 60 * 1000);
+			return getUserHandler(requestName);
+		} catch (InterruptedException e1)
+		{
+			logger.info("Problem in Thread.sleep().");
+			System.exit(0);
+			return null;
+		}
+	}
+	
 
 	private ResultContainer filterTweetsByDate(List<Tweet> tweets,Date startDate, Date endDate)	
 	{
@@ -143,6 +189,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 	@Override
 	public List<Long> getFollowersIds(long userId) throws TwitterException
 	{
+		
 		long cursor = -1;
 		List<Long> ids = new ArrayList<Long>();
 		while (cursor != 0)
@@ -157,20 +204,8 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 
 	private IDs getFollowersIdsWithPagination(long userId, long cursor) throws TwitterException
 	{
-		RequestName requestName = RequestName.GET_FOLLOWERS_IDS_WITH_PAGINATION;
-		List<Object> requestParameters = new ArrayList<Object>();
-		requestParameters.add(0, userId);
-		requestParameters.add(1, cursor);
-		try
-		{
-			return (IDs) userHandlersManager.executeRequest(requestName, requestParameters);
-		}
-		catch (ProtectedUserException e)
-		{
-			//this call can't throw this exception
-			System.exit(0);
-			return null;
-		}
+		UserHandler userHandler = getUserHandler("/followers/ids");
+		return userHandler.getFollowersWithPagination(userId, cursor);
 	}
 
 	@Override
@@ -188,53 +223,26 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		return ids;
 	}
 
-	
-
 	@Override
 	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException 
 	{
+		UserHandler userHandler = getUserHandler("/statuses/user_timeline");
 		logger.info("Downloading 200 tweets for user with id:" + userId + " with maxid="+maxId);
-		RequestName requestname = RequestName.GET_USER_TWEETS_WITH_MAX_ID;
-		List<Object> requestParameters = new ArrayList<Object>();
-		requestParameters.add(0, userId);
-		requestParameters.add(1, maxId);
-		List<String> tweets = (List<String>) userHandlersManager.executeRequest(requestname, requestParameters);
+		List<String> tweets = userHandler.getTweetsWithMaxId(userId, maxId);
 		return tweets;
 	}
 
-	private List<String> getUpTo100Users(long[] usersIds) throws TwitterException, MethodInputNotCorrectException
+	private List<String> getUpTo100Users(long[] usersIds) throws TwitterException
 	{
-		RequestName requestname = RequestName.GET_UP_TO_100_USERS;
-		List<Object> requestParameters = new ArrayList<Object>();
-		requestParameters.add(0, usersIds);
-		try
-		{
-			return (List<String>) userHandlersManager.executeRequest(requestname, requestParameters);
-		}
-		catch (ProtectedUserException e)
-		{
-			//this call can't throw this exception
-			System.exit(0);
-			return null;
-		}
+		UserHandler userHandler = getUserHandler("/users/lookup");
+		return (List<String>) userHandler.getUsersJsons(usersIds);
 	}
 	
 	@Override
 	public String getUserJson(long userId) throws TwitterException
 	{
-		RequestName requestName = RequestName.GET_USER_JSON_FROM_ID;
-		List<Object> requestParameters = new ArrayList<Object>();
-		requestParameters.add(0, userId);
-		try
-		{
-			return (String) userHandlersManager.executeRequest(requestName, requestParameters);
-		}
-		catch (ProtectedUserException e)
-		{
-			//this call can't throw this exception
-			System.exit(0);
-			return null;
-		}
+		UserHandler userHandler = getUserHandler("/users/show/:id");
+		return userHandler.getUserJson(userId);
 	}
 
 	
@@ -242,19 +250,8 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 	@Override
 	public String getUserJson(String screenName) throws TwitterException
 	{
-		RequestName requestName = RequestName.GET_USER_JSON_FROM_SCREENNAME;
-		List<Object> requestParameters = new ArrayList<Object>();
-		requestParameters.add(0, screenName);
-		try
-		{
-			return (String) userHandlersManager.executeRequest(requestName, requestParameters);
-		}
-		catch (ProtectedUserException e)
-		{
-			//this call can't throw this exception
-			System.exit(0);
-			return null;
-		}
+		UserHandler userHandler = getUserHandler("/users/show/:id");
+		return userHandler.getUserJson(screenName);
 	}
 	
 	@Override
@@ -273,15 +270,8 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		{
 			long[] chunk = getChunk(usersIds, 100, i);
 			logger.info("downloading chunk " + i + "/" + chunksCount);
-			try
-			{
-				List<String> chunkResult = getUpTo100Users(chunk);
-				usersJsons.addAll(chunkResult);
-			} catch (MethodInputNotCorrectException e)
-			{
-				e.printStackTrace();
-				System.exit(0);
-			} 
+			List<String> chunkResult = getUpTo100Users(chunk);
+			usersJsons.addAll(chunkResult);
 		}
 		return usersJsons;
 	}
@@ -332,20 +322,8 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 	
 	private IDs getFriendsIdsWithPagination(long userId, long cursor) throws TwitterException
 	{
-		RequestName requestName = RequestName.GET_FRIENDS_IDS_WITH_PAGINATION;
-		List<Object> requestParameters = new ArrayList<Object>();
-		requestParameters.add(0, userId);
-		requestParameters.add(1, cursor);
-		try
-		{
-			return (IDs) userHandlersManager.executeRequest(requestName, requestParameters);
-		}
-		catch (ProtectedUserException e)
-		{
-			//this call can't throw this exception
-			System.exit(0);
-			return null;
-		}
+		UserHandler userHandler = getUserHandler("/friends/ids");
+		return (IDs) userHandler.getFriendsWithPagination(userId, cursor);
 	}
 
 	private List<Tweet> getTweetsFromJsons(List<String> tweetsJsons)

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
@@ -25,7 +25,7 @@ public class LaPerlaRanking
 			toMonth= 2, 
 			toDay = 20;
 		String luceneTempDirPath = "/home/godzy/Desktop/temp";
-		TwitterFacade twitterFacade = TwitterFacadeFactory.getTwitterFacade();
+		TwitterCache twitterFacade = TwitterFacadeFactory.getTwitterFacade();
 		List<Long> laPerla2800UserIds = ListFileReader.readLongListFile("/home/godzy/Desktop/laPerla2800UsersIds.txt");
 		Collections.shuffle(laPerla2800UserIds);
 		List<Long> seedUsers = laPerla2800UserIds.subList(0, 10);

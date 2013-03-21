@@ -8,7 +8,7 @@ import java.util.Set;
 
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 
 
 			 
@@ -18,7 +18,7 @@ public class OrFilterManager implements FilterManager
 	private List<FilterManager> filterMangers;
 	private GraphFacade graphFacade;
 	private List<Long> users;
-	private TwitterFacade twitterFacade;
+	private TwitterCache twitterFacade;
 
 	public OrFilterManager(List<FilterManager> filterMangers)
 	{
@@ -41,7 +41,7 @@ public class OrFilterManager implements FilterManager
 	}
 
 	@Override
-	public void setTwitterFacade(TwitterFacade twitterFacade)
+	public void setTwitterFacade(TwitterCache twitterFacade)
 	{
 		this.twitterFacade = twitterFacade;
 	}

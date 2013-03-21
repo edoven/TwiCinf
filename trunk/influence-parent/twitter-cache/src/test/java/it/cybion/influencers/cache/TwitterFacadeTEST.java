@@ -27,7 +27,7 @@ public class TwitterFacadeTEST
 
 	private static final Logger logger = Logger.getLogger(TwitterFacadeTEST.class);
 
-	private TwitterFacade twitterFacade;
+	private TwitterCache twitterFacade;
 
 	@BeforeClass
 	public void init() throws UnknownHostException
@@ -50,7 +50,7 @@ public class TwitterFacadeTEST
 
 		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb");
-		twitterFacade = new TwitterFacade(twitterWebFacade, persistanceFacade);
+		twitterFacade = new TwitterCache(twitterWebFacade, persistanceFacade);
 	}
 
 	@Test(enabled = false)

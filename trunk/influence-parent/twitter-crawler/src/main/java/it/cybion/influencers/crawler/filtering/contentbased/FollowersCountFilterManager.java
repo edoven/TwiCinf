@@ -11,7 +11,7 @@ import twitter4j.TwitterException;
 
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 
 
 
@@ -20,7 +20,7 @@ public class FollowersCountFilterManager implements FilterManager
 
 	private static final Logger logger = Logger.getLogger(FollowersCountFilterManager.class);
 
-	private TwitterFacade twitterManager;
+	private TwitterCache twitterManager;
 	private List<Long> users;
 	private int threshold;
 	private Map<Long, Integer> user2followersCount;
@@ -68,7 +68,7 @@ public class FollowersCountFilterManager implements FilterManager
 	}
 
 	@Override
-	public void setTwitterFacade(TwitterFacade twitterManager)
+	public void setTwitterFacade(TwitterCache twitterManager)
 	{
 		this.twitterManager = twitterManager;
 	}

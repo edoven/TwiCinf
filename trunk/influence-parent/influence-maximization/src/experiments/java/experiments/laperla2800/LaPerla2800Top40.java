@@ -1,6 +1,6 @@
 package experiments.laperla2800;
 
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.info.utils.ListFileReader;
 
@@ -83,7 +83,7 @@ public class LaPerla2800Top40
 		top40.add("voguemagazine");
 		top40.add("InStyle");
 		
-		TwitterFacade twitterFacade = TwitterFacadeFactory.getTwitterFacade();
+		TwitterCache twitterFacade = TwitterFacadeFactory.getTwitterFacade();
 		List<User> laPerla2800Users = new ArrayList<User>();
 		int count=0;
 		for (Long userId : laPerlaFashio2800)
@@ -117,7 +117,7 @@ public class LaPerla2800Top40
 				1412, 2397, 2759, 1009, 2100, 2349, 1837, 
 				1958, 2814, 550};
 		Map<String,Integer> screenName2GrapgId = getScreenName2GrapgId();
-		TwitterFacade twitterFacade = TwitterFacadeFactory.getTwitterFacade();
+		TwitterCache twitterFacade = TwitterFacadeFactory.getTwitterFacade();
 		List<String> top40screenNames = new ArrayList<String>();
 		List<Long> top40userIds;
 		

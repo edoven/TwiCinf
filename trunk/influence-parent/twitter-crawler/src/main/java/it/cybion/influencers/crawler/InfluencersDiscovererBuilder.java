@@ -2,7 +2,7 @@ package it.cybion.influencers.crawler;
 
 import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
 import it.cybion.influencers.crawler.graph.GraphFacade;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class InfluencersDiscovererBuilder
 		return this;
 	}
 	
-	public InfluencersDiscovererBuilder usingTwitterFacade(TwitterFacade twitterFacade)
+	public InfluencersDiscovererBuilder usingTwitterFacade(TwitterCache twitterFacade)
 	{
 		influencersDiscoverer.setTwitterFacade(twitterFacade);
 		twitterFacadeSet = true;

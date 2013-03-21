@@ -1,6 +1,6 @@
 package influenceGraph;
 
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class UsersWithRetweetsCreator {
 	
 	
 
-	public static List<User> getRetweetsEnrichenedUsers(TwitterFacade twitterFacade , List<Long> usersIds) {
+	public static List<User> getRetweetsEnrichenedUsers(TwitterCache twitterFacade , List<Long> usersIds) {
 		List<User> enrichedUsers = new ArrayList<User>();
 		int count = 0;
 		for (Long userId : usersIds) {
@@ -41,7 +41,7 @@ public class UsersWithRetweetsCreator {
 		return enrichedUsers;
 	}
 	
-	public static Map<Long, Integer> getRetweetsStatusForUser(TwitterFacade twitterFacade, Long userId) throws TwitterException {
+	public static Map<Long, Integer> getRetweetsStatusForUser(TwitterCache twitterFacade, Long userId) throws TwitterException {
 		Map<Long, Integer> users2Retweets = new HashMap<Long,Integer>();
 		List<String> tweetsJsons = twitterFacade.getUpTo200Tweets(userId);
 		List<Tweet> tweets = new ArrayList<Tweet>();

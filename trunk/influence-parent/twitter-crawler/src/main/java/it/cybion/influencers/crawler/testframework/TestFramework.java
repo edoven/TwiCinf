@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import twitter4j.TwitterException;
 
 import it.cybion.influencers.crawler.InfluencersDiscoverer;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 
 
 
@@ -20,9 +20,9 @@ public class TestFramework
 
 	private InfluencersDiscoverer influencersDiscoverer;
 	private List<Long> toBeInUsers;
-	private TwitterFacade twitterFacade;
+	private TwitterCache twitterFacade;
 
-	public TestFramework(InfluencersDiscoverer influencersDiscoverer, List<Long> toBeInUsers, TwitterFacade twitterFacade)
+	public TestFramework(InfluencersDiscoverer influencersDiscoverer, List<Long> toBeInUsers, TwitterCache twitterFacade)
 	{
 		this.influencersDiscoverer = influencersDiscoverer;
 		this.toBeInUsers = toBeInUsers;

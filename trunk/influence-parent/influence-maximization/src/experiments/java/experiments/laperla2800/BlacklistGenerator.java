@@ -1,6 +1,6 @@
 package experiments.laperla2800;
 
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.info.utils.ListFileReader;
 
@@ -53,7 +53,7 @@ public class BlacklistGenerator
 	public static List<Integer> getTopFollowedNGraphIds(int n) throws UnknownHostException, TwitterException
 	{
 		List<Long> laPerla2800UsersIds = ListFileReader.readLongListFile("/home/godzy/Desktop/laPerla2800UsersIds.txt");
-		TwitterFacade twitterFacade = TwitterFacadeFactory.getTwitterFacade();
+		TwitterCache twitterFacade = TwitterFacadeFactory.getTwitterFacade();
 		
 		List<User> laPerla2800Users = new ArrayList<User>();
 		for (Long userId : laPerla2800UsersIds)

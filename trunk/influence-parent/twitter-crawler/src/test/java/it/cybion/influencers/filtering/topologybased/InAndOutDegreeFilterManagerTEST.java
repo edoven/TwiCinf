@@ -5,7 +5,7 @@ import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilte
 import it.cybion.influencers.crawler.graph.GraphFacade;
 import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
 import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
@@ -29,7 +29,7 @@ public class InAndOutDegreeFilterManagerTEST
 
 	private static final Logger logger = Logger.getLogger(InAndOutDegreeFilterManagerTEST.class);
 
-	private static TwitterFacade twitterFacade;
+	private static TwitterCache twitterFacade;
 	private static GraphFacade graphFacade;
 
 	public static void init() throws IOException

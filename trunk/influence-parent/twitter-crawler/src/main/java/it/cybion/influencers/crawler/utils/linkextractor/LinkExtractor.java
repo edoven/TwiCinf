@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import com.google.gson.Gson;
@@ -17,11 +17,11 @@ public class LinkExtractor
 {
 	private static final Logger logger = Logger.getLogger(LinkExtractor.class);
 	
-	public TwitterFacade twitterFacade;	
+	public TwitterCache twitterFacade;	
 	
 	
 	
-	public LinkExtractor(TwitterFacade twitterFacade)
+	public LinkExtractor(TwitterCache twitterFacade)
 	{
 		super();
 		this.twitterFacade = twitterFacade;

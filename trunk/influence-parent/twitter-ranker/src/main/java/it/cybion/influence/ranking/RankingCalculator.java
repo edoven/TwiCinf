@@ -4,7 +4,7 @@ import it.cybion.influence.ranking.model.Tweet;
 import it.cybion.influence.ranking.topic.lucene.TweetToTopicSimilarityCalculator;
 import it.cybion.influence.ranking.topic.lucene.TweetsIndexCreator;
 import it.cybion.influence.ranking.topic.lucene.enriching.UrlsExapandedTweetsTextExtractor;
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class RankingCalculator
 	
 	public List<RankedUser> printRanks(List<Long> seedUsers, 
 						   List<Long> usersToRank, 
-						   TwitterFacade twitterFacade,
+						   TwitterCache twitterFacade,
 						   String luceneTempDirPath,
 						   int fromYear, int fromMonth, int fromDay,
 						   int toYear, int toMonth, int toDay)

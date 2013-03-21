@@ -2,7 +2,7 @@ package trashionLaPerla;
 
 
 
-import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.influencers.crawler.InfluencersDiscoverer;
 import it.cybion.influencers.crawler.InfluencersDiscovererBuilder;
@@ -45,7 +45,7 @@ public class TrashionLaPerla
 		}
 
 		GraphFacade graphFacade = getGraphFacade();
-		TwitterFacade twitterFacade = TwitterFacadeFactory.getTwitterFacade();
+		TwitterCache twitterFacade = TwitterFacadeFactory.getTwitterFacade();
 		List<FilterManager> iteratingFilters = getIteratingFilters();
 		List<String> screenNames = getUsers();
 
