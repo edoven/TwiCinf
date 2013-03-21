@@ -21,12 +21,6 @@ import com.google.gson.GsonBuilder;
 
 public class Twitter4jWebFacade implements TwitterWebFacade
 {
-	private final Logger logger = Logger.getLogger(Twitter4jWebFacade.class);
-
-	private List<UserHandler> userHandlers;
-	private final int WAIT_TIME = 1; 
-	
-	
 	private class ResultContainer
 	{		
 		boolean isFinished;
@@ -43,6 +37,12 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 			this.badTweets = badTweets;
 		}
 	}
+
+	private final Logger logger = Logger.getLogger(Twitter4jWebFacade.class);
+	
+	private final int WAIT_TIME = 1;
+	private List<UserHandler> userHandlers; 	
+	
 	
 
 	public Twitter4jWebFacade(Token consumerToken, List<Token> userTokens)
@@ -75,37 +75,15 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		logger.info("UserHandlers created");
 	}
 	
-	public UserHandler getUserHandler(String requestName)
-	{
-		for (UserHandler userHandler : userHandlers)
-		{
-			if (!userHandler.requestLimitReached(requestName))
-				return userHandler;
-		}
-		try
-		{
-			logger.info("All handlers have reached the limit, let's wait for " + WAIT_TIME + " min");
-			Thread.sleep(WAIT_TIME * 60 * 1000);
-			return getUserHandler(requestName);
-		} catch (InterruptedException e1)
-		{
-			logger.info("Problem in Thread.sleep().");
-			System.exit(0);
-			return null;
-		}
-	}
-	
-
 	private ResultContainer filterTweetsByDate(List<Tweet> tweets,Date startDate, Date endDate)	
 	{
 		Collections.sort(tweets);
 		Tweet minIdTweet = tweets.get(0);
-		Date minDate200 = minIdTweet.created_at;
+		long oldestId = minIdTweet.id;
 		Tweet maxIdTweet = tweets.get(tweets.size()-1);	
 		Date maxDate200 = maxIdTweet.created_at;
 		List<String> goodTweets = new ArrayList<String>();
-		List<String> badTweets = new ArrayList<String>();
-		
+		List<String> badTweets = new ArrayList<String>();		
 		for (Tweet tweet: tweets)
 		{
 			if (isGreater(tweet.created_at,startDate) && isGreater(endDate, tweet.created_at))
@@ -114,62 +92,11 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 				badTweets.add(tweet.originalJson);
 		}
 		boolean isFinished = false;
-		long oldestId = minIdTweet.id;
-		
-		/*
-		 * 
-		 * caso 1 = i tweet del periodo sono contenuti tutti tra i 200 tweet - si salvano i tweet tra startDate e endDate e stop
-		 * caso 2 = i 200 tweet sono più recenti del periodo - bisogna scaricare tweet piu vecchi
-		 * caso 3 = i 200 tweet sono a cavallo della endDate - si salvano i tweet più vecchi ma bisogna scaricare tweet piu vecchi
-		 * caso 4 = i 200 tweet sono contenuti tutti all'interno del periodo - si salvano tutti i tweet ma bisogna scaricare tweet piu vecchi
-		 * caso 5 = i 200 tweet sono a cavallo con la startDate - si salvano i tweet più recenti e stop
-		 * caso 6 = i 200 tweet sono tutti più vecchi della startDate - non prendo nessun tweet e stop
-		 * 	
-		 */
-		if (isGreater(startDate,minDate200) && isGreater(maxDate200,endDate))
-		{
-			logger.debug("caso 1");
+		if (maxDate200.compareTo(startDate)<0)
 			isFinished = true;
-		}
-		if (isGreater(minDate200,endDate))
-		{
-			logger.debug("caso 2");
-			isFinished = false;
-		}			
-		if (isGreater(minDate200,startDate) && isGreater(endDate,minDate200) && isGreater(maxDate200,endDate))
-		{
-			logger.debug("caso 3");
-			isFinished = false;
-		}		
-		if (isGreater(minDate200,startDate) && isGreater(endDate,maxDate200))
-		{
-			logger.debug("caso 4");
-			isFinished = false;
-		}		
-		if (isGreater(startDate,minDate200) && isGreater(maxDate200, startDate) && isGreater(endDate,maxDate200))
-		{
-			logger.debug("caso 5");
-			isFinished = true;
-		}		
-		if (isGreater(startDate, maxDate200))
-		{
-			logger.debug("caso 6");
-			isFinished = true;
-		}
-		
-		/*
-		 * 
-		 * BEWARE!
-		 * TODO: handle this in a better way!
-		 * 
-		 */
-		if (tweets.size()<2)
-			isFinished = true;
-
-		return new ResultContainer(isFinished,oldestId,goodTweets,badTweets);
-			
+		return new ResultContainer(isFinished,oldestId,goodTweets,badTweets);		
 	}
-
+	
 	private long[] getChunk(List<Long> list, int chunkSize, int chunkIndex)
 	{
 		int firstElementIndex = chunkIndex * chunkSize;
@@ -223,6 +150,63 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		return ids;
 	}
 
+	private IDs getFriendsIdsWithPagination(long userId, long cursor) throws TwitterException
+	{
+		UserHandler userHandler = getUserHandler("/friends/ids");
+		return (IDs) userHandler.getFriendsWithPagination(userId, cursor);
+	}
+
+	@Override
+	public SearchedByDateTweetsResultContainer getTweetsByDate(
+											long userId, 
+											int fromYear, int fromMonth, int fromDay, 
+											int toYear,	  int toMonth,   int toDay) throws TwitterException, ProtectedUserException
+	{
+		
+		Date fromDate = new Date(fromYear-1900, fromMonth-1, fromDay);
+		Date toDate = new Date(toYear-1900, toMonth-1, toDay);
+		if (toDate.compareTo(fromDate)<0)
+		{
+			logger.info("ERROR! endDate can't be smaller than startDate.");
+			System.exit(0);
+		}
+		List<String> tweetsJsons = getTweetsWithMaxId(userId, -1);
+		List<Tweet> tweets = getTweetsFromJsons(tweetsJsons);				
+		List<String> goodTweets = new ArrayList<String>();
+		List<String> badTweets = new ArrayList<String>();
+		ResultContainer resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
+		goodTweets.addAll(resultContainer.goodTweets);
+		badTweets.addAll(resultContainer.badTweets);
+		if (resultContainer.isFinished==false)
+			while (!resultContainer.isFinished)
+			{
+				long oldestId = resultContainer.oldestId;
+				tweetsJsons = getTweetsWithMaxId(userId,oldestId);
+				tweets = getTweetsFromJsons(tweetsJsons);
+				resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
+				goodTweets.addAll(resultContainer.goodTweets);
+				badTweets.addAll(resultContainer.badTweets);
+			}		
+		return new SearchedByDateTweetsResultContainer(goodTweets, badTweets);
+	}
+
+	private List<Tweet> getTweetsFromJsons(List<String> tweetsJsons)
+	{
+		List<Tweet> tweets = new ArrayList<Tweet>();
+		Gson gson = new GsonBuilder()
+				.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+					// "Wed Oct 17 19:59:40 +0000 2012"
+					.setDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy").create();
+		Tweet tweet;
+		for (String tweetjson : tweetsJsons)
+		{
+			tweet = gson.fromJson(tweetjson, Tweet.class);
+			tweet.setOriginalJson(tweetjson);
+			tweets.add(tweet);
+		}
+		return tweets;
+	}
+	
 	@Override
 	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException 
 	{
@@ -232,10 +216,32 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		return tweets;
 	}
 
+	
+	
 	private List<String> getUpTo100Users(long[] usersIds) throws TwitterException
 	{
 		UserHandler userHandler = getUserHandler("/users/lookup");
 		return (List<String>) userHandler.getUsersJsons(usersIds);
+	}
+	
+	public UserHandler getUserHandler(String requestName)
+	{
+		for (UserHandler userHandler : userHandlers)
+		{
+			if (!userHandler.requestLimitReached(requestName))
+				return userHandler;
+		}
+		try
+		{
+			logger.info("All handlers have reached the limit, let's wait for " + WAIT_TIME + " min");
+			Thread.sleep(WAIT_TIME * 60 * 1000);
+			return getUserHandler(requestName);
+		} catch (InterruptedException e1)
+		{
+			logger.info("Problem in Thread.sleep().");
+			System.exit(0);
+			return null;
+		}
 	}
 	
 	@Override
@@ -244,7 +250,6 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		UserHandler userHandler = getUserHandler("/users/show/:id");
 		return userHandler.getUserJson(userId);
 	}
-
 	
 	
 	@Override
@@ -275,72 +280,13 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		}
 		return usersJsons;
 	}
-	
-	@Override
-	public SearchedByDateTweetsResultContainer getTweetsByDate(
-											long userId, 
-											int fromYear, int fromMonth, int fromDay, 
-											int toYear,	  int toMonth,   int toDay) throws TwitterException, ProtectedUserException
-	{
-		
-		Date fromDate = new Date(fromYear-1900, fromMonth-1, fromDay);
-		Date toDate = new Date(toYear-1900, toMonth-1, toDay);
-		if (toDate.compareTo(fromDate)<0)
-		{
-			logger.info("ERROR! endDate can't be smaller than startDate.");
-			System.exit(0);
-		}
-		List<String> tweetsJsons = getTweetsWithMaxId(userId, -1);
-		List<Tweet> tweets = getTweetsFromJsons(tweetsJsons);				
-		List<String> goodTweets = new ArrayList<String>();
-		List<String> badTweets = new ArrayList<String>();
-		ResultContainer resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
-		goodTweets.addAll(resultContainer.goodTweets);
-		badTweets.addAll(resultContainer.badTweets);
-		if (resultContainer.isFinished==false)
-			while (resultContainer.isFinished==false)
-			{
-				long oldestId = resultContainer.oldestId;
-				tweetsJsons = getTweetsWithMaxId(userId,oldestId);
-				tweets = getTweetsFromJsons(tweetsJsons);
-				resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
-				goodTweets.addAll(resultContainer.goodTweets);
-				badTweets.addAll(resultContainer.badTweets);
-			}
-		
-		return new SearchedByDateTweetsResultContainer(goodTweets, badTweets);
-	}
-	
-	
+
 	private boolean isGreater(Date a, Date b)
 	{
 		if (a.compareTo(b)>0)
 			return true;
 		else
 			return false;
-	}
-	
-	private IDs getFriendsIdsWithPagination(long userId, long cursor) throws TwitterException
-	{
-		UserHandler userHandler = getUserHandler("/friends/ids");
-		return (IDs) userHandler.getFriendsWithPagination(userId, cursor);
-	}
-
-	private List<Tweet> getTweetsFromJsons(List<String> tweetsJsons)
-	{
-		List<Tweet> tweets = new ArrayList<Tweet>();
-		Gson gson = new GsonBuilder()
-				.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-					// "Wed Oct 17 19:59:40 +0000 2012"
-					.setDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy").create();
-		Tweet tweet;
-		for (String tweetjson : tweetsJsons)
-		{
-			tweet = gson.fromJson(tweetjson, Tweet.class);
-			tweet.setOriginalJson(tweetjson);
-			tweets.add(tweet);
-		}
-		return tweets;
 	}
 
 }

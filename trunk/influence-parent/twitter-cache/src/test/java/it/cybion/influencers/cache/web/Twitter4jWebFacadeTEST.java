@@ -217,16 +217,24 @@ public class Twitter4jWebFacadeTEST
 									// "Wed Oct 17 19:59:40 +0000 2012"
 						.setDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy").create();
 			Tweet tweet = gson.fromJson(tweetJson, Tweet.class);
-			logger.info(tweet.created_at);
+//			logger.info(tweet.created_at);
 			Assert.assertTrue(tweet.created_at.compareTo(fromDate)>0);
 			Assert.assertTrue(tweet.created_at.compareTo(toDate)<0);			
 		}
 	}
 	
 	@Test(enabled = true)
-	public void getTweetsFromProtectedUser() throws TwitterException, UserWithNoTweetsException, ProtectedUserException
-	{
-		List<String> tweetJsons = twitter4jFacade.getTweetsWithMaxId(107684088, -1); //user:LesaMcMaster
-		Assert.assertTrue(tweetJsons.size()==0);
+	public void getTweetsFromProtectedUser() throws TwitterException, UserWithNoTweetsException
+	{	
+		try
+		{
+			twitter4jFacade.getTweetsWithMaxId(107684088, -1); //user:LesaMcMaster
+			Assert.assertTrue(false);
+		}
+		catch (ProtectedUserException e)
+		{
+			Assert.assertTrue(true);
+		} 
+		
 	}
 }
