@@ -67,7 +67,7 @@ public class TweetToTopicSimilarityCalculator
 			accumulator = accumulator + getTweetRankFromOneIndex(indexReader, tweet);
 		}
 		float totalScore = accumulator / indexesReaders.size();
-		logger.info("total=" + totalScore);
+//		logger.info("total=" + totalScore);
 		return totalScore;
 	}
 
@@ -108,7 +108,7 @@ public class TweetToTopicSimilarityCalculator
 			score = 0;
 		else
 			score = hits[0].score;
-		logger.info(score);
+//		logger.info(score);
 		return score;
 
 	}

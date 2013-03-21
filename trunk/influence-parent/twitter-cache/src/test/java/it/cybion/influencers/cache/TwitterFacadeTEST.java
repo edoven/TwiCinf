@@ -7,6 +7,7 @@ import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.Twitter4jWebFacade;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -119,7 +120,7 @@ public class TwitterFacadeTEST
 	}
 
 	@Test(enabled = false)
-	public void getUpTo200TweetsTEST() throws TwitterException
+	public void getUpTo200TweetsTEST() throws TwitterException, ProtectedUserException
 	{
 		logger.info("--start--");
 		logger.info(twitterFacade.getUpTo200Tweets(887469007l));
@@ -128,7 +129,7 @@ public class TwitterFacadeTEST
 	
 	
 	@Test(enabled = true)
-	public void getTweetsByDateTEST() throws TwitterException
+	public void getTweetsByDateTEST() throws TwitterException, ProtectedUserException
 	{
 		long userId = 813286L; //BarackObama
 		int fromYear = 2012;

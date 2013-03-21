@@ -4,7 +4,8 @@ import java.util.List;
 import twitter4j.TwitterException;
 
 import it.cybion.influencers.cache.TwitterFacadeFactory;
-import it.cybion.influencers.utils.link_extractor.LinkExtractor;
+import it.cybion.influencers.crawler.utils.linkextractor.LinkExtractor;
+
 
 
 public class LinkExtractorTest

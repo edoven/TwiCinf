@@ -4,11 +4,14 @@ package it.cybion.influencers.crawler.filtering.language;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
 import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
 
@@ -18,6 +21,8 @@ import com.google.gson.Gson;
 
 public class LanguageDetectionFilterManager implements FilterManager
 {
+	
+	private static final Logger logger = Logger.getLogger(LanguageDetectionFilterManager.class);
 
 	private TwitterFacade twitterFacade;
 	private List<Long> seedUsers;
@@ -87,7 +92,17 @@ public class LanguageDetectionFilterManager implements FilterManager
 			List<String> tweetsText = new ArrayList<String>();
 			try
 			{
-				List<String> tweetsJsons = twitterFacade.getUpTo200Tweets(userId);
+				List<String> tweetsJsons;
+				try
+				{
+					tweetsJsons = twitterFacade.getUpTo200Tweets(userId);
+				}
+				catch (ProtectedUserException e)
+				{					
+					e.printStackTrace(); 
+					logger.info("User with id "+userId+" is protected. Skipped!");
+					continue;
+				}
 				for (String tweetJson : tweetsJsons)
 				{
 					Tweet tweet = gson.fromJson(tweetJson, Tweet.class);

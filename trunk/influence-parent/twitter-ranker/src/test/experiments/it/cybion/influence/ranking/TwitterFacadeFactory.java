@@ -1,4 +1,4 @@
-package it.cybion.influencers.rank.laperla;
+package it.cybion.influence.ranking;
 
 
 import it.cybion.influencers.cache.TwitterFacade;

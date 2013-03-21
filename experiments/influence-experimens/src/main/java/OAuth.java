@@ -9,7 +9,7 @@ import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
-import org.scribe.oauth.Token;
+
 
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;

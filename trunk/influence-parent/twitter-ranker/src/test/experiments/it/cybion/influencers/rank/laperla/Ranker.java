@@ -13,15 +13,13 @@ import com.google.gson.Gson;
 import twitter4j.TwitterException;
 
 
-public class RetweetsCount
+public class Ranker
 {
 	private static class Tweet
 	{
 		int retweet_count;
-		Tweet retweeted_status;
-		
+		Tweet retweeted_status;		
 	}
-	
 	
 	private static class User implements Comparable<User>
 	{
@@ -47,21 +45,26 @@ public class RetweetsCount
 	{
 		TwitterFacade twitterFacade;
 		twitterFacade = TwitterFacadeFactory.getTwitterFacade();
-//		
-		
-		
-		
 		List<Long> laPerla2800UserIds = ListFileReader.readLongListFile("/home/godzy/Desktop/laPerla2800UsersIds.txt");
 		Collections.sort(laPerla2800UserIds);
 		laPerla2800UserIds = laPerla2800UserIds.subList(0, 30);
 		Gson gson = new Gson();
 		List<User> users = new ArrayList<User>();
 		
+		int fromYear = 2013,
+			fromMonth = 2,
+			fromDay = 1;
+		int toYear = 2013,
+			toMonth = 3,
+			toDay = 1;
+		
 		int usersCount = 0;
+		List<String> jsonTweets;
 		for (Long userId : laPerla2800UserIds)
 		{
 			try {
-				List<String> jsonTweets = twitterFacade.getUpTo200Tweets(userId);
+				jsonTweets = twitterFacade.getUpTo200Tweets(userId);
+				jsonTweets = twitterFacade.getTweetsByDate(userId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
 				User user = new User();
 				double accumulator = 0;
 				int originalTweets = 0;
@@ -73,9 +76,6 @@ public class RetweetsCount
 						originalTweets++;
 						accumulator = accumulator + tweet.retweet_count;
 					}
-	//					System.out.println(tweet.retweet_count);
-	//				else
-	//					System.out.println(tweet.retweeted_status.retweet_count);
 				}
 				int followers = twitterFacade.getFollowersCount(userId);
 				double meanRetweetsCount = accumulator/originalTweets;
@@ -104,7 +104,6 @@ public class RetweetsCount
 		Collections.sort(users);
 		for (User user : users)
 		{
-//			System.out.println(user.screenName+" - "+user.meanRetweetsCount+" - "+user.originalTweets+" - "+user.followersCount+" - "+user.reach);		
 			System.out.printf("%15s - %5.2f - %4d - %7d - %9d - %4.5f \n", 
 								user.screenName, 
 								user.meanRetweetsCount,
@@ -113,12 +112,6 @@ public class RetweetsCount
 								user.reach, 
 								user.ranking);		
 			
-//			String screenName;
-//			int followersCount;
-//			int originalTweets;
-//			double meanRetweetsCount;
-//			int reach;
-//			double ranking;
 		}
 		System.exit(0);
 	}

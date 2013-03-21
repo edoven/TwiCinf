@@ -61,7 +61,15 @@ public class GraphBuilder
 		Map<Integer,String> graphId2UserScreenName = new HashMap<Integer, String>();
 		Gson gson = new Gson(); //this is used to "translate" the json of the tweet the a Tweet object
 		
-		twitterFacde.getDescriptions(usersIds); //this downloads 100 profiles per request and it's used to get screen_name from id
+		try
+		{
+			twitterFacde.getDescriptions(usersIds);
+		}
+		catch (TwitterException e1)
+		{
+			logger.info("twitterFacde.getDescriptions - problem with some user");
+			e1.printStackTrace();
+		} //this downloads 100 profiles per request and it's used to get screen_name from id
 		
 		//building screenName2GraphId and graphId2UserScreenName
 		for (int i = 0; i < usersIds.size(); i++)

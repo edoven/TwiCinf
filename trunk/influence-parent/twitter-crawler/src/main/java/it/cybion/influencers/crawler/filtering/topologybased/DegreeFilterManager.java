@@ -151,7 +151,16 @@ public abstract class DegreeFilterManager implements FilterManager
 		if (tenPercent == 0)
 			tenPercent = 1;
 
-		twitterFacade.donwloadUsersProfiles(seedUsers);
+		try
+		{
+			twitterFacade.donwloadUsersProfiles(seedUsers);
+		}
+		catch (TwitterException e1)
+		{
+			logger.info("problem in twitterFacade.donwloadUsersProfiles");
+			e1.printStackTrace();
+			System.exit(0);
+		}
 
 		for (int i = 0; i < seedUsers.size(); i++)
 		{

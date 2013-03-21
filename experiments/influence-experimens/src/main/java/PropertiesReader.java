@@ -1,7 +1,6 @@
 
 
-
-import it.cybion.influencers.filtering.FilterManager;
+import it.cybion.influencers.crawler.filtering.FilterManager;
 
 import java.io.FileInputStream;
 import java.io.IOException;

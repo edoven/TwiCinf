@@ -3,7 +3,7 @@ package it.cybion.influencers.cache.web;
 
 import it.cybion.influencers.cache.web.exceptions.LimitReachedForCurrentRequestException;
 import it.cybion.influencers.cache.web.exceptions.MethodInputNotCorrectException;
-
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +68,7 @@ public class UserHandler
 	}
 
 
-	private void setRequestType2limit()
+	public void setRequestType2limit()
 	{
 		logger.debug("setRequestType2limit");
 		Map<String, RateLimitStatus> requestType2limitStatus;
@@ -80,15 +80,15 @@ public class UserHandler
 				int limit = requestType2limitStatus.get(requestType).getRemaining();
 				requestType2limit.put(requestType, limit);
 			}
-		} catch (TwitterException e)
+		} 
+		catch (TwitterException e)
 		{
-			logger.info("Problem with setRequestType2limit.");
 			if (setRequestType2LimitTries < 2)
 			{
-				logger.info("Let's wait for 10 sec and retry.");
+				logger.info("Problem with setRequestType2limit. Let's wait for 3 sec and retry.");
 				try
 				{
-					Thread.sleep(10 * 1000);
+					Thread.sleep(3 * 1000);
 				} catch (InterruptedException e1)
 				{
 					logger.info("Problem in Thread.sleep(). Skipped.");
@@ -160,20 +160,31 @@ public class UserHandler
 		return result;
 	}
 
-	public List<String> getLast200TweetsPostedByUser(long userId) throws LimitReachedForCurrentRequestException, TwitterException
-	{
-		String requestName = "/statuses/user_timeline";
-		int limit = requestType2limit.get(requestName);
-		logger.debug("limit for getLast200TweetsPostedByUser=" + limit);
-		if (limit <= 0)
-			throw new LimitReachedForCurrentRequestException(requestType2limit);
-		List<Status> statuses = twitter.getUserTimeline(userId, new Paging(1, 200));
-		List<String> result = new ArrayList<String>();
-		for (Status status : statuses)
-			result.add(DataObjectFactory.getRawJSON(status));
-		requestType2limit.put(requestName, (limit - 1));
-		return result;
-	}
+//	public List<String> getLast200TweetsPostedByUser(long userId) throws LimitReachedForCurrentRequestException, ProtectedUserException, TwitterException
+//	{
+//		String requestName = "/statuses/user_timeline";
+//		int limit = requestType2limit.get(requestName);
+//		logger.debug("limit for getLast200TweetsPostedByUser=" + limit);
+//		if (limit <= 0)
+//			throw new LimitReachedForCurrentRequestException(requestType2limit);
+//		List<Status> statuses;
+//		try
+//		{
+//			statuses = twitter.getUserTimeline(userId, new Paging(1, 200));
+//		}
+//		catch (TwitterException e)
+//		{
+//			if (e.getErrorCode() == e.UNAUTHORIZED)
+//				throw new ProtectedUserException();
+//			else
+//				throw e;
+//		}
+//		List<String> result = new ArrayList<String>();
+//		for (Status status : statuses)
+//			result.add(DataObjectFactory.getRawJSON(status));
+//		requestType2limit.put(requestName, (limit - 1));
+//		return result;
+//	}
 
 	public String getUserJson(String screenName) throws LimitReachedForCurrentRequestException, TwitterException
 	{
@@ -187,7 +198,7 @@ public class UserHandler
 		return result;
 	}
 
-	public List<String> getTweetsWithMaxId(long userId, long maxId) throws LimitReachedForCurrentRequestException, TwitterException
+	public List<String> getTweetsWithMaxId(long userId, long maxId) throws LimitReachedForCurrentRequestException, TwitterException, ProtectedUserException
 	{
 		String requestName = "/statuses/user_timeline";
 		int limit = requestType2limit.get(requestName);
@@ -199,7 +210,20 @@ public class UserHandler
 		paging.setPage(1);
 		if (maxId!=-1)
 			paging.setMaxId(maxId);
-		List<Status> statuses = twitter.getUserTimeline(userId, paging);
+		List<Status> statuses;
+		try
+		{
+			statuses = twitter.getUserTimeline(userId, paging);
+		}
+		catch (TwitterException e)
+		{
+			if (e.getStatusCode() == 401)
+			{
+				throw new ProtectedUserException();
+			}
+			else
+				throw e;
+		}
 		List<String> result = new ArrayList<String>();
 		for (Status status : statuses)
 			result.add(DataObjectFactory.getRawJSON(status));

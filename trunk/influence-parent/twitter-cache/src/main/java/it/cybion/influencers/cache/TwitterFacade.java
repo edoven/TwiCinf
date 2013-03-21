@@ -2,6 +2,7 @@ package it.cybion.influencers.cache;
 
 
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.persistance.exceptions.OldestTweetsNeedToBeDownloadedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
@@ -9,6 +10,7 @@ import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnriched
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
 import it.cybion.influencers.cache.web.SearchedByDateTweetsResultContainer;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +45,7 @@ public class TwitterFacade
 		this.persistanceFacade = persistanceFacade;
 	}
 
-	public void donwloadUsersProfiles(List<Long> userIds)
+	public void donwloadUsersProfiles(List<Long> userIds) throws TwitterException
 	{
 
 		List<Long> usersToDownload = new ArrayList<Long>();
@@ -88,7 +90,7 @@ public class TwitterFacade
 		}
 	}
 
-	public Map<Long, String> getDescriptions(List<Long> userIds)
+	public Map<Long, String> getDescriptions(List<Long> userIds) throws TwitterException
 	{
 		Map<Long, String> userToDescription = new HashMap<Long, String>();
 		List<Long> usersToDownload = new ArrayList<Long>();
@@ -134,7 +136,7 @@ public class TwitterFacade
 		return userToDescription;
 	}
 
-	public Map<Long, String> getDescriptionsAndStatuses(List<Long> userIds)
+	public Map<Long, String> getDescriptionsAndStatuses(List<Long> userIds) throws TwitterException
 	{
 		Map<Long, String> user2DescriptionAndStatus = new HashMap<Long, String>();
 		List<Long> usersToDownload = new ArrayList<Long>();
@@ -333,7 +335,7 @@ public class TwitterFacade
 		}
 	}
 
-	public List<String> getUpTo200Tweets(long userId) throws TwitterException
+	public List<String> getUpTo200Tweets(long userId) throws TwitterException, ProtectedUserException
 	{
 		try
 		{
@@ -348,19 +350,19 @@ public class TwitterFacade
 		
 	public List<String> getTweetsByDate(long userId, 
 										int fromYear, int fromMonth , int fromDay,
-										int toYear, int toMonth, int toDay) throws TwitterException
+										int toYear, int toMonth, int toDay) throws TwitterException, ProtectedUserException
 	{
 		try
 		{
 			List<String> tweets = persistanceFacade.getTweetsByDate(userId, 
-					fromYear, fromMonth,  fromDay, 
-					toYear,  toMonth, toDay );
-			logger.info("tweets get from mongodb");
+						fromYear, fromMonth,  fromDay, 
+						toYear,  toMonth, toDay );
+			logger.debug("tweets get from mongodb");
 			return tweets;
 		}
 		catch (UserWithNoTweetsException e)
 		{
-			logger.info("downloading tweets");
+			logger.debug("downloading tweets");
 			SearchedByDateTweetsResultContainer result = twitterWebFacade.getTweetsByDate(userId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
 			persistanceFacade.putTweets(result.getBadTweets());
 			persistanceFacade.putTweets(result.getGoodTweets());
@@ -373,6 +375,35 @@ public class TwitterFacade
 			catch (UserWithNoTweetsException e1)
 			{
 				return new ArrayList<String>();
+			}
+			catch (OldestTweetsNeedToBeDownloadedException e1)
+			{
+				logger.info("problems with getTweetsByDate and saving tweets");
+				System.exit(0);
+				return null;
+			}
+		}
+		catch (OldestTweetsNeedToBeDownloadedException e)
+		{
+			logger.debug("downloading tweets");
+			SearchedByDateTweetsResultContainer result = twitterWebFacade.getTweetsByDate(userId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
+			persistanceFacade.putTweets(result.getBadTweets());
+			persistanceFacade.putTweets(result.getGoodTweets());
+			try
+			{
+				return persistanceFacade.getTweetsByDate(userId, 
+						fromYear, fromMonth,  fromDay, 
+						toYear,  toMonth, toDay );
+			}
+			catch (UserWithNoTweetsException e1)
+			{
+				return new ArrayList<String>();
+			}
+			catch (OldestTweetsNeedToBeDownloadedException e1)
+			{
+				logger.info("problems with getTweetsByDate and saving tweets");
+				System.exit(0);
+				return null;
 			}
 		}
 	}

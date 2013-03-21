@@ -1,14 +1,16 @@
 package it.cybion.influence.ranking.topic.lucene;
 
 
-import it.cybion.influence.ranking.tweets.enriching.UrlsExapandedTweetsTextExtractor;
+import it.cybion.influence.ranking.topic.lucene.enriching.UrlsExapandedTweetsTextExtractor;
 import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -24,18 +26,29 @@ import twitter4j.TwitterException;
 
 public class TweetsIndexCreator
 {
+	private static final Logger logger = Logger.getLogger(TweetsIndexCreator.class);
+	
 	public static List<Directory> createSingleDocumentIndexesForUsers(TwitterFacade twitterFacade, String indexesRootDirPath, List<Long> usersIds)
 	{
 		List<Directory> indexes = new ArrayList<Directory>();
+		int indexesCount = 0;
 		for (Long userId : usersIds)
 		{
+			logger.info("creating index "+(indexesCount++)+"/"+usersIds.size());
 			String indexDir = indexesRootDirPath + "/" + userId;
-			indexes.add(createSingleDocumentIndexForUser(twitterFacade, indexDir, userId));
+			try
+			{
+				indexes.add(createSingleDocumentIndexForUser(twitterFacade, indexDir, userId));
+			}
+			catch (ProtectedUserException e)
+			{
+				logger.info("User protected. Skipped.");
+			}
 		}
 		return indexes;
 	}
 
-	public static Directory createSingleDocumentIndexForUser(TwitterFacade twitterFacade, String indexPath, long userId)
+	public static Directory createSingleDocumentIndexForUser(TwitterFacade twitterFacade, String indexPath, long userId) throws ProtectedUserException
 	{
 		List<String> tweetsJsons = null;
 		try
@@ -46,7 +59,7 @@ public class TweetsIndexCreator
 			e.printStackTrace();
 			System.exit(0);
 		}
-		List<String> tweetsTexts = UrlsExapandedTweetsTextExtractor.getUrlsExpandedText(tweetsJsons);
+		List<String> tweetsTexts = new ArrayList<String>(UrlsExapandedTweetsTextExtractor.getUrlsExpandedTextFromTexts(tweetsJsons).values());
 		return createSingleDocumentIndex(indexPath, tweetsTexts);
 	}
 

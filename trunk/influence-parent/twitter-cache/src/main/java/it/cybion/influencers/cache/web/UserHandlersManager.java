@@ -3,6 +3,7 @@ package it.cybion.influencers.cache.web;
 
 import it.cybion.influencers.cache.web.exceptions.LimitReachedForCurrentRequestException;
 import it.cybion.influencers.cache.web.exceptions.MethodInputNotCorrectException;
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class UserHandlersManager
 					{
 						logger.info("Problem in Thread.sleep");
 					}
-				}
+				}			
 				logger.info("Can't create UserHandler for token = " + userToken + ". Skipped.");
 			}
 		}
@@ -61,11 +62,10 @@ public class UserHandlersManager
 	
 	
 	// Factorized method to execute a single request
-	public Object executeRequest(RequestName requestName, List<Object> requestParameters) throws TwitterException
+	public Object executeRequest(RequestName requestName, List<Object> requestParameters) throws TwitterException, ProtectedUserException
 	{
 		for (int i = 0; i < userHandlers.size(); i++)
 		{
-			// logger.info("Trying UserHandler "+i);
 			UserHandler userHandler = userHandlers.get(i);
 			try
 			{
@@ -121,9 +121,7 @@ public class UserHandlersManager
 				System.exit(0);
 			}
 		}
-
-		// this point is reached if all tokens have reached the limit for this
-		// request
+		// this point is reached if all tokens have reached the limit for this request
 		try
 		{
 			logger.info("All handlers have reached the limit, let's wait for " + WAIT_TIME + " min");

@@ -2,6 +2,7 @@ package it.cybion.influencers.cache.persistance;
 
 
 
+import it.cybion.influencers.cache.persistance.exceptions.OldestTweetsNeedToBeDownloadedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
@@ -51,6 +52,6 @@ public interface PersistanceFacade
 
 	List<String> getTweetsByDate(long userId, 
 			int fromYear, int fromMonth , int fromDay,
-			int toYear, int toMonth, int toDay) throws UserWithNoTweetsException;
+			int toYear, int toMonth, int toDay) throws UserWithNoTweetsException, OldestTweetsNeedToBeDownloadedException;
 
 }

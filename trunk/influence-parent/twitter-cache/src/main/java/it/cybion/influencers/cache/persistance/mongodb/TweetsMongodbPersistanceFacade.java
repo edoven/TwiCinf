@@ -1,6 +1,7 @@
 package it.cybion.influencers.cache.persistance.mongodb;
 
 import it.cybion.influencers.cache.model.Tweet;
+import it.cybion.influencers.cache.persistance.exceptions.OldestTweetsNeedToBeDownloadedException;
 import it.cybion.influencers.cache.persistance.exceptions.TweetNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
 
@@ -115,19 +116,26 @@ public class TweetsMongodbPersistanceFacade
 	
 	public List<String> getTweetsByDate(long userId, 
 										int fromYear, int fromMonth , int fromDay,
-										int toYear, int toMonth, int toDay) throws UserWithNoTweetsException
+										int toYear, int toMonth, int toDay) throws UserWithNoTweetsException, OldestTweetsNeedToBeDownloadedException
 	{
 		Date fromDate = new Date(fromYear-1900, fromMonth-1, fromDay);
 		Date toDate = new Date(toYear-1900, toMonth-1, toDay);
 		List<String> userTweets = getTweets(userId);
 		List<String> goodTweets = new ArrayList<String>();
 		Tweet tweet;
+		Date oldestDate = new Date(2200-1900,0,1); // 2200/01/01
+		Date tweetDate;
 		for (String tweetJson : userTweets)
 		{
 			tweet = Tweet.buildTweetFromJson(tweetJson);
-			if (fromDate.compareTo(tweet.created_at)<0 && toDate.compareTo(tweet.created_at)>0)
+			tweetDate = tweet.created_at;
+			if (fromDate.compareTo(tweetDate)<0 && toDate.compareTo(tweetDate)>0)
 				goodTweets.add(tweetJson);
+			if (tweetDate.compareTo(oldestDate)<0)
+				oldestDate = new Date(tweetDate.getYear(), tweetDate.getMonth(), tweetDate.getDate());
 		}
+		if (oldestDate.compareTo(fromDate)>0)
+			throw new OldestTweetsNeedToBeDownloadedException();
 		return goodTweets;
 	}
 }

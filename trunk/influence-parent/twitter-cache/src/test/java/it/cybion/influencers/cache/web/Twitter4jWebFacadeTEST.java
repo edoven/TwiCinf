@@ -4,36 +4,27 @@ package it.cybion.influencers.cache.web;
 import static org.testng.AssertJUnit.assertTrue;
 import it.cybion.influencers.cache.model.Tweet;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
-import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.Twitter4jWebFacade;
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import twitter4j.TwitterException;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import twitter4j.TwitterException;
 
 
-
-/*
- * 
- * TODO:
- * -test the case when all tokens have reached the limit
- * 
- */
 
 public class Twitter4jWebFacadeTEST
 {
@@ -50,14 +41,14 @@ public class Twitter4jWebFacadeTEST
 
 		Token userToken0 = new Token("/home/godzy/tokens/token0.properties");
 		userTokens.add(userToken0);
-		// Token userToken1 = new Token("/home/godzy/tokens/token1.txt");
-		// userTokens.add(userToken1);
-		// Token userToken2 = new Token("/home/godzy/tokens/token2.txt");
-		// userTokens.add(userToken2);
-		// Token userToken3 = new Token("/home/godzy/tokens/token3.txt");
-		// userTokens.add(userToken3);
-		// Token userToken4 = new Token("/home/godzy/tokens/token4.txt");
-		// userTokens.add(userToken4);
+		Token userToken1 = new Token("/home/godzy/tokens/token1.properties");
+		userTokens.add(userToken1);
+		Token userToken2 = new Token("/home/godzy/tokens/token2.properties");
+		userTokens.add(userToken2);
+		Token userToken3 = new Token("/home/godzy/tokens/token3.properties");
+		userTokens.add(userToken3);
+		Token userToken4 = new Token("/home/godzy/tokens/token4.properties");
+		userTokens.add(userToken4);
 		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
 		userTokens.add(userToken5);
 		
@@ -65,7 +56,7 @@ public class Twitter4jWebFacadeTEST
 		twitter4jFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 	}
 
-	@Test(enabled = false)
+	@Test(enabled = true)
 	public void getUserJsonTEST() throws TwitterException
 	{
 		String user = twitter4jFacade.getUserJson(813286l); // BarackObama
@@ -75,94 +66,67 @@ public class Twitter4jWebFacadeTEST
 		assertTrue(user.contains("This account is run by"));
 	}
 
-	@Test(enabled = false)
+	@Test(enabled = true)
 	public void getLessThan5000FollowersIdsTEST() throws TwitterException
 	{
 		List<Long> followerIds = twitter4jFacade.getFollowersIds(58477550); // screenName=gifo77
-		logger.info("#############################");
-		logger.info(followerIds);
-		logger.info(followerIds.size());
-		logger.info("#############################");
+		assertTrue(followerIds.size() > 2);
 		assertTrue(followerIds.size() < 5000);
 	}
 
-	@Test(enabled = false)
+	@Test(enabled = true)
 	public void getMoreThan5000FollowersIdsTEST() throws TwitterException
 	{
 		List<Long> followerIds = twitter4jFacade.getFollowersIds(444712353); // screenName=ChiaraMaci
-		logger.info("#############################");
-		logger.info(followerIds);
-		logger.info(followerIds.size());
-		logger.info("#############################");
-		assertTrue(followerIds.size() > 5000);
+		assertTrue(followerIds.size() > 8000);
 	}
 
-	@Test(enabled = false)
+	@Test(enabled = true)
 	public void getLessThan5000FriendsIdsTEST() throws TwitterException
 	{
 		List<Long> friendIds = twitter4jFacade.getFriendsIds(58477550); // screenName=gifo77
-		logger.info("#############################");
-		logger.info(friendIds);
-		logger.info(friendIds.size());
-		logger.info("#############################");
+		assertTrue(friendIds.size() > 2);
 		assertTrue(friendIds.size() < 5000);
 	}
 
-	@Test(enabled = false)
+	@Test(enabled = true)
 	public void getFriendsIdsRepeatedRequestsTEST() throws TwitterException
 	{
-		List<Long> friendIds = twitter4jFacade.getFriendsIds(58477550); // screenName=gifo77
-		for (int i = 0; i < 15; i++)
-			friendIds = twitter4jFacade.getFriendsIds(58477550);
+		List<Long> friendIds = null;
+		for (int i = 0; i < 5; i++)
+			friendIds = twitter4jFacade.getFriendsIds(58477550); // screenName=gifo77
+		assertTrue(friendIds.size() > 2);
 		assertTrue(friendIds.size() < 5000);
 	}
 
-	@Test(enabled = false)
+	@Test(enabled = true)
 	public void getMoreThan5000FriendsIdsTEST() throws TwitterException
 	{
 		List<Long> followerIds = twitter4jFacade.getFriendsIds(14831419); // screenName=mattuk
-		logger.info("#############################");
-		logger.info(followerIds);
-		logger.info(followerIds.size());
-		logger.info("#############################");
-		assertTrue(followerIds.size() > 5000);
+		assertTrue(followerIds.size() > 20000);
 	}
 
-	@Test(enabled = false)
-	public void getUsersJsonsTEST() throws TwitterException
-	{
-		List<Long> followerIds = new ArrayList<Long>();
-		for (long i = 0; i < 101; i++)
-			followerIds.add(435668609 + i);
-		twitter4jFacade.getUsersJsons(followerIds);
-	}
+//	@Test(enabled = true)
+//	public void getUsersJsonsTEST() throws TwitterException
+//	{
+//		List<Long> followerIds = new ArrayList<Long>();
+//		for (long i = 0; i < 101; i++)
+//			followerIds.add(435668609 + i);
+//		twitter4jFacade.getUsersJsons(followerIds);
+//	}
 	
-	@Test(enabled = false)
-	public void deserializeTweetDate()
-	{
-		Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                			// "Wed Oct 17 19:59:40 +0000 2012"
-                .setDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy").create();
-		
-		String jsonTweet = "{\"created_at\": \"Wed Jun 06 20:07:10 +0000 2012\"}";
-		
-		Tweet tweet = gson.fromJson(jsonTweet, Tweet.class);
-		Date tweetDate = tweet.created_at;
-		Assert.assertEquals(tweetDate.getDate(), 6);
-		Assert.assertEquals(tweetDate.getMonth(), 5);
-		Assert.assertEquals(tweetDate.getYear(), 2012-1900 );
-	}
 	
-	@Test(enabled = false)
-	public void getUserTweetsWithMaxId() throws TwitterException
+	
+	@Test(enabled = true)
+	public void getUserTweetsWithMaxId() throws TwitterException, ProtectedUserException
 	{
 		List<String> tweets = twitter4jFacade.getTweetsWithMaxId(887469007L, -1);
 		Assert.assertTrue(tweets.size()>0);
 	}
 	
 	
-	@Test(enabled = false)
-	public void getTweetsFromDate1() throws TwitterException, UserWithNoTweetsException
+	@Test(enabled = true)
+	public void getTweetsFromDate1() throws TwitterException, UserWithNoTweetsException, ProtectedUserException
 	{
 		long userId = 887469007L; //edoventurini
 		int fromYear = 2012,
@@ -176,15 +140,15 @@ public class Twitter4jWebFacadeTEST
 																	toYear, 	toMonth,   toDay);
 		List<String> tweets = resultContainer.getGoodTweets();
 		Assert.assertEquals(tweets.size(), 2);
-		for (String tweet : tweets)
-		{
-			logger.info(tweet);
-		}
+//		for (String tweet : tweets)
+//		{
+//			logger.info(tweet);
+//		}
 	}
 	
 	
 	@Test(enabled = true)
-	public void getTweetsFromDate2() throws TwitterException, UserWithNoTweetsException
+	public void getTweetsFromDate2() throws TwitterException, UserWithNoTweetsException, ProtectedUserException
 	{
 		long userId = 517903407L; //profdalimonte
 		int fromYear = 2013,
@@ -198,16 +162,16 @@ public class Twitter4jWebFacadeTEST
 																	toYear, 	toMonth,   toDay);
 		List<String> tweets = resultContainer.getGoodTweets();
 		Assert.assertEquals(tweets.size(),4);
-		for (String tweetJson : tweets)
-		{
-			Tweet tweet = Tweet.buildTweetFromJson(tweetJson);
-			logger.info(tweet.id+" - "+tweet.created_at+" - "+tweet.originalJson);
-		}
+//		for (String tweetJson : tweets)
+//		{
+//			Tweet tweet = Tweet.buildTweetFromJson(tweetJson);
+//			logger.info(tweet.id+" - "+tweet.created_at+" - "+tweet.originalJson);
+//		}
 	}
 	
 	
-	@Test(enabled = false)
-	public void getTweetsFromDateCheckIfContainsDuplicates() throws TwitterException, UserWithNoTweetsException
+	@Test(enabled = true)
+	public void getTweetsFromDateCheckIfContainsDuplicates() throws TwitterException, UserWithNoTweetsException, ProtectedUserException
 	{
 		long userId = 813286L; //BarackObama
 		
@@ -230,8 +194,8 @@ public class Twitter4jWebFacadeTEST
 		Assert.assertEquals(tweetJsons.size(), tweetJsonsSet.size());
 	}
 	
-	@Test(enabled = false)
-	public void getTweetsFromDateCheckIfDateIsCorrect() throws TwitterException, UserWithNoTweetsException
+	@Test(enabled = true)
+	public void getTweetsFromDateCheckIfDateIsCorrect() throws TwitterException, UserWithNoTweetsException, ProtectedUserException
 	{
 		long userId = 813286L; //BarackObama
 		int fromYear = 2013,
@@ -257,5 +221,12 @@ public class Twitter4jWebFacadeTEST
 			Assert.assertTrue(tweet.created_at.compareTo(fromDate)>0);
 			Assert.assertTrue(tweet.created_at.compareTo(toDate)<0);			
 		}
+	}
+	
+	@Test(enabled = true)
+	public void getTweetsFromProtectedUser() throws TwitterException, UserWithNoTweetsException, ProtectedUserException
+	{
+		List<String> tweetJsons = twitter4jFacade.getTweetsWithMaxId(107684088, -1); //user:LesaMcMaster
+		Assert.assertTrue(tweetJsons.size()==0);
 	}
 }

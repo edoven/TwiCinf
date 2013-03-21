@@ -3,6 +3,8 @@ package it.cybion.influencers.crawler.filtering.contentbased;
 
 import org.apache.log4j.Logger;
 
+import twitter4j.TwitterException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -110,7 +112,16 @@ public class DescriptionAndStatusDictionaryFilterManager implements FilterManage
 
 	private void createUsers2descriptions()
 	{
-		users2descriptions = twitterFacade.getDescriptionsAndStatuses(seedUsers);
+		try
+		{
+			users2descriptions = twitterFacade.getDescriptionsAndStatuses(seedUsers);
+		}
+		catch (TwitterException e)
+		{
+			logger.info("Problem in twitterFacade.getDescriptionsAndStatuses");
+			e.printStackTrace();
+			System.exit(0);
+		}
 	}
 
 	@Override

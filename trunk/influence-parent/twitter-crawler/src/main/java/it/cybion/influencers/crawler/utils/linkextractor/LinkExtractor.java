@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
 import it.cybion.influencers.cache.TwitterFacade;
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import com.google.gson.Gson;
 
@@ -40,7 +41,15 @@ public class LinkExtractor
 		for (Long userId : usersIds)
 			try
 			{
-				urls.addAll(getLinks(userId));
+				try
+				{
+					urls.addAll(getLinks(userId));
+				}
+				catch (ProtectedUserException e)
+				{
+					logger.info("User with id "+userId+" is protected. Skipped!");
+					continue;
+				}
 			}
 			catch (TwitterException e)
 			{
@@ -51,7 +60,7 @@ public class LinkExtractor
 	}
 
 	
-	public List<String> getLinks(long userId) throws TwitterException
+	public List<String> getLinks(long userId) throws TwitterException, ProtectedUserException
 	{
 		List<String> jsonTweets = twitterFacade.getUpTo200Tweets(userId);
 		Set<String> urls = new HashSet<String>();

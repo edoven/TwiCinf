@@ -1,26 +1,20 @@
 package food46;
 
 
-import it.cybion.influencers.InfluencersDiscoverer;
 import it.cybion.influencers.cache.TwitterFacade;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
-import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.Twitter4jWebFacade;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.filtering.FilterManager;
-import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
-import it.cybion.influencers.filtering.topologybased.InOrOutDegreeFilterManager;
-import it.cybion.influencers.filtering.topologybased.OutDegreeFilterManager;
-import it.cybion.influencers.graph.GraphFacade;
-import it.cybion.influencers.graph.Neo4jGraphFacade;
-import it.cybion.influencers.graph.indexes.GraphIndexType;
-import it.cybion.influencers.utils.FilesDeleter;
+import it.cybion.influencers.crawler.InfluencersDiscoverer;
+import it.cybion.influencers.crawler.filtering.FilterManager;
+import it.cybion.influencers.crawler.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
+import it.cybion.influencers.crawler.filtering.topologybased.InOrOutDegreeFilterManager;
+import it.cybion.influencers.crawler.filtering.topologybased.OutDegreeFilterManager;
+import it.cybion.influencers.crawler.graph.GraphFacade;
+import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
+import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
+import it.cybion.influencers.crawler.utils.FilesDeleter;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 

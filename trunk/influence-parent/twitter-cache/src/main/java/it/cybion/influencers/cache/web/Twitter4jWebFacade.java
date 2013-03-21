@@ -3,6 +3,7 @@ package it.cybion.influencers.cache.web;
 
 import it.cybion.influencers.cache.model.Tweet;
 import it.cybion.influencers.cache.web.exceptions.MethodInputNotCorrectException;
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +22,11 @@ import com.google.gson.GsonBuilder;
 
 public class Twitter4jWebFacade implements TwitterWebFacade
 {
+	private final Logger logger = Logger.getLogger(Twitter4jWebFacade.class);
+
+	private UserHandlersManager userHandlersManager;
+	
+	
 	private class ResultContainer
 	{		
 		boolean isFinished;
@@ -37,11 +43,6 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 			this.badTweets = badTweets;
 		}
 	}
-
-	
-	private final Logger logger = Logger.getLogger(Twitter4jWebFacade.class);
-
-	private UserHandlersManager userHandlersManager;
 	
 
 	public Twitter4jWebFacade(Token consumerToken, List<Token> userTokens)
@@ -54,10 +55,8 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		Collections.sort(tweets);
 		Tweet minIdTweet = tweets.get(0);
 		Date minDate200 = minIdTweet.created_at;
-//		logger.info("minDate200="+minDate200);
 		Tweet maxIdTweet = tweets.get(tweets.size()-1);	
 		Date maxDate200 = maxIdTweet.created_at;
-//		logger.info("maxDate200="+maxDate200);
 		List<String> goodTweets = new ArrayList<String>();
 		List<String> badTweets = new ArrayList<String>();
 		
@@ -83,34 +82,44 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		 */
 		if (isGreater(startDate,minDate200) && isGreater(maxDate200,endDate))
 		{
-			logger.info("caso 1");
+			logger.debug("caso 1");
 			isFinished = true;
 		}
 		if (isGreater(minDate200,endDate))
 		{
-			logger.info("caso 2");
+			logger.debug("caso 2");
 			isFinished = false;
 		}			
 		if (isGreater(minDate200,startDate) && isGreater(endDate,minDate200) && isGreater(maxDate200,endDate))
 		{
-			logger.info("caso 3");
+			logger.debug("caso 3");
 			isFinished = false;
 		}		
 		if (isGreater(minDate200,startDate) && isGreater(endDate,maxDate200))
 		{
-			logger.info("caso 4");
+			logger.debug("caso 4");
 			isFinished = false;
 		}		
 		if (isGreater(startDate,minDate200) && isGreater(maxDate200, startDate) && isGreater(endDate,maxDate200))
 		{
-			logger.info("caso 5");
+			logger.debug("caso 5");
 			isFinished = true;
 		}		
 		if (isGreater(startDate, maxDate200))
 		{
-			logger.info("caso 6");
+			logger.debug("caso 6");
 			isFinished = true;
 		}
+		
+		/*
+		 * 
+		 * BEWARE!
+		 * TODO: handle this in a better way!
+		 * 
+		 */
+		if (tweets.size()<2)
+			isFinished = true;
+
 		return new ResultContainer(isFinished,oldestId,goodTweets,badTweets);
 			
 	}
@@ -118,15 +127,12 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 	private long[] getChunk(List<Long> list, int chunkSize, int chunkIndex)
 	{
 		int firstElementIndex = chunkIndex * chunkSize;
-		// logger.info("firstElementIndex="+firstElementIndex);
 		int lastElementIndex = chunkIndex * chunkSize + chunkSize;
-		// logger.info("lastElementIndex="+lastElementIndex);
 		if (lastElementIndex > list.size())
 		{
 			lastElementIndex = list.size();
 			chunkSize = lastElementIndex - firstElementIndex;
 		}
-		// logger.info("end="+lastElementIndex);
 		List<Long> chunkList = list.subList(firstElementIndex, lastElementIndex);
 		long chunkArray[] = new long[chunkList.size()];
 		for (int i = 0; i < chunkSize; i++)
@@ -155,7 +161,16 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		List<Object> requestParameters = new ArrayList<Object>();
 		requestParameters.add(0, userId);
 		requestParameters.add(1, cursor);
-		return (IDs) userHandlersManager.executeRequest(requestName, requestParameters);
+		try
+		{
+			return (IDs) userHandlersManager.executeRequest(requestName, requestParameters);
+		}
+		catch (ProtectedUserException e)
+		{
+			//this call can't throw this exception
+			System.exit(0);
+			return null;
+		}
 	}
 
 	@Override
@@ -173,36 +188,12 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		return ids;
 	}
 
-	private IDs getFriendsIdsWithPagination(long userId, long cursor) throws TwitterException
-	{
-		RequestName requestName = RequestName.GET_FRIENDS_IDS_WITH_PAGINATION;
-		List<Object> requestParameters = new ArrayList<Object>();
-		requestParameters.add(0, userId);
-		requestParameters.add(1, cursor);
-		return (IDs) userHandlersManager.executeRequest(requestName, requestParameters);
-	}
-
-	private List<Tweet> getTweetsFromJsons(List<String> tweetsJsons)
-	{
-		List<Tweet> tweets = new ArrayList<Tweet>();
-		Gson gson = new GsonBuilder()
-				.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-					// "Wed Oct 17 19:59:40 +0000 2012"
-					.setDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy").create();
-		Tweet tweet;
-		for (String tweetjson : tweetsJsons)
-		{
-			tweet = gson.fromJson(tweetjson, Tweet.class);
-			tweet.setOriginalJson(tweetjson);
-			tweets.add(tweet);
-		}
-		return tweets;
-	}
+	
 
 	@Override
-	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException
+	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException 
 	{
-		logger.info("Downloading 200 tweets for user with id:" + userId);
+		logger.info("Downloading 200 tweets for user with id:" + userId + " with maxid="+maxId);
 		RequestName requestname = RequestName.GET_USER_TWEETS_WITH_MAX_ID;
 		List<Object> requestParameters = new ArrayList<Object>();
 		requestParameters.add(0, userId);
@@ -216,9 +207,17 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		RequestName requestname = RequestName.GET_UP_TO_100_USERS;
 		List<Object> requestParameters = new ArrayList<Object>();
 		requestParameters.add(0, usersIds);
-		return (List<String>) userHandlersManager.executeRequest(requestname, requestParameters);
+		try
+		{
+			return (List<String>) userHandlersManager.executeRequest(requestname, requestParameters);
+		}
+		catch (ProtectedUserException e)
+		{
+			//this call can't throw this exception
+			System.exit(0);
+			return null;
+		}
 	}
-	
 	
 	@Override
 	public String getUserJson(long userId) throws TwitterException
@@ -226,7 +225,16 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		RequestName requestName = RequestName.GET_USER_JSON_FROM_ID;
 		List<Object> requestParameters = new ArrayList<Object>();
 		requestParameters.add(0, userId);
-		return (String) userHandlersManager.executeRequest(requestName, requestParameters);
+		try
+		{
+			return (String) userHandlersManager.executeRequest(requestName, requestParameters);
+		}
+		catch (ProtectedUserException e)
+		{
+			//this call can't throw this exception
+			System.exit(0);
+			return null;
+		}
 	}
 
 	
@@ -237,11 +245,20 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		RequestName requestName = RequestName.GET_USER_JSON_FROM_SCREENNAME;
 		List<Object> requestParameters = new ArrayList<Object>();
 		requestParameters.add(0, screenName);
-		return (String) userHandlersManager.executeRequest(requestName, requestParameters);
+		try
+		{
+			return (String) userHandlersManager.executeRequest(requestName, requestParameters);
+		}
+		catch (ProtectedUserException e)
+		{
+			//this call can't throw this exception
+			System.exit(0);
+			return null;
+		}
 	}
 	
 	@Override
-	public List<String> getUsersJsons(List<Long> usersIds)
+	public List<String> getUsersJsons(List<Long> usersIds) throws TwitterException
 	{
 		logger.info("downloading " + usersIds.size() + " users profiles");
 		List<String> usersJsons = new ArrayList<String>();
@@ -264,10 +281,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 			{
 				e.printStackTrace();
 				System.exit(0);
-			} catch (TwitterException e)
-			{
-				// logger.info("Problem with chunk, skipped. Chunk = "+chunk);
-			}
+			} 
 		}
 		return usersJsons;
 	}
@@ -276,7 +290,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 	public SearchedByDateTweetsResultContainer getTweetsByDate(
 											long userId, 
 											int fromYear, int fromMonth, int fromDay, 
-											int toYear,	  int toMonth,   int toDay) throws TwitterException
+											int toYear,	  int toMonth,   int toDay) throws TwitterException, ProtectedUserException
 	{
 		
 		Date fromDate = new Date(fromYear-1900, fromMonth-1, fromDay);
@@ -314,6 +328,41 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 			return true;
 		else
 			return false;
+	}
+	
+	private IDs getFriendsIdsWithPagination(long userId, long cursor) throws TwitterException
+	{
+		RequestName requestName = RequestName.GET_FRIENDS_IDS_WITH_PAGINATION;
+		List<Object> requestParameters = new ArrayList<Object>();
+		requestParameters.add(0, userId);
+		requestParameters.add(1, cursor);
+		try
+		{
+			return (IDs) userHandlersManager.executeRequest(requestName, requestParameters);
+		}
+		catch (ProtectedUserException e)
+		{
+			//this call can't throw this exception
+			System.exit(0);
+			return null;
+		}
+	}
+
+	private List<Tweet> getTweetsFromJsons(List<String> tweetsJsons)
+	{
+		List<Tweet> tweets = new ArrayList<Tweet>();
+		Gson gson = new GsonBuilder()
+				.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+					// "Wed Oct 17 19:59:40 +0000 2012"
+					.setDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy").create();
+		Tweet tweet;
+		for (String tweetjson : tweetsJsons)
+		{
+			tweet = gson.fromJson(tweetjson, Tweet.class);
+			tweet.setOriginalJson(tweetjson);
+			tweets.add(tweet);
+		}
+		return tweets;
 	}
 
 }
