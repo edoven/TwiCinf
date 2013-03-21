@@ -69,7 +69,7 @@ public class RetweetsStatCalculator {
 	
 	public static Map<Long, Integer> getRetweetsStatusForUser(TwitterCache twitterFacade, Long userId) throws TwitterException {
 		Map<Long, Integer> users2Retweets = new HashMap<Long,Integer>();
-		List<String> tweetsJsons = twitterFacade.getUpTo200Tweets(userId);
+		List<String> tweetsJsons = twitterFacade.getLast200Tweets(userId);
 		List<Tweet> tweets = new ArrayList<Tweet>();
 		Gson gson = new Gson();
 		for (String tweetJson : tweetsJsons) {

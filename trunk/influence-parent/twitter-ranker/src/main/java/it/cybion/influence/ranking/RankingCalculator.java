@@ -44,7 +44,7 @@ public class RankingCalculator
 			logger.info("Calculating rank for user "+(userCounts++)+"/"+usersToRank.size());
 			double accumulator = 0;
 			double topicTweetsCount = 0;
-			int originalTweets = 0;
+			int originalTweetsCount = 0;
 			double rank = -1;
 			List<String> tweetsJsons;
 			try
@@ -71,9 +71,9 @@ public class RankingCalculator
 				int followersCount = tweets.get(0).user.followers_count;
 				for (Tweet tweet : tweets)
 				{
-					if (tweet.retweeted_status==null)
+					if (tweet.retweeted_status==null && tweet.in_reply_to_status_id_str==null)
 					{
-						originalTweets++;
+						originalTweetsCount++;
 						String text = tweet.urlsExpandedText;
 						double topicProximity = topicCalculator.getTweetRank(text);
 						int retweetCount = tweet.retweet_count;
@@ -81,15 +81,20 @@ public class RankingCalculator
 						topicTweetsCount = topicTweetsCount + topicProximity;
 					}					
 				}
-				double meanRetweetCount = accumulator / originalTweets;
-				rank = rankingFunction(topicTweetsCount, meanRetweetCount, followersCount);
-				rankedUsers.add(new RankedUser(userScreenName, followersCount, originalTweets, meanRetweetCount, rank));
+				double meanRetweetCount = accumulator / originalTweetsCount;
+				double topicTweetsRatio = topicTweetsCount / originalTweetsCount;
+				rank = rankingFunction(topicTweetsCount, meanRetweetCount, followersCount, topicTweetsRatio);
+				rankedUsers.add(new RankedUser(userScreenName, followersCount, originalTweetsCount, meanRetweetCount, topicTweetsRatio, rank));
 				logger.info("user:"+userScreenName+
 									" - followers:"+followersCount+
-									" - originalTweets:"+originalTweets+
+									" - originalTweets:"+originalTweetsCount+
+									" - topicTweetsCount:"+topicTweetsCount+
+									" - topicTweetsRatio:"+topicTweetsRatio+
 									" - meanRetweetCount:"+meanRetweetCount+
 									" - rank:"+rank);		
-			}				
+			}	
+//			logger.info("Tot tweets = "+tweetsJsons.size());
+//			logger.info("Original tweets = "+originalTweetsCount);
 		}
 		Collections.sort(rankedUsers);
 		return rankedUsers;
@@ -109,15 +114,9 @@ public class RankingCalculator
 	}
 	
 	
-	private double rankingFunction(double topicTweetsCount, double meanRetweetCount, int followersCount)
+	private double rankingFunction(double topicTweetsCount, double meanRetweetCount, int followersCount, double topicTweetsRatio)
 	{
-		double followersContribute = Math.log(followersCount)*Math.log(followersCount)*Math.log(followersCount);
-		double rank = (topicTweetsCount * meanRetweetCount) / followersContribute;
-		logger.info("followersCount="+followersCount);
-		logger.info("followersContribute="+followersContribute);
-		logger.info("topicTweetsCount="+topicTweetsCount);
-		logger.info("meanRetweetCount="+meanRetweetCount);
-		logger.info("rank="+rank);
+		double rank = Math.log10(followersCount) * Math.sqrt(topicTweetsCount) * meanRetweetCount * (topicTweetsRatio*100)*(topicTweetsRatio*100);
 		return rank;
 	}
 	

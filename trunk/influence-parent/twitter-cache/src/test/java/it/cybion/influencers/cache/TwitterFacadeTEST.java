@@ -123,7 +123,7 @@ public class TwitterFacadeTEST
 	public void getUpTo200TweetsTEST() throws TwitterException, ProtectedUserException
 	{
 		logger.info("--start--");
-		logger.info(twitterFacade.getUpTo200Tweets(887469007l));
+		logger.info(twitterFacade.getLast200Tweets(887469007l));
 		logger.info("--end--");
 	}
 	

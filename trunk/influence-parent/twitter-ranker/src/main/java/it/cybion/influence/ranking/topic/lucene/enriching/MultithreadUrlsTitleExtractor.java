@@ -52,45 +52,45 @@ public class MultithreadUrlsTitleExtractor extends Thread
 	private MultithreadUrlsTitleExtractor(int threadId)
 	{
 		this.setName(Integer.toString(threadId));
-//		System.out.println("Created thread with id=" + threadId);
 	}
 
 	public void run()
 	{
-//		while (urls.size() > 0)
-//		{
-//			String url = urls.remove(urls.size() - 1);
-//			ulrs2Titles.put(url, getTitleFromUrl(url));
-//		}
+
 		String url = urls.get(Integer.parseInt(Thread.currentThread().getName()));
 		ulrs2Titles.put(url, getTitleFromUrl(url));
 	}
 
 	private String getTitleFromUrl(String urlString)
 	{
-//		if (urlString==null)
-//			logger.info("ERROR! getTitleFromUrl - url is null!");
 		if (urlString.contains("instagr"))
 			return getTitleFromInstagram(urlString);
 		try
 		{
 			Document doc = Jsoup.connect(urlString).get();
 			String title = doc.getElementsByTag("title").text();
+			logger.debug("url:"+urlString+" - title:"+title);
 			return title;
 		} catch (IOException e)
 		{
+			logger.debug("Error with jsoup and url: "+urlString);
 			return "";
 		}
 	}
 
 	private String getTitleFromInstagram(String urlString)
 	{
+		Document doc;
+		String title;
 		try
 		{
-			Document doc = Jsoup.connect(urlString).get();
-			return doc.getElementsByClass("caption-text").text();
+			doc = Jsoup.connect(urlString).get();
+			title = doc.getElementsByClass("caption-text").text();
+			logger.debug("url:"+urlString+" - title:"+title);
+			return title;
 		} catch (IOException e)
 		{
+			logger.debug("Error with jsoup and url: "+urlString);
 			return "";
 		}
 	}

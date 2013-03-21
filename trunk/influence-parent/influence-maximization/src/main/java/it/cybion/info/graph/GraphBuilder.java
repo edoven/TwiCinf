@@ -103,7 +103,7 @@ public class GraphBuilder
 			long userId = usersIds.get(i);
 			try
 			{	
-				List<String> jsonTweets = twitterFacde.getUpTo200Tweets(userId);
+				List<String> jsonTweets = twitterFacde.getLast200Tweets(userId);
 				userGraphId2TweetsCount.put(i, jsonTweets.size());
 				for (String jsonTweet : jsonTweets)
 				{

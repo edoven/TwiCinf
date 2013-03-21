@@ -126,7 +126,7 @@ public class Twitter4jWebFacadeTEST
 	
 	
 	@Test(enabled = true)
-	public void getTweetsFromDate1() throws TwitterException, UserWithNoTweetsException, ProtectedUserException
+	public void getTweetsFromDate1() throws TwitterException, ProtectedUserException
 	{
 		long userId = 887469007L; //edoventurini
 		int fromYear = 2012,
@@ -148,7 +148,7 @@ public class Twitter4jWebFacadeTEST
 	
 	
 	@Test(enabled = true)
-	public void getTweetsFromDate2() throws TwitterException, UserWithNoTweetsException, ProtectedUserException
+	public void getTweetsFromDate2() throws TwitterException, ProtectedUserException
 	{
 		long userId = 517903407L; //profdalimonte
 		int fromYear = 2013,
@@ -171,7 +171,7 @@ public class Twitter4jWebFacadeTEST
 	
 	
 	@Test(enabled = true)
-	public void getTweetsFromDateCheckIfContainsDuplicates() throws TwitterException, UserWithNoTweetsException, ProtectedUserException
+	public void getTweetsFromDateCheckIfContainsDuplicates() throws TwitterException, ProtectedUserException
 	{
 		long userId = 813286L; //BarackObama
 		
@@ -195,7 +195,7 @@ public class Twitter4jWebFacadeTEST
 	}
 	
 	@Test(enabled = true)
-	public void getTweetsFromDateCheckIfDateIsCorrect() throws TwitterException, UserWithNoTweetsException, ProtectedUserException
+	public void getTweetsFromDateCheckIfDateIsCorrect() throws TwitterException, ProtectedUserException
 	{
 		long userId = 813286L; //BarackObama
 		int fromYear = 2013,
@@ -224,7 +224,7 @@ public class Twitter4jWebFacadeTEST
 	}
 	
 	@Test(enabled = true)
-	public void getTweetsFromProtectedUser() throws TwitterException, UserWithNoTweetsException
+	public void getTweetsFromProtectedUser() throws TwitterException
 	{	
 		try
 		{
@@ -234,7 +234,23 @@ public class Twitter4jWebFacadeTEST
 		catch (ProtectedUserException e)
 		{
 			Assert.assertTrue(true);
-		} 
-		
+		} 	
 	}
+	
+	
+	@Test(enabled = true)
+	public void getTweetsByDateDoesNotStop() throws TwitterException, ProtectedUserException
+	{	
+			int fromYear = 2013, 
+					fromMonth = 2, 
+					fromDay = 1; 
+				int toYear = 2013, 
+					toMonth= 2, 
+					toDay = 20;
+			long userId = 228432756;
+			SearchedByDateTweetsResultContainer results = twitter4jFacade.getTweetsByDate(userId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
+			Assert.assertTrue(results.goodTweets.size()>10);
+
+	}
+
 }

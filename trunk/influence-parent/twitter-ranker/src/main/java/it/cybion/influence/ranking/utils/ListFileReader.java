@@ -1,4 +1,4 @@
-package it.cybion.influencers.rank.laperla;
+package it.cybion.influence.ranking.utils;
 
 import java.io.IOException;
 import java.nio.file.Path;

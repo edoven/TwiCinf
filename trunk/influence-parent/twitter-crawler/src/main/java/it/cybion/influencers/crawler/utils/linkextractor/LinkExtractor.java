@@ -62,7 +62,7 @@ public class LinkExtractor
 	
 	public List<String> getLinks(long userId) throws TwitterException, ProtectedUserException
 	{
-		List<String> jsonTweets = twitterFacade.getUpTo200Tweets(userId);
+		List<String> jsonTweets = twitterFacade.getLast200Tweets(userId);
 		Set<String> urls = new HashSet<String>();
 		for (String jsonTweet : jsonTweets)
 			urls.addAll(getLinks(jsonTweet));

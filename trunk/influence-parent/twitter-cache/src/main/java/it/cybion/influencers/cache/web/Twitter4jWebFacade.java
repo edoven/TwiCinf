@@ -94,6 +94,8 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		boolean isFinished = false;
 		if (maxDate200.compareTo(startDate)<0)
 			isFinished = true;
+		if (tweets.size()<2)
+			isFinished = true;
 		return new ResultContainer(isFinished,oldestId,goodTweets,badTweets);		
 	}
 	

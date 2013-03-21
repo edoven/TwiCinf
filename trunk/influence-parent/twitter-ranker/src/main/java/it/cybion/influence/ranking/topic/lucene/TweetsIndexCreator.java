@@ -53,7 +53,8 @@ public class TweetsIndexCreator
 		List<String> tweetsJsons = null;
 		try
 		{
-			tweetsJsons = twitterFacade.getUpTo200Tweets(userId);
+			tweetsJsons = twitterFacade.getLast200Tweets(userId);
+			logger.info("creating index for user with id "+userId+" with "+tweetsJsons.size()+" tweets");
 		} catch (TwitterException e)
 		{
 			e.printStackTrace();

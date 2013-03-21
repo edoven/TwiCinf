@@ -95,7 +95,7 @@ public class LanguageDetectionFilterManager implements FilterManager
 				List<String> tweetsJsons;
 				try
 				{
-					tweetsJsons = twitterFacade.getUpTo200Tweets(userId);
+					tweetsJsons = twitterFacade.getLast200Tweets(userId);
 				}
 				catch (ProtectedUserException e)
 				{					

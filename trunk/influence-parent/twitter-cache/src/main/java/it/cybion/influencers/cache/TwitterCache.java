@@ -335,7 +335,7 @@ public class TwitterCache
 		}
 	}
 
-	public List<String> getUpTo200Tweets(long userId) throws TwitterException, ProtectedUserException
+	public List<String> getLast200Tweets(long userId) throws TwitterException, ProtectedUserException
 	{
 		try
 		{
@@ -344,7 +344,7 @@ public class TwitterCache
 		{
 			List<String> jsonTweets = twitterWebFacade.getTweetsWithMaxId(userId, -1);
 			persistanceFacade.putTweets(jsonTweets);
-			return getUpTo200Tweets(userId);
+			return getLast200Tweets(userId);
 		}
 	}
 		

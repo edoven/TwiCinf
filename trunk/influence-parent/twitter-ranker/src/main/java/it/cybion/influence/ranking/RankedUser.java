@@ -6,16 +6,18 @@ public class RankedUser implements Comparable<RankedUser>
 	private int followersCount;
 	private int originalTweets;
 	private double meanRetweetsCount;
+	private double topicTweetsRatio;
 	private double rank;
 	
 	
 	public RankedUser(String screenName, int followersCount,
-			int originalTweets, double meanRetweetsCount, double rank)
+			int originalTweets, double meanRetweetsCount, double topicTweetsRatio, double rank)
 	{
 		this.screenName = screenName;
 		this.followersCount = followersCount;
 		this.originalTweets = originalTweets;
 		this.meanRetweetsCount = meanRetweetsCount;
+		this.setTopicTweetsRatio(topicTweetsRatio);
 		this.rank = rank;
 	}
 	
@@ -98,7 +100,25 @@ public class RankedUser implements Comparable<RankedUser>
 	}
 
 
+	public String toString()
+	{
+		return "user:"+this.getScreenName()+
+				" - followers:"+this.getFollowersCount()+
+				" - originalTweets:"+this.getOriginalTweets()+
+				" - meanRetweetCount:"+this.getMeanRetweetsCount()+
+				" - topicTweetsRatio:"+this.getTopicTweetsRatio()+
+				" - rank:"+this.getRank();
+	}
 
+	public double getTopicTweetsRatio()
+	{
+		return topicTweetsRatio;
+	}
+
+	public void setTopicTweetsRatio(double topicTweetsRatio)
+	{
+		this.topicTweetsRatio = topicTweetsRatio;
+	}
 
 	
 	

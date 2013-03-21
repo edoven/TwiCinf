@@ -75,13 +75,14 @@ public class TweetToTopicSimilarityCalculator
 	{
 		Query query = null;
 		QueryParser queryParser = new QueryParser(Version.LUCENE_36, "content", analyzer);
+		String cleanedTweetText = getCleanedTweetText(tweet);
 		try
 		{
-			query = queryParser.parse(getCleanedTweetText(tweet));
+			query = queryParser.parse(cleanedTweetText);
 		} catch (ParseException e1)
 		{
-			e1.printStackTrace();
-			System.exit(0);
+			logger.info("Parsing error! Can't parse: "+cleanedTweetText);
+			return 0;
 		}
 		int hitsPerPage = 1;
 		IndexSearcher searcher = new IndexSearcher(indexReader);
@@ -108,7 +109,6 @@ public class TweetToTopicSimilarityCalculator
 			score = 0;
 		else
 			score = hits[0].score;
-//		logger.info(score);
 		return score;
 
 	}

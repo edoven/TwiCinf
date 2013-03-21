@@ -93,7 +93,7 @@ public class UserHandler
 		logger.debug("limit for getLast200TweetsPostedByUser=" + limit);
 		Paging paging = new Paging();
 		paging.setCount(200);
-		paging.setPage(1);
+//		paging.setPage(1);
 		if (maxId!=-1)
 			paging.setMaxId(maxId);
 		List<Status> statuses;

@@ -1,17 +1,11 @@
 package it.cybion.influence.ranking;
 
+import it.cybion.influence.ranking.utils.ListFileReader;
+import it.cybion.influencers.cache.TwitterCache;
+
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import it.cybion.influencers.cache.TwitterCache;
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
-import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.Twitter4jWebFacade;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.rank.laperla.ListFileReader;
 
 public class LaPerlaRanking
 {
@@ -42,13 +36,7 @@ public class LaPerlaRanking
 		System.out.println("== RANKED USERS ==");
 		System.out.println();
 		for (RankedUser rankedUser : users)
-		{
-			System.out.println("user:"+rankedUser.getScreenName()+
-					" - followers:"+rankedUser.getFollowersCount()+
-					" - originalTweets:"+rankedUser.getOriginalTweets()+
-					" - meanRetweetCount:"+rankedUser.getMeanRetweetsCount()+
-					" - rank:"+rankedUser.getRank());
-		}
+			System.out.println(rankedUser.toString());
 		System.exit(0);
 	}
 	
