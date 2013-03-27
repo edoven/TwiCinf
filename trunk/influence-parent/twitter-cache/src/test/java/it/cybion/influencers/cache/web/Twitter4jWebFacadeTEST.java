@@ -2,17 +2,20 @@ package it.cybion.influencers.cache.web;
 
 
 import static org.testng.AssertJUnit.assertTrue;
+import it.cybion.influencers.cache.calendar.CalendarManager;
 import it.cybion.influencers.cache.model.Tweet;
-import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.cache.web.implementations.twitter4j.SearchedByDateTweetsResultContainer;
+import it.cybion.influencers.cache.web.implementations.twitter4j.Token;
+import it.cybion.influencers.cache.web.implementations.twitter4j.Twitter4jWebFacade;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -29,7 +32,7 @@ import com.google.gson.GsonBuilder;
 public class Twitter4jWebFacadeTEST
 {
 
-	private static final Logger logger = Logger.getLogger(Twitter4jWebFacadeTEST.class);
+//	private static final Logger logger = Logger.getLogger(Twitter4jWebFacadeTEST.class);
 
 	private Twitter4jWebFacade twitter4jFacade;
 
@@ -52,7 +55,6 @@ public class Twitter4jWebFacadeTEST
 		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
 		userTokens.add(userToken5);
 		
-
 		twitter4jFacade = new Twitter4jWebFacade(applicationToken, userTokens);
 	}
 
@@ -106,17 +108,15 @@ public class Twitter4jWebFacadeTEST
 		assertTrue(followerIds.size() > 20000);
 	}
 
-//	@Test(enabled = true)
-//	public void getUsersJsonsTEST() throws TwitterException
-//	{
-//		List<Long> followerIds = new ArrayList<Long>();
-//		for (long i = 0; i < 101; i++)
-//			followerIds.add(435668609 + i);
-//		twitter4jFacade.getUsersJsons(followerIds);
-//	}
-	
-	
-	
+	@Test(enabled = true)
+	public void getUsersJsonsTEST() throws TwitterException
+	{
+		List<Long> followerIds = new ArrayList<Long>();
+		for (long i = 0; i < 101; i++)
+			followerIds.add(435668609 + i);
+		twitter4jFacade.getUsersJsons(followerIds);
+	}
+		
 	@Test(enabled = true)
 	public void getUserTweetsWithMaxId() throws TwitterException, ProtectedUserException
 	{
@@ -129,21 +129,11 @@ public class Twitter4jWebFacadeTEST
 	public void getTweetsFromDate1() throws TwitterException, ProtectedUserException
 	{
 		long userId = 887469007L; //edoventurini
-		int fromYear = 2012,
-			toYear = 2012;
-		int fromMonth = 12,
-			toMonth = 12;
-		int fromDay = 13,
-			toDay = 15;
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,
-																	fromYear, fromMonth, fromDay,
-																	toYear, 	toMonth,   toDay);
+		Date fromDate = CalendarManager.getDate(2012, 12, 13);
+		Date toDate   = CalendarManager.getDate(2012, 12, 15);
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,fromDate,toDate);
 		List<String> tweets = resultContainer.getGoodTweets();
 		Assert.assertEquals(tweets.size(), 2);
-//		for (String tweet : tweets)
-//		{
-//			logger.info(tweet);
-//		}
 	}
 	
 	
@@ -151,43 +141,35 @@ public class Twitter4jWebFacadeTEST
 	public void getTweetsFromDate2() throws TwitterException, ProtectedUserException
 	{
 		long userId = 517903407L; //profdalimonte
-		int fromYear = 2013,
-			toYear = 2013;
-		int fromMonth = 2,
-			toMonth = 2;
-		int fromDay = 4,
-			toDay = 5;
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,
-																	fromYear, fromMonth, fromDay,
-																	toYear, 	toMonth,   toDay);
+		Date fromDate = CalendarManager.getDate(2013, 2, 3);
+		Date toDate   = CalendarManager.getDate(2013, 2, 5);
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,fromDate,toDate);
 		List<String> tweets = resultContainer.getGoodTweets();
-		Assert.assertEquals(tweets.size(),4);
-//		for (String tweetJson : tweets)
-//		{
-//			Tweet tweet = Tweet.buildTweetFromJson(tweetJson);
-//			logger.info(tweet.id+" - "+tweet.created_at+" - "+tweet.originalJson);
-//		}
+		Assert.assertEquals(tweets.size(),8);
+		Collections.sort(tweets);
 	}
+	
+	
+	@Test(enabled = true)
+	public void getTweetsFromDateUserWithError() throws TwitterException, ProtectedUserException{
+		long userId = 94040214L;
+		Date fromDate = CalendarManager.getDate(2013, 2, 1);
+		Date toDate   = CalendarManager.getDate(2013, 2, 20);
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,fromDate,toDate);
+		List<String> tweets = resultContainer.getGoodTweets();
+		Assert.assertTrue(tweets.size()==0);
+	}
+	
+	
 	
 	
 	@Test(enabled = true)
 	public void getTweetsFromDateCheckIfContainsDuplicates() throws TwitterException, ProtectedUserException
 	{
 		long userId = 813286L; //BarackObama
-		
-		int fromYear = 2012;
-		int fromMonth = 12;
-		int fromDay = 1;
-		
-		int	toYear = 2013;
-		int	toMonth = 1;
-		int	toDay = 1;
-		
-		Date fromDate = new Date(fromYear-1900,fromMonth-1,fromDay);
-		Date toDate = new Date(toYear-1900,toMonth-1,toDay);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,
-																	fromYear, fromMonth, fromDay,
-																	toYear, 	toMonth,   toDay);
+		Date fromDate = CalendarManager.getDate(2012, 12, 1);
+		Date toDate   = CalendarManager.getDate(2013, 1, 1);
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,fromDate,toDate);
 		List<String> tweetJsons = resultContainer.getGoodTweets();
 		Set<String> tweetJsonsSet = new HashSet<String>(tweetJsons);
 		Assert.assertTrue(tweetJsons.size()>20);
@@ -198,17 +180,9 @@ public class Twitter4jWebFacadeTEST
 	public void getTweetsFromDateCheckIfDateIsCorrect() throws TwitterException, ProtectedUserException
 	{
 		long userId = 813286L; //BarackObama
-		int fromYear = 2013,
-			toYear = 2013;
-		int fromMonth = 1,
-			toMonth = 3;
-		int fromDay = 1,
-			toDay = 1;
-		Date fromDate = new Date(fromYear-1900,fromMonth-1,fromDay);
-		Date toDate = new Date(toYear-1900,toMonth-1,toDay);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,
-																	fromYear, fromMonth, fromDay,
-																	toYear, 	toMonth,   toDay);
+		Date fromDate = CalendarManager.getDate(2013, 1, 1);
+		Date toDate   = CalendarManager.getDate(2013, 3, 1);
+		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,fromDate,toDate);
 		List<String> tweetJsons = resultContainer.getGoodTweets();
 		for (String tweetJson : tweetJsons)
 		{
@@ -217,9 +191,8 @@ public class Twitter4jWebFacadeTEST
 									// "Wed Oct 17 19:59:40 +0000 2012"
 						.setDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy").create();
 			Tweet tweet = gson.fromJson(tweetJson, Tweet.class);
-//			logger.info(tweet.created_at);
-			Assert.assertTrue(tweet.created_at.compareTo(fromDate)>0);
-			Assert.assertTrue(tweet.created_at.compareTo(toDate)<0);			
+			Assert.assertTrue(tweet.getCreatedAt().compareTo(fromDate)>0);
+			Assert.assertTrue(tweet.getCreatedAt().compareTo(toDate)<0);			
 		}
 	}
 	
@@ -241,16 +214,23 @@ public class Twitter4jWebFacadeTEST
 	@Test(enabled = true)
 	public void getTweetsByDateDoesNotStop() throws TwitterException, ProtectedUserException
 	{	
-			int fromYear = 2013, 
-					fromMonth = 2, 
-					fromDay = 1; 
-				int toYear = 2013, 
-					toMonth= 2, 
-					toDay = 20;
-			long userId = 228432756;
-			SearchedByDateTweetsResultContainer results = twitter4jFacade.getTweetsByDate(userId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
-			Assert.assertTrue(results.goodTweets.size()>10);
-
+		Date fromDate = CalendarManager.getDate(2013, 2, 1);
+		Date toDate   = CalendarManager.getDate(2013, 2, 20);
+		long userId = 228432756;
+		SearchedByDateTweetsResultContainer results = twitter4jFacade.getTweetsByDate(userId, fromDate, toDate);
+		Assert.assertTrue(results.getGoodTweets().size()>10);
 	}
+	
+	@Test(enabled = true)
+	public void getTweetsByDateZeroTweets() throws TwitterException, ProtectedUserException
+	{	
+		Date fromDate = CalendarManager.getDate(2013, 2, 1);
+		Date toDate   = CalendarManager.getDate(2013, 2, 20);
+		long userId = 24767201; //user=wwdcareers
+		SearchedByDateTweetsResultContainer results = twitter4jFacade.getTweetsByDate(userId, fromDate, toDate);
+		Assert.assertTrue(results.getGoodTweets().size()==0);
+	}
+	
+	
 
 }

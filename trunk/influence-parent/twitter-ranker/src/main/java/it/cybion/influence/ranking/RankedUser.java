@@ -2,25 +2,33 @@ package it.cybion.influence.ranking;
 
 public class RankedUser implements Comparable<RankedUser>
 {
-	private String screenName;
-	private int followersCount;
-	private int originalTweets;
-	private double meanRetweetsCount;
-	private double topicTweetsRatio;
-	private double rank;
+	String screenName;
+	int followersCount;
+	int originalTweets;
+	double topicTweetsCount; 
+	double topicTweetsRatio; 
+	double meanRetweetsCount; 
+	double rank;
+
 	
-	
-	public RankedUser(String screenName, int followersCount,
-			int originalTweets, double meanRetweetsCount, double topicTweetsRatio, double rank)
+	public RankedUser(String screenName, 
+					  int followersCount,
+					  int originalTweets, 
+					  double topicTweetsCount,
+					  double topicTweetsRatio, 
+					  double meanRetweetsCount, 
+					  double rank)
 	{
+		super();
 		this.screenName = screenName;
 		this.followersCount = followersCount;
 		this.originalTweets = originalTweets;
+		this.topicTweetsCount = topicTweetsCount;
+		this.topicTweetsRatio = topicTweetsRatio;
 		this.meanRetweetsCount = meanRetweetsCount;
-		this.setTopicTweetsRatio(topicTweetsRatio);
 		this.rank = rank;
 	}
-	
+
 	@Override
 	public int compareTo(RankedUser toCompare)
 	{
@@ -102,12 +110,23 @@ public class RankedUser implements Comparable<RankedUser>
 
 	public String toString()
 	{
-		return "user:"+this.getScreenName()+
-				" - followers:"+this.getFollowersCount()+
-				" - originalTweets:"+this.getOriginalTweets()+
-				" - meanRetweetCount:"+this.getMeanRetweetsCount()+
-				" - topicTweetsRatio:"+this.getTopicTweetsRatio()+
-				" - rank:"+this.getRank();
+		return "user:"+this.screenName+
+				" - followers:"+this.followersCount+
+				" - originalTweets:"+this.originalTweets+
+				" - topicTweetsCount:"+this.topicTweetsCount+
+				" - topicTweetsRatio:"+this.topicTweetsRatio+
+				" - meanRetweetsCount:"+this.meanRetweetsCount+
+				" - rank:"+this.rank;
+	}
+	
+	public String toCSV()
+	{
+		return this.screenName+","+
+			   this.followersCount+","+
+			   this.originalTweets+","+
+			   this.topicTweetsCount+","+
+			   this.topicTweetsRatio+","+
+			   this.meanRetweetsCount;
 	}
 
 	public double getTopicTweetsRatio()
@@ -120,7 +139,15 @@ public class RankedUser implements Comparable<RankedUser>
 		this.topicTweetsRatio = topicTweetsRatio;
 	}
 
-	
+	public double getTopicTweetsCount()
+	{
+		return topicTweetsCount;
+	}
+
+	public void setTopicTweetsCount(double topicTweetsCount)
+	{
+		this.topicTweetsCount = topicTweetsCount;
+	}
 	
 
 }

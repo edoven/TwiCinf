@@ -1,7 +1,8 @@
-package it.cybion.influence.ranking.topic.lucene.enriching;
+package it.cybion.influence.ranking.urlsexpansion;
 
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,6 @@ public class MultithreadUrlsTitleExtractor extends Thread
 
 	public static Map<String, String> getTitles(List<String> urlsList)
 	{
-		logger.debug("getting titles for "+urlsList.size()+" urls....");
 		urls = urlsList;
 		ulrs2Titles = new HashMap<String, String>();
 		List<Thread> threads = new ArrayList<Thread>();
@@ -45,7 +45,6 @@ public class MultithreadUrlsTitleExtractor extends Thread
 				e.printStackTrace();
 			}
 		}
-		logger.debug("done!");
 		return ulrs2Titles;
 	}
 
@@ -56,7 +55,6 @@ public class MultithreadUrlsTitleExtractor extends Thread
 
 	public void run()
 	{
-
 		String url = urls.get(Integer.parseInt(Thread.currentThread().getName()));
 		ulrs2Titles.put(url, getTitleFromUrl(url));
 	}
@@ -67,12 +65,21 @@ public class MultithreadUrlsTitleExtractor extends Thread
 			return getTitleFromInstagram(urlString);
 		try
 		{
-			Document doc = Jsoup.connect(urlString).get();
-			String title = doc.getElementsByTag("title").text();
+			Document doc = Jsoup.connect(urlString).followRedirects(true).get();
+			String title = doc.title();
 			logger.debug("url:"+urlString+" - title:"+title);
+//			if (title==null || title.equals(""))
+//				logger.info("url="+urlString+" - title="+title);
 			return title;
-		} catch (IOException e)
+		} 
+		catch (IOException e)
 		{
+			logger.debug("Error with jsoup and url: "+urlString);
+			return "";
+		}
+		catch (IllegalArgumentException e)
+		{
+
 			logger.debug("Error with jsoup and url: "+urlString);
 			return "";
 		}
@@ -84,7 +91,7 @@ public class MultithreadUrlsTitleExtractor extends Thread
 		String title;
 		try
 		{
-			doc = Jsoup.connect(urlString).get();
+			doc = Jsoup.connect(urlString).timeout(3000).get();
 			title = doc.getElementsByClass("caption-text").text();
 			logger.debug("url:"+urlString+" - title:"+title);
 			return title;

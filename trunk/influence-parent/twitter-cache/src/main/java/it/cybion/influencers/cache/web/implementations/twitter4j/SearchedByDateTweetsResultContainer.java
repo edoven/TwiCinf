@@ -1,11 +1,11 @@
-package it.cybion.influencers.cache.web;
+package it.cybion.influencers.cache.web.implementations.twitter4j;
 
 import java.util.List;
 
 public class SearchedByDateTweetsResultContainer
 {
-	List<String> goodTweets;
-	List<String> badTweets;
+	private List<String> goodTweets;
+	private List<String> badTweets;
 	
 	public SearchedByDateTweetsResultContainer(List<String> goodTweets,
 			List<String> badTweets)

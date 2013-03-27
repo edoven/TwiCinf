@@ -8,9 +8,9 @@ import com.google.gson.GsonBuilder;
 
 public class Tweet implements Comparable<Tweet>
 {
-	public long id;
-	public Date created_at;
-	public String originalJson;
+	private long id;
+	private Date created_at;
+	private String originalJson;
 	
 	public static Tweet buildTweetFromJson(String originalJson)
 	{
@@ -41,6 +41,25 @@ public class Tweet implements Comparable<Tweet>
 	{
 		this.originalJson = originalJson;
 	}
-	
+
+	public long getId()
+	{
+		return id;
+	}
+
+	public void setId(long id)
+	{
+		this.id = id;
+	}
+
+	public Date getCreatedAt()
+	{
+		return created_at;
+	}
+
+	public void setCreatedAt(Date created_at)
+	{
+		this.created_at = created_at;
+	}
 		
 }

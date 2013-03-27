@@ -1,15 +1,18 @@
 package it.cybion.influencers.cache.persistance;
 
 
+import it.cybion.influencers.cache.calendar.CalendarManager;
+import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
-import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
+import it.cybion.influencers.cache.persistance.implementations.mongodb.MongodbPersistanceFacade;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -250,8 +253,125 @@ public class MongodbPersistanceFacadeTEST
 		{
 			Assert.assertTrue(false);
 		}
+		persistanceFacade.removeTweet(1L);
 	}
 	
 	
+	@Test
+	public void getTweetsByDateWithCoveredRange()
+	{
+		persistanceFacade.removeTweet(1L);
+		persistanceFacade.removeTweet(2L);
+		persistanceFacade.removeTweet(3L);
+		persistanceFacade.removeTweet(4L);
+		String tweet1 = "{\"id\": 1, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Thu Jan 10 19:14:38 +0000 2013\"}";
+		String tweet2 = "{\"id\": 2, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Tue Jan 15 19:14:38 +0000 2013\"}";
+		String tweet3 = "{\"id\": 3, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Wed Jan 16 19:14:38 +0000 2013\"}";
+		String tweet4 = "{\"id\": 4, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Sun Jan 20 19:14:38 +0000 2013\"}";
+		persistanceFacade.putTweet(tweet1);
+		persistanceFacade.putTweet(tweet2);
+		persistanceFacade.putTweet(tweet3);
+		persistanceFacade.putTweet(tweet4);
+		
+		Date fromDate = CalendarManager.getDate(2013, 1, 12);
+		Date toDate   = CalendarManager.getDate(2013, 1, 18);
+		
+		try
+		{
+			List<String> tweets = persistanceFacade.getTweetsByDate(1, fromDate, toDate);
+			Assert.assertTrue(tweets.size()==2);
+		}
+		catch (UserWithNoTweetsException e)
+		{
+			Assert.assertTrue(false);
+		}
+		catch (DataRangeNotCoveredException e)
+		{
+			Assert.assertTrue(false);
+		}
+			
+		persistanceFacade.removeTweet(1L);
+		persistanceFacade.removeTweet(2L);
+		persistanceFacade.removeTweet(3L);
+		persistanceFacade.removeTweet(4L);
+	}
+	
+	@Test
+	public void getTweetsByDateWithUncoveredRangeTooEarly()
+	{
+		persistanceFacade.removeTweet(1L);
+		persistanceFacade.removeTweet(2L);
+		persistanceFacade.removeTweet(3L);
+		persistanceFacade.removeTweet(4L);
+		String tweet1 = "{\"id\": 1, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Thu Jan 10 19:14:38 +0000 2013\"}";
+		String tweet2 = "{\"id\": 2, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Tue Jan 15 19:14:38 +0000 2013\"}";
+		String tweet3 = "{\"id\": 3, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Wed Jan 16 19:14:38 +0000 2013\"}";
+		String tweet4 = "{\"id\": 4, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Sun Jan 20 19:14:38 +0000 2013\"}";
+		persistanceFacade.putTweet(tweet1);
+		persistanceFacade.putTweet(tweet2);
+		persistanceFacade.putTweet(tweet3);
+		persistanceFacade.putTweet(tweet4);
+		
+		Date fromDate = CalendarManager.getDate(2013, 1, 1);
+		Date toDate   = CalendarManager.getDate(2013, 1, 18);
+		
+		try
+		{
+			List<String> tweets = persistanceFacade.getTweetsByDate(1, fromDate, toDate);
+			Assert.assertTrue(false);
+		}
+		catch (UserWithNoTweetsException e)
+		{
+			Assert.assertTrue(false);
+		}
+		catch (DataRangeNotCoveredException e)
+		{
+			Assert.assertTrue(true);
+		}
+			
+		persistanceFacade.removeTweet(1L);
+		persistanceFacade.removeTweet(2L);
+		persistanceFacade.removeTweet(3L);
+		persistanceFacade.removeTweet(4L);
+	}
+	
+	@Test
+	public void getTweetsByDateWithUncoveredRangeTooLate()
+	{
+		persistanceFacade.removeTweet(1L);
+		persistanceFacade.removeTweet(2L);
+		persistanceFacade.removeTweet(3L);
+		persistanceFacade.removeTweet(4L);
+		String tweet1 = "{\"id\": 1, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Thu Jan 10 19:14:38 +0000 2013\"}";
+		String tweet2 = "{\"id\": 2, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Tue Jan 15 19:14:38 +0000 2013\"}";
+		String tweet3 = "{\"id\": 3, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Wed Jan 16 19:14:38 +0000 2013\"}";
+		String tweet4 = "{\"id\": 4, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Sun Jan 20 19:14:38 +0000 2013\"}";
+		persistanceFacade.putTweet(tweet1);
+		persistanceFacade.putTweet(tweet2);
+		persistanceFacade.putTweet(tweet3);
+		persistanceFacade.putTweet(tweet4);
+		
+		Date fromDate = CalendarManager.getDate(2013, 1, 12);
+		Date toDate   = CalendarManager.getDate(2013, 1, 22);
+		
+		try
+		{
+			List<String> tweets = persistanceFacade.getTweetsByDate(1, fromDate, toDate);
+			Assert.assertTrue(false);
+		}
+		catch (UserWithNoTweetsException e)
+		{
+			Assert.assertTrue(false);
+		}
+		catch (DataRangeNotCoveredException e)
+		{
+			Assert.assertTrue(true);
+		}
+			
+		persistanceFacade.removeTweet(1L);
+		persistanceFacade.removeTweet(2L);
+		persistanceFacade.removeTweet(3L);
+		persistanceFacade.removeTweet(4L);
+	}
 
 }

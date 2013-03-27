@@ -1,7 +1,8 @@
-package it.cybion.influencers.cache.web;
+package it.cybion.influencers.cache.web.implementations.twitter4j;
 
 
 import it.cybion.influencers.cache.model.Tweet;
+import it.cybion.influencers.cache.web.TwitterWebFacade;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
@@ -23,19 +24,18 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 {
 	private class ResultContainer
 	{		
-		boolean isFinished;
-		long oldestId;
-		List<String> goodTweets;
-		List<String> badTweets;
-		public ResultContainer(boolean isFinished, long oldestId,
+		private List<String> goodTweets;
+		private List<String> badTweets;
+		
+		public ResultContainer(
 				List<String> goodTweets, List<String> badTweets)
 		{
-			super();
-			this.isFinished = isFinished;
-			this.oldestId = oldestId;
 			this.goodTweets = goodTweets;
 			this.badTweets = badTweets;
 		}
+		
+		public List<String> getGoodTweets() {return goodTweets;}
+		public List<String> getBadTweets() {return badTweets;}
 	}
 
 	private final Logger logger = Logger.getLogger(Twitter4jWebFacade.class);
@@ -44,7 +44,6 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 	private List<UserHandler> userHandlers; 	
 	
 	
-
 	public Twitter4jWebFacade(Token consumerToken, List<Token> userTokens)
 	{
 		userHandlers = new ArrayList<UserHandler>();
@@ -75,28 +74,19 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		logger.info("UserHandlers created");
 	}
 	
-	private ResultContainer filterTweetsByDate(List<Tweet> tweets,Date startDate, Date endDate)	
+	private ResultContainer filterTweetsByDate(List<Tweet> tweets,Date fromDate, Date toDate)	
 	{
-		Collections.sort(tweets);
-		Tweet minIdTweet = tweets.get(0);
-		long oldestId = minIdTweet.id;
-		Tweet maxIdTweet = tweets.get(tweets.size()-1);	
-		Date maxDate200 = maxIdTweet.created_at;
 		List<String> goodTweets = new ArrayList<String>();
 		List<String> badTweets = new ArrayList<String>();		
 		for (Tweet tweet: tweets)
 		{
-			if (isGreater(tweet.created_at,startDate) && isGreater(endDate, tweet.created_at))
-				goodTweets.add(tweet.originalJson);	
+			Date tweetDate = tweet.getCreatedAt();
+			if (tweetDate.compareTo(fromDate)>=0 && tweetDate.compareTo(toDate)<0)
+				goodTweets.add(tweet.getOriginalJson());				
 			else
-				badTweets.add(tweet.originalJson);
+				badTweets.add(tweet.getOriginalJson());
 		}
-		boolean isFinished = false;
-		if (maxDate200.compareTo(startDate)<0)
-			isFinished = true;
-		if (tweets.size()<2)
-			isFinished = true;
-		return new ResultContainer(isFinished,oldestId,goodTweets,badTweets);		
+		return new ResultContainer(goodTweets,badTweets);		
 	}
 	
 	private long[] getChunk(List<Long> list, int chunkSize, int chunkIndex)
@@ -160,36 +150,38 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 
 	@Override
 	public SearchedByDateTweetsResultContainer getTweetsByDate(
-											long userId, 
-											int fromYear, int fromMonth, int fromDay, 
-											int toYear,	  int toMonth,   int toDay) throws TwitterException, ProtectedUserException
+											long userId, Date fromDate, Date toDate
+											) throws TwitterException, ProtectedUserException
 	{
-		
-		Date fromDate = new Date(fromYear-1900, fromMonth-1, fromDay);
-		Date toDate = new Date(toYear-1900, toMonth-1, toDay);
-		if (toDate.compareTo(fromDate)<0)
-		{
-			logger.info("ERROR! endDate can't be smaller than startDate.");
-			System.exit(0);
-		}
 		List<String> tweetsJsons = getTweetsWithMaxId(userId, -1);
+		if (tweetsJsons.size()<1)
+			return new SearchedByDateTweetsResultContainer(Collections.<String>emptyList(), Collections.<String>emptyList());
 		List<Tweet> tweets = getTweetsFromJsons(tweetsJsons);				
 		List<String> goodTweets = new ArrayList<String>();
 		List<String> badTweets = new ArrayList<String>();
 		ResultContainer resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
-		goodTweets.addAll(resultContainer.goodTweets);
-		badTweets.addAll(resultContainer.badTweets);
-		if (resultContainer.isFinished==false)
-			while (!resultContainer.isFinished)
-			{
-				long oldestId = resultContainer.oldestId;
-				tweetsJsons = getTweetsWithMaxId(userId,oldestId);
-				tweets = getTweetsFromJsons(tweetsJsons);
-				resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
-				goodTweets.addAll(resultContainer.goodTweets);
-				badTweets.addAll(resultContainer.badTweets);
-			}		
+		goodTweets.addAll(resultContainer.getGoodTweets());
+		badTweets.addAll(resultContainer.getBadTweets());
+		Tweet oldestTweet = getOldestTweet(tweets);
+		while (fromDate.compareTo( oldestTweet.getCreatedAt() ) <= 0 )
+		{
+			long oldestTweetId = oldestTweet.getId();
+			tweetsJsons = getTweetsWithMaxId(userId,oldestTweetId);
+			if (tweetsJsons.size()<1)
+				return new SearchedByDateTweetsResultContainer(goodTweets, badTweets);
+			tweets = getTweetsFromJsons(tweetsJsons);
+			resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
+			goodTweets.addAll(resultContainer.goodTweets);
+			badTweets.addAll(resultContainer.badTweets);
+			oldestTweet = getOldestTweet(tweets);
+		}		
 		return new SearchedByDateTweetsResultContainer(goodTweets, badTweets);
+	}
+
+	private Tweet getOldestTweet(List<Tweet> tweets)
+	{
+		Collections.sort(tweets);
+		return tweets.get(0);
 	}
 
 	private List<Tweet> getTweetsFromJsons(List<String> tweetsJsons)
@@ -213,13 +205,11 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException 
 	{
 		UserHandler userHandler = getUserHandler("/statuses/user_timeline");
-		logger.info("Downloading 200 tweets for user with id:" + userId + " with maxid="+maxId);
+//		logger.info("Downloading 200 tweets for user with id:" + userId + " with maxid="+maxId);
 		List<String> tweets = userHandler.getTweetsWithMaxId(userId, maxId);
 		return tweets;
 	}
 
-	
-	
 	private List<String> getUpTo100Users(long[] usersIds) throws TwitterException
 	{
 		UserHandler userHandler = getUserHandler("/users/lookup");
@@ -252,8 +242,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		UserHandler userHandler = getUserHandler("/users/show/:id");
 		return userHandler.getUserJson(userId);
 	}
-	
-	
+		
 	@Override
 	public String getUserJson(String screenName) throws TwitterException
 	{
@@ -277,18 +266,19 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		{
 			long[] chunk = getChunk(usersIds, 100, i);
 			logger.info("downloading chunk " + i + "/" + chunksCount);
-			List<String> chunkResult = getUpTo100Users(chunk);
-			usersJsons.addAll(chunkResult);
+			List<String> chunkResult;
+			try
+			{
+				chunkResult = getUpTo100Users(chunk);			
+				usersJsons.addAll(chunkResult);
+			}
+			catch (TwitterException e)
+			{
+				logger.info("ERROR: problem with chuck, skipped!");
+			}
+			
 		}
 		return usersJsons;
-	}
-
-	private boolean isGreater(Date a, Date b)
-	{
-		if (a.compareTo(b)>0)
-			return true;
-		else
-			return false;
 	}
 
 }

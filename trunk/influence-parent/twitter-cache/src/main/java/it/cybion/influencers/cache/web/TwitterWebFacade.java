@@ -2,7 +2,9 @@ package it.cybion.influencers.cache.web;
 
 
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.cache.web.implementations.twitter4j.SearchedByDateTweetsResultContainer;
 
+import java.util.Date;
 import java.util.List;
 
 import twitter4j.TwitterException;
@@ -26,9 +28,7 @@ public interface TwitterWebFacade
 
 	List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException;
 
-	SearchedByDateTweetsResultContainer getTweetsByDate(long userId,
-			int fromYear, int fromMonth, int fromDay, int toYear, int toMonth,
-			int toDay) throws TwitterException, ProtectedUserException;
+	SearchedByDateTweetsResultContainer getTweetsByDate(long userId,Date fromDate, Date toDate) throws TwitterException, ProtectedUserException;
 
 	// String getUserJson(String screenName) throws TwitterApiException;
 	// List<Long> getFollowersIds(String screenName) throws TwitterApiException;

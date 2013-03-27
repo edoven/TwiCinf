@@ -2,13 +2,14 @@ package it.cybion.influencers.cache.persistance;
 
 
 
-import it.cybion.influencers.cache.persistance.exceptions.OldestTweetsNeedToBeDownloadedException;
+import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -22,10 +23,7 @@ public interface PersistanceFacade
 	List<Long> getFriends(Long userId) throws UserNotFriendsEnrichedException, UserNotPresentException;
 	int getFriendsCount(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException;
 	String getScreenName(Long userId) throws UserNotPresentException, UserNotProfileEnrichedException;
-	List<String> getTweetsByDate(long userId, 
-			int fromYear, int fromMonth , int fromDay,
-			int toYear, int toMonth, int toDay) throws UserWithNoTweetsException, OldestTweetsNeedToBeDownloadedException;
-
+	List<String> getTweetsByDate(long userId,Date fromDate, Date toDate) throws UserWithNoTweetsException, DataRangeNotCoveredException;
 	List<String> getUpTo200Tweets(long userId) throws UserWithNoTweetsException;
 	String getUser(Long userId) throws UserNotPresentException;
 	String getUser(String screenName) throws UserNotPresentException;

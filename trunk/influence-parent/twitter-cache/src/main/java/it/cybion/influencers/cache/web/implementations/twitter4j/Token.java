@@ -1,4 +1,4 @@
-package it.cybion.influencers.cache.web;
+package it.cybion.influencers.cache.web.implementations.twitter4j;
 
 
 import java.io.FileInputStream;

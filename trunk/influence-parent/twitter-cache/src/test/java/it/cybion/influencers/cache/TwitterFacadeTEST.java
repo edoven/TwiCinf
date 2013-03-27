@@ -1,16 +1,17 @@
 package it.cybion.influencers.cache;
 
 
-import it.cybion.influencers.cache.model.Tweet;
+import it.cybion.influencers.cache.calendar.CalendarManager;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.mongodb.MongodbPersistanceFacade;
-import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.Twitter4jWebFacade;
+import it.cybion.influencers.cache.persistance.implementations.mongodb.MongodbPersistanceFacade;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.cache.web.implementations.twitter4j.Token;
+import it.cybion.influencers.cache.web.implementations.twitter4j.Twitter4jWebFacade;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -132,22 +133,35 @@ public class TwitterFacadeTEST
 	public void getTweetsByDateTEST() throws TwitterException, ProtectedUserException
 	{
 		long userId = 813286L; //BarackObama
-		int fromYear = 2012;
-		int fromMonth = 12;
-		int fromDay = 1;
-		int	toYear = 2013;
-		int	toMonth = 1;		
-		int	toDay = 1;
-		List<String> tweetJsons = twitterFacade.getTweetsByDate(userId,
-																	fromYear, fromMonth, fromDay,
-																	toYear, 	toMonth,   toDay);
-		Tweet tweet;
-		for (String tweetJson : tweetJsons)
-		{
-			tweet = Tweet.buildTweetFromJson(tweetJson);
-			logger.info(tweet.created_at);
-		}
+		Date fromDate = CalendarManager.getDate(2012, 12, 1);
+		Date toDate   = CalendarManager.getDate(2013, 1, 1);
+		List<String> tweetJsons = twitterFacade.getTweetsByDate(userId,fromDate,toDate);
 		Assert.assertTrue(tweetJsons.size()>20);
 	}
-
+	
+	
+	@Test(enabled = true)
+	public void getTweetsByDateWithStrangeUserTEST() 
+	{
+		long userId = 16361000; //user: InStyle
+		Date fromDate = CalendarManager.getDate(2013, 2, 1);
+		Date toDate   = CalendarManager.getDate(2013, 2, 20);
+		List<String> tweetJsons = null;
+		try
+		{
+			tweetJsons = twitterFacade.getTweetsByDate(userId,fromDate,toDate);
+		}
+		catch (TwitterException e)
+		{
+			Assert.assertTrue(false);
+		}
+		catch (ProtectedUserException e)
+		{
+			Assert.assertTrue(false);
+		}
+		Assert.assertTrue(true);		
+		logger.info(tweetJsons.size());
+		Assert.assertTrue(tweetJsons.size()>20);
+	}
+	
 }

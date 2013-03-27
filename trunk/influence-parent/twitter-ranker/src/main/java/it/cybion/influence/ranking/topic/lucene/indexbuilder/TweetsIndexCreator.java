@@ -1,7 +1,8 @@
-package it.cybion.influence.ranking.topic.lucene;
+package it.cybion.influence.ranking.topic.lucene.indexbuilder;
 
 
-import it.cybion.influence.ranking.topic.lucene.enriching.UrlsExapandedTweetsTextExtractor;
+import it.cybion.influence.ranking.model.Tweet;
+import it.cybion.influence.ranking.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
@@ -20,6 +21,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 
+import com.google.gson.Gson;
+
 import twitter4j.TwitterException;
 
 
@@ -27,6 +30,36 @@ import twitter4j.TwitterException;
 public class TweetsIndexCreator
 {
 	private static final Logger logger = Logger.getLogger(TweetsIndexCreator.class);
+	
+	public static Directory createSingleIndexForUsers(TwitterCache twitterFacade, String indexesRootDirPath, List<Long> usersIds)
+	{
+		int indexesCount = 0;
+		List<String> urlExpandedTweets = new ArrayList<String>();
+		List<String> tweetsJsons = new ArrayList<String>();
+		for (Long userId : usersIds)
+		{
+			try
+			{
+				tweetsJsons.addAll(twitterFacade.getLast200Tweets(userId));
+			} catch (TwitterException e)
+			{
+				e.printStackTrace();
+				System.exit(0);
+			}
+			catch (ProtectedUserException e)
+			{
+				logger.info("Can't get tweets for user with id "+userId+" because is protected.");
+				System.exit(0);
+			}
+		}
+		List<Tweet> tweets = getTweetsObjectsFromJsons(tweetsJsons);
+		tweets = UrlsExapandedTweetsTextExtractor.getUrlsExpandedTextTweets(tweets);
+		List<String> tweetsTexts = new ArrayList<String>();
+		for (Tweet tweet : tweets)
+			tweetsTexts.add(tweet.urlsExpandedText);			
+		return createSingleDocumentIndex(indexesRootDirPath, tweetsTexts);
+	}
+	
 	
 	public static List<Directory> createSingleDocumentIndexesForUsers(TwitterCache twitterFacade, String indexesRootDirPath, List<Long> usersIds)
 	{
@@ -48,7 +81,7 @@ public class TweetsIndexCreator
 		return indexes;
 	}
 
-	public static Directory createSingleDocumentIndexForUser(TwitterCache twitterFacade, String indexPath, long userId) throws ProtectedUserException
+	private static Directory createSingleDocumentIndexForUser(TwitterCache twitterFacade, String indexPath, long userId) throws ProtectedUserException
 	{
 		List<String> tweetsJsons = null;
 		try
@@ -60,11 +93,15 @@ public class TweetsIndexCreator
 			e.printStackTrace();
 			System.exit(0);
 		}
-		List<String> tweetsTexts = new ArrayList<String>(UrlsExapandedTweetsTextExtractor.getUrlsExpandedTextFromTexts(tweetsJsons).values());
+		List<Tweet> tweets = getTweetsObjectsFromJsons(tweetsJsons);
+		tweets = UrlsExapandedTweetsTextExtractor.getUrlsExpandedTextTweets(tweets);
+		List<String> tweetsTexts = new ArrayList<String>();
+		for (Tweet tweet : tweets)
+			tweetsTexts.add(tweet.urlsExpandedText);
 		return createSingleDocumentIndex(indexPath, tweetsTexts);
 	}
 
-	public static Directory createSingleDocumentIndex(String indexPath, List<String> tweets)
+	private static Directory createSingleDocumentIndex(String indexPath, List<String> tweets)
 	{
 		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
 		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
@@ -86,10 +123,14 @@ public class TweetsIndexCreator
 			e.printStackTrace();
 			System.exit(0);
 		}
+		StringBuilder stringBuilder = new StringBuilder();
 		for (String tweet : tweets)
 		{
-			addDocument(indexWriter, tweet);
+			stringBuilder.append(tweet);
+			stringBuilder.append(" ");
 		}
+		String singleTweetsDocument = stringBuilder.toString();
+		addDocument(indexWriter, singleTweetsDocument);
 		try
 		{
 			indexWriter.close();
@@ -113,6 +154,19 @@ public class TweetsIndexCreator
 			e.printStackTrace();
 			System.exit(0);
 		}
+	}
+	
+	private static List<Tweet> getTweetsObjectsFromJsons(List<String> tweetsJsons)
+	{
+		Gson gson = new Gson();
+		List<Tweet> tweets = new ArrayList<Tweet>();
+		Tweet tweet;
+		for (String tweetJson : tweetsJsons)
+		{
+			tweet = gson.fromJson(tweetJson, Tweet.class);
+			tweets.add(tweet);
+		}
+		return tweets;
 	}
 
 }

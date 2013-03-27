@@ -1,39 +1,29 @@
-package it.cybion.influencers.cache.persistance.mongodb;
+package it.cybion.influencers.cache.persistance.implementations.mongodb;
 
 
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.exceptions.OldestTweetsNeedToBeDownloadedException;
-import it.cybion.influencers.cache.persistance.exceptions.TweetNotPresentException;
+import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
 
-
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.util.JSON;
-
-import java.util.Map;
-import java.util.HashMap;
 
 
 
 public class MongodbPersistanceFacade implements PersistanceFacade
 {
-	private UsersMongodbPersistanceFacade usersMongodbPersistanceFacade;
-	private TweetsMongodbPersistanceFacade tweetsMongodbPersistanceFacade;
+	private MongodbUsersPersistanceFacade usersMongodbPersistanceFacade;
+	private MongodbTweetsPersistanceFacade tweetsMongodbPersistanceFacade;
 	
 	
 	public MongodbPersistanceFacade(String host, String database) throws UnknownHostException
@@ -45,8 +35,8 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		DBCollection tweetsCollection = db.getCollection("tweets");
 		tweetsCollection.createIndex(new BasicDBObject("id", 1));
 		
-		usersMongodbPersistanceFacade = new UsersMongodbPersistanceFacade(userCollection);
-		tweetsMongodbPersistanceFacade = new TweetsMongodbPersistanceFacade(tweetsCollection);
+		usersMongodbPersistanceFacade = new MongodbUsersPersistanceFacade(userCollection);
+		tweetsMongodbPersistanceFacade = new MongodbTweetsPersistanceFacade(tweetsCollection);
 	}
 
 	@Override
@@ -168,12 +158,8 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 	}
 
 	@Override
-	public List<String> getTweetsByDate(long userId, 
-								int fromYear, int fromMonth , int fromDay,
-								int toYear, int toMonth, int toDay) throws UserWithNoTweetsException, OldestTweetsNeedToBeDownloadedException
+	public List<String> getTweetsByDate(long userId,Date fromDate, Date toDate) throws UserWithNoTweetsException, DataRangeNotCoveredException
 	{
-		return tweetsMongodbPersistanceFacade.getTweetsByDate(userId, 
-														fromYear, fromMonth, fromDay,
-														toYear, toMonth, toDay );
+		return tweetsMongodbPersistanceFacade.getTweetsByDate(userId, fromDate, toDate );
 	}
 }

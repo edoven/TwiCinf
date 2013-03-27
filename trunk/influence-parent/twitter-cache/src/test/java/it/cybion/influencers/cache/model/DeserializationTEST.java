@@ -21,7 +21,7 @@ public class DeserializationTEST
 		String jsonTweet = "{\"created_at\": \"Wed Jun 06 20:07:10 +0000 2012\"}";
 		
 		Tweet tweet = gson.fromJson(jsonTweet, Tweet.class);
-		Date tweetDate = tweet.created_at;
+		Date tweetDate = tweet.getCreatedAt();
 		Assert.assertEquals(tweetDate.getDate(), 6);
 		Assert.assertEquals(tweetDate.getMonth(), 5);
 		Assert.assertEquals(tweetDate.getYear(), 2012-1900 );

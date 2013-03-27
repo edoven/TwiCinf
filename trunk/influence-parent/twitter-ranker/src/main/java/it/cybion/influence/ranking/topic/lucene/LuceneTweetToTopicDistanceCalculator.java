@@ -1,6 +1,8 @@
 package it.cybion.influence.ranking.topic.lucene;
 
 
+import it.cybion.influence.ranking.topic.TweetToTopicDistanceCalculator;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
 
-
 /**
  * 
  * TweetToTopicSimilarityCalculator uses a list of Lucene indexes to calculate a
@@ -29,20 +30,22 @@ import org.apache.lucene.util.Version;
  * 
  */
 
-public class TweetToTopicSimilarityCalculator
+public class LuceneTweetToTopicDistanceCalculator implements TweetToTopicDistanceCalculator
 {
+	
 
 	private static final String LUCENE_ESCAPE_CHARS = "[\\\\+\\-\\!\\(\\)\\:\\^\\]\\{\\}\\~\\*\\?]";
 	private static final Pattern LUCENE_PATTERN = Pattern.compile(LUCENE_ESCAPE_CHARS);
 	private static final String REPLACEMENT_STRING = "\\\\$0";
 
-	private static final Logger logger = Logger.getLogger(TweetToTopicSimilarityCalculator.class);
+	private static final Logger logger = Logger.getLogger(LuceneTweetToTopicDistanceCalculator.class);
 
-	private List<IndexReader> indexesReaders = new ArrayList<IndexReader>();
+	private List<IndexReader> indexesReaders;
 	private StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
 
-	public TweetToTopicSimilarityCalculator(List<Directory> indexes)
-	{
+	public LuceneTweetToTopicDistanceCalculator(List<Directory> indexes)
+	{	
+		indexesReaders = new ArrayList<IndexReader>();
 		for (Directory index : indexes)
 		{
 			IndexReader indexReader = null;
@@ -59,23 +62,24 @@ public class TweetToTopicSimilarityCalculator
 		}
 	}
 
-	public float getTweetRank(String tweet)
+	@Override
+	public float getTweetToTopicDistance(String tweetText)
 	{
 		float accumulator = 0;
 		for (IndexReader indexReader : indexesReaders)
 		{
-			accumulator = accumulator + getTweetRankFromOneIndex(indexReader, tweet);
+			accumulator = accumulator + getTweetToTopicDistanceFromOneIndex(indexReader, tweetText);
 		}
 		float totalScore = accumulator / indexesReaders.size();
-//		logger.info("total=" + totalScore);
+//		logger.info("score="+totalScore+" - tweet="+tweet);
 		return totalScore;
 	}
 
-	private float getTweetRankFromOneIndex(IndexReader indexReader, String tweet)
+	private float getTweetToTopicDistanceFromOneIndex(IndexReader indexReader, String tweetText)
 	{
 		Query query = null;
 		QueryParser queryParser = new QueryParser(Version.LUCENE_36, "content", analyzer);
-		String cleanedTweetText = getCleanedTweetText(tweet);
+		String cleanedTweetText = getCleanedTweetText(tweetText);
 		try
 		{
 			query = queryParser.parse(cleanedTweetText);
@@ -119,5 +123,7 @@ public class TweetToTopicSimilarityCalculator
 		cleanedTweet = QueryParser.escape(cleanedTweet);
 		return cleanedTweet;
 	}
+
+	
 
 }

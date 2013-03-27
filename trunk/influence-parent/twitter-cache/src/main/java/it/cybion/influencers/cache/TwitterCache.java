@@ -2,27 +2,28 @@ package it.cybion.influencers.cache;
 
 
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.exceptions.OldestTweetsNeedToBeDownloadedException;
+import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
-import it.cybion.influencers.cache.web.SearchedByDateTweetsResultContainer;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.cache.web.implementations.twitter4j.SearchedByDateTweetsResultContainer;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import twitter4j.TwitterException;
+
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-
-import twitter4j.TwitterException;
 
 
 
@@ -348,65 +349,32 @@ public class TwitterCache
 		}
 	}
 		
-	public List<String> getTweetsByDate(long userId, 
-										int fromYear, int fromMonth , int fromDay,
-										int toYear, int toMonth, int toDay) throws TwitterException, ProtectedUserException
+	public List<String> getTweetsByDate(long userId, Date fromDate, Date toDate) throws TwitterException, ProtectedUserException
 	{
 		try
 		{
-			List<String> tweets = persistanceFacade.getTweetsByDate(userId, 
-						fromYear, fromMonth,  fromDay, 
-						toYear,  toMonth, toDay );
-			logger.debug("tweets get from mongodb");
+			List<String> tweets = persistanceFacade.getTweetsByDate(userId,fromDate,toDate);
+			logger.info("tweets get from mongodb");
 			return tweets;
 		}
 		catch (UserWithNoTweetsException e)
 		{
-			logger.debug("downloading tweets");
-			SearchedByDateTweetsResultContainer result = twitterWebFacade.getTweetsByDate(userId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
+			logger.info("downloading tweets");
+			SearchedByDateTweetsResultContainer result = twitterWebFacade.getTweetsByDate(userId, fromDate,toDate);
 			persistanceFacade.putTweets(result.getBadTweets());
 			persistanceFacade.putTweets(result.getGoodTweets());
-			try
-			{
-				return persistanceFacade.getTweetsByDate(userId, 
-						fromYear, fromMonth,  fromDay, 
-						toYear,  toMonth, toDay );
-			}
-			catch (UserWithNoTweetsException e1)
-			{
-				return new ArrayList<String>();
-			}
-			catch (OldestTweetsNeedToBeDownloadedException e1)
-			{
-				logger.info("problems with getTweetsByDate and saving tweets");
-				System.exit(0);
-				return null;
-			}
+			return result.getGoodTweets();
 		}
-		catch (OldestTweetsNeedToBeDownloadedException e)
+		catch (DataRangeNotCoveredException e)
 		{
-			logger.debug("downloading tweets");
-			SearchedByDateTweetsResultContainer result = twitterWebFacade.getTweetsByDate(userId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
+			logger.info("downloading tweets");
+			SearchedByDateTweetsResultContainer result = twitterWebFacade.getTweetsByDate(userId, fromDate, toDate);
 			persistanceFacade.putTweets(result.getBadTweets());
 			persistanceFacade.putTweets(result.getGoodTweets());
-			try
-			{
-				return persistanceFacade.getTweetsByDate(userId, 
-						fromYear, fromMonth,  fromDay, 
-						toYear,  toMonth, toDay );
-			}
-			catch (UserWithNoTweetsException e1)
-			{
-				return new ArrayList<String>();
-			}
-			catch (OldestTweetsNeedToBeDownloadedException e1)
-			{
-				logger.info("problems with getTweetsByDate and saving tweets");
-				System.exit(0);
-				return null;
-			}
+			return result.getGoodTweets();
 		}
 	}
+	
 
 	public String getUser(Long userId) throws TwitterException
 	{

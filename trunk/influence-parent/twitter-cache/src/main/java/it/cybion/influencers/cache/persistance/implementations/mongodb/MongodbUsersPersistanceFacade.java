@@ -1,4 +1,4 @@
-package it.cybion.influencers.cache.persistance.mongodb;
+package it.cybion.influencers.cache.persistance.implementations.mongodb;
 
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
@@ -18,14 +18,14 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
-public class UsersMongodbPersistanceFacade
+public class MongodbUsersPersistanceFacade
 {
-	private final Logger logger = Logger.getLogger(UsersMongodbPersistanceFacade.class);
+	private final Logger logger = Logger.getLogger(MongodbUsersPersistanceFacade.class);
 	
 	
 	private DBCollection userCollection;
 	
-	public UsersMongodbPersistanceFacade(DBCollection userCollection)
+	public MongodbUsersPersistanceFacade(DBCollection userCollection)
 	{
 		this.userCollection = userCollection;
 	}
@@ -62,6 +62,7 @@ public class UsersMongodbPersistanceFacade
 		DBObject userJson = getUserDbObject(userId);
 		if (userJson.containsField("followers"))
 		{
+			@SuppressWarnings("unchecked")
 			List<Integer> intList = (List<Integer>) userJson.get("followers");
 			List<Long> longList = new ArrayList<Long>();
 			for (int intElement : intList)
@@ -87,6 +88,7 @@ public class UsersMongodbPersistanceFacade
 		DBObject userJson = getUserDbObject(userId);
 		if (userJson.containsField("friends"))
 		{
+			@SuppressWarnings("unchecked")
 			List<Integer> intList = (List<Integer>) userJson.get("friends");
 			List<Long> longList = new ArrayList<Long>();
 			for (int intElement : intList)
