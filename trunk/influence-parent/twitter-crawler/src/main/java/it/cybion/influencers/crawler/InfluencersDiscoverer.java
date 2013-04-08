@@ -86,12 +86,11 @@ public class InfluencersDiscoverer
 				logger.info(filterManager.toString());
 				users = filterManager.filter();
 				printInfoOnResultFromFilter(users);
-			}		
+			}
+			twitterFacade.shutDown();
 			return users;		
 		}
 	}
-
-	
 	
 	
 	private void printInitInfo()

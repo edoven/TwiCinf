@@ -74,6 +74,13 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 		logger.info("UserHandlers created");
 	}
 	
+	@Override
+	public void shutDown()
+	{
+		for (UserHandler userHandler : userHandlers)
+			userHandler.shutDown();
+	}
+	
 	private ResultContainer filterTweetsByDate(List<Tweet> tweets,Date fromDate, Date toDate)	
 	{
 		List<String> goodTweets = new ArrayList<String>();

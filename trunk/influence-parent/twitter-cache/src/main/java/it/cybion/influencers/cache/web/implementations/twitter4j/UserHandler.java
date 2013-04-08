@@ -35,6 +35,7 @@ public class UserHandler
 	private Twitter twitter;
 	private Map<String, Integer> requestType2limit;
 	private int setRequestType2LimitTries = 0;
+	private ScheduledExecutorService scheduledExecutor;
 
 	public UserHandler(Token applicationToken, Token userToken) throws TwitterException
 	{
@@ -46,7 +47,7 @@ public class UserHandler
 		requestType2limit = new HashMap<String, Integer>();
 		setRequestType2limit();
 
-		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+		scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 		Runnable periodicTask = new Runnable()
 		{
 			public void run()
@@ -55,8 +56,14 @@ public class UserHandler
 			}
 		};
 
-		executor.scheduleAtFixedRate(periodicTask, 0, 10, TimeUnit.SECONDS);
+		scheduledExecutor.scheduleAtFixedRate(periodicTask, 0, 10, TimeUnit.SECONDS);
 		logger.debug(requestType2limit);
+	}
+	
+	
+	public void shutDown()
+	{
+		this.scheduledExecutor.shutdown();
 	}
 	
 	public boolean requestLimitReached(String requestType)

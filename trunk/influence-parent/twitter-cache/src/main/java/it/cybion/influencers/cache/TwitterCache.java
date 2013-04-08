@@ -45,6 +45,12 @@ public class TwitterCache
 		this.twitterWebFacade = twitterWebFacade;
 		this.persistanceFacade = persistanceFacade;
 	}
+	
+	public void shutDown()
+	{
+		twitterWebFacade.shutDown();
+//		persistanceFacade.shutDown();
+	}
 
 	public void donwloadUsersProfiles(List<Long> userIds) throws TwitterException
 	{

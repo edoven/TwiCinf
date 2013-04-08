@@ -113,6 +113,14 @@ public class ConfigurationFileParser
 
 	private static final Logger logger = Logger.getLogger(ConfigurationFileParser.class);
 	
+	
+	public static void main(String[] args) throws IOException
+	{
+		InfluencersDiscoverer infDis = ConfigurationFileParser.getInfluencersDiscovererFromConfiguration("/home/godzy/Desktop/prova.config");
+		infDis.getInfluencers();
+	}
+	
+	
 	private enum filtersManagers
 	{
 		InAndOutDegreeFilterManager,
