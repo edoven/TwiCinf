@@ -146,7 +146,7 @@ public abstract class DegreeFilterManager implements FilterManager
 	{
 		logger.info("Not enriched = " + twitterFacade.getNotFollowersAndFriendsEnriched(seedUsers).size());
 		enrichedSeedUsers = new ArrayList<User>();
-		int percentCompleted = 0;
+//		int percentCompleted = 0;
 		int tenPercent = Math.round((float) seedUsers.size() / 10);
 		if (tenPercent == 0)
 			tenPercent = 1;

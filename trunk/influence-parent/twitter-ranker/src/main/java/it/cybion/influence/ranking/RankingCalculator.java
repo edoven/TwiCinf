@@ -2,7 +2,8 @@ package it.cybion.influence.ranking;
 
 import it.cybion.influence.ranking.model.Tweet;
 import it.cybion.influence.ranking.topic.TweetToTopicDistanceCalculator;
-import it.cybion.influence.ranking.urlsexpansion.UrlsExapandedTweetsTextExtractor;
+import it.cybion.influence.ranking.utils.TweetsDeserializer;
+import it.cybion.influence.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
@@ -70,9 +71,11 @@ public class RankingCalculator
 			logger.info("Calculating rank for user "+(usersCount++)+"/"+usersToRank.size()+" with id "+userId);
 			List<String> tweetsJsons = getTweets(userId, fromDate, toDate);
 			if (tweetsJsons.isEmpty())
+			{
+				logger.info("User has 0 tweets, can't calculate rank!");
 				continue;
-			
-			RankedUser rankedUser = calculateRankWithoutUrlsResolution(tweetsJsons);	;
+			}		
+			RankedUser rankedUser = calculateRankWithoutUrlsResolution(tweetsJsons);
 			rankedUsers.add(rankedUser);
 					
 			logger.info("user:"+rankedUser.getScreenName()+
@@ -89,26 +92,20 @@ public class RankingCalculator
 		
 	private RankedUser calculateRankWithoutUrlsResolution(List<String> tweetsJsons)
 	{
-		long globalBegin = System.currentTimeMillis();
 		double retweetsAccumulator = 0;
 		double topicTweetsCount = 0;
 		double rank;
-		List<Tweet> tweets = getTweetsObjectsFromJsons(tweetsJsons);
+		List<Tweet> tweets = TweetsDeserializer.getTweetsObjectsFromJsons(tweetsJsons);
 		String userScreenName = tweets.get(0).user.screen_name;
 		int followersCount = tweets.get(0).user.followers_count;
 		
 		List<Tweet> originalTweets = getOriginalTweets(tweets);
-		if (originalTweets.size()<1)
-			return new RankedUser(userScreenName, followersCount, 0, 0, 0, 0, 0);
-//		long urlsResolutionBegin = System.currentTimeMillis();
-//		originalTweets = UrlsExapandedTweetsTextExtractor.getUrlsExpandedTextTweets(originalTweets);
-//		long urlsResolutionEnd = System.currentTimeMillis();
-//		logger.info("Urls resolution time ="+(urlsResolutionEnd-urlsResolutionBegin)/1000.0);
-		
+		if (originalTweets.isEmpty())
+			return new RankedUser(userScreenName, followersCount, 0, 0, 0, 0, 0);		
 		for (Tweet tweet : originalTweets)
 		{
-//			String text = tweet.urlsExpandedText;
 			String text = tweet.text;
+//			logger.info(text);
 			double topicProximity = topicDistanceCalculator.getTweetToTopicDistance(text);
 			int retweetCount = tweet.retweet_count;
 			retweetsAccumulator = retweetsAccumulator + (topicProximity*retweetCount);
@@ -117,33 +114,29 @@ public class RankingCalculator
 		double meanRetweetCount = retweetsAccumulator / originalTweets.size();
 		double topicTweetsRatio = topicTweetsCount / originalTweets.size();
 		rank = rankingFunction(topicTweetsCount, meanRetweetCount, followersCount, topicTweetsRatio);
-		long globalEnd = System.currentTimeMillis();
-		logger.info("Score calcultion time = "+(globalEnd-globalBegin)/1000.0 +" (for "+tweetsJsons.size()+" tweets)");
+
 		return new RankedUser(userScreenName, followersCount, originalTweets.size(), topicTweetsCount, topicTweetsRatio, meanRetweetCount, rank);
 	}
 
 	
 	private RankedUser calculateRankWithUrlsResolution(List<String> tweetsJsons)
 	{
-		long globalBegin = System.currentTimeMillis();
 		double retweetsAccumulator = 0;
 		double topicTweetsCount = 0;
 		double rank;
-		List<Tweet> tweets = getTweetsObjectsFromJsons(tweetsJsons);
+		List<Tweet> tweets = TweetsDeserializer.getTweetsObjectsFromJsons(tweetsJsons);
 		String userScreenName = tweets.get(0).user.screen_name;
 		int followersCount = tweets.get(0).user.followers_count;
 		
 		List<Tweet> originalTweets = getOriginalTweets(tweets);
 		if (originalTweets.size()<1)
 			return new RankedUser(userScreenName, followersCount, 0, 0, 0, 0, 0);
-		long urlsResolutionBegin = System.currentTimeMillis();
 		originalTweets = UrlsExapandedTweetsTextExtractor.getUrlsExpandedTextTweets(originalTweets);
-		long urlsResolutionEnd = System.currentTimeMillis();
-		logger.info("Urls resolution time ="+(urlsResolutionEnd-urlsResolutionBegin)/1000.0);
 		
 		for (Tweet tweet : originalTweets)
 		{
 			String text = tweet.urlsExpandedText;
+//			logger.info(text);
 			double topicProximity = topicDistanceCalculator.getTweetToTopicDistance(text);
 			int retweetCount = tweet.retweet_count;
 			retweetsAccumulator = retweetsAccumulator + (topicProximity*retweetCount);
@@ -152,8 +145,6 @@ public class RankingCalculator
 		double meanRetweetCount = retweetsAccumulator / originalTweets.size();
 		double topicTweetsRatio = topicTweetsCount / originalTweets.size();
 		rank = rankingFunction(topicTweetsCount, meanRetweetCount, followersCount, topicTweetsRatio);
-		long globalEnd = System.currentTimeMillis();
-		logger.info("Score calcultion time = "+(globalEnd-globalBegin)/1000.0 +" (for "+tweetsJsons.size()+" tweets)");
 		return new RankedUser(userScreenName, followersCount, originalTweets.size(), topicTweetsCount, topicTweetsRatio, meanRetweetCount, rank);
 	}
 
@@ -167,8 +158,7 @@ public class RankingCalculator
 	}
 
 	private List<String> getTweets(long userId, Date fromDate, Date toDate)
-	{
-		long begin = System.currentTimeMillis();
+	{		
 		List<String> tweetsJsons;
 		try
 		{
@@ -184,26 +174,11 @@ public class RankingCalculator
 		{
 			logger.info("User with id "+userId+" is protected. Skipped!");
 			tweetsJsons = Collections.emptyList();
-		}
-		if (tweetsJsons.size()<1)
-			logger.info("User has 0 tweets, can't calculate rank!");
-		long end = System.currentTimeMillis();
-		logger.info("Tweets retrieval time = "+(end-begin)/1000.0);
+		}	
 		return tweetsJsons;
 	}
 	
 	
-	private List<Tweet> getTweetsObjectsFromJsons(List<String> tweetsJsons)
-	{
-		List<Tweet> tweets = new ArrayList<Tweet>();
-		Tweet tweet;
-		for (String tweetJson : tweetsJsons)
-		{
-			tweet = gson.fromJson(tweetJson, Tweet.class);
-			tweets.add(tweet);
-		}
-		return tweets;
-	}
 	
 	
 	private double rankingFunction(double topicTweetsCount, double meanRetweetCount, int followersCount, double topicTweetsRatio)

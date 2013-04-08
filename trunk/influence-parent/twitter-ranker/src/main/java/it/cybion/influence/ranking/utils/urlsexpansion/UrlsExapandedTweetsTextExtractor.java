@@ -1,7 +1,8 @@
-package it.cybion.influence.ranking.urlsexpansion;
+package it.cybion.influence.ranking.utils.urlsexpansion;
 
 
 
+import it.cybion.influence.ranking.RankingCalculator;
 import it.cybion.influence.ranking.model.Tweet;
 import it.cybion.influence.ranking.model.Url;
 
@@ -10,12 +11,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.google.gson.Gson;
 
 
 
 public class UrlsExapandedTweetsTextExtractor
 {
+	
+	private static final Logger logger = Logger.getLogger(RankingCalculator.class);
+	
 	
 //	public static Map<Long,String> getUrlsExpandedTextFromJsons(List<String> tweetsJsons)
 //	{
@@ -63,7 +69,10 @@ public class UrlsExapandedTweetsTextExtractor
 			for (Url url : tweet.entities.urls)
 				urls.add(url.expanded_url);
 		}
+		long begin = System.currentTimeMillis();
 		Map<String, String> urls2Titles = MultithreadUrlsTitleExtractor.getTitles(urls);
+		long end = System.currentTimeMillis();
+		logger.info("Urls resolution time = "+(end-begin)/1000.0 + " (for "+urls.size()+" urls)");
 
 		List<Tweet> expandedTweets = new ArrayList<Tweet>();
 		String tweetText;

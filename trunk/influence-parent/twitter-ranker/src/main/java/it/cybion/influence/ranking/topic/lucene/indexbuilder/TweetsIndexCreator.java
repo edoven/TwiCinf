@@ -2,7 +2,7 @@ package it.cybion.influence.ranking.topic.lucene.indexbuilder;
 
 
 import it.cybion.influence.ranking.model.Tweet;
-import it.cybion.influence.ranking.urlsexpansion.UrlsExapandedTweetsTextExtractor;
+import it.cybion.influence.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 

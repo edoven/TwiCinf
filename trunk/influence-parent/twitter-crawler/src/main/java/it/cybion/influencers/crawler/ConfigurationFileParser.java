@@ -59,6 +59,7 @@ user_token_3_path=/home/godzy/tokens/token3.properties
 user_token_4_path=/home/godzy/tokens/token4.properties
 user_token_5_path=/home/godzy/tokens/token5.properties
 
+
 #
 #
 #	GRAPHDB CONFIG
@@ -74,7 +75,6 @@ graph_dir_path=/home/godzy/Desktop/laPerlaTempGraphs
 #
 iterations=2
 seed_users_screenNames=Fashionista_com,voguemagazine,ELLEmagazine,marieclaire,RachelZoe,TwitterFashion
-
 
 
 #
@@ -127,7 +127,11 @@ public class ConfigurationFileParser
 	{
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(configFilePath));
-		
+		return getInfluencersDiscovererFromConfiguration(properties);
+	}
+	
+	public static InfluencersDiscoverer getInfluencersDiscovererFromConfiguration(Properties properties) throws IOException
+	{
 		int iterations = getIterations(properties);		
 		TwitterCache twitterFacade = getTwitterFacade(properties);	
 		GraphFacade graphFacade = getGraphFacade(properties);

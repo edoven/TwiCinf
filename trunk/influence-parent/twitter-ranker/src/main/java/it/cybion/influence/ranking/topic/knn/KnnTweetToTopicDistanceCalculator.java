@@ -1,4 +1,4 @@
-package it.cybion.influence.ranking.topic.lucene;
+package it.cybion.influence.ranking.topic.knn;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +24,9 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 
 
-public class LuceneTweetToTopicDistanceCalculator
+public class KnnTweetToTopicDistanceCalculator
 {	
-	private static final Logger logger = Logger.getLogger(LuceneTweetToTopicDistanceCalculator.class);
+	private static final Logger logger = Logger.getLogger(KnnTweetToTopicDistanceCalculator.class);
 	
 	private static final String LUCENE_ESCAPE_CHARS = "[\\\\+\\-\\!\\(\\)\\:\\^\\]\\{\\}\\~\\*\\?]";
 	private static final Pattern LUCENE_PATTERN = Pattern.compile(LUCENE_ESCAPE_CHARS);
@@ -34,15 +34,16 @@ public class LuceneTweetToTopicDistanceCalculator
 	
 	private Directory index;
 	private IndexReader indexReader;
-	private int docsCount;
 	private StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
+	private int k;
 	
-	public LuceneTweetToTopicDistanceCalculator(String indexPath,
-												String topicBigDoc,
-												List<String> outOfTopicBigDocs)
+	public KnnTweetToTopicDistanceCalculator(String indexPath,
+												List<String> topicTweets,
+												List<String> outOfTopicTweets,
+												int k)
 	{	
-		index = createIndex(indexPath, topicBigDoc, outOfTopicBigDocs);
-		docsCount = 1 + outOfTopicBigDocs.size();
+		index = createIndex(indexPath, topicTweets, outOfTopicTweets);
+		this.k = k;
 		try
 		{
 			indexReader = IndexReader.open(index);
@@ -60,10 +61,10 @@ public class LuceneTweetToTopicDistanceCalculator
 	}
 	
 	
-	public float getTweetToTopicDistance(String tweetText)
+	
+	public void printKnn(String tweetText )
 	{
-		logger.info(tweetText);
-		
+//		logger.info("#### printKnn for tweet: "+tweetText);
 		Query query = null;
 		QueryParser queryParser = new QueryParser(Version.LUCENE_36, "content", analyzer);
 		String cleanedTweetText = getCleanedTweetText(tweetText);
@@ -73,9 +74,9 @@ public class LuceneTweetToTopicDistanceCalculator
 		} catch (ParseException e1)
 		{
 			logger.info("Parsing error! Can't parse: "+cleanedTweetText);
-			return 0;
+			return;
 		}
-		int hitsPerPage = docsCount;
+		int hitsPerPage = k;
 		IndexSearcher searcher = new IndexSearcher(indexReader);
 		TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
 		try
@@ -95,11 +96,13 @@ public class LuceneTweetToTopicDistanceCalculator
 			e.printStackTrace();
 			System.exit(0);
 		}
-		float score = 0;
 		if (hits.length == 0)
-			score = 0;
+			logger.info("no results for this query");
 		else
 		{
+			int inTopicCount = 0,
+				outOfTopicCount = 0;
+			
 			for (int i=0; i<hits.length; i++)
 			{
 				ScoreDoc scoreDoc = hits[i];
@@ -109,14 +112,11 @@ public class LuceneTweetToTopicDistanceCalculator
 				{
 					document = indexReader.document(docId);
 					String inTopicString = document.get("inTopic");
+//					logger.info(inTopicString+" - "+document.get("content"));
 					if (inTopicString.equals("true"))
-					{
-						logger.info("inTopic - score:"+scoreDoc.score);
-					}
-					if (inTopicString.equals("false"))
-					{
-						logger.info("outOfTopic - score:"+scoreDoc.score);
-					}
+						inTopicCount++;
+					else
+						outOfTopicCount++;
 				}
 				catch (CorruptIndexException e)
 				{
@@ -129,13 +129,15 @@ public class LuceneTweetToTopicDistanceCalculator
 					System.exit(0);
 				}
 			}
+			logger.info("("+inTopicCount+"-"+outOfTopicCount+") "+tweetText);
+//			logger.info("inTopicCount="+inTopicCount);
+//			logger.info("outOfTopicCount="+outOfTopicCount);
 		}
-			
-		return score;
 	}
 	
+
 	
-	private static Directory createIndex(String indexPath, String topicBigDoc, List<String> outOfTopicBigDocs)
+	private static Directory createIndex(String indexPath, List<String> topicTweets, List<String> outOfTopicTweets)
 	{
 		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
 		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
@@ -158,9 +160,10 @@ public class LuceneTweetToTopicDistanceCalculator
 			System.exit(0);
 		}
 		
-		addInTopicDocument(indexWriter, topicBigDoc);
-		for (String outOfTopicBigDoc : outOfTopicBigDocs)
-			addOutOfTopicDocument(indexWriter, outOfTopicBigDoc);
+		for (String topicTweet : topicTweets)
+			addInTopicDocument(indexWriter, topicTweet);
+		for (String outOfTopicTweet : outOfTopicTweets)
+			addOutOfTopicDocument(indexWriter, outOfTopicTweet);
 		try
 		{
 			indexWriter.close();
@@ -172,10 +175,10 @@ public class LuceneTweetToTopicDistanceCalculator
 		return index;
 	}
 
-	private static void addInTopicDocument(IndexWriter indexWriter, String bigDocument)
+	private static void addInTopicDocument(IndexWriter indexWriter, String tweet)
 	{
 		Document document = new Document();
-		document.add(new Field("content", bigDocument, Field.Store.YES, Field.Index.ANALYZED));
+		document.add(new Field("content", tweet, Field.Store.YES, Field.Index.ANALYZED));
 		document.add(new Field("inTopic", "true", Field.Store.YES, Field.Index.NOT_ANALYZED));
 		try
 		{
@@ -187,10 +190,10 @@ public class LuceneTweetToTopicDistanceCalculator
 		}
 	}
 	
-	private static void addOutOfTopicDocument(IndexWriter indexWriter, String bigDocument)
+	private static void addOutOfTopicDocument(IndexWriter indexWriter, String tweet)
 	{
 		Document document = new Document();
-		document.add(new Field("content", bigDocument, Field.Store.YES, Field.Index.ANALYZED));
+		document.add(new Field("content", tweet, Field.Store.YES, Field.Index.ANALYZED));
 		document.add(new Field("inTopic", "false", Field.Store.YES, Field.Index.NOT_ANALYZED));
 		try
 		{

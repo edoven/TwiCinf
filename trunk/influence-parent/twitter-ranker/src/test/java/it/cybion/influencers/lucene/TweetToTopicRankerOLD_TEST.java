@@ -4,7 +4,7 @@ package it.cybion.influencers.lucene;
 
 import it.cybion.influence.ranking.topic.TweetToTopicDistanceCalculator;
 import it.cybion.influence.ranking.topic.dictionary.DictionaryTweetToTopicDistanceCalculator;
-import it.cybion.influence.ranking.topic.lucene.LuceneTweetToTopicDistanceCalculator;
+import it.cybion.influence.ranking.topic.lucene.LuceneTweetToTopicDistanceCalculatorOLD;
 import it.cybion.influence.ranking.utils.ListFileReader;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 
 
 
-public class TweetToTopicRankerTEST
+public class TweetToTopicRankerOLD_TEST
 {
 
 	@Test(enabled=false)
@@ -51,7 +51,7 @@ public class TweetToTopicRankerTEST
 		List<Directory> indexes = new ArrayList<Directory>();
 		indexes.add(index1);
 		indexes.add(index2);
-		LuceneTweetToTopicDistanceCalculator ranker = new LuceneTweetToTopicDistanceCalculator(indexes);
+		LuceneTweetToTopicDistanceCalculatorOLD ranker = new LuceneTweetToTopicDistanceCalculatorOLD(indexes);
 		String tweet1 = "un tweet sulla pasta, il cibo migliore che esista";
 		String tweet2 = "la ricetta della torta fragole, peperoni e salmone";
 		String tweet3 = "testo senza senso";

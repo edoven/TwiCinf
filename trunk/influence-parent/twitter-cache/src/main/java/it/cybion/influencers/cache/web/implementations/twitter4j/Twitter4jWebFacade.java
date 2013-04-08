@@ -174,7 +174,7 @@ public class Twitter4jWebFacade implements TwitterWebFacade
 			goodTweets.addAll(resultContainer.goodTweets);
 			badTweets.addAll(resultContainer.badTweets);
 			oldestTweet = getOldestTweet(tweets);
-		}		
+		}	
 		return new SearchedByDateTweetsResultContainer(goodTweets, badTweets);
 	}
 

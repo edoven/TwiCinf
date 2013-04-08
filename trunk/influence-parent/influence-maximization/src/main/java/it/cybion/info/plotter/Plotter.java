@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JFrame;
+
 import de.erichseifert.gral.data.DataTable;
 import de.erichseifert.gral.plots.XYPlot;
 import de.erichseifert.gral.plots.lines.DefaultLineRenderer2D;
@@ -25,7 +25,6 @@ public class Plotter extends JFrame {
         setSize(600, 400);
 
         DataTable data = new DataTable(Double.class, Double.class);
-        double y;
         List<Double> xList = new ArrayList<Double>(points.keySet());
         Collections.sort(xList);
         for (Double x : xList)

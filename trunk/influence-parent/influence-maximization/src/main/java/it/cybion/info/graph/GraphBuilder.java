@@ -2,6 +2,7 @@ package it.cybion.info.graph;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 import it.cybion.info.utils.SerializationManager;
 
 import java.net.UnknownHostException;
@@ -125,7 +126,11 @@ public class GraphBuilder
 			catch (TwitterException e)
 			{
 				logger.info("Error with user with id "+userId);
-			}		
+			}	
+			catch (ProtectedUserException e)
+			{
+				logger.info("Error with user with id "+userId);
+			}
 		}
 		
 		//build probabilityGraph

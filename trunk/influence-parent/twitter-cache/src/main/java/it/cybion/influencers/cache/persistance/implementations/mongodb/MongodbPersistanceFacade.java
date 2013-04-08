@@ -13,6 +13,8 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -22,6 +24,9 @@ import com.mongodb.MongoClient;
 
 public class MongodbPersistanceFacade implements PersistanceFacade
 {
+	private static final Logger logger = Logger.getLogger(MongodbPersistanceFacade.class);
+	
+	
 	private MongodbUsersPersistanceFacade usersMongodbPersistanceFacade;
 	private MongodbTweetsPersistanceFacade tweetsMongodbPersistanceFacade;
 	
@@ -34,6 +39,7 @@ public class MongodbPersistanceFacade implements PersistanceFacade
 		userCollection.createIndex(new BasicDBObject("id", 1));		
 		DBCollection tweetsCollection = db.getCollection("tweets");
 		tweetsCollection.createIndex(new BasicDBObject("id", 1));
+		tweetsCollection.createIndex(new BasicDBObject("user.id", 1));
 		
 		usersMongodbPersistanceFacade = new MongodbUsersPersistanceFacade(userCollection);
 		tweetsMongodbPersistanceFacade = new MongodbTweetsPersistanceFacade(tweetsCollection);

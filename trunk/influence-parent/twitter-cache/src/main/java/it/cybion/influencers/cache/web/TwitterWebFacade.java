@@ -30,6 +30,7 @@ public interface TwitterWebFacade
 
 	SearchedByDateTweetsResultContainer getTweetsByDate(long userId,Date fromDate, Date toDate) throws TwitterException, ProtectedUserException;
 
+
 	// String getUserJson(String screenName) throws TwitterApiException;
 	// List<Long> getFollowersIds(String screenName) throws TwitterApiException;
 	// List<Long> getFriendsIds(String screenName) throws TwitterApiException;

@@ -1,4 +1,4 @@
-package it.cybion.influence.ranking.urlsexpansion;
+package it.cybion.influence.ranking.utils.urlsexpansion;
 
 
 import java.io.IOException;

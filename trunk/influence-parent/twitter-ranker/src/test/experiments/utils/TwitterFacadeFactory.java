@@ -1,4 +1,4 @@
-package it.cybion.influence.ranking;
+package utils;
 
 
 import it.cybion.influencers.cache.TwitterCache;

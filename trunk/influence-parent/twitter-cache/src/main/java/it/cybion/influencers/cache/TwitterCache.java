@@ -358,7 +358,7 @@ public class TwitterCache
 			return tweets;
 		}
 		catch (UserWithNoTweetsException e)
-		{
+		{	
 			logger.info("downloading tweets");
 			SearchedByDateTweetsResultContainer result = twitterWebFacade.getTweetsByDate(userId, fromDate,toDate);
 			persistanceFacade.putTweets(result.getBadTweets());
@@ -392,6 +392,30 @@ public class TwitterCache
 		}
 	}
 	
+	public Long getUserId(String screenName) throws TwitterException
+	{
+		try
+		{
+			return persistanceFacade.getUserId(screenName);
+		}
+		catch (UserNotPresentException e)
+		{
+			String userJson = twitterWebFacade.getUserJson(screenName) ;
+			persistanceFacade.putUser(userJson);
+			try
+			{
+				return persistanceFacade.getUserId(screenName);
+			}
+			catch (UserNotPresentException e1)
+			{
+				logger.info("Error! user with screenName "+screenName+" should have been in the cache but it is not. Check uppercase/lowercase!");
+				System.exit(0);
+				return -1L;
+			}
+			
+		}
+	}
+	
 	
 	public List<Long> getUserIds(List<String> screenNames) 
 	{
@@ -413,7 +437,7 @@ public class TwitterCache
 					}
 					catch (UserNotPresentException e1)
 					{
-						logger.info("Error! user with screenName "+screenName+" should have been in the cache but it is not");
+						logger.info("Error! user with screenName "+screenName+" should have been in the cache but it is not. Check uppercase/lowercase!");
 						System.exit(0);
 					}
 				}

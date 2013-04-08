@@ -6,9 +6,7 @@ import it.cybion.influencers.crawler.graph.indexes.GraphIndex;
 import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
 import it.cybion.influencers.crawler.graph.indexes.LuceneIndex;
 import it.cybion.influencers.crawler.graph.indexes.TreeMapIndex;
-import it.cybion.influencers.crawler.utils.FilesDeleter;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,19 +27,19 @@ public class Neo4jGraphFacade implements GraphFacade
 	private static final Logger logger = Logger.getLogger(Neo4jGraphFacade.class);
 
 	private Neo4jGraph graph;
-	private String dirPath;
+//	private String dirPath;
 	private int vericesCount = 0;
 	private int edgeCount = 0;
 	private GraphIndex vertexIndex;
-	private GraphIndexType indexType;
+//	private GraphIndexType indexType;
 
 	private final int OPERATIONS_PER_TRANSACTION = 20000;
 
 	public Neo4jGraphFacade(String dirPath, GraphIndexType indexType)
 	{
-		this.dirPath = dirPath;
+//		this.dirPath = dirPath;
 		graph = new Neo4jGraph(dirPath);
-		this.indexType = indexType;
+//		this.indexType = indexType;
 		switch (indexType)
 		{
 		case LUCENE_INDEX:

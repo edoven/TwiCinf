@@ -1,9 +1,9 @@
 package it.cybion.influence.ranking.keywords;
 
-import it.cybion.influence.ranking.TwitterFacadeFactory;
+
 import it.cybion.influence.ranking.model.Tweet;
-import it.cybion.influence.ranking.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 import it.cybion.influence.ranking.utils.ListFileReader;
+import it.cybion.influence.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 
 import twitter4j.TwitterException;
+import utils.TwitterFacadeFactory;
 
 public class LaPerlaTweetsPrinter
 {
