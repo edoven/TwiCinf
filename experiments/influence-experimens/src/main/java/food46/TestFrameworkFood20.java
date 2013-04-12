@@ -5,9 +5,10 @@ import it.cybion.influencers.InfluencersDiscoverer;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.utils.FilesDeleter;
 import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.filtering.FilterManager;
 import it.cybion.influencers.filtering.aggregation.OrFilterManager;
 import it.cybion.influencers.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
@@ -16,7 +17,6 @@ import it.cybion.influencers.graph.GraphFacade;
 import it.cybion.influencers.graph.Neo4jGraphFacade;
 import it.cybion.influencers.graph.indexes.GraphIndexType;
 import it.cybion.influencers.testframework.TestFramework;
-import it.cybion.influencers.utils.FilesDeleter;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,7 +76,7 @@ public class TestFrameworkFood20
 		Token userToken6 = new Token("tokens/token6.txt");
 		userTokens.add(userToken6);
 
-		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(
+		WebFacade twitterWebFacade = new WebFacade(
 				applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new PersistanceFacade(
 				"localhost", "twitter");

@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -33,9 +30,9 @@ public class UserHandler
 	private static final Logger logger = Logger.getLogger(UserHandler.class);
 
 	private Twitter twitter;
-	private Map<String, Integer> requestType2limit;
+	public Map<String, Integer> requestType2limit;
 	private int setRequestType2LimitTries = 0;
-	private ScheduledExecutorService scheduledExecutor;
+	long lastGetRateLimitStatusTime;
 
 	public UserHandler(Token applicationToken, Token userToken) throws TwitterException
 	{
@@ -46,30 +43,60 @@ public class UserHandler
 		twitter = tf.getInstance();
 		requestType2limit = new HashMap<String, Integer>();
 		setRequestType2limit();
-
-		scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
-		Runnable periodicTask = new Runnable()
-		{
-			public void run()
-			{
-				setRequestType2limit();
-			}
-		};
-
-		scheduledExecutor.scheduleAtFixedRate(periodicTask, 0, 10, TimeUnit.SECONDS);
-		logger.debug(requestType2limit);
 	}
 	
-	
-	public void shutDown()
+	private void setRequestType2limit()
 	{
-		this.scheduledExecutor.shutdown();
+		logger.debug("setRequestType2limit");
+		Map<String, RateLimitStatus> requestType2limitStatus;
+		try
+		{
+			requestType2limitStatus = twitter.getRateLimitStatus();
+			for (String requestType : requestType2limitStatus.keySet())
+			{
+				int limit = requestType2limitStatus.get(requestType).getRemaining();
+				requestType2limit.put(requestType, limit);
+			}
+		} 
+		catch (TwitterException e)
+		{
+			if (setRequestType2LimitTries < 2)
+			{
+				logger.info("Problem with setRequestType2limit. Let's wait for 3 sec and retry.");
+				try
+				{
+					Thread.sleep(3 * 1000);
+				} catch (InterruptedException e1)
+				{
+					logger.info("Problem in Thread.sleep(). Skipped.");
+					return;
+				}
+				setRequestType2LimitTries++;
+				setRequestType2limit();
+			} else
+				logger.info("Skipped.");
+		}
+		setRequestType2LimitTries = 0;
+		lastGetRateLimitStatusTime = System.currentTimeMillis();
 	}
 	
-	public boolean requestLimitReached(String requestType)
+	public boolean canMakeRequest(String requestType)
 	{
 		int requestsLeft = requestType2limit.get(requestType);
-		return requestsLeft<1;
+		if (requestsLeft>0)
+			return true;
+		else
+		{
+			long now = System.currentTimeMillis();
+			logger.info("(now-lastGetRateLimitStatusTime)/1000="+(now-lastGetRateLimitStatusTime)/1000.0);
+			if ( (now-lastGetRateLimitStatusTime)/1000.0 > 5 ) //5 = (15*60)/180
+			{
+				setRequestType2limit();
+				return canMakeRequest(requestType);
+			}
+			else
+				return false;
+		}
 	}
 
 	public IDs getFollowersWithPagination(long userId, long cursor) throws TwitterException
@@ -161,39 +188,5 @@ public class UserHandler
 			result.add(userJson);
 		}
 		return result;
-	}
-	
-	public void setRequestType2limit()
-	{
-		logger.debug("setRequestType2limit");
-		Map<String, RateLimitStatus> requestType2limitStatus;
-		try
-		{
-			requestType2limitStatus = twitter.getRateLimitStatus();
-			for (String requestType : requestType2limitStatus.keySet())
-			{
-				int limit = requestType2limitStatus.get(requestType).getRemaining();
-				requestType2limit.put(requestType, limit);
-			}
-		} 
-		catch (TwitterException e)
-		{
-			if (setRequestType2LimitTries < 2)
-			{
-				logger.info("Problem with setRequestType2limit. Let's wait for 3 sec and retry.");
-				try
-				{
-					Thread.sleep(3 * 1000);
-				} catch (InterruptedException e1)
-				{
-					logger.info("Problem in Thread.sleep(). Skipped.");
-					return;
-				}
-				setRequestType2LimitTries++;
-				setRequestType2limit();
-			} else
-				logger.info("Skipped.");
-		}
-		setRequestType2LimitTries = 0;
 	}
 }

@@ -5,8 +5,8 @@ import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class TwitterFacadeFactory
 		List<Token> userTokens = new ArrayList<Token>();
 		for (int i = 0; i < tokens.length; i++)
 			userTokens.add(new Token(tokens[i]));
-		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(applicationToken, userTokens);
+		WebFacade twitterWebFacade = new WebFacade(applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new PersistanceFacade(mongoDbHost, mongoDbTwitterDb);
 		TwitterCache twitterFacade = new TwitterCache(twitterWebFacade, persistanceFacade);
 		return twitterFacade;
@@ -45,7 +45,7 @@ public class TwitterFacadeFactory
 		List<Token> userTokens = new ArrayList<Token>();
 		for (int i = 0; i < tokens.length; i++)
 			userTokens.add(new Token(tokens[i]));
-		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(applicationToken, userTokens);
+		WebFacade twitterWebFacade = new WebFacade(applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new PersistanceFacade(mongoDbHost, mongoDbTestDb);
 		TwitterCache twitterFacade = new TwitterCache(twitterWebFacade, persistanceFacade);
 		return twitterFacade;

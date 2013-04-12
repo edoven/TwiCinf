@@ -6,8 +6,8 @@ import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
 
 import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
@@ -206,7 +206,7 @@ public class ProperitesFileParser
 			userTokens.add(new Token(userTokenPath));
 			i++;
 		}
-		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(applicationToken, userTokens);
+		WebFacade twitterWebFacade = new WebFacade(applicationToken, userTokens);
 			
 		return new TwitterCache(twitterWebFacade, persistanceFacade);
 		

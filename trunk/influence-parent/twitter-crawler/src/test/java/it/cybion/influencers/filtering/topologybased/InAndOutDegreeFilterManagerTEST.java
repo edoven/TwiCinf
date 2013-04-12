@@ -10,7 +10,7 @@ import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.crawler.utils.FilesDeleter;
 
 import java.io.File;

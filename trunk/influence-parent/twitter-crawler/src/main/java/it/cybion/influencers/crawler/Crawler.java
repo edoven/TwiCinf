@@ -88,7 +88,6 @@ public class Crawler
 				users = filterManager.filter();
 				printInfoOnResultFromFilter(users);
 			}
-			twitterFacade.shutDown();
 			return users;		
 		}
 	}

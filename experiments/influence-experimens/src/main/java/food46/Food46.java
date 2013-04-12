@@ -5,8 +5,8 @@ import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
@@ -88,7 +88,7 @@ public class Food46
 		Token userToken6 = new Token("tokens/token6.txt");
 		userTokens.add(userToken6);
 
-		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(
+		WebFacade twitterWebFacade = new WebFacade(
 				applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new PersistanceFacade(
 				"localhost", "twitter");

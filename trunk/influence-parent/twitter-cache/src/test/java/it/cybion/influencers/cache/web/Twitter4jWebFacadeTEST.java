@@ -2,11 +2,11 @@ package it.cybion.influencers.cache.web;
 
 
 import static org.testng.AssertJUnit.assertTrue;
-import it.cybion.influencers.cache.calendar.CalendarManager;
 import it.cybion.influencers.cache.model.Tweet;
+import it.cybion.influencers.cache.utils.CalendarManager;
 import it.cybion.influencers.cache.web.SearchedByDateTweetsResultContainer;
 import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class Twitter4jWebFacadeTEST
 
 //	private static final Logger logger = Logger.getLogger(Twitter4jWebFacadeTEST.class);
 
-	private TwitterWebFacade twitter4jFacade;
+	private WebFacade webFacade;
 
 	@BeforeClass
 	public void init()
@@ -55,13 +55,13 @@ public class Twitter4jWebFacadeTEST
 		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
 		userTokens.add(userToken5);
 		
-		twitter4jFacade = new TwitterWebFacade(applicationToken, userTokens);
+		webFacade = new WebFacade(applicationToken, userTokens);
 	}
 
 	@Test(enabled = true)
 	public void getUserJsonTEST() throws TwitterException
 	{
-		String user = twitter4jFacade.getUserJson(813286l); // BarackObama
+		String user = webFacade.getUserJson(813286l); // BarackObama
 		assertTrue(user.contains("Barack Obama"));
 		assertTrue(user.contains("followers"));
 		assertTrue(user.contains("friends"));
@@ -71,7 +71,7 @@ public class Twitter4jWebFacadeTEST
 	@Test(enabled = true)
 	public void getLessThan5000FollowersIdsTEST() throws TwitterException
 	{
-		List<Long> followerIds = twitter4jFacade.getFollowersIds(58477550); // screenName=gifo77
+		List<Long> followerIds = webFacade.getFollowersIds(58477550); // screenName=gifo77
 		assertTrue(followerIds.size() > 2);
 		assertTrue(followerIds.size() < 5000);
 	}
@@ -79,14 +79,14 @@ public class Twitter4jWebFacadeTEST
 	@Test(enabled = true)
 	public void getMoreThan5000FollowersIdsTEST() throws TwitterException
 	{
-		List<Long> followerIds = twitter4jFacade.getFollowersIds(444712353); // screenName=ChiaraMaci
+		List<Long> followerIds = webFacade.getFollowersIds(444712353); // screenName=ChiaraMaci
 		assertTrue(followerIds.size() > 8000);
 	}
 
 	@Test(enabled = true)
 	public void getLessThan5000FriendsIdsTEST() throws TwitterException
 	{
-		List<Long> friendIds = twitter4jFacade.getFriendsIds(58477550); // screenName=gifo77
+		List<Long> friendIds = webFacade.getFriendsIds(58477550); // screenName=gifo77
 		assertTrue(friendIds.size() > 2);
 		assertTrue(friendIds.size() < 5000);
 	}
@@ -96,7 +96,7 @@ public class Twitter4jWebFacadeTEST
 	{
 		List<Long> friendIds = null;
 		for (int i = 0; i < 5; i++)
-			friendIds = twitter4jFacade.getFriendsIds(58477550); // screenName=gifo77
+			friendIds = webFacade.getFriendsIds(58477550); // screenName=gifo77
 		assertTrue(friendIds.size() > 2);
 		assertTrue(friendIds.size() < 5000);
 	}
@@ -104,7 +104,7 @@ public class Twitter4jWebFacadeTEST
 	@Test(enabled = true)
 	public void getMoreThan5000FriendsIdsTEST() throws TwitterException
 	{
-		List<Long> followerIds = twitter4jFacade.getFriendsIds(14831419); // screenName=mattuk
+		List<Long> followerIds = webFacade.getFriendsIds(14831419); // screenName=mattuk
 		assertTrue(followerIds.size() > 20000);
 	}
 
@@ -114,13 +114,13 @@ public class Twitter4jWebFacadeTEST
 		List<Long> followerIds = new ArrayList<Long>();
 		for (long i = 0; i < 101; i++)
 			followerIds.add(435668609 + i);
-		twitter4jFacade.getUsersJsons(followerIds);
+		webFacade.getUsersJsons(followerIds);
 	}
 		
 	@Test(enabled = true)
 	public void getUserTweetsWithMaxId() throws TwitterException, ProtectedUserException
 	{
-		List<String> tweets = twitter4jFacade.getTweetsWithMaxId(887469007L, -1);
+		List<String> tweets = webFacade.getTweetsWithMaxId(887469007L, -1);
 		Assert.assertTrue(tweets.size()>0);
 	}
 	
@@ -131,7 +131,7 @@ public class Twitter4jWebFacadeTEST
 		long userId = 887469007L; //edoventurini
 		Date fromDate = CalendarManager.getDate(2012, 12, 13);
 		Date toDate   = CalendarManager.getDate(2012, 12, 15);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,fromDate,toDate);
+		SearchedByDateTweetsResultContainer resultContainer = webFacade.getTweetsByDate(userId,fromDate,toDate);
 		List<String> tweets = resultContainer.getGoodTweets();
 		Assert.assertEquals(tweets.size(), 2);
 	}
@@ -143,7 +143,7 @@ public class Twitter4jWebFacadeTEST
 		long userId = 517903407L; //profdalimonte
 		Date fromDate = CalendarManager.getDate(2013, 2, 3);
 		Date toDate   = CalendarManager.getDate(2013, 2, 5);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,fromDate,toDate);
+		SearchedByDateTweetsResultContainer resultContainer = webFacade.getTweetsByDate(userId,fromDate,toDate);
 		List<String> tweets = resultContainer.getGoodTweets();
 		Assert.assertEquals(tweets.size(),8);
 		Collections.sort(tweets);
@@ -155,7 +155,7 @@ public class Twitter4jWebFacadeTEST
 		long userId = 94040214L;
 		Date fromDate = CalendarManager.getDate(2013, 2, 1);
 		Date toDate   = CalendarManager.getDate(2013, 2, 20);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,fromDate,toDate);
+		SearchedByDateTweetsResultContainer resultContainer = webFacade.getTweetsByDate(userId,fromDate,toDate);
 		List<String> tweets = resultContainer.getGoodTweets();
 		Assert.assertTrue(tweets.size()==0);
 	}
@@ -169,7 +169,7 @@ public class Twitter4jWebFacadeTEST
 		long userId = 813286L; //BarackObama
 		Date fromDate = CalendarManager.getDate(2012, 12, 1);
 		Date toDate   = CalendarManager.getDate(2013, 1, 1);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,fromDate,toDate);
+		SearchedByDateTweetsResultContainer resultContainer = webFacade.getTweetsByDate(userId,fromDate,toDate);
 		List<String> tweetJsons = resultContainer.getGoodTweets();
 		Set<String> tweetJsonsSet = new HashSet<String>(tweetJsons);
 		Assert.assertTrue(tweetJsons.size()>20);
@@ -182,7 +182,7 @@ public class Twitter4jWebFacadeTEST
 		long userId = 813286L; //BarackObama
 		Date fromDate = CalendarManager.getDate(2013, 1, 1);
 		Date toDate   = CalendarManager.getDate(2013, 3, 1);
-		SearchedByDateTweetsResultContainer resultContainer = twitter4jFacade.getTweetsByDate(userId,fromDate,toDate);
+		SearchedByDateTweetsResultContainer resultContainer = webFacade.getTweetsByDate(userId,fromDate,toDate);
 		List<String> tweetJsons = resultContainer.getGoodTweets();
 		for (String tweetJson : tweetJsons)
 		{
@@ -201,7 +201,7 @@ public class Twitter4jWebFacadeTEST
 	{	
 		try
 		{
-			twitter4jFacade.getTweetsWithMaxId(107684088, -1); //user:LesaMcMaster
+			webFacade.getTweetsWithMaxId(107684088, -1); //user:LesaMcMaster
 			Assert.assertTrue(false);
 		}
 		catch (ProtectedUserException e)
@@ -217,7 +217,7 @@ public class Twitter4jWebFacadeTEST
 		Date fromDate = CalendarManager.getDate(2013, 2, 1);
 		Date toDate   = CalendarManager.getDate(2013, 2, 20);
 		long userId = 228432756;
-		SearchedByDateTweetsResultContainer results = twitter4jFacade.getTweetsByDate(userId, fromDate, toDate);
+		SearchedByDateTweetsResultContainer results = webFacade.getTweetsByDate(userId, fromDate, toDate);
 		Assert.assertTrue(results.getGoodTweets().size()>10);
 	}
 	
@@ -227,7 +227,7 @@ public class Twitter4jWebFacadeTEST
 		Date fromDate = CalendarManager.getDate(2013, 2, 1);
 		Date toDate   = CalendarManager.getDate(2013, 2, 20);
 		long userId = 24767201; //user=wwdcareers
-		SearchedByDateTweetsResultContainer results = twitter4jFacade.getTweetsByDate(userId, fromDate, toDate);
+		SearchedByDateTweetsResultContainer results = webFacade.getTweetsByDate(userId, fromDate, toDate);
 		Assert.assertTrue(results.getGoodTweets().size()==0);
 	}
 	

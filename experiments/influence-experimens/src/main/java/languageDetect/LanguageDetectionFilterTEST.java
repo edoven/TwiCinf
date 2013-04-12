@@ -4,8 +4,8 @@ import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.filtering.language.LanguageDetectionFilterManager;
 
 import java.net.UnknownHostException;
@@ -74,7 +74,7 @@ public class LanguageDetectionFilterTEST {
 		Token userToken6 = new Token("tokens/token6.txt");
 		userTokens.add(userToken6);
 		
-		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(applicationToken, userTokens);
+		WebFacade twitterWebFacade = new WebFacade(applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new PersistanceFacade("localhost", "twitter");
 		TwitterCache twitterFacade = new TwitterCache(twitterWebFacade, persistanceFacade);
 		return twitterFacade;

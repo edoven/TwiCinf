@@ -1,7 +1,6 @@
 package it.cybion.influencers.cache.persistance;
 
 
-import it.cybion.influencers.cache.calendar.CalendarManager;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
@@ -9,6 +8,7 @@ import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnriched
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
+import it.cybion.influencers.cache.utils.CalendarManager;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;

@@ -1,12 +1,10 @@
 package it.cybion.influencers.cache;
 
 
-import it.cybion.influencers.cache.calendar.CalendarManager;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.utils.CalendarManager;
 import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
 import java.net.UnknownHostException;
@@ -23,10 +21,10 @@ import twitter4j.TwitterException;
 
 
 
-public class TwitterFacadeTEST
+public class TwitterCacheTEST
 {
 
-	private static final Logger logger = Logger.getLogger(TwitterFacadeTEST.class);
+	private static final Logger logger = Logger.getLogger(TwitterCacheTEST.class);
 
 	private TwitterCache twitterFacade;
 
@@ -48,8 +46,7 @@ public class TwitterFacadeTEST
 		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
 		userTokens.add(userToken5);
 		
-
-		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(applicationToken, userTokens);
+		WebFacade twitterWebFacade = new WebFacade(applicationToken, userTokens);
 		PersistanceFacade persistanceFacade = new PersistanceFacade("localhost", "testdb");
 		twitterFacade = new TwitterCache(twitterWebFacade, persistanceFacade);
 	}

@@ -4,7 +4,7 @@ import it.cybion.influence.ranking.topic.TopicScorer;
 import it.cybion.influence.ranking.topic.dictionary.DictionaryTopicScorer;
 import it.cybion.influence.ranking.utils.ListFileReader;
 import it.cybion.influencers.cache.TwitterCache;
-import it.cybion.influencers.cache.calendar.CalendarManager;
+import it.cybion.influencers.cache.utils.CalendarManager;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
