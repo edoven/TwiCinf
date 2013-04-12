@@ -4,8 +4,7 @@ package trashionLaPerla;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
-import it.cybion.influencers.crawler.InfluencersDiscoverer;
-import it.cybion.influencers.crawler.InfluencersDiscovererBuilder;
+import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.filtering.aggregation.OrFilterManager;
 import it.cybion.influencers.crawler.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
@@ -13,6 +12,7 @@ import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilte
 import it.cybion.influencers.crawler.filtering.topologybased.InDegreeFilterManager;
 import it.cybion.influencers.crawler.filtering.topologybased.OutDegreeFilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
+import it.cybion.influencers.crawler.launcher.CrawlerFluentBuilder;
 import it.cybion.influencers.crawler.utils.FilesDeleter;
 
 import java.io.File;
@@ -49,8 +49,8 @@ public class TrashionLaPerla
 		List<FilterManager> iteratingFilters = getIteratingFilters();
 		List<String> screenNames = getUsers();
 
-		InfluencersDiscoverer influencersDiscoverer = 
-				new InfluencersDiscovererBuilder()
+		Crawler influencersDiscoverer = 
+				new CrawlerFluentBuilder()
 					.buildAnInfluenceDiscoverer()
 						.iteratingFor(iterations)
 						.startingFromScreenNames(screenNames)

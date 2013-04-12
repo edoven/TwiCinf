@@ -1,4 +1,4 @@
-package it.cybion.influencers.crawler;
+package it.cybion.influencers.crawler.launcher.parsing;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

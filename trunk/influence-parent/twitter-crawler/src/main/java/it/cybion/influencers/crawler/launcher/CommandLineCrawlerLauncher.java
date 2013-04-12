@@ -1,13 +1,16 @@
-package it.cybion.influencers.crawler;
+package it.cybion.influencers.crawler.launcher;
 
+
+import it.cybion.influencers.crawler.Crawler;
+import it.cybion.influencers.crawler.launcher.parsing.ProperitesFileParser;
 
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-public class InfluencersDiscovererLauncher
+public class CommandLineCrawlerLauncher
 {
-	private static final Logger logger = Logger.getLogger(InfluencersDiscovererLauncher.class);
+	private static final Logger logger = Logger.getLogger(CommandLineCrawlerLauncher.class);
 	
 	public static void main(String[] args) throws IOException
 	{
@@ -20,7 +23,7 @@ public class InfluencersDiscovererLauncher
 		String configurationFile = args[0];
 //		String configurationFile = "/home/godzy/Desktop/trashion_la_perla.properties";
 
-		InfluencersDiscoverer influencersDiscoverer = ConfigurationFileParser.getInfluencersDiscovererFromConfiguration(configurationFile);
+		Crawler influencersDiscoverer = ProperitesFileParser.getCrawlerFromPropertiesFile(configurationFile);
 		influencersDiscoverer.getInfluencers();
 	}
 }

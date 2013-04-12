@@ -3,7 +3,7 @@ package food46;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
-import it.cybion.influencers.crawler.InfluencersDiscoverer;
+import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
 import it.cybion.influencers.crawler.filtering.topologybased.InOrOutDegreeFilterManager;
@@ -38,7 +38,7 @@ public class Food20
 		List<Long> usersIds = getUsersIds();
 		List<FilterManager> filterManagers = getFilterManagers();
 
-		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer(
+		Crawler influencersDiscoverer = new Crawler(
 				iterations, usersIds, graphFacade, twitterFacade,
 				filterManagers);
 		List<Long> influencers = influencersDiscoverer.getInfluencers();

@@ -1,4 +1,4 @@
-package it.cybion.influencers.cache.web.implementations.twitter4j;
+package it.cybion.influencers.cache.web;
 
 
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;

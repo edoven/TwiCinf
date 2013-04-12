@@ -1,7 +1,7 @@
 package it.cybion.influence.ranking;
 
 import it.cybion.influence.ranking.model.Tweet;
-import it.cybion.influence.ranking.topic.TweetToTopicDistanceCalculator;
+import it.cybion.influence.ranking.topic.TopicScorer;
 import it.cybion.influence.ranking.utils.TweetsDeserializer;
 import it.cybion.influence.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 import it.cybion.influencers.cache.TwitterCache;
@@ -16,21 +16,18 @@ import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
 
-import com.google.gson.Gson;
-
 
 public class RankingCalculator
 {
 	private static final Logger logger = Logger.getLogger(RankingCalculator.class);
 	
-	private Gson gson = new Gson();
 	private TwitterCache twitterCache;
 	private List<RankedUser> rankedUsers = new ArrayList<RankedUser>();
-	private TweetToTopicDistanceCalculator topicDistanceCalculator;
+	private TopicScorer topicDistanceCalculator;
 	
 	
 	public RankingCalculator(TwitterCache twitterCache,
-							 TweetToTopicDistanceCalculator topicDistanceCalculator)
+							 TopicScorer topicDistanceCalculator)
 	{
 		this.twitterCache = twitterCache;
 		this.topicDistanceCalculator = topicDistanceCalculator;

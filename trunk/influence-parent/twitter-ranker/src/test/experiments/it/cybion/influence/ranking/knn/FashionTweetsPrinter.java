@@ -1,9 +1,8 @@
 package it.cybion.influence.ranking.knn;
 
 import it.cybion.influence.ranking.model.Tweet;
-import it.cybion.influence.ranking.topic.knn.KnnTweetToTopicDistanceCalculator;
+import it.cybion.influence.ranking.topic.knn.KnnTopicScorer;
 import it.cybion.influence.ranking.utils.TweetsDeserializer;
-import it.cybion.influence.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 
@@ -57,10 +56,9 @@ public class FashionTweetsPrinter
 //		for (int i=0; i<technologyTweetsGroups.size(); i++)
 //			System.out.println(i+"-"+technologyTweetsGroups.get(i));
 		
-		KnnTweetToTopicDistanceCalculator topicDistanceCalculator = new KnnTweetToTopicDistanceCalculator("/home/godzy/Desktop/temp/luceneIndex",
-				fashionTweetsGroups,
-				technologyTweetsGroups,
-				10);
+		KnnTopicScorer topicDistanceCalculator = new KnnTopicScorer(fashionTweetsGroups,
+																										  technologyTweetsGroups,
+																										  10);
 		
 		
 //		topicDistanceCalculator.printKnn("this new computer really sucks because it has windows and not linux");

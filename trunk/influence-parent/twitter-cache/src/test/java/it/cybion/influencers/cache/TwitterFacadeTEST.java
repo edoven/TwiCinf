@@ -3,11 +3,11 @@ package it.cybion.influencers.cache;
 
 import it.cybion.influencers.cache.calendar.CalendarManager;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.implementations.mongodb.MongodbPersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.web.Token;
+import it.cybion.influencers.cache.web.TwitterWebFacade;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
-import it.cybion.influencers.cache.web.implementations.twitter4j.Token;
-import it.cybion.influencers.cache.web.implementations.twitter4j.Twitter4jWebFacade;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -49,8 +49,8 @@ public class TwitterFacadeTEST
 		userTokens.add(userToken5);
 		
 
-		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb");
+		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(applicationToken, userTokens);
+		PersistanceFacade persistanceFacade = new PersistanceFacade("localhost", "testdb");
 		twitterFacade = new TwitterCache(twitterWebFacade, persistanceFacade);
 	}
 

@@ -2,7 +2,6 @@ package it.cybion.influence.ranking.utils.urlsexpansion;
 
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

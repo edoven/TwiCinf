@@ -51,8 +51,8 @@ public class Trashion7
 		List<FilterManager> iteratingFilters = getIteratingFilters();
 		List<FilterManager> finalizingFilters = getFinalizingFilters();
 
-		InfluencersDiscoverer influencersDiscoverer = 
-				new InfluencersDiscovererBuilder()
+		Crawler influencersDiscoverer = 
+				new CrawlerFluentBuilder()
 					.buildAnInfluenceDiscoverer()
 						.iteratingFor(iterations)
 						.startingFromUserIds(usersIds)

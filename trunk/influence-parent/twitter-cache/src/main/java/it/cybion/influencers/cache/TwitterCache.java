@@ -8,9 +8,9 @@ import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnriched
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
+import it.cybion.influencers.cache.web.SearchedByDateTweetsResultContainer;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
-import it.cybion.influencers.cache.web.implementations.twitter4j.SearchedByDateTweetsResultContainer;
 
 import java.util.ArrayList;
 import java.util.Date;

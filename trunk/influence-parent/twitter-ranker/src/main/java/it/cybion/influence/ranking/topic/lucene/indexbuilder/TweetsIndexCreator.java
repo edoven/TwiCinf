@@ -33,8 +33,8 @@ public class TweetsIndexCreator
 	
 	public static Directory createSingleIndexForUsers(TwitterCache twitterFacade, String indexesRootDirPath, List<Long> usersIds)
 	{
-		int indexesCount = 0;
-		List<String> urlExpandedTweets = new ArrayList<String>();
+//		int indexesCount = 0;
+//		List<String> urlExpandedTweets = new ArrayList<String>();
 		List<String> tweetsJsons = new ArrayList<String>();
 		for (Long userId : usersIds)
 		{

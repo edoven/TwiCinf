@@ -1,4 +1,4 @@
-package it.cybion.influencers.cache.persistance.implementations.mongodb;
+package it.cybion.influencers.cache.persistance;
 
 import it.cybion.influencers.cache.model.Tweet;
 import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
@@ -20,13 +20,13 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
-public class MongodbTweetsPersistanceFacade
+public class TweetsPersistanceFacade
 {
-	private final Logger logger = Logger.getLogger(MongodbTweetsPersistanceFacade.class);
+	private final Logger logger = Logger.getLogger(TweetsPersistanceFacade.class);
 	
 	private DBCollection tweetsCollection;
 	
-	public MongodbTweetsPersistanceFacade(DBCollection tweetsCollection)
+	public TweetsPersistanceFacade(DBCollection tweetsCollection)
 	{
 		this.tweetsCollection = tweetsCollection;
 	}

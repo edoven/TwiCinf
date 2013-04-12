@@ -1,5 +1,6 @@
-package it.cybion.influencers.crawler;
+package it.cybion.influencers.crawler.launcher;
 
+import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
 import it.cybion.influencers.crawler.graph.GraphFacade;
 import it.cybion.influencers.cache.TwitterCache;
@@ -24,11 +25,11 @@ import org.apache.log4j.Logger;
  * 														.build();
  * 
  */
-public class InfluencersDiscovererBuilder 
+public class CrawlerFluentBuilder 
 {
-	private static final Logger logger = Logger.getLogger(InfluencersDiscovererBuilder.class);
+	private static final Logger logger = Logger.getLogger(CrawlerFluentBuilder.class);
 	
-	private InfluencersDiscoverer influencersDiscoverer;
+	private Crawler influencersDiscoverer;
 	private List<String> screenNames;
 	private boolean influencersDiscovererCreated = false,
 					iterationsSet = false,
@@ -39,32 +40,32 @@ public class InfluencersDiscovererBuilder
 					iteratingFiltersSet = false,
 					finalizingFiltersSet = false;
 	
-	public InfluencersDiscovererBuilder()
+	public CrawlerFluentBuilder()
 	{
 	}
 	
-	public InfluencersDiscovererBuilder buildAnInfluenceDiscoverer()
+	public CrawlerFluentBuilder buildAnInfluenceDiscoverer()
 	{
-		influencersDiscoverer = new InfluencersDiscoverer();
+		influencersDiscoverer = new Crawler();
 		influencersDiscovererCreated = true;
 		return this;
 	}
 	
-	public InfluencersDiscovererBuilder iteratingFor(int iterations)
+	public CrawlerFluentBuilder iteratingFor(int iterations)
 	{
 		influencersDiscoverer.setItarations(iterations);
 		iterationsSet = true;
 		return this;
 	}
 	
-	public InfluencersDiscovererBuilder usingGraphFacade(GraphFacade graphFacade)
+	public CrawlerFluentBuilder usingGraphFacade(GraphFacade graphFacade)
 	{
 		influencersDiscoverer.setGraphFacade(graphFacade);
 		graphFacadeSet = true;
 		return this;
 	}
 	
-	public InfluencersDiscovererBuilder usingTwitterFacade(TwitterCache twitterFacade)
+	public CrawlerFluentBuilder usingTwitterFacade(TwitterCache twitterFacade)
 	{
 		influencersDiscoverer.setTwitterFacade(twitterFacade);
 		twitterFacadeSet = true;
@@ -74,35 +75,35 @@ public class InfluencersDiscovererBuilder
 	//screen-names have to be resolved into user id using TwitterFacade
 	//so influencersDiscoverer.setUsersScreenNames(screenNames) is called in 
 	//validate() method after verifying TwitterFacade has been set
-	public InfluencersDiscovererBuilder startingFromScreenNames(List<String> screenNames)
+	public CrawlerFluentBuilder startingFromScreenNames(List<String> screenNames)
 	{
 		this.screenNames = screenNames;
 		usersScreenNamesSet = true;
 		return this;
 	}
 	
-	public InfluencersDiscovererBuilder startingFromUserIds(List<Long> userIds)
+	public CrawlerFluentBuilder startingFromUserIds(List<Long> userIds)
 	{
 		influencersDiscoverer.setUsersIds(userIds);
 		usersIdsSet = true;
 		return this;
 	}
 	
-	public InfluencersDiscovererBuilder iteratingWith(List<FilterManagerDescription> iteratingFiltersDescriptions)
+	public CrawlerFluentBuilder iteratingWith(List<FilterManagerDescription> iteratingFiltersDescriptions)
 	{
 		influencersDiscoverer.setIteratingFiltersDescriptions(iteratingFiltersDescriptions);
 		iteratingFiltersSet = true;
 		return this;
 	}
 	
-	public InfluencersDiscovererBuilder finalizingWith(List<FilterManagerDescription> finalizingFiltersDescriptions)
+	public CrawlerFluentBuilder finalizingWith(List<FilterManagerDescription> finalizingFiltersDescriptions)
 	{
 		influencersDiscoverer.setFinalizationFiltersDescriptions(finalizingFiltersDescriptions);
 		finalizingFiltersSet = true;
 		return this;
 	}
 	
-	public InfluencersDiscoverer build()
+	public Crawler build()
 	{
 		validate();
 		return this.influencersDiscoverer;

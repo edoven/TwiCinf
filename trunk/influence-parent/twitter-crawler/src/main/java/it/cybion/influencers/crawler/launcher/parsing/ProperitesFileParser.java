@@ -1,18 +1,20 @@
-package it.cybion.influencers.crawler;
+package it.cybion.influencers.crawler.launcher.parsing;
 
 
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.implementations.mongodb.MongodbPersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.cache.web.implementations.twitter4j.Token;
-import it.cybion.influencers.cache.web.implementations.twitter4j.Twitter4jWebFacade;
+import it.cybion.influencers.cache.web.TwitterWebFacade;
 
+import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
 import it.cybion.influencers.crawler.graph.GraphFacade;
 import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
 import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
+import it.cybion.influencers.crawler.launcher.CrawlerFluentBuilder;
 import it.cybion.influencers.crawler.utils.FilesDeleter;
 
 import java.io.File;
@@ -108,19 +110,11 @@ iterating_filter_1_dictionary=moda,fashion,outfit,street style,cool hunter,scarp
  */
 
 
-public class ConfigurationFileParser
+public class ProperitesFileParser
 {
 
-	private static final Logger logger = Logger.getLogger(ConfigurationFileParser.class);
-	
-	
-	public static void main(String[] args) throws IOException
-	{
-		InfluencersDiscoverer infDis = ConfigurationFileParser.getInfluencersDiscovererFromConfiguration("/home/godzy/Desktop/prova.config");
-		infDis.getInfluencers();
-	}
-	
-	
+	private static final Logger logger = Logger.getLogger(ProperitesFileParser.class);
+		
 	private enum filtersManagers
 	{
 		InAndOutDegreeFilterManager,
@@ -131,14 +125,14 @@ public class ConfigurationFileParser
 		OutDegreeFilterManager
 	}
 
-	public static InfluencersDiscoverer getInfluencersDiscovererFromConfiguration(String configFilePath) throws IOException
+	public static Crawler getCrawlerFromPropertiesFile(String configFilePath) throws IOException
 	{
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(configFilePath));
-		return getInfluencersDiscovererFromConfiguration(properties);
+		return getCrawlerFromProperties(properties);
 	}
 	
-	public static InfluencersDiscoverer getInfluencersDiscovererFromConfiguration(Properties properties) throws IOException
+	public static Crawler getCrawlerFromProperties(Properties properties) throws IOException
 	{
 		int iterations = getIterations(properties);		
 		TwitterCache twitterFacade = getTwitterFacade(properties);	
@@ -147,7 +141,7 @@ public class ConfigurationFileParser
 		List<FilterManagerDescription> iteratingFiltersDescriptions = getIteratingFiltersDescriptions(properties);
 		List<FilterManagerDescription> finalizingFiltersDescriptions = getFinalizingFiltersDescriptions(properties);
 		List<String> seedUsersScreenNames = getSeedUsersScreenNames(properties);
-		InfluencersDiscoverer influencersDiscoverer = null;
+		Crawler influencersDiscoverer = null;
 		
 		if (seedUsersIds==null && seedUsersScreenNames==null)
 		{
@@ -157,7 +151,7 @@ public class ConfigurationFileParser
 		else
 		{
 			if (seedUsersIds!=null)
-				influencersDiscoverer = new InfluencersDiscovererBuilder()
+				influencersDiscoverer = new CrawlerFluentBuilder()
 					.buildAnInfluenceDiscoverer()
 						.startingFromUserIds(seedUsersIds)
 						.iteratingFor(iterations)
@@ -168,7 +162,7 @@ public class ConfigurationFileParser
 			else
 			{
 				if (seedUsersScreenNames!=null)
-					influencersDiscoverer = new InfluencersDiscovererBuilder()
+					influencersDiscoverer = new CrawlerFluentBuilder()
 						.buildAnInfluenceDiscoverer()
 							.startingFromScreenNames(seedUsersScreenNames)
 							.iteratingFor(iterations)
@@ -200,7 +194,7 @@ public class ConfigurationFileParser
 		
 		String mongodbHost = properties.getProperty("mongodb_host");
 		String mongodbTwitterDb = properties.getProperty("mongodb_db");
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade(mongodbHost, mongodbTwitterDb);
+		PersistanceFacade persistanceFacade = new PersistanceFacade(mongodbHost, mongodbTwitterDb);
 
 		String applicationTokenPath = properties.getProperty("application_token_path");
 		Token applicationToken = new Token(applicationTokenPath);	
@@ -212,7 +206,7 @@ public class ConfigurationFileParser
 			userTokens.add(new Token(userTokenPath));
 			i++;
 		}
-		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
+		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(applicationToken, userTokens);
 			
 		return new TwitterCache(twitterWebFacade, persistanceFacade);
 		

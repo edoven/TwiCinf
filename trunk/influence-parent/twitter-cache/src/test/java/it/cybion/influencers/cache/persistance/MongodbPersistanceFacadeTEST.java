@@ -2,13 +2,13 @@ package it.cybion.influencers.cache.persistance;
 
 
 import it.cybion.influencers.cache.calendar.CalendarManager;
+import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
-import it.cybion.influencers.cache.persistance.implementations.mongodb.MongodbPersistanceFacade;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -33,12 +33,12 @@ public class MongodbPersistanceFacadeTEST
 
 	private static final Logger logger = Logger.getLogger(MongodbPersistanceFacadeTEST.class);
 
-	private MongodbPersistanceFacade persistanceFacade;
+	private PersistanceFacade persistanceFacade;
 
 	@BeforeClass
 	public void init() throws UnknownHostException
 	{
-		persistanceFacade = new MongodbPersistanceFacade("localhost", "testdb");
+		persistanceFacade = new PersistanceFacade("localhost", "testdb");
 	}
 
 	@Test(enabled = true)

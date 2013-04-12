@@ -4,6 +4,7 @@ package it.cybion.influencers.crawler;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
 import it.cybion.influencers.crawler.graph.GraphFacade;
+import it.cybion.influencers.crawler.launcher.parsing.FilterManagerDescriptionInterpreter;
 import it.cybion.influencers.cache.TwitterCache;
 
 import java.util.ArrayList;
@@ -15,9 +16,9 @@ import org.apache.log4j.Logger;
 
 
 
-public class InfluencersDiscoverer
+public class Crawler
 {	
-	private static final Logger logger = Logger.getLogger(InfluencersDiscoverer.class);
+	private static final Logger logger = Logger.getLogger(Crawler.class);
 
 	private int iterations;
 	private List<Long> users;
@@ -28,7 +29,7 @@ public class InfluencersDiscoverer
 	private Set<Long> resultsFromIterations = new HashSet<Long>();
 
 
-	public InfluencersDiscoverer() {}
+	public Crawler() {}
 	
 	public void setItarations(int iterations){this.iterations = iterations;	}
 	public void setGraphFacade(GraphFacade graphFacade){this.graphFacade = graphFacade;}	

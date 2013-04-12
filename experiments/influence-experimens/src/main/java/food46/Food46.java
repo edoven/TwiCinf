@@ -3,11 +3,11 @@ package food46;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.implementations.mongodb.MongodbPersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.cache.web.implementations.twitter4j.Token;
-import it.cybion.influencers.cache.web.implementations.twitter4j.Twitter4jWebFacade;
-import it.cybion.influencers.crawler.InfluencersDiscoverer;
+import it.cybion.influencers.cache.web.TwitterWebFacade;
+import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.filtering.contentbased.DescriptionAndStatusDictionaryFilterManager;
 import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilterManager;
@@ -43,7 +43,7 @@ public class Food46
 		List<Long> usersIds = getUsersIds();
 		List<FilterManager> filterManagers = getFilterManagers();
 
-		InfluencersDiscoverer influencersDiscoverer = new InfluencersDiscoverer(
+		Crawler influencersDiscoverer = new Crawler(
 				iterations, usersIds, graphFacade, twitterFacade,
 				filterManagers);
 		List<Long> influencers = influencersDiscoverer.getInfluencers();
@@ -88,9 +88,9 @@ public class Food46
 		Token userToken6 = new Token("tokens/token6.txt");
 		userTokens.add(userToken6);
 
-		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(
+		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(
 				applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade(
+		PersistanceFacade persistanceFacade = new PersistanceFacade(
 				"localhost", "twitter");
 		TwitterCache twitterFacade = new TwitterCache(twitterWebFacade,
 				persistanceFacade);

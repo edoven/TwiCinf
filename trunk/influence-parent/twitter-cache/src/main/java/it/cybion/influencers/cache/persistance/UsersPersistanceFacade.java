@@ -1,4 +1,4 @@
-package it.cybion.influencers.cache.persistance.implementations.mongodb;
+package it.cybion.influencers.cache.persistance;
 
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
@@ -18,14 +18,14 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
-public class MongodbUsersPersistanceFacade
+public class UsersPersistanceFacade
 {
-	private final Logger logger = Logger.getLogger(MongodbUsersPersistanceFacade.class);
+	private final Logger logger = Logger.getLogger(UsersPersistanceFacade.class);
 	
 	
 	private DBCollection userCollection;
 	
-	public MongodbUsersPersistanceFacade(DBCollection userCollection)
+	public UsersPersistanceFacade(DBCollection userCollection)
 	{
 		this.userCollection = userCollection;
 	}

@@ -2,10 +2,10 @@ package languageDetect;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.implementations.mongodb.MongodbPersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.TwitterWebFacade;
-import it.cybion.influencers.cache.web.implementations.twitter4j.Token;
-import it.cybion.influencers.cache.web.implementations.twitter4j.Twitter4jWebFacade;
+import it.cybion.influencers.cache.web.TwitterWebFacade;
 import it.cybion.influencers.filtering.language.LanguageDetectionFilterManager;
 
 import java.net.UnknownHostException;
@@ -74,8 +74,8 @@ public class LanguageDetectionFilterTEST {
 		Token userToken6 = new Token("tokens/token6.txt");
 		userTokens.add(userToken6);
 		
-		TwitterWebFacade twitterWebFacade = new Twitter4jWebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new MongodbPersistanceFacade("localhost", "twitter");
+		TwitterWebFacade twitterWebFacade = new TwitterWebFacade(applicationToken, userTokens);
+		PersistanceFacade persistanceFacade = new PersistanceFacade("localhost", "twitter");
 		TwitterCache twitterFacade = new TwitterCache(twitterWebFacade, persistanceFacade);
 		return twitterFacade;
 	}

@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import twitter4j.TwitterException;
 
-import it.cybion.influencers.crawler.InfluencersDiscoverer;
+import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.cache.TwitterCache;
 
 
@@ -18,11 +18,11 @@ public class TestFramework
 
 	private static final Logger logger = Logger.getLogger(TestFramework.class);
 
-	private InfluencersDiscoverer influencersDiscoverer;
+	private Crawler influencersDiscoverer;
 	private List<Long> toBeInUsers;
 	private TwitterCache twitterFacade;
 
-	public TestFramework(InfluencersDiscoverer influencersDiscoverer, List<Long> toBeInUsers, TwitterCache twitterFacade)
+	public TestFramework(Crawler influencersDiscoverer, List<Long> toBeInUsers, TwitterCache twitterFacade)
 	{
 		this.influencersDiscoverer = influencersDiscoverer;
 		this.toBeInUsers = toBeInUsers;

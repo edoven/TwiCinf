@@ -7,13 +7,10 @@ import it.cybion.influence.ranking.model.Tweet;
 import it.cybion.influence.ranking.model.Url;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-
-import com.google.gson.Gson;
 
 
 

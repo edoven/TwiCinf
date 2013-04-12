@@ -1,9 +1,7 @@
 package it.cybion.influence.ranking;
 
-import it.cybion.influence.ranking.topic.TweetToTopicDistanceCalculator;
-import it.cybion.influence.ranking.topic.dictionary.DictionaryTweetToTopicDistanceCalculator;
-import it.cybion.influence.ranking.topic.lucene.LuceneTweetToTopicDistanceCalculatorOLD;
-import it.cybion.influence.ranking.topic.lucene.indexbuilder.TweetsIndexCreator;
+import it.cybion.influence.ranking.topic.TopicScorer;
+import it.cybion.influence.ranking.topic.dictionary.DictionaryTopicScorer;
 import it.cybion.influence.ranking.utils.ListFileReader;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.calendar.CalendarManager;
@@ -12,8 +10,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.lucene.store.Directory;
 
 import twitter4j.TwitterException;
 import utils.TwitterFacadeFactory;
@@ -28,9 +24,9 @@ public class LaPerlaRanking
 		List<Long> usersToRank = UsersSampling.getSamplingByFollowers(laPerla2800UserIds, twitterFacade);
 //		List<Long> usersToRank = filterByFollowersCount(twitterFacade,laPerla2800UserIds, 5000);
 		laPerla2800UserIds = null;
-		TweetToTopicDistanceCalculator topicDistanceCalculator = getDictionaryTweetToTopicDistanceCalculator();
+		TopicScorer topicScorere = getDictionaryTopicScorer();
 //		TweetToTopicDistanceCalculator topicDistanceCalculator = getLuceneTweetToTopicDistanceCalculator(laPerla2800UserIds);
-		RankingCalculator rankingCalculator = new RankingCalculator(twitterFacade, topicDistanceCalculator);
+		RankingCalculator rankingCalculator = new RankingCalculator(twitterFacade, topicScorere);
 		Date fromDate = CalendarManager.getDate(2013, 2, 28);
 		Date toDate   = CalendarManager.getDate(2013, 3, 7);	
 //		List<RankedUser> users = rankingCalculator.getRankedUsersWithoutUrlsResolution(usersToRank,fromDate, toDate);
@@ -83,24 +79,24 @@ public class LaPerlaRanking
 	}
 	
 	
-	private static List<Long> filterByFollowersCount(TwitterCache twitterCache, List<Long> users, int followersCount)
-	{
-		List<Long> goodUsers = new ArrayList<Long>();
-		for (Long userId : users)
-		{
-			try
-			{
-				if (twitterCache.getFollowersCount(userId)>=followersCount)
-					goodUsers.add(userId);
-			}
-			catch (TwitterException e)
-			{
-				System.out.println("Problem with user with id "+userId);
-				continue;
-			}
-		}
-		return goodUsers;
-	}
+//	private static List<Long> filterByFollowersCount(TwitterCache twitterCache, List<Long> users, int followersCount)
+//	{
+//		List<Long> goodUsers = new ArrayList<Long>();
+//		for (Long userId : users)
+//		{
+//			try
+//			{
+//				if (twitterCache.getFollowersCount(userId)>=followersCount)
+//					goodUsers.add(userId);
+//			}
+//			catch (TwitterException e)
+//			{
+//				System.out.println("Problem with user with id "+userId);
+//				continue;
+//			}
+//		}
+//		return goodUsers;
+//	}
 	
 	
 	private static void printInfo(List<RankedUser> users)
@@ -129,7 +125,7 @@ public class LaPerlaRanking
 	}
 	
 	
-	private static TweetToTopicDistanceCalculator getDictionaryTweetToTopicDistanceCalculator()
+	private static TopicScorer getDictionaryTopicScorer()
 	{
 		List<String> dictionary = new ArrayList<String>();
 		dictionary.add("fashion");
@@ -174,22 +170,22 @@ public class LaPerlaRanking
 		dictionary.add("leather");
 		dictionary.add("design");
 		
-		return new DictionaryTweetToTopicDistanceCalculator(dictionary);
+		return new DictionaryTopicScorer(dictionary);
 				
 	}
 	
 	
-	private static TweetToTopicDistanceCalculator getLuceneTweetToTopicDistanceCalculator(List<Long> users, TwitterCache twitterCache)
-	{	
-		List<Long> seedUsers = users.subList(0, 50);
-		
-		String luceneTempDirPath = "/home/godzy/Desktop/temp";
-//		logger.info("Building lucene indexes - START");		
-//		List<Directory> indexes = TweetsIndexCreator.createSingleDocumentIndexesForUsers(twitterCache, luceneTempDirPath, seedUsers);		
-		List<Directory> indexes = new ArrayList<Directory>();
-		indexes.add( TweetsIndexCreator.createSingleIndexForUsers(twitterCache, luceneTempDirPath, seedUsers) );		
-//		logger.info("Building lucene indexes - FINISHED");
-		return new LuceneTweetToTopicDistanceCalculatorOLD(indexes);
-	}
+//	private static TopicScorer getLuceneTweetToTopicDistanceCalculator(List<Long> users, TwitterCache twitterCache)
+//	{	
+//		List<Long> seedUsers = users.subList(0, 50);
+//		
+//		String luceneTempDirPath = "/home/godzy/Desktop/temp";
+////		logger.info("Building lucene indexes - START");		
+////		List<Directory> indexes = TweetsIndexCreator.createSingleDocumentIndexesForUsers(twitterCache, luceneTempDirPath, seedUsers);		
+//		List<Directory> indexes = new ArrayList<Directory>();
+//		indexes.add( TweetsIndexCreator.createSingleIndexForUsers(twitterCache, luceneTempDirPath, seedUsers) );		
+////		logger.info("Building lucene indexes - FINISHED");
+//		return new LuceneTweetToTopicDistanceCalculatorOLD(indexes);
+//	}
 	
 }

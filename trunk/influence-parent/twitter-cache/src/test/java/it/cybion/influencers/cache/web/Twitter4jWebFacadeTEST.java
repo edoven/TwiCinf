@@ -4,10 +4,10 @@ package it.cybion.influencers.cache.web;
 import static org.testng.AssertJUnit.assertTrue;
 import it.cybion.influencers.cache.calendar.CalendarManager;
 import it.cybion.influencers.cache.model.Tweet;
+import it.cybion.influencers.cache.web.SearchedByDateTweetsResultContainer;
+import it.cybion.influencers.cache.web.Token;
+import it.cybion.influencers.cache.web.TwitterWebFacade;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
-import it.cybion.influencers.cache.web.implementations.twitter4j.SearchedByDateTweetsResultContainer;
-import it.cybion.influencers.cache.web.implementations.twitter4j.Token;
-import it.cybion.influencers.cache.web.implementations.twitter4j.Twitter4jWebFacade;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +34,7 @@ public class Twitter4jWebFacadeTEST
 
 //	private static final Logger logger = Logger.getLogger(Twitter4jWebFacadeTEST.class);
 
-	private Twitter4jWebFacade twitter4jFacade;
+	private TwitterWebFacade twitter4jFacade;
 
 	@BeforeClass
 	public void init()
@@ -55,7 +55,7 @@ public class Twitter4jWebFacadeTEST
 		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
 		userTokens.add(userToken5);
 		
-		twitter4jFacade = new Twitter4jWebFacade(applicationToken, userTokens);
+		twitter4jFacade = new TwitterWebFacade(applicationToken, userTokens);
 	}
 
 	@Test(enabled = true)
