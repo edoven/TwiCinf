@@ -4,11 +4,8 @@ package it.cybion.influencers.crawler.launcher.parsing;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
-import it.cybion.influencers.cache.web.WebFacade;
-
 import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
 import it.cybion.influencers.crawler.graph.GraphFacade;
@@ -194,7 +191,7 @@ public class ProperitesFileParser
 		
 		String mongodbHost = properties.getProperty("mongodb_host");
 		String mongodbTwitterDb = properties.getProperty("mongodb_db");
-		PersistanceFacade persistanceFacade = new PersistanceFacade(mongodbHost, mongodbTwitterDb);
+		PersistanceFacade persistanceFacade = PersistanceFacade.getInstance(mongodbHost, mongodbTwitterDb);
 
 		String applicationTokenPath = properties.getProperty("application_token_path");
 		Token applicationToken = new Token(applicationTokenPath);	
@@ -206,9 +203,9 @@ public class ProperitesFileParser
 			userTokens.add(new Token(userTokenPath));
 			i++;
 		}
-		WebFacade twitterWebFacade = new WebFacade(applicationToken, userTokens);
+		WebFacade twitterWebFacade = WebFacade.getInstance(applicationToken, userTokens);
 			
-		return new TwitterCache(twitterWebFacade, persistanceFacade);
+		return TwitterCache.getInstance(twitterWebFacade, persistanceFacade);
 		
 	}
 	

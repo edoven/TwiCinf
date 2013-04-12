@@ -23,6 +23,8 @@ public class WebFacade
 {
 	private final Logger logger = Logger.getLogger(WebFacade.class);
 	
+	private static WebFacade singletonInstance = null;
+	
 	private final int WAIT_TIME = 1;
 	private List<UserHandler> userHandlers; 	
 	
@@ -44,9 +46,15 @@ public class WebFacade
 	}
 
 	
+	public static WebFacade getInstance(Token consumerToken, List<Token> userTokens)
+	{
+		if (singletonInstance == null)
+			singletonInstance = new WebFacade(consumerToken, userTokens);
+		return singletonInstance;
+	}
 	
 	
-	public WebFacade(Token consumerToken, List<Token> userTokens)
+	private WebFacade(Token consumerToken, List<Token> userTokens)
 	{
 		userHandlers = new ArrayList<UserHandler>();
 		for (Token userToken : userTokens)

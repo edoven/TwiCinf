@@ -1,19 +1,10 @@
 package it.cybion.influencers.filtering.topologybased;
 
 
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
-import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
-import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
-import it.cybion.influencers.cache.TwitterCache;
-import it.cybion.influencers.cache.TwitterFacadeFactory;
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
-import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.WebFacade;
-import it.cybion.influencers.crawler.utils.FilesDeleter;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

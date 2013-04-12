@@ -21,11 +21,19 @@ import com.mongodb.MongoClient;
 
 public class PersistanceFacade
 {
+	private static PersistanceFacade singletonInstance = null;
+	
 	private UsersPersistanceFacade usersMongodbPersistanceFacade;
 	private TweetsPersistanceFacade tweetsMongodbPersistanceFacade;
 	
+	public static PersistanceFacade getInstance(String host, String database) throws UnknownHostException
+	{
+		if (singletonInstance == null)
+			singletonInstance = new PersistanceFacade(host, database);
+		return singletonInstance;
+	}
 	
-	public PersistanceFacade(String host, String database) throws UnknownHostException
+	private PersistanceFacade(String host, String database) throws UnknownHostException
 	{
 		MongoClient mongoClient = new MongoClient(host);
 		DB db = mongoClient.getDB(database);

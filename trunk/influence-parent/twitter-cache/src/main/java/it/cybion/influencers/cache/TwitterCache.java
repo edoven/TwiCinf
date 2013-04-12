@@ -34,13 +34,21 @@ import com.mongodb.util.JSON;
 
 public class TwitterCache
 {
-
 	private static final Logger logger = Logger.getLogger(TwitterCache.class);
+	
+	private static TwitterCache singletonInstance = null;
 
 	WebFacade webFacade;
 	PersistanceFacade persistanceFacade;
+	
+	public static TwitterCache getInstance(WebFacade twitterWebFacade, PersistanceFacade persistanceFacade)
+	{
+		if (singletonInstance == null)
+			singletonInstance = new TwitterCache(twitterWebFacade,persistanceFacade);
+		return singletonInstance;
+	}
 
-	public TwitterCache(WebFacade twitterWebFacade, PersistanceFacade persistanceFacade)
+	private TwitterCache(WebFacade twitterWebFacade, PersistanceFacade persistanceFacade)
 	{
 		this.webFacade = twitterWebFacade;
 		this.persistanceFacade = persistanceFacade;

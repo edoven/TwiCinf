@@ -29,7 +29,7 @@ import com.google.gson.GsonBuilder;
 
 
 
-public class Twitter4jWebFacadeTEST
+public class WebFacadeTEST
 {
 
 //	private static final Logger logger = Logger.getLogger(Twitter4jWebFacadeTEST.class);
@@ -55,7 +55,7 @@ public class Twitter4jWebFacadeTEST
 		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
 		userTokens.add(userToken5);
 		
-		webFacade = new WebFacade(applicationToken, userTokens);
+		webFacade = WebFacade.getInstance(applicationToken, userTokens);
 	}
 
 	@Test(enabled = true)

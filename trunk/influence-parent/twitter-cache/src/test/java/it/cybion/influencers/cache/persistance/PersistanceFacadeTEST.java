@@ -28,17 +28,17 @@ import com.mongodb.util.JSON;
 
 
 
-public class MongodbPersistanceFacadeTEST
+public class PersistanceFacadeTEST
 {
 
-	private static final Logger logger = Logger.getLogger(MongodbPersistanceFacadeTEST.class);
+	private static final Logger logger = Logger.getLogger(PersistanceFacadeTEST.class);
 
 	private PersistanceFacade persistanceFacade;
 
 	@BeforeClass
 	public void init() throws UnknownHostException
 	{
-		persistanceFacade = new PersistanceFacade("localhost", "testdb");
+		persistanceFacade = PersistanceFacade.getInstance("localhost", "testdb");
 	}
 
 	@Test(enabled = true)

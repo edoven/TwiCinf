@@ -46,9 +46,9 @@ public class TwitterCacheTEST
 		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
 		userTokens.add(userToken5);
 		
-		WebFacade twitterWebFacade = new WebFacade(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = new PersistanceFacade("localhost", "testdb");
-		twitterFacade = new TwitterCache(twitterWebFacade, persistanceFacade);
+		WebFacade twitterWebFacade = WebFacade.getInstance(applicationToken, userTokens);
+		PersistanceFacade persistanceFacade = PersistanceFacade.getInstance("localhost", "testdb");
+		twitterFacade = TwitterCache.getInstance(twitterWebFacade, persistanceFacade);
 	}
 
 	@Test(enabled = false)
