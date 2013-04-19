@@ -3,7 +3,6 @@ package trashionLaPerla;
 
 
 import it.cybion.influencers.cache.TwitterCache;
-import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.filtering.aggregation.OrFilterManager;
@@ -12,6 +11,8 @@ import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilte
 import it.cybion.influencers.crawler.filtering.topologybased.InDegreeFilterManager;
 import it.cybion.influencers.crawler.filtering.topologybased.OutDegreeFilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
+import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
+import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
 import it.cybion.influencers.crawler.launcher.CrawlerFluentBuilder;
 import it.cybion.influencers.crawler.utils.FilesDeleter;
 

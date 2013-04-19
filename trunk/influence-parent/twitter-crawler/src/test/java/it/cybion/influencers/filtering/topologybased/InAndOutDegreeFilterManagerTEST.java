@@ -2,10 +2,14 @@ package it.cybion.influencers.filtering.topologybased;
 
 
 import it.cybion.influencers.cache.TwitterCache;
+import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.web.Token;
+import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +29,29 @@ public class InAndOutDegreeFilterManagerTEST
 
 	public static void init() throws IOException
 	{
-		twitterFacade = TwitterFacadeFactory.getTwitterFacadeForTests();
+		twitterFacade = getTwitterCache();
+	}
+	
+	private static TwitterCache getTwitterCache() throws UnknownHostException
+	{
+		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.properties");
+		List<Token> userTokens = new ArrayList<Token>();
+		Token userToken0 = new Token("/home/godzy/tokens/token0.properties");
+		userTokens.add(userToken0);
+		Token userToken1 = new Token("/home/godzy/tokens/token1.properties");
+		userTokens.add(userToken1);
+		Token userToken2 = new Token("/home/godzy/tokens/token2.properties");
+		userTokens.add(userToken2);
+		Token userToken3 = new Token("/home/godzy/tokens/token3.properties");
+		userTokens.add(userToken3);
+		Token userToken4 = new Token("/home/godzy/tokens/token4.properties");
+		userTokens.add(userToken4);
+		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
+		userTokens.add(userToken5);
+		
+		WebFacade twitterWebFacade = WebFacade.getInstance(applicationToken, userTokens);
+		PersistanceFacade persistanceFacade = PersistanceFacade.getInstance("localhost", "testdb");
+		return TwitterCache.getInstance(twitterWebFacade, persistanceFacade);
 	}
 
 	public static void main(String args[]) throws IOException, TwitterException

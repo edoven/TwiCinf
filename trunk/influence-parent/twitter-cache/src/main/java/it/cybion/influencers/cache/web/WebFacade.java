@@ -89,7 +89,7 @@ public class WebFacade
 		for (UserHandler userHandler : userHandlers)
 			if (userHandler.canMakeRequest(requestName))
 			{
-				logger.info(userHandler.requestType2limit.get(requestName));
+				logger.debug("userHandler.requestType2limit.get("+requestName+")="+userHandler.requestType2limit.get(requestName));
 				return userHandler;
 			}
 		try

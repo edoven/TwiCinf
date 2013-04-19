@@ -88,7 +88,7 @@ public class UserHandler
 		else
 		{
 			long now = System.currentTimeMillis();
-			logger.info("(now-lastGetRateLimitStatusTime)/1000="+(now-lastGetRateLimitStatusTime)/1000.0);
+			logger.debug("(now-lastGetRateLimitStatusTime)/1000="+(now-lastGetRateLimitStatusTime)/1000.0);
 			if ( (now-lastGetRateLimitStatusTime)/1000.0 > 5 ) //5 = (15*60)/180
 			{
 				setRequestType2limit();
