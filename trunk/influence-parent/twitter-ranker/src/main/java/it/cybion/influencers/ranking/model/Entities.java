@@ -1,4 +1,4 @@
-package it.cybion.influence.ranking.model;
+package it.cybion.influencers.ranking.model;
 
 import java.util.List;
 

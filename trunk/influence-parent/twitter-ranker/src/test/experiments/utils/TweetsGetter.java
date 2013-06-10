@@ -1,10 +1,10 @@
 package utils;
 
-import it.cybion.influence.ranking.model.Tweet;
-import it.cybion.influence.ranking.utils.TweetsDeserializer;
-import it.cybion.influence.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.ranking.model.Tweet;
+import it.cybion.influencers.ranking.utils.TweetsDeserializer;
+import it.cybion.influencers.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 
 import java.util.ArrayList;
 import java.util.List;

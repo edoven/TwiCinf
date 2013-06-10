@@ -1,11 +1,11 @@
-package it.cybion.influence.ranking;
+package it.cybion.influencers.ranking;
 
-import it.cybion.influence.ranking.model.Tweet;
-import it.cybion.influence.ranking.topic.TopicScorer;
-import it.cybion.influence.ranking.utils.TweetsDeserializer;
-import it.cybion.influence.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
+import it.cybion.influencers.ranking.model.Tweet;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.ranking.topic.TopicScorer;
+import it.cybion.influencers.ranking.utils.TweetsDeserializer;
+import it.cybion.influencers.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 
 import java.util.ArrayList;
 import java.util.Collections;

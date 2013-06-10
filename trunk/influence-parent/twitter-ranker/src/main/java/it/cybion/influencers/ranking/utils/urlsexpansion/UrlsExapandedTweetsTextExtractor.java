@@ -1,10 +1,10 @@
-package it.cybion.influence.ranking.utils.urlsexpansion;
+package it.cybion.influencers.ranking.utils.urlsexpansion;
 
 
 
-import it.cybion.influence.ranking.RankingCalculator;
-import it.cybion.influence.ranking.model.Tweet;
-import it.cybion.influence.ranking.model.Url;
+import it.cybion.influencers.ranking.model.Tweet;
+import it.cybion.influencers.ranking.model.Url;
+import it.cybion.influencers.ranking.RankingCalculator;
 
 import java.util.ArrayList;
 import java.util.List;

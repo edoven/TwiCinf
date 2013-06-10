@@ -1,6 +1,6 @@
-package it.cybion.influence.ranking.topic.knn;
+package it.cybion.influencers.ranking.topic.knn;
 
-import it.cybion.influence.ranking.topic.TopicScorer;
+import it.cybion.influencers.ranking.topic.TopicScorer;
 
 import java.io.IOException;
 import java.util.List;

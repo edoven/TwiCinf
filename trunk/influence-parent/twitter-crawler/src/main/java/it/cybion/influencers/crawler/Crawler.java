@@ -7,24 +7,18 @@ import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
 import it.cybion.influencers.crawler.graph.GraphFacade;
 import it.cybion.influencers.crawler.launcher.parsing.FilterManagerDescriptionInterpreter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Layout;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
 
 
 public class Crawler
 {	
-	private Logger logger;
+	private Logger logger = Logger.getLogger(Crawler.class);
 	
 
 	private int iterations;
@@ -38,7 +32,7 @@ public class Crawler
 
 	public Crawler() 
 	{
-		setDefaultLogger();
+//		setDefaultLogger();
 	}
 	
 	
@@ -50,23 +44,23 @@ public class Crawler
 	public void setUsersScreenNames(List<String> screenNames){this.users = twitterFacade.getUserIds(screenNames);}
 	public void setFinalizationFiltersDescriptions(List<FilterManagerDescription> finalizationFiltersDescriptions){this.finalizationFiltersDescriptions = finalizationFiltersDescriptions;}
 	
-	public void setFileLogger(String filename) throws IOException
-	{
-		logger = Logger.getLogger(this.getClass());
-		Layout layout = new PatternLayout("%d{ABSOLUTE} %5p %c{1}:%L - %m%n");
-		Appender appender = new FileAppender(layout, filename);
-		appender.setLayout(layout);
-		logger.addAppender(appender);
-	}
+//	public void setFileLogger(String filename) throws IOException
+//	{
+//		logger = Logger.getLogger(this.getClass());
+//		Layout layout = new PatternLayout("%d{ABSOLUTE} %5p %c{1}:%L - %m%n");
+//		Appender appender = new FileAppender(layout, filename);
+//		appender.setLayout(layout);
+//		logger.addAppender(appender);
+//	}
 	
-	private void setDefaultLogger()
-	{
-		logger = Logger.getLogger(this.getClass());
-		Appender appender = new ConsoleAppender();
-		Layout layout = new PatternLayout("%d{ABSOLUTE} %5p %c{1}:%L - %m%n");
-		appender.setLayout(layout);
-		logger.addAppender(appender);	
-	}
+//	private void setDefaultLogger()
+//	{
+//		logger = Logger.getLogger(this.getClass());
+//		Appender appender = new ConsoleAppender();
+//		Layout layout = new PatternLayout("%d{ABSOLUTE} %5p %c{1}:%L - %m%n");
+//		appender.setLayout(layout);
+//		logger.addAppender(appender);	
+//	}
 	
 	
 	public List<Long> getInfluencers()

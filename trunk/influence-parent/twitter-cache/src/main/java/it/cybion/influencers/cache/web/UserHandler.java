@@ -30,18 +30,21 @@ public class UserHandler
 	private static final Logger logger = Logger.getLogger(UserHandler.class);
 
 	private Twitter twitter;
-	public Map<String, Integer> requestType2limit;
-	private int setRequestType2LimitTries = 0;
-	long lastGetRateLimitStatusTime;
+	public Map<String, Integer> requestType2limit = new HashMap<String, Integer>();
+	private int failedSetRequestType2LimitTries = 0;
+	private long lastGetRateLimitStatusTime;
 
 	public UserHandler(Token applicationToken, Token userToken) throws TwitterException
 	{
-		ConfigurationBuilder cb = new ConfigurationBuilder();
-		cb.setDebugEnabled(false).setOAuthConsumerKey(applicationToken.getTokenString()).setOAuthConsumerSecret(applicationToken.getSecretString()).setOAuthAccessToken(userToken.getTokenString())
-				.setOAuthAccessTokenSecret(userToken.getSecretString()).setJSONStoreEnabled(true);
-		TwitterFactory tf = new TwitterFactory(cb.build());
-		twitter = tf.getInstance();
-		requestType2limit = new HashMap<String, Integer>();
+		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+		configurationBuilder.setDebugEnabled(false)
+							.setOAuthConsumerKey(applicationToken.getTokenString())
+							.setOAuthConsumerSecret(applicationToken.getSecretString())
+							.setOAuthAccessToken(userToken.getTokenString())
+							.setOAuthAccessTokenSecret(userToken.getSecretString())
+							.setJSONStoreEnabled(true);
+		TwitterFactory twitterFactory = new TwitterFactory(configurationBuilder.build());
+		twitter = twitterFactory.getInstance();
 		setRequestType2limit();
 	}
 	
@@ -60,7 +63,7 @@ public class UserHandler
 		} 
 		catch (TwitterException e)
 		{
-			if (setRequestType2LimitTries < 2)
+			if (failedSetRequestType2LimitTries < 2)
 			{
 				logger.info("Problem with setRequestType2limit. Let's wait for 3 sec and retry.");
 				try
@@ -69,43 +72,55 @@ public class UserHandler
 				} catch (InterruptedException e1)
 				{
 					logger.info("Problem in Thread.sleep(). Skipped.");
-					return;
 				}
-				setRequestType2LimitTries++;
+				failedSetRequestType2LimitTries++;
 				setRequestType2limit();
 			} else
 				logger.info("Skipped.");
 		}
-		setRequestType2LimitTries = 0;
+		failedSetRequestType2LimitTries = 0;
 		lastGetRateLimitStatusTime = System.currentTimeMillis();
 	}
 	
+	private int getRequestLimit(String requestName)
+	{
+		return requestType2limit.get(requestName);
+	}
+	
+	private void updateRequestLimit(String requestName, int limit)
+	{
+		requestType2limit.put(requestName, limit);
+	}
+	
+	
 	public boolean canMakeRequest(String requestType)
 	{
-		int requestsLeft = requestType2limit.get(requestType);
+		int requestsLeft = getRequestLimit(requestType);
 		if (requestsLeft>0)
 			return true;
 		else
 		{
 			long now = System.currentTimeMillis();
-			logger.debug("(now-lastGetRateLimitStatusTime)/1000="+(now-lastGetRateLimitStatusTime)/1000.0);
-			if ( (now-lastGetRateLimitStatusTime)/1000.0 > 5 ) //5 = (15*60)/180
+			long secondsPassedFromLastRequest = (now-lastGetRateLimitStatusTime)/1000;
+			logger.debug("secondsPassedFromLastRequest="+secondsPassedFromLastRequest);
+			if (secondsPassedFromLastRequest  > 5 ) //5 = (15*60)/180
 			{
 				setRequestType2limit();
 				return canMakeRequest(requestType);
 			}
-			else
+			else //it's too early to ask the limits again
 				return false;
 		}
 	}
+	
 
 	public IDs getFollowersWithPagination(long userId, long cursor) throws TwitterException
 	{
 		String requestName = "/followers/ids";
-		int limit = requestType2limit.get(requestName);
+		int limit = getRequestLimit(requestName);
 		logger.debug("limit for getFollowersWithPagination=" + limit);
 		IDs result = twitter.getFollowersIDs(userId, cursor);
-		requestType2limit.put(requestName, (limit - 1));
+		updateRequestLimit(requestName, (limit - 1));
 		return result;
 	}
 
@@ -113,17 +128,17 @@ public class UserHandler
 	public IDs getFriendsWithPagination(long userId, long cursor) throws TwitterException
 	{
 		String requestName = "/friends/ids";
-		int limit = requestType2limit.get(requestName);
+		int limit = getRequestLimit(requestName);
 		logger.debug("limit for getFriendsWithPagination=" + limit);
 		IDs result = twitter.getFriendsIDs(userId, cursor);
-		requestType2limit.put(requestName, (limit - 1));
+		updateRequestLimit(requestName, (limit - 1));
 		return result;
 	}
 
 	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException
 	{
 		String requestName = "/statuses/user_timeline";
-		int limit = requestType2limit.get(requestName);
+		int limit = getRequestLimit(requestName);
 		logger.debug("limit for getLast200TweetsPostedByUser=" + limit);
 		Paging paging = new Paging();
 		paging.setCount(200);
@@ -147,27 +162,27 @@ public class UserHandler
 		List<String> result = new ArrayList<String>();
 		for (Status status : statuses)
 			result.add(DataObjectFactory.getRawJSON(status));
-		requestType2limit.put(requestName, (limit - 1));
+		updateRequestLimit(requestName, (limit - 1));
 		return result;
 	}
 
 	public String getUserJson(long userId) throws TwitterException
 	{
 		String requestName = "/users/show/:id";
-		int limit = requestType2limit.get(requestName);
+		int limit = getRequestLimit(requestName);
 		logger.debug("limit for getUserJson=" + limit);
 		String result = DataObjectFactory.getRawJSON(twitter.showUser(userId));
-		requestType2limit.put(requestName, (limit - 1));
+		updateRequestLimit(requestName, (limit - 1));
 		return result;
 	}
 
 	public String getUserJson(String screenName) throws TwitterException
 	{
 		String requestName = "/users/show/:id";
-		int limit = requestType2limit.get(requestName);
+		int limit = getRequestLimit(requestName);
 		logger.debug("limit for getUserJson=" + limit);
 		String result = DataObjectFactory.getRawJSON(twitter.showUser(screenName));
-		requestType2limit.put(requestName, (limit - 1));
+		updateRequestLimit(requestName, (limit - 1));
 		return result;
 	}
 
@@ -175,10 +190,10 @@ public class UserHandler
 	public List<String> getUsersJsons(long usersIds[]) throws TwitterException
 	{
 		String requestName = "/users/lookup";
-		int limit = requestType2limit.get(requestName);
+		int limit = getRequestLimit(requestName);
 		logger.debug("limit for getUsersJsons=" + limit);
 		ResponseList<User> responseList = twitter.lookupUsers(usersIds);
-		requestType2limit.put(requestName, (limit - 1));
+		updateRequestLimit(requestName, (limit - 1));
 		List<String> result = new ArrayList<String>();
 		Iterator<User> resultIterator = responseList.iterator();
 		while (resultIterator.hasNext())

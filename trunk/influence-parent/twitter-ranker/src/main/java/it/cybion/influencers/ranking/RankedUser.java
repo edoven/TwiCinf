@@ -1,4 +1,4 @@
-package it.cybion.influence.ranking;
+package it.cybion.influencers.ranking;
 
 public class RankedUser implements Comparable<RankedUser>
 {

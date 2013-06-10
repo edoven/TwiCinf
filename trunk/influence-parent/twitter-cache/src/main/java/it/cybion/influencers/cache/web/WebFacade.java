@@ -84,7 +84,7 @@ public class WebFacade
 		logger.info("UserHandlers created");
 	}
 	
-	public UserHandler getUserHandler(String requestName)
+	public UserHandler getUserHandlerForRequest(String requestName)
 	{
 		for (UserHandler userHandler : userHandlers)
 			if (userHandler.canMakeRequest(requestName))
@@ -96,7 +96,7 @@ public class WebFacade
 		{
 			logger.info("All handlers have reached the limit, let's wait for " + WAIT_TIME + " min");
 			Thread.sleep(WAIT_TIME * 60 * 1000);
-			return getUserHandler(requestName);
+			return getUserHandlerForRequest(requestName);
 		} catch (InterruptedException e1)
 		{
 			logger.info("Problem in Thread.sleep().");
@@ -152,7 +152,7 @@ public class WebFacade
 
 	private IDs getFollowersIdsWithPagination(long userId, long cursor) throws TwitterException
 	{
-		UserHandler userHandler = getUserHandler("/followers/ids");
+		UserHandler userHandler = getUserHandlerForRequest("/followers/ids");
 		return userHandler.getFollowersWithPagination(userId, cursor);
 	}
 
@@ -172,7 +172,7 @@ public class WebFacade
 
 	private IDs getFriendsIdsWithPagination(long userId, long cursor) throws TwitterException
 	{
-		UserHandler userHandler = getUserHandler("/friends/ids");
+		UserHandler userHandler = getUserHandlerForRequest("/friends/ids");
 		return (IDs) userHandler.getFriendsWithPagination(userId, cursor);
 	}
 
@@ -228,7 +228,7 @@ public class WebFacade
 	
 	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException 
 	{
-		UserHandler userHandler = getUserHandler("/statuses/user_timeline");
+		UserHandler userHandler = getUserHandlerForRequest("/statuses/user_timeline");
 		logger.info("Downloading 200 tweets for user with id:" + userId + " with maxid="+maxId);
 		List<String> tweets = userHandler.getTweetsWithMaxId(userId, maxId);
 		return tweets;
@@ -236,7 +236,7 @@ public class WebFacade
 
 	private List<String> getUpTo100Users(long[] usersIds) throws TwitterException
 	{
-		UserHandler userHandler = getUserHandler("/users/lookup");
+		UserHandler userHandler = getUserHandlerForRequest("/users/lookup");
 		return (List<String>) userHandler.getUsersJsons(usersIds);
 	}
 	
@@ -244,13 +244,13 @@ public class WebFacade
 	
 	public String getUserJson(long userId) throws TwitterException
 	{
-		UserHandler userHandler = getUserHandler("/users/show/:id");
+		UserHandler userHandler = getUserHandlerForRequest("/users/show/:id");
 		return userHandler.getUserJson(userId);
 	}
 		
 	public String getUserJson(String screenName) throws TwitterException
 	{
-		UserHandler userHandler = getUserHandler("/users/show/:id");
+		UserHandler userHandler = getUserHandlerForRequest("/users/show/:id");
 		return userHandler.getUserJson(screenName);
 	}
 	

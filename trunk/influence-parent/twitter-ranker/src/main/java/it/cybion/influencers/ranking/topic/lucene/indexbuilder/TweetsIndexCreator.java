@@ -1,10 +1,11 @@
-package it.cybion.influence.ranking.topic.lucene.indexbuilder;
+package it.cybion.influencers.ranking.topic.lucene.indexbuilder;
 
 
-import it.cybion.influence.ranking.model.Tweet;
-import it.cybion.influence.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
+import it.cybion.influencers.ranking.model.Tweet;
+import it.cybion.influencers.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+
 
 import java.io.File;
 import java.io.IOException;

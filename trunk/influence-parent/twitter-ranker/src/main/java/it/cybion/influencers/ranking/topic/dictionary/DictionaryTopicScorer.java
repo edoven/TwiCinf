@@ -1,6 +1,6 @@
-package it.cybion.influence.ranking.topic.dictionary;
+package it.cybion.influencers.ranking.topic.dictionary;
 
-import it.cybion.influence.ranking.topic.TopicScorer;
+import it.cybion.influencers.ranking.topic.TopicScorer;
 
 import java.util.List;
 

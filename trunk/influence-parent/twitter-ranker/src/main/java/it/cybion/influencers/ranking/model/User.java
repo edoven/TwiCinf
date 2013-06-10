@@ -1,4 +1,4 @@
-package it.cybion.influence.ranking.model;
+package it.cybion.influencers.ranking.model;
 
 public class User
 {

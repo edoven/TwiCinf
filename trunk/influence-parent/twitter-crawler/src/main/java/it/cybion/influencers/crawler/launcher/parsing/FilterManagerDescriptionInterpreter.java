@@ -27,52 +27,53 @@ public class FilterManagerDescriptionInterpreter
 				
 		try
 		{
-			switch (filterManagerName)
+			if(filterManagerName.equals("InAndOutDegreeFilterManager"))
 			{
-				case "InAndOutDegreeFilterManager":
-					Class<InAndOutDegreeFilterManager> InAndOutDegreeFilterManagerClass = (Class<InAndOutDegreeFilterManager>) Class.forName("it.cybion.influencers.crawler.filtering.topologybased."+filterManagerName);
-					constructor = InAndOutDegreeFilterManagerClass.getConstructor(Float.class, Float.class);
-					Float inDegreeThreshold = (Float)parameterName2ParameterValue.get("inDegreePercentageThreshold");
-					Float outDegreeThreshold = (Float)parameterName2ParameterValue.get("outDegreePercentageThreshold");
-					filterManger = (FilterManager) constructor.newInstance(inDegreeThreshold,outDegreeThreshold	);	
-					break;
-				case "DescriptionAndStatusDictionaryFilterManager":
-					constructor = Class.forName("it.cybion.influencers.crawler.filtering.contentbased."+filterManagerName).getConstructor(List.class);
-					filterManger = (FilterManager) constructor.newInstance((List<String>)parameterName2ParameterValue.get("dictionary"));	
-					break;
-				case "OutDegreeFilterManager":
-					constructor = Class.forName(filterManagerName).getConstructor(Float.class);
-					filterManger = (FilterManager) constructor.newInstance((Float)parameterName2ParameterValue.get("outDegreePercentageThreshold"));
-					break;	
-				case "InDegreeFilterManager":
-					constructor = Class.forName("it.cybion.influencers.crawler.filtering.topologybased."+filterManagerName).getConstructor(Float.class);
-					filterManger = (FilterManager) constructor.newInstance((Float)parameterName2ParameterValue.get("inDegreePercentageThreshold"));
-					break;
-				case "OrFilterManager":
-					constructor = Class.forName("it.cybion.influencers.crawler.filtering.aggregation."+filterManagerName).getConstructor(List.class);
-					List<FilterManagerDescription> filterManagersDescriptions = 
-								(List<FilterManagerDescription>)parameterName2ParameterValue.get("filterManagersDescriptions");
-					List<FilterManager> orFilterManagers = new ArrayList<FilterManager>();
-					for (FilterManagerDescription filterManagerDescription : filterManagersDescriptions)
-						orFilterManagers.add(getFilterManagerFromDescription(filterManagerDescription));
-					filterManger = (FilterManager) constructor.newInstance(orFilterManagers);
-					break;
-				case "LanguageDetectionFilterManager":
-					constructor = Class.forName("it.cybion.influencers.crawler.filtering.language."+filterManagerName).getConstructor(String.class, String.class);
-					
-					filterManger = (FilterManager) constructor.newInstance(
+				Class<InAndOutDegreeFilterManager> InAndOutDegreeFilterManagerClass = (Class<InAndOutDegreeFilterManager>) Class.forName("it.cybion.influencers.crawler.filtering.topologybased."+filterManagerName);
+				constructor = InAndOutDegreeFilterManagerClass.getConstructor(Float.class, Float.class);
+				Float inDegreeThreshold = (Float)parameterName2ParameterValue.get("inDegreePercentageThreshold");
+				Float outDegreeThreshold = (Float)parameterName2ParameterValue.get("outDegreePercentageThreshold");
+				filterManger = (FilterManager) constructor.newInstance(inDegreeThreshold,outDegreeThreshold	);	
+			}				
+			else if(filterManagerName.equals("DescriptionAndStatusDictionaryFilterManager"))
+			{
+				constructor = Class.forName("it.cybion.influencers.crawler.filtering.contentbased."+filterManagerName).getConstructor(List.class);
+				filterManger = (FilterManager) constructor.newInstance((List<String>)parameterName2ParameterValue.get("dictionary"));	
+			}
+			else if(filterManagerName.equals("OutDegreeFilterManager"))
+			{
+				constructor = Class.forName(filterManagerName).getConstructor(Float.class);
+				filterManger = (FilterManager) constructor.newInstance((Float)parameterName2ParameterValue.get("outDegreePercentageThreshold"));
+			}
+			else if(filterManagerName.equals("InDegreeFilterManager"))
+			{
+				constructor = Class.forName("it.cybion.influencers.crawler.filtering.topologybased."+filterManagerName).getConstructor(Float.class);
+				filterManger = (FilterManager) constructor.newInstance((Float)parameterName2ParameterValue.get("inDegreePercentageThreshold"));
+			}
+			else if(filterManagerName.equals("OrFilterManager"))
+			{
+				constructor = Class.forName("it.cybion.influencers.crawler.filtering.aggregation."+filterManagerName).getConstructor(List.class);
+				List<FilterManagerDescription> filterManagersDescriptions = 
+							(List<FilterManagerDescription>)parameterName2ParameterValue.get("filterManagersDescriptions");
+				List<FilterManager> orFilterManagers = new ArrayList<FilterManager>();
+				for (FilterManagerDescription filterManagerDescription : filterManagersDescriptions)
+					orFilterManagers.add(getFilterManagerFromDescription(filterManagerDescription));
+				filterManger = (FilterManager) constructor.newInstance(orFilterManagers);
+			}
+			else if(filterManagerName.equals("LanguageDetectionFilterManager"))
+			{
+				constructor = Class.forName("it.cybion.influencers.crawler.filtering.language."+filterManagerName).getConstructor(String.class, String.class);					
+				filterManger = (FilterManager) constructor.newInstance(
 											(Float)parameterName2ParameterValue.get("languageProfilesDir"),
 											(Float)parameterName2ParameterValue.get("language"));
-				default:
-					logger.info("Sorry, I don't know any filter with this name: "+filterManagerName);
-					System.exit(0);
-					
+			}
+			else
+			{
+				logger.info("Sorry, I don't know any filter with this name: "+filterManagerName);
+				System.exit(0);
 			}
 		}
-		catch (NoSuchMethodException | SecurityException| 
-			   ClassNotFoundException | InstantiationException | 
-			   IllegalAccessException | IllegalArgumentException | 
-			   InvocationTargetException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 			System.exit(0);

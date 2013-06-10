@@ -1,10 +1,12 @@
-package it.cybion.influence.ranking;
+package it.cybion.influencers.ranking;
 
-import it.cybion.influence.ranking.topic.TopicScorer;
-import it.cybion.influence.ranking.topic.dictionary.DictionaryTopicScorer;
-import it.cybion.influence.ranking.utils.ListFileReader;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.utils.CalendarManager;
+import it.cybion.influencers.ranking.RankedUser;
+import it.cybion.influencers.ranking.RankingCalculator;
+import it.cybion.influencers.ranking.topic.TopicScorer;
+import it.cybion.influencers.ranking.topic.dictionary.DictionaryTopicScorer;
+import it.cybion.influencers.ranking.utils.ListFileReader;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;

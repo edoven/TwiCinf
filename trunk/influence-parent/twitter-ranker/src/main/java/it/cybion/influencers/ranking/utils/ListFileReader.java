@@ -1,5 +1,7 @@
-package it.cybion.influence.ranking.utils;
+package it.cybion.influencers.ranking.utils;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,14 +23,15 @@ public class ListFileReader
 		Path path = Paths.get(filePath);
 		List<Long> longs = new ArrayList<Long>();
 		Long currentLong;
-	    try (Scanner scanner =  new Scanner(path, "UTF-8"))
+		Scanner scanner;
+	    try
 	    {
-	      while (scanner.hasNextLine())
-	      {
-	    	  currentLong = Long.parseLong(scanner.nextLine());
-	    	  longs.add(currentLong);
-	      }
-	    	   
+	    	scanner =  new Scanner(path, "UTF-8");
+	    	while (scanner.hasNextLine())
+	    	{
+	    		currentLong = Long.parseLong(scanner.nextLine());
+	    		longs.add(currentLong);
+	    	}	    	   
 	    }
 		catch (IOException e)
 		{

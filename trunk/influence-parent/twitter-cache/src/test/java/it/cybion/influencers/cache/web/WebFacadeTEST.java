@@ -48,12 +48,12 @@ public class WebFacadeTEST
 		userTokens.add(userToken1);
 		Token userToken2 = new Token("/home/godzy/tokens/token2.properties");
 		userTokens.add(userToken2);
-		Token userToken3 = new Token("/home/godzy/tokens/token3.properties");
-		userTokens.add(userToken3);
-		Token userToken4 = new Token("/home/godzy/tokens/token4.properties");
-		userTokens.add(userToken4);
-		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
-		userTokens.add(userToken5);
+//		Token userToken3 = new Token("/home/godzy/tokens/token3.properties");
+//		userTokens.add(userToken3);
+//		Token userToken4 = new Token("/home/godzy/tokens/token4.properties");
+//		userTokens.add(userToken4);
+//		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
+//		userTokens.add(userToken5);
 		
 		webFacade = WebFacade.getInstance(applicationToken, userTokens);
 	}

@@ -1,6 +1,6 @@
-package it.cybion.influence.ranking.utils;
+package it.cybion.influencers.ranking.utils;
 
-import it.cybion.influence.ranking.model.Tweet;
+import it.cybion.influencers.ranking.model.Tweet;
 
 import java.util.ArrayList;
 import java.util.List;

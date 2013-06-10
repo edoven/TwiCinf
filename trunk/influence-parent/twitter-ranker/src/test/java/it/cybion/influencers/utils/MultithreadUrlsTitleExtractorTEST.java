@@ -1,7 +1,7 @@
 package it.cybion.influencers.utils;
 
 
-import it.cybion.influence.ranking.utils.urlsexpansion.MultithreadUrlsTitleExtractor;
+import it.cybion.influencers.ranking.utils.urlsexpansion.MultithreadUrlsTitleExtractor;
 
 import java.util.ArrayList;
 import java.util.List;

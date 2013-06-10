@@ -1,4 +1,4 @@
-package it.cybion.influence.ranking.topic;
+package it.cybion.influencers.ranking.topic;
 
 public interface TopicScorer
 {

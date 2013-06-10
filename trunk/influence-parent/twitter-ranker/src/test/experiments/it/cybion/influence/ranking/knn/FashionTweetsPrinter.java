@@ -1,10 +1,10 @@
 package it.cybion.influence.ranking.knn;
 
-import it.cybion.influence.ranking.model.Tweet;
-import it.cybion.influence.ranking.topic.knn.KnnTopicScorer;
-import it.cybion.influence.ranking.utils.TweetsDeserializer;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.ranking.model.Tweet;
+import it.cybion.influencers.ranking.topic.knn.KnnTopicScorer;
+import it.cybion.influencers.ranking.utils.TweetsDeserializer;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -116,7 +116,7 @@ public class FashionTweetsPrinter
 			fashionTweets.addAll(getUrlsEnrichedTweetsTexts(15170087, twitterCache));
 			fashionTweets.addAll(getUrlsEnrichedTweetsTexts(14241704, twitterCache));
 		}
-		catch (TwitterException | ProtectedUserException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}	
@@ -154,7 +154,7 @@ public class FashionTweetsPrinter
 			technologyTweets.addAll(getUrlsEnrichedTweetsTexts(25911549, twitterCache));
 			technologyTweets.addAll(getUrlsEnrichedTweetsTexts(60308942, twitterCache));
 		}
-		catch (TwitterException | ProtectedUserException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}	
