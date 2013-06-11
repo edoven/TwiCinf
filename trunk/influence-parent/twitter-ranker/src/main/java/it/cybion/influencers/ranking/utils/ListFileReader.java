@@ -1,10 +1,7 @@
 package it.cybion.influencers.ranking.utils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -20,13 +17,12 @@ public class ListFileReader
 	
 	public static List<Long> readLongListFile(String filePath)
 	{
-		Path path = Paths.get(filePath);
 		List<Long> longs = new ArrayList<Long>();
 		Long currentLong;
-		Scanner scanner;
+		Scanner scanner = null;
 	    try
 	    {
-	    	scanner =  new Scanner(path, "UTF-8");
+	    	scanner = new Scanner(new File(filePath), "UTF-8");
 	    	while (scanner.hasNextLine())
 	    	{
 	    		currentLong = Long.parseLong(scanner.nextLine());
@@ -38,6 +34,8 @@ public class ListFileReader
 			e.printStackTrace();
 			System.exit(0);
 		}
+	    if (scanner!=null)
+	    	scanner.close();
 	    return longs;
 	}
 }
