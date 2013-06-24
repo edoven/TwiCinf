@@ -41,6 +41,7 @@ public class Token
 
 	private Token buildTokenFromFile(String filePath)
 	{
+        //TODO use getResourceAsStream
 		Properties properties = new Properties();
 		try
 		{

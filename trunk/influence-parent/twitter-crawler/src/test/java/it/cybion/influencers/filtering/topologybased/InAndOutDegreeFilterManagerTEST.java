@@ -34,6 +34,7 @@ public class InAndOutDegreeFilterManagerTEST
 	
 	private static TwitterCache getTwitterCache() throws UnknownHostException
 	{
+        //TODO remove absolute path
 		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.properties");
 		List<Token> userTokens = new ArrayList<Token>();
 		Token userToken0 = new Token("/home/godzy/tokens/token0.properties");
