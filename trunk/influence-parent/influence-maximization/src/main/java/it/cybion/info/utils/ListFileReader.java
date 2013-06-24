@@ -21,9 +21,11 @@ public class ListFileReader
 		Path path = Paths.get(filePath);
 		List<Long> longs = new ArrayList<Long>();
 		Long currentLong;
-	    try (Scanner scanner =  new Scanner(path, "UTF-8"))
+        Scanner scanner = null;
+        try
 	    {
-	      while (scanner.hasNextLine())
+            scanner =  new Scanner(path, "UTF-8");
+            while (scanner.hasNextLine())
 	      {
 	    	  currentLong = Long.parseLong(scanner.nextLine());
 	    	  longs.add(currentLong);
@@ -33,8 +35,13 @@ public class ListFileReader
 		catch (IOException e)
 		{
 			e.printStackTrace();
+            //TODO exit -1?
 			System.exit(0);
-		}
+		} finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
 	    return longs;
 	}
 }
