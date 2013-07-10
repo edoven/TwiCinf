@@ -18,14 +18,14 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
-public class UsersPersistanceFacade
+public class UsersPersistenceFacade
 {
-	private final Logger logger = Logger.getLogger(UsersPersistanceFacade.class);
+	private static final Logger LOGGER = Logger.getLogger(UsersPersistenceFacade.class);
 	
 	
 	private DBCollection userCollection;
 	
-	public UsersPersistanceFacade(DBCollection userCollection)
+	public UsersPersistenceFacade(DBCollection userCollection)
 	{
 		this.userCollection = userCollection;
 	}
@@ -162,7 +162,7 @@ public class UsersPersistanceFacade
 	
 	public void putFollowers(Long userId, List<Long> followersIds) throws UserNotPresentException
 	{
-		logger.info("writing " + followersIds.size() + " followers for user with id=" + userId);
+		LOGGER.info("writing " + followersIds.size() + " followers for user with id=" + userId);
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		user.put("followers", followersIds);
@@ -178,7 +178,7 @@ public class UsersPersistanceFacade
 	
 	public void putFriends(Long userId, List<Long> friendsIds) throws UserNotPresentException
 	{
-		logger.info("writing " + friendsIds.size() + " friends for user with id=" + userId);
+		LOGGER.info("writing " + friendsIds.size() + " friends for user with id=" + userId);
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		user.put("friends", friendsIds);

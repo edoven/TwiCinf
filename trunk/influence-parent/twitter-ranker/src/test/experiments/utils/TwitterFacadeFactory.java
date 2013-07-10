@@ -2,7 +2,8 @@ package utils;
 
 
 import it.cybion.influencers.cache.TwitterCache;
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistenceFacade;
+import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
 
@@ -32,8 +33,9 @@ public class TwitterFacadeFactory
 		for (int i = 0; i < tokens.length; i++)
 			userTokens.add(new Token(tokens[i]));
 		WebFacade twitterWebFacade = WebFacade.getInstance(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = PersistanceFacade.getInstance(mongoDbHost, mongoDbTwitterDb);
-		TwitterCache twitterFacade = TwitterCache.getInstance(twitterWebFacade, persistanceFacade);
+		PersistenceFacade persistenceFacade = PersistenceFacade.getInstance(mongoDbHost,
+                mongoDbTwitterDb);
+		TwitterCache twitterFacade = TwitterCache.getInstance(twitterWebFacade, persistenceFacade);
 		return twitterFacade;
 	}
 
@@ -44,8 +46,9 @@ public class TwitterFacadeFactory
 		for (int i = 0; i < tokens.length; i++)
 			userTokens.add(new Token(tokens[i]));
 		WebFacade twitterWebFacade = WebFacade.getInstance(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = PersistanceFacade.getInstance(mongoDbHost, mongoDbTestDb);
-		TwitterCache twitterFacade = TwitterCache.getInstance(twitterWebFacade, persistanceFacade);
+		PersistenceFacade persistenceFacade = PersistenceFacade.getInstance(mongoDbHost,
+                mongoDbTestDb);
+		TwitterCache twitterFacade = TwitterCache.getInstance(twitterWebFacade, persistenceFacade);
 		return twitterFacade;
 	}
 }

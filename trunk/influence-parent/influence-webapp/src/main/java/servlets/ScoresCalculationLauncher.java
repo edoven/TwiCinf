@@ -1,11 +1,12 @@
 package servlets;
 
+import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.ranking.RankedUser;
 import it.cybion.influencers.ranking.RankingCalculator;
 import it.cybion.influencers.ranking.topic.TopicScorer;
 import it.cybion.influencers.ranking.topic.knn.KnnTopicScorer;
 import it.cybion.influencers.cache.TwitterCache;
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.utils.CalendarManager;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
@@ -170,7 +171,8 @@ public class ScoresCalculationLauncher extends HttpServlet {
 		
 		String mongodbHost = properties.getProperty("mongodb_host");
 		String mongodbTwitterDb = properties.getProperty("mongodb_db");
-		PersistanceFacade persistanceFacade = PersistanceFacade.getInstance(mongodbHost, mongodbTwitterDb);
+		PersistenceFacade persistenceFacade = PersistenceFacade.getInstance(mongodbHost,
+                mongodbTwitterDb);
 
 		String applicationTokenPath = properties.getProperty("application_token_path");
 		Token applicationToken = new Token(applicationTokenPath);	
@@ -184,7 +186,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
 		}
 		WebFacade webFacade = WebFacade.getInstance(applicationToken, userTokens);
 			
-		return TwitterCache.getInstance(webFacade, persistanceFacade);		
+		return TwitterCache.getInstance(webFacade, persistenceFacade);
 	}
 	
 	private Properties getPropertiesFromFile(String filePath)

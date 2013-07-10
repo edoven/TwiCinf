@@ -20,13 +20,13 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
-public class TweetsPersistanceFacade
+public class TweetsPersistenceFacade
 {
-	private final Logger logger = Logger.getLogger(TweetsPersistanceFacade.class);
+	private static final Logger LOGGER = Logger.getLogger(TweetsPersistenceFacade.class);
 	
 	private DBCollection tweetsCollection;
 	
-	public TweetsPersistanceFacade(DBCollection tweetsCollection)
+	public TweetsPersistenceFacade(DBCollection tweetsCollection)
 	{
 		this.tweetsCollection = tweetsCollection;
 	}
@@ -86,16 +86,18 @@ public class TweetsPersistanceFacade
 			if (id instanceof Long)
 				tweetId = (Long) id;
 			else
-				if (id instanceof Integer)
+				if (id instanceof Integer) {
 					tweetId = new Long((Integer) id);
+                }
 				else
 				{
-					logger.info("problem with twitter id "+id);
+					LOGGER.error("problem with twitter id " + id);
 					System.exit(0);
 				}
 		} catch (ClassCastException e)
 		{
-			logger.info("ERROR: problem extracting id from " + tweetToInsertJson);
+			LOGGER.error(
+                    "ERROR: problem extracting id from " + tweetToInsertJson + " " + e.getMessage());
 			return;
 		}
 		String tweetJson = getTweet(tweetId);

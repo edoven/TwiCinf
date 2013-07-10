@@ -1,7 +1,7 @@
 package it.cybion.influencers.cache.persistance;
 
 
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
@@ -33,25 +33,25 @@ public class PersistanceFacadeTEST
 
 	private static final Logger logger = Logger.getLogger(PersistanceFacadeTEST.class);
 
-	private PersistanceFacade persistanceFacade;
+	private PersistenceFacade persistenceFacade;
 
 	@BeforeClass
 	public void init() throws UnknownHostException
 	{
-		persistanceFacade = PersistanceFacade.getInstance("localhost", "testdb");
+		persistenceFacade = PersistenceFacade.getInstance("localhost", "testdb");
 	}
 
 	@Test(enabled = true)
 	public void insertionAndRetrivalTEST() throws UnknownHostException, UserNotProfileEnrichedException, UserNotPresentException
 	{
 		String originalUserJson = "{\"id\": 425699035,\"name\": \"PerugiaToday\",\"screenName\": \"PerugiaToday\",\"location\": \"Perugia\",\"description\": \"sono fatto cosi e cosa\",\"isContributorsEnabled\": false,\"profileImageUrl\": \"http://a0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"profileImageUrlHttps\": \"https://si0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"url\": \"http://www.perugiatoday.it/\",\"isProtected\": false,\"followersCount\": 123,\"profileBackgroundColor\": \"C0DEED\",\"profileTextColor\": \"333333\",\"profileLinkColor\": \"0084B4\",\"profileSidebarFillColor\": \"DDEEF6\",\"profileSidebarBorderColor\": \"C0DEED\",\"profileUseBackgroundImage\": true,\"showAllInlineMedia\": false,\"friendsCount\": 93,\"createdAt\": \"Dec 1, 2011 10:49:25 AM\",\"favouritesCount\": 0,\"utcOffset\": -1,\"profileBackgroundImageUrl\": \"http://a0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundImageUrlHttps\": \"https://si0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundTiled\": false,\"lang\": \"it\",\"statusesCount\": 996,\"isGeoEnabled\": false,\"isVerified\": false,\"translator\": false,\"listedCount\": 3,\"isFollowRequestSent\": false}";
-		persistanceFacade.putUser(originalUserJson);
-		String retrievedUserJson = persistanceFacade.getUser(425699035l);
-		persistanceFacade.removeUser(425699035l);
+		persistenceFacade.putUser(originalUserJson);
+		String retrievedUserJson = persistenceFacade.getUser(425699035l);
+		persistenceFacade.removeUser(425699035l);
 
 		try
 		{
-			persistanceFacade.getDescription(425699035l);
+			persistenceFacade.getDescription(425699035l);
 		} catch (UserNotPresentException e)
 		{
 			assertEquals(true, true);
@@ -77,16 +77,16 @@ public class PersistanceFacadeTEST
 		logger.info("==1==");
 		int id = 1;
 		String userJson = "{\"id\": " + id + "}";
-		persistanceFacade.putUser(userJson);
-		String retrievedUserJson = persistanceFacade.getUser(new Long(id));
+		persistenceFacade.putUser(userJson);
+		String retrievedUserJson = persistenceFacade.getUser(new Long(id));
 		DBObject retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		logger.info(retrievedUser);
 		Assert.assertEquals(retrievedUser.get("id"), id);
 
 		logger.info("==2==");
 		userJson = "{\"id\": " + id + " ,\"name\": \"Bob Dole\"}";
-		persistanceFacade.putUser(userJson);
-		retrievedUserJson = persistanceFacade.getUser(new Long(id));
+		persistenceFacade.putUser(userJson);
+		retrievedUserJson = persistenceFacade.getUser(new Long(id));
 		retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		logger.info(retrievedUser);
 		Assert.assertEquals(retrievedUser.get("id"), id);
@@ -96,8 +96,8 @@ public class PersistanceFacadeTEST
 		logger.info("==3==");
 		// now let's check if the field "name" remains untouched
 		userJson = "{\"id\": " + id + "}";
-		persistanceFacade.putUser(userJson);
-		retrievedUserJson = persistanceFacade.getUser(new Long(id));
+		persistenceFacade.putUser(userJson);
+		retrievedUserJson = persistenceFacade.getUser(new Long(id));
 		retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		logger.info(retrievedUser);
 		Assert.assertEquals(retrievedUser.get("id"), id);
@@ -105,7 +105,7 @@ public class PersistanceFacadeTEST
 		Assert.assertNotNull(retrievedUser.get("name"));
 		Assert.assertEquals(retrievedUser.get("name"), "Bob Dole");
 
-		persistanceFacade.removeUser((long) id);
+		persistenceFacade.removeUser((long) id);
 
 	}
 
@@ -125,23 +125,23 @@ public class PersistanceFacadeTEST
 		Long friendThreeId = 2222l;
 		friendsIds.add(friendThreeId);
 		// user insertion
-		persistanceFacade.putUser(user.toString());
+		persistenceFacade.putUser(user.toString());
 		try
 		{
-			persistanceFacade.getUser(userId);
+			persistenceFacade.getUser(userId);
 			Assert.assertTrue(true);
 		} catch (UserNotPresentException e)
 		{
 			Assert.assertTrue(false);
 		}
 		// friends insertion
-		persistanceFacade.putFriends(userId, friendsIds);
+		persistenceFacade.putFriends(userId, friendsIds);
 		// check if all friends are inserted
 		for (Long friendId : friendsIds)
 		{
 			try
 			{
-				persistanceFacade.getUser(friendId);
+				persistenceFacade.getUser(friendId);
 				Assert.assertTrue(true);
 			} catch (UserNotPresentException e)
 			{
@@ -150,7 +150,7 @@ public class PersistanceFacadeTEST
 		}
 
 		// test getFriends
-		List<Long> retrievedFriendsIds = persistanceFacade.getFriends(userId);
+		List<Long> retrievedFriendsIds = persistenceFacade.getFriends(userId);
 		assertEquals(retrievedFriendsIds.size(), friendsIds.size());
 		for (long friendId : retrievedFriendsIds)
 		{
@@ -158,7 +158,7 @@ public class PersistanceFacadeTEST
 		}
 
 		// getting user (it should have been enriched)
-		String retrievedUserJson = persistanceFacade.getUser(userId);
+		String retrievedUserJson = persistenceFacade.getUser(userId);
 		DBObject retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		List<Integer> intList = (List<Integer>) retrievedUser.get("friends");
 		for (int intElement : intList)
@@ -168,10 +168,10 @@ public class PersistanceFacadeTEST
 		}
 		assertEquals(intList.size(), friendsIds.size());
 
-		persistanceFacade.removeUser(userId);
-		persistanceFacade.removeUser(friendOneId);
-		persistanceFacade.removeUser(friendTwoId);
-		persistanceFacade.removeUser(friendThreeId);
+		persistenceFacade.removeUser(userId);
+		persistenceFacade.removeUser(friendOneId);
+		persistenceFacade.removeUser(friendTwoId);
+		persistenceFacade.removeUser(friendThreeId);
 	}
 
 	@Test(enabled = true)
@@ -192,16 +192,16 @@ public class PersistanceFacadeTEST
 		Long followerThreeId = 2222l;
 		followersIds.add(followerThreeId);
 		// user insertion
-		persistanceFacade.putUser(user.toString());
+		persistenceFacade.putUser(user.toString());
 		// friends insertion
-		persistanceFacade.putFollowers(userId, followersIds);
+		persistenceFacade.putFollowers(userId, followersIds);
 
 		// getting friends
-		List<Long> retrievedFollowersIds = persistanceFacade.getFollowers(userId);
+		List<Long> retrievedFollowersIds = persistenceFacade.getFollowers(userId);
 		assertEquals(retrievedFollowersIds.size(), followersIds.size());
 
 		// getting user (it should have been enriched)
-		String retrievedUserJson = persistanceFacade.getUser(userId);
+		String retrievedUserJson = persistenceFacade.getUser(userId);
 		DBObject retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		List<Integer> intList = (List<Integer>) retrievedUser.get("followers");
 		for (Integer intElement : intList)
@@ -211,10 +211,10 @@ public class PersistanceFacadeTEST
 		}
 		assertEquals(intList.size(), followersIds.size());
 
-		persistanceFacade.removeUser(userId);
-		persistanceFacade.removeUser(followerOneId);
-		persistanceFacade.removeUser(followerTwoId);
-		persistanceFacade.removeUser(followerThreeId);
+		persistenceFacade.removeUser(userId);
+		persistenceFacade.removeUser(followerOneId);
+		persistenceFacade.removeUser(followerTwoId);
+		persistenceFacade.removeUser(followerThreeId);
 	}
 
 	@Test(enabled = true)
@@ -222,7 +222,7 @@ public class PersistanceFacadeTEST
 	{
 		try
 		{
-			persistanceFacade.getUser(534529555443l);
+			persistenceFacade.getUser(534529555443l);
 		} catch (UserNotPresentException e)
 		{
 			assertTrue(true);
@@ -235,50 +235,50 @@ public class PersistanceFacadeTEST
 	public void getStatus() throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userToInsertJson = "{\"name\": \"Twitter API\", \"id\": 6253282, \"description\":\"my description\", \"status\": {\"text\": \"this is my last status\"}}";
-		persistanceFacade.putUser(userToInsertJson);
-		String retrievedStatus = persistanceFacade.getStatus(6253282L);
+		persistenceFacade.putUser(userToInsertJson);
+		String retrievedStatus = persistenceFacade.getStatus(6253282L);
 		Assert.assertEquals("this is my last status", retrievedStatus);
-		persistanceFacade.removeUser(6253282L);
+		persistenceFacade.removeUser(6253282L);
 	}
 
 	@Test
 	public void getTweets()
 	{
 		String tweet = "{\"id\": 1, \"user\": {\"id\": 1 }, \"text\": \"text1\" }";
-		persistanceFacade.putTweet(tweet);
+		persistenceFacade.putTweet(tweet);
 		try
 		{
-			Assert.assertTrue(persistanceFacade.getUpTo200Tweets(1).size() > 0);
+			Assert.assertTrue(persistenceFacade.getUpTo200Tweets(1).size() > 0);
 		} catch (UserWithNoTweetsException e)
 		{
 			Assert.assertTrue(false);
 		}
-		persistanceFacade.removeTweet(1L);
+		persistenceFacade.removeTweet(1L);
 	}
 	
 	
 	@Test
 	public void getTweetsByDateWithCoveredRange()
 	{
-		persistanceFacade.removeTweet(1L);
-		persistanceFacade.removeTweet(2L);
-		persistanceFacade.removeTweet(3L);
-		persistanceFacade.removeTweet(4L);
+		persistenceFacade.removeTweet(1L);
+		persistenceFacade.removeTweet(2L);
+		persistenceFacade.removeTweet(3L);
+		persistenceFacade.removeTweet(4L);
 		String tweet1 = "{\"id\": 1, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Thu Jan 10 19:14:38 +0000 2013\"}";
 		String tweet2 = "{\"id\": 2, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Tue Jan 15 19:14:38 +0000 2013\"}";
 		String tweet3 = "{\"id\": 3, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Wed Jan 16 19:14:38 +0000 2013\"}";
 		String tweet4 = "{\"id\": 4, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Sun Jan 20 19:14:38 +0000 2013\"}";
-		persistanceFacade.putTweet(tweet1);
-		persistanceFacade.putTweet(tweet2);
-		persistanceFacade.putTweet(tweet3);
-		persistanceFacade.putTweet(tweet4);
+		persistenceFacade.putTweet(tweet1);
+		persistenceFacade.putTweet(tweet2);
+		persistenceFacade.putTweet(tweet3);
+		persistenceFacade.putTweet(tweet4);
 		
 		Date fromDate = CalendarManager.getDate(2013, 1, 12);
 		Date toDate   = CalendarManager.getDate(2013, 1, 18);
 		
 		try
 		{
-			List<String> tweets = persistanceFacade.getTweetsByDate(1, fromDate, toDate);
+			List<String> tweets = persistenceFacade.getTweetsByDate(1, fromDate, toDate);
 			Assert.assertTrue(tweets.size()==2);
 		}
 		catch (UserWithNoTweetsException e)
@@ -290,34 +290,34 @@ public class PersistanceFacadeTEST
 			Assert.assertTrue(false);
 		}
 			
-		persistanceFacade.removeTweet(1L);
-		persistanceFacade.removeTweet(2L);
-		persistanceFacade.removeTweet(3L);
-		persistanceFacade.removeTweet(4L);
+		persistenceFacade.removeTweet(1L);
+		persistenceFacade.removeTweet(2L);
+		persistenceFacade.removeTweet(3L);
+		persistenceFacade.removeTweet(4L);
 	}
 	
 	@Test
 	public void getTweetsByDateWithUncoveredRangeTooEarly()
 	{
-		persistanceFacade.removeTweet(1L);
-		persistanceFacade.removeTweet(2L);
-		persistanceFacade.removeTweet(3L);
-		persistanceFacade.removeTweet(4L);
+		persistenceFacade.removeTweet(1L);
+		persistenceFacade.removeTweet(2L);
+		persistenceFacade.removeTweet(3L);
+		persistenceFacade.removeTweet(4L);
 		String tweet1 = "{\"id\": 1, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Thu Jan 10 19:14:38 +0000 2013\"}";
 		String tweet2 = "{\"id\": 2, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Tue Jan 15 19:14:38 +0000 2013\"}";
 		String tweet3 = "{\"id\": 3, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Wed Jan 16 19:14:38 +0000 2013\"}";
 		String tweet4 = "{\"id\": 4, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Sun Jan 20 19:14:38 +0000 2013\"}";
-		persistanceFacade.putTweet(tweet1);
-		persistanceFacade.putTweet(tweet2);
-		persistanceFacade.putTweet(tweet3);
-		persistanceFacade.putTweet(tweet4);
+		persistenceFacade.putTweet(tweet1);
+		persistenceFacade.putTweet(tweet2);
+		persistenceFacade.putTweet(tweet3);
+		persistenceFacade.putTweet(tweet4);
 		
 		Date fromDate = CalendarManager.getDate(2013, 1, 1);
 		Date toDate   = CalendarManager.getDate(2013, 1, 18);
 		
 		try
 		{
-			List<String> tweets = persistanceFacade.getTweetsByDate(1, fromDate, toDate);
+			List<String> tweets = persistenceFacade.getTweetsByDate(1, fromDate, toDate);
 			Assert.assertTrue(false);
 		}
 		catch (UserWithNoTweetsException e)
@@ -329,34 +329,34 @@ public class PersistanceFacadeTEST
 			Assert.assertTrue(true);
 		}
 			
-		persistanceFacade.removeTweet(1L);
-		persistanceFacade.removeTweet(2L);
-		persistanceFacade.removeTweet(3L);
-		persistanceFacade.removeTweet(4L);
+		persistenceFacade.removeTweet(1L);
+		persistenceFacade.removeTweet(2L);
+		persistenceFacade.removeTweet(3L);
+		persistenceFacade.removeTweet(4L);
 	}
 	
 	@Test
 	public void getTweetsByDateWithUncoveredRangeTooLate()
 	{
-		persistanceFacade.removeTweet(1L);
-		persistanceFacade.removeTweet(2L);
-		persistanceFacade.removeTweet(3L);
-		persistanceFacade.removeTweet(4L);
+		persistenceFacade.removeTweet(1L);
+		persistenceFacade.removeTweet(2L);
+		persistenceFacade.removeTweet(3L);
+		persistenceFacade.removeTweet(4L);
 		String tweet1 = "{\"id\": 1, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Thu Jan 10 19:14:38 +0000 2013\"}";
 		String tweet2 = "{\"id\": 2, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Tue Jan 15 19:14:38 +0000 2013\"}";
 		String tweet3 = "{\"id\": 3, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Wed Jan 16 19:14:38 +0000 2013\"}";
 		String tweet4 = "{\"id\": 4, \"user\": {\"id\": 1 }, \"text\": \"text1\", \"created_at\": \"Sun Jan 20 19:14:38 +0000 2013\"}";
-		persistanceFacade.putTweet(tweet1);
-		persistanceFacade.putTweet(tweet2);
-		persistanceFacade.putTweet(tweet3);
-		persistanceFacade.putTweet(tweet4);
+		persistenceFacade.putTweet(tweet1);
+		persistenceFacade.putTweet(tweet2);
+		persistenceFacade.putTweet(tweet3);
+		persistenceFacade.putTweet(tweet4);
 		
 		Date fromDate = CalendarManager.getDate(2013, 1, 12);
 		Date toDate   = CalendarManager.getDate(2013, 1, 22);
 		
 		try
 		{
-			List<String> tweets = persistanceFacade.getTweetsByDate(1, fromDate, toDate);
+			List<String> tweets = persistenceFacade.getTweetsByDate(1, fromDate, toDate);
 			Assert.assertTrue(false);
 		}
 		catch (UserWithNoTweetsException e)
@@ -368,10 +368,10 @@ public class PersistanceFacadeTEST
 			Assert.assertTrue(true);
 		}
 			
-		persistanceFacade.removeTweet(1L);
-		persistanceFacade.removeTweet(2L);
-		persistanceFacade.removeTweet(3L);
-		persistanceFacade.removeTweet(4L);
+		persistenceFacade.removeTweet(1L);
+		persistenceFacade.removeTweet(2L);
+		persistenceFacade.removeTweet(3L);
+		persistenceFacade.removeTweet(4L);
 	}
 
 }

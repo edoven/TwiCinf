@@ -19,21 +19,21 @@ import com.mongodb.MongoClient;
 
 
 
-public class PersistanceFacade
+public class PersistenceFacade
 {
-	private static PersistanceFacade singletonInstance = null;
+	private static PersistenceFacade singletonInstance = null;
 	
-	private UsersPersistanceFacade usersMongodbPersistanceFacade;
-	private TweetsPersistanceFacade tweetsMongodbPersistanceFacade;
+	private UsersPersistenceFacade usersMongodbPersistanceFacade;
+	private TweetsPersistenceFacade tweetsMongodbPersistanceFacade;
 	
-	public static PersistanceFacade getInstance(String host, String database) throws UnknownHostException
+	public static PersistenceFacade getInstance(String host, String database) throws UnknownHostException
 	{
 		if (singletonInstance == null)
-			singletonInstance = new PersistanceFacade(host, database);
+			singletonInstance = new PersistenceFacade(host, database);
 		return singletonInstance;
 	}
 	
-	private PersistanceFacade(String host, String database) throws UnknownHostException
+	private PersistenceFacade(String host, String database) throws UnknownHostException
 	{
 		MongoClient mongoClient = new MongoClient(host);
 		DB db = mongoClient.getDB(database);
@@ -43,8 +43,8 @@ public class PersistanceFacade
 		tweetsCollection.createIndex(new BasicDBObject("id", 1));
 		tweetsCollection.createIndex(new BasicDBObject("user.id", 1));
 		
-		usersMongodbPersistanceFacade = new UsersPersistanceFacade(userCollection);
-		tweetsMongodbPersistanceFacade = new TweetsPersistanceFacade(tweetsCollection);
+		usersMongodbPersistanceFacade = new UsersPersistenceFacade(userCollection);
+		tweetsMongodbPersistanceFacade = new TweetsPersistenceFacade(tweetsCollection);
 	}
 
 

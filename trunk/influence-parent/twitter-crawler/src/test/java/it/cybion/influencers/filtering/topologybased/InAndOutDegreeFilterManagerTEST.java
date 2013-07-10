@@ -2,7 +2,8 @@ package it.cybion.influencers.filtering.topologybased;
 
 
 import it.cybion.influencers.cache.TwitterCache;
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistenceFacade;
+import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilterManager;
@@ -51,8 +52,8 @@ public class InAndOutDegreeFilterManagerTEST
 		userTokens.add(userToken5);
 		
 		WebFacade twitterWebFacade = WebFacade.getInstance(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = PersistanceFacade.getInstance("localhost", "testdb");
-		return TwitterCache.getInstance(twitterWebFacade, persistanceFacade);
+		PersistenceFacade persistenceFacade = PersistenceFacade.getInstance("localhost", "testdb");
+		return TwitterCache.getInstance(twitterWebFacade, persistenceFacade);
 	}
 
 	public static void main(String args[]) throws IOException, TwitterException

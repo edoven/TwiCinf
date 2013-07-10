@@ -1,7 +1,8 @@
 package it.cybion.influencers.cache;
 
 
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistenceFacade;
+import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.utils.CalendarManager;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
@@ -47,8 +48,8 @@ public class TwitterCacheTEST
 		userTokens.add(userToken5);
 		
 		WebFacade twitterWebFacade = WebFacade.getInstance(applicationToken, userTokens);
-		PersistanceFacade persistanceFacade = PersistanceFacade.getInstance("localhost", "testdb");
-		twitterFacade = TwitterCache.getInstance(twitterWebFacade, persistanceFacade);
+		PersistenceFacade persistenceFacade = PersistenceFacade.getInstance("localhost", "testdb");
+		twitterFacade = TwitterCache.getInstance(twitterWebFacade, persistenceFacade);
 	}
 
 	@Test(enabled = false)

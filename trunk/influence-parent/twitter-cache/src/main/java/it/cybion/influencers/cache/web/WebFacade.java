@@ -79,7 +79,7 @@ public class WebFacade
 						LOGGER.info("Problem in Thread.sleep");
 					}
 				}			
-				LOGGER.info("Can't create UserHandler for token = " + userToken + ". Skipped.");
+				LOGGER.warn("Can't create UserHandler for token = " + userToken + ". Skipped.");
 			}
 		}
 		LOGGER.info("UserHandlers created");
@@ -101,7 +101,7 @@ public class WebFacade
 			return getUserHandlerForRequest(requestName);
 		} catch (InterruptedException e1)
 		{
-			LOGGER.info("Problem in Thread.sleep().");
+			LOGGER.error("Problem in Thread.sleep().");
 			System.exit(0);
 			return null;
 		}
@@ -241,8 +241,6 @@ public class WebFacade
 		UserHandler userHandler = getUserHandlerForRequest("/users/lookup");
 		return (List<String>) userHandler.getUsersJsons(usersIds);
 	}
-	
-	
 	
 	public String getUserJson(long userId) throws TwitterException
 	{

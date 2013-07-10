@@ -1,7 +1,7 @@
 package it.cybion.influencers.cache;
 
 
-import it.cybion.influencers.cache.persistance.PersistanceFacade;
+import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
 import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
@@ -39,16 +39,16 @@ public class TwitterCache
 	private static TwitterCache singletonInstance = null;
 
 	WebFacade webFacade;
-	PersistanceFacade persistenceFacade;
+	PersistenceFacade persistenceFacade;
 	
-	public static TwitterCache getInstance(WebFacade twitterWebFacade, PersistanceFacade persistanceFacade)
+	public static TwitterCache getInstance(WebFacade twitterWebFacade, PersistenceFacade persistenceFacade)
 	{
 		if (singletonInstance == null)
-			singletonInstance = new TwitterCache(twitterWebFacade,persistanceFacade);
+			singletonInstance = new TwitterCache(twitterWebFacade, persistenceFacade);
 		return singletonInstance;
 	}
 
-	private TwitterCache(WebFacade twitterWebFacade, PersistanceFacade persistenceFacade)
+	private TwitterCache(WebFacade twitterWebFacade, PersistenceFacade persistenceFacade)
 	{
 		this.webFacade = twitterWebFacade;
 		this.persistenceFacade = persistenceFacade;

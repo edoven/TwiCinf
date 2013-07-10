@@ -20,7 +20,7 @@
         <description></description>
         <display-name>CrawlingLauncher</display-name>
         <servlet-name>CrawlingLauncher</servlet-name>
-        <servlet-class>serlvets.CrawlingLauncher</servlet-class>
+        <servlet-class>servlets.CrawlingLauncher</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -32,7 +32,7 @@
         <description></description>
         <display-name>ScoresCalculationLauncher</display-name>
         <servlet-name>ScoresCalculationLauncher</servlet-name>
-        <servlet-class>serlvets.ScoresCalculationLauncher</servlet-class>
+        <servlet-class>servlets.ScoresCalculationLauncher</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -44,7 +44,7 @@
         <description></description>
         <display-name>TopicCreator</display-name>
         <servlet-name>TopicCreator</servlet-name>
-        <servlet-class>serlvets.TopicCreator</servlet-class>
+        <servlet-class>servlets.TopicCreator</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -56,7 +56,7 @@
         <description></description>
         <display-name>TweetsListUploader</display-name>
         <servlet-name>TweetsListUploader</servlet-name>
-        <servlet-class>serlvets.TweetsListUploader</servlet-class>
+        <servlet-class>servlets.TweetsListUploader</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -68,7 +68,7 @@
         <description></description>
         <display-name>CrawlingConfigFileUploader</display-name>
         <servlet-name>CrawlingConfigFileUploader</servlet-name>
-        <servlet-class>serlvets.CrawlingConfigFileUploader</servlet-class>
+        <servlet-class>servlets.CrawlingConfigFileUploader</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -80,7 +80,7 @@
         <description></description>
         <display-name>FilesDeleter</display-name>
         <servlet-name>FilesDeleter</servlet-name>
-        <servlet-class>serlvets.FilesDeleter</servlet-class>
+        <servlet-class>servlets.FilesDeleter</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -92,7 +92,7 @@
         <description></description>
         <display-name>FileViewer</display-name>
         <servlet-name>FileViewer</servlet-name>
-        <servlet-class>serlvets.FileViewer</servlet-class>
+        <servlet-class>servlets.FileViewer</servlet-class>
     </servlet>
 
     <servlet-mapping>
