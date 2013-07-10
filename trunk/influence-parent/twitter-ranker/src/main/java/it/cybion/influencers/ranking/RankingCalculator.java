@@ -19,7 +19,7 @@ import twitter4j.TwitterException;
 
 public class RankingCalculator
 {
-	private static final Logger logger = Logger.getLogger(RankingCalculator.class);
+	private static final Logger LOGGER = Logger.getLogger(RankingCalculator.class);
 	
 	private TwitterCache twitterCache;
 	private List<RankedUser> rankedUsers = new ArrayList<RankedUser>();
@@ -38,22 +38,23 @@ public class RankingCalculator
 		int usersCount = 1;
 		for (Long userId : usersToRank)
 		{		
-			logger.info("");
-			logger.info("Calculating rank for user "+(usersCount++)+"/"+usersToRank.size()+" with id "+userId);
-			List<String> tweetsJsons = getTweets(userId, fromDate, toDate);
+			LOGGER.info("");
+			LOGGER.info("Calculating rank for user " + (usersCount++) + "/" + usersToRank.size() +
+                        " with id " + userId);
+			List<String> tweetsJsons = getTweetsJsons(userId, fromDate, toDate);
 			if (tweetsJsons.isEmpty())
 				continue;
 			
 			RankedUser rankedUser = calculateRankWithUrlsResolution(tweetsJsons);	;
 			rankedUsers.add(rankedUser);
 					
-			logger.info("user:"+rankedUser.getScreenName()+
-								" - followers:"+rankedUser.getFollowersCount()+
-								" - originalTweets:"+rankedUser.getOriginalTweets()+
-								" - topicTweetsCount:"+rankedUser.getTopicTweetsCount()+
-								" - topicTweetsRatio:"+rankedUser.getTopicTweetsRatio()+
-								" - meanRetweetCount:"+rankedUser.getMeanRetweetsCount()+
-								" - rank:"+rankedUser.getRank());			
+			LOGGER.info("user:" + rankedUser.getScreenName() +
+                        " - followers:" + rankedUser.getFollowersCount() +
+                        " - originalTweets:" + rankedUser.getOriginalTweets() +
+                        " - topicTweetsCount:" + rankedUser.getTopicTweetsCount() +
+                        " - topicTweetsRatio:" + rankedUser.getTopicTweetsRatio() +
+                        " - meanRetweetCount:" + rankedUser.getMeanRetweetsCount() +
+                        " - rank:" + rankedUser.getRank());
 		}
 		Collections.sort(rankedUsers);
 		return rankedUsers;
@@ -64,24 +65,26 @@ public class RankingCalculator
 		int usersCount = 1;
 		for (Long userId : usersToRank)
 		{		
-			logger.info("");
-			logger.info("Calculating rank for user "+(usersCount++)+"/"+usersToRank.size()+" with id "+userId);
-			List<String> tweetsJsons = getTweets(userId, fromDate, toDate);
+            LOGGER.info("Calculating rank for user "+(usersCount++)+"/"+usersToRank.size()+" with id "+userId);
+			List<String> tweetsJsons = getTweetsJsons(userId, fromDate, toDate);
 			if (tweetsJsons.isEmpty())
 			{
-				logger.info("User has 0 tweets, can't calculate rank!");
+				LOGGER.info("User has 0 tweets, can't calculate rank!");
 				continue;
 			}		
 			RankedUser rankedUser = calculateRankWithoutUrlsResolution(tweetsJsons);
-			rankedUsers.add(rankedUser);
-					
-			logger.info("user:"+rankedUser.getScreenName()+
-								" - followers:"+rankedUser.getFollowersCount()+
-								" - originalTweets:"+rankedUser.getOriginalTweets()+
-								" - topicTweetsCount:"+rankedUser.getTopicTweetsCount()+
-								" - topicTweetsRatio:"+rankedUser.getTopicTweetsRatio()+
-								" - meanRetweetCount:"+rankedUser.getMeanRetweetsCount()+
-								" - rank:"+rankedUser.getRank());			
+
+            if (rankedUser != null) {
+                rankedUsers.add(rankedUser);
+            }
+
+			LOGGER.info("user:" + rankedUser.getScreenName() +
+                        " - followers:" + rankedUser.getFollowersCount() +
+                        " - originalTweets:" + rankedUser.getOriginalTweets() +
+                        " - topicTweetsCount:" + rankedUser.getTopicTweetsCount() +
+                        " - topicTweetsRatio:" + rankedUser.getTopicTweetsRatio() +
+                        " - meanRetweetCount:" + rankedUser.getMeanRetweetsCount() +
+                        " - rank:" + rankedUser.getRank());
 		}
 		Collections.sort(rankedUsers);
 		return rankedUsers;
@@ -154,7 +157,7 @@ public class RankingCalculator
 		return originalTweets;
 	}
 
-	private List<String> getTweets(long userId, Date fromDate, Date toDate)
+	private List<String> getTweetsJsons(long userId, Date fromDate, Date toDate)
 	{		
 		List<String> tweetsJsons;
 		try
@@ -164,12 +167,12 @@ public class RankingCalculator
 		catch (TwitterException e)
 		{
 			e.printStackTrace();
-			logger.info("Error with user with id "+userId+". Skipped!");
+			LOGGER.warn("Error with user with id " + userId + ". Skipped!: " + e.getMessage());
 			tweetsJsons = Collections.emptyList();
 		}
 		catch (ProtectedUserException e)
 		{
-			logger.info("User with id "+userId+" is protected. Skipped!");
+			LOGGER.info("User with id " + userId + " is protected. Skipped!");
 			tweetsJsons = Collections.emptyList();
 		}	
 		return tweetsJsons;
