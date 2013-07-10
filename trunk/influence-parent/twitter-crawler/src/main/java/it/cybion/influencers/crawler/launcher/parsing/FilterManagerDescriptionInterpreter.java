@@ -1,16 +1,14 @@
 package it.cybion.influencers.crawler.launcher.parsing;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
 import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilterManager;
+import org.apache.log4j.Logger;
+
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 public class FilterManagerDescriptionInterpreter

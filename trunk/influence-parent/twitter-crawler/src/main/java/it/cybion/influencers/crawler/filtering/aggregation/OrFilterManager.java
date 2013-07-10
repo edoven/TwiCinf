@@ -1,14 +1,13 @@
 package it.cybion.influencers.crawler.filtering.aggregation;
 
+import it.cybion.influencers.cache.TwitterCache;
+import it.cybion.influencers.crawler.filtering.FilterManager;
+import it.cybion.influencers.crawler.graph.GraphFacade;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import it.cybion.influencers.crawler.filtering.FilterManager;
-import it.cybion.influencers.crawler.graph.GraphFacade;
-import it.cybion.influencers.cache.TwitterCache;
 
 
 			 

@@ -1,20 +1,18 @@
 package it.cybion.influencers.ranking;
 
-import it.cybion.influencers.ranking.model.Tweet;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.ranking.model.Tweet;
 import it.cybion.influencers.ranking.topic.TopicScorer;
 import it.cybion.influencers.ranking.utils.TweetsDeserializer;
 import it.cybion.influencers.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
+import org.apache.log4j.Logger;
+import twitter4j.TwitterException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import twitter4j.TwitterException;
 
 
 public class RankingCalculator

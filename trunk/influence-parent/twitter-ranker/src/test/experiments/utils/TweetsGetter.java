@@ -5,11 +5,10 @@ import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 import it.cybion.influencers.ranking.model.Tweet;
 import it.cybion.influencers.ranking.utils.TweetsDeserializer;
 import it.cybion.influencers.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
+import twitter4j.TwitterException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import twitter4j.TwitterException;
 
 public class TweetsGetter
 {

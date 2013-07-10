@@ -1,8 +1,6 @@
 package utils;
 
-
 import it.cybion.influencers.cache.TwitterCache;
-import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;

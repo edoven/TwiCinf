@@ -1,15 +1,14 @@
 package it.cybion.influencers.cache.model;
 
-import java.util.Date;
-
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-public class DeserializationTEST
+import java.util.Date;
+
+public class DeserializationTestCase
 {
 	@Test(enabled = true)
 	public void deserializeTweetDate()

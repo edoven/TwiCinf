@@ -1,10 +1,10 @@
 package it.cybion.influencers.cache.model;
 
-import java.util.Date;
-
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.Date;
 
 public class Tweet implements Comparable<Tweet>
 {

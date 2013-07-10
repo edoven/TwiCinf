@@ -1,35 +1,21 @@
 package it.cybion.influencers.cache.web;
 
-
-import static org.testng.AssertJUnit.assertTrue;
-import it.cybion.influencers.cache.model.Tweet;
-import it.cybion.influencers.cache.utils.CalendarManager;
-import it.cybion.influencers.cache.web.SearchedByDateTweetsResultContainer;
-import it.cybion.influencers.cache.web.Token;
-import it.cybion.influencers.cache.web.WebFacade;
-import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
-import twitter4j.TwitterException;
-
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import it.cybion.influencers.cache.model.Tweet;
+import it.cybion.influencers.cache.utils.CalendarManager;
+import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import twitter4j.TwitterException;
 
+import java.util.*;
 
+import static org.testng.AssertJUnit.assertTrue;
 
-
-public class WebFacadeTEST
+public class WebFacadeTestCase
 {
 
 //	private static final Logger logger = Logger.getLogger(Twitter4jWebFacadeTEST.class);
@@ -39,6 +25,7 @@ public class WebFacadeTEST
 	@BeforeClass
 	public void init()
 	{
+        //TODO remove absolute paths
 		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.properties");
 		List<Token> userTokens = new ArrayList<Token>();
 

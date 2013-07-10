@@ -1,23 +1,19 @@
 package it.cybion.influence.ranking.keywords;
 
-
+import com.google.gson.Gson;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 import it.cybion.influencers.ranking.model.Tweet;
 import it.cybion.influencers.ranking.utils.ListFileReader;
 import it.cybion.influencers.ranking.utils.urlsexpansion.UrlsExapandedTweetsTextExtractor;
+import org.apache.log4j.Logger;
+import twitter4j.TwitterException;
+import utils.TwitterFacadeFactory;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import com.google.gson.Gson;
-
-import twitter4j.TwitterException;
-import utils.TwitterFacadeFactory;
 
 public class LaPerlaTweetsPrinter
 {

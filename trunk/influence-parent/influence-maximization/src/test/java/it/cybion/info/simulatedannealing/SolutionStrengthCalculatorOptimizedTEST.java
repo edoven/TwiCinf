@@ -1,13 +1,12 @@
 package it.cybion.info.simulatedannealing;
 
 import it.cybion.info.simulatedannealing.strengthcalculator.SolutionStrengthCalculatorOptimized;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 

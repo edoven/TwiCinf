@@ -1,12 +1,10 @@
 package it.cybion.influencers.crawler.launcher;
 
-
 import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.launcher.parsing.ProperitesFileParser;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
-
-import org.apache.log4j.Logger;
 
 public class CommandLineCrawlerLauncher
 {

@@ -1,11 +1,10 @@
 package it.cybion.influencers.crawler.filtering.contentbased;
 
+import it.cybion.influencers.crawler.filtering.Filter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import it.cybion.influencers.crawler.filtering.Filter;
 
 
 

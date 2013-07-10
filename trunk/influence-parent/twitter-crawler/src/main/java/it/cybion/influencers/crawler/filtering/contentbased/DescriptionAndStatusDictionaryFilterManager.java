@@ -1,16 +1,13 @@
 package it.cybion.influencers.crawler.filtering.contentbased;
 
-
+import it.cybion.influencers.cache.TwitterCache;
+import it.cybion.influencers.crawler.filtering.FilterManager;
+import it.cybion.influencers.crawler.graph.GraphFacade;
 import org.apache.log4j.Logger;
-
 import twitter4j.TwitterException;
 
 import java.util.List;
 import java.util.Map;
-
-import it.cybion.influencers.crawler.filtering.FilterManager;
-import it.cybion.influencers.crawler.graph.GraphFacade;
-import it.cybion.influencers.cache.TwitterCache;
 
 
 

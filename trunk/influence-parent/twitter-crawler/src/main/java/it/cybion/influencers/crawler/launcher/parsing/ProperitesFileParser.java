@@ -1,9 +1,6 @@
 package it.cybion.influencers.crawler.launcher.parsing;
 
-
-
 import it.cybion.influencers.cache.TwitterCache;
-import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
@@ -14,19 +11,13 @@ import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
 import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
 import it.cybion.influencers.crawler.launcher.CrawlerFluentBuilder;
 import it.cybion.influencers.crawler.utils.FilesDeleter;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.log4j.Logger;
+import java.util.*;
 
 
 /*

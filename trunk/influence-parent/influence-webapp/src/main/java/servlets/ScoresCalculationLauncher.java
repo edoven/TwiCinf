@@ -1,36 +1,27 @@
 package servlets;
 
-import it.cybion.influencers.cache.persistance.PersistenceFacade;
-import it.cybion.influencers.ranking.RankedUser;
-import it.cybion.influencers.ranking.RankingCalculator;
-import it.cybion.influencers.ranking.topic.TopicScorer;
-import it.cybion.influencers.ranking.topic.knn.KnnTopicScorer;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.utils.CalendarManager;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
+import it.cybion.influencers.ranking.RankedUser;
+import it.cybion.influencers.ranking.RankingCalculator;
+import it.cybion.influencers.ranking.topic.TopicScorer;
+import it.cybion.influencers.ranking.topic.knn.KnnTopicScorer;
+import utils.HomePathGetter;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import utils.HomePathGetter;
 
 
 /**

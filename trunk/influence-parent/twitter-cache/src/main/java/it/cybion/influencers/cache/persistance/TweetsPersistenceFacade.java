@@ -1,16 +1,5 @@
 package it.cybion.influencers.cache.persistance;
 
-import it.cybion.influencers.cache.model.Tweet;
-import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
-import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +8,15 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import it.cybion.influencers.cache.model.Tweet;
+import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
+import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class TweetsPersistenceFacade
 {

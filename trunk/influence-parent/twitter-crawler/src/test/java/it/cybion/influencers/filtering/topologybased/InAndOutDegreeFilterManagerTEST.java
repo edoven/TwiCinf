@@ -1,22 +1,18 @@
 package it.cybion.influencers.filtering.topologybased;
 
-
 import it.cybion.influencers.cache.TwitterCache;
-import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
+import org.apache.log4j.Logger;
+import twitter4j.TwitterException;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import twitter4j.TwitterException;
 
 
 

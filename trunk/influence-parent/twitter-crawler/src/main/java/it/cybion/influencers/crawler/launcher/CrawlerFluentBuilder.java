@@ -1,13 +1,12 @@
 package it.cybion.influencers.crawler.launcher;
 
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
 import it.cybion.influencers.crawler.graph.GraphFacade;
-import it.cybion.influencers.cache.TwitterCache;
+import org.apache.log4j.Logger;
 
 import java.util.List;
-
-import org.apache.log4j.Logger;
 
 /*
  * This class is used to build InfluenceDiscoverer object with fluent-builder patter.

@@ -2,19 +2,16 @@ package it.cybion.influencers.ranking;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.utils.CalendarManager;
-import it.cybion.influencers.ranking.RankedUser;
-import it.cybion.influencers.ranking.RankingCalculator;
 import it.cybion.influencers.ranking.topic.TopicScorer;
 import it.cybion.influencers.ranking.topic.dictionary.DictionaryTopicScorer;
 import it.cybion.influencers.ranking.utils.ListFileReader;
+import twitter4j.TwitterException;
+import utils.TwitterFacadeFactory;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import twitter4j.TwitterException;
-import utils.TwitterFacadeFactory;
 
 public class LaPerlaRanking
 {

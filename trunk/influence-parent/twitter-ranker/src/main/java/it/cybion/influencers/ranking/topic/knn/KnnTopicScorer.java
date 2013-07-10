@@ -1,11 +1,6 @@
 package it.cybion.influencers.ranking.topic.knn;
 
 import it.cybion.influencers.ranking.topic.TopicScorer;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -23,6 +18,10 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.regex.Pattern;
 
 
 public class KnnTopicScorer implements TopicScorer

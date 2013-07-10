@@ -1,11 +1,10 @@
 package it.cybion.influencers.cache.web;
 
+import org.apache.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import org.apache.log4j.Logger;
 
 /*
  * File format is (property-like):

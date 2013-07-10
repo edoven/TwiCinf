@@ -1,13 +1,11 @@
 package it.cybion.influencers.crawler.graph.indexes;
 
-
-import java.util.Iterator;
-
-import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
-
 import com.tinkerpop.blueprints.Index;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
+import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
+
+import java.util.Iterator;
 
 
 

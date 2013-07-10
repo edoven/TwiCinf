@@ -1,29 +1,16 @@
 package it.cybion.influencers.cache;
 
-
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
-import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
+import it.cybion.influencers.cache.persistance.exceptions.*;
 import it.cybion.influencers.cache.web.SearchedByDateTweetsResultContainer;
 import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
-
 import twitter4j.TwitterException;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import java.util.*;
 
 
 

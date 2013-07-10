@@ -1,22 +1,20 @@
 package it.cybion.influencers.cache.persistance;
 
-import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
+import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
+import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
+import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class UsersPersistenceFacade
 {

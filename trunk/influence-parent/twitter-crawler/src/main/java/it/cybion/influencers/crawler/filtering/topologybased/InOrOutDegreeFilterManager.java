@@ -1,14 +1,12 @@
 package it.cybion.influencers.crawler.filtering.topologybased;
 
+import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
 
 
 

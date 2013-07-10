@@ -1,11 +1,10 @@
 package it.cybion.influencers.ranking;
 
 import it.cybion.influencers.cache.TwitterCache;
+import twitter4j.TwitterException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import twitter4j.TwitterException;
 
 public class UsersSampling
 {

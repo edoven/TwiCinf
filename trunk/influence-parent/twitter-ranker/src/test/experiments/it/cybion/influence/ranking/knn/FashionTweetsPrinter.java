@@ -5,14 +5,13 @@ import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 import it.cybion.influencers.ranking.model.Tweet;
 import it.cybion.influencers.ranking.topic.knn.KnnTopicScorer;
 import it.cybion.influencers.ranking.utils.TweetsDeserializer;
+import twitter4j.TwitterException;
+import utils.TwitterFacadeFactory;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import twitter4j.TwitterException;
-import utils.TwitterFacadeFactory;
 
 public class FashionTweetsPrinter
 {

@@ -1,21 +1,19 @@
 package it.cybion.influencers.graph;
 
-
 import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
 import it.cybion.influencers.crawler.graph.exceptions.InDegreeNotSetException;
 import it.cybion.influencers.crawler.graph.exceptions.OutDegreeNotSetException;
 import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
 import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
+import org.apache.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 
 

@@ -1,16 +1,14 @@
 package it.cybion.influencers.graph;
 
-
 import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
 import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
 import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
 import it.cybion.influencers.crawler.utils.FilesDeleter;
+import org.apache.log4j.Logger;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.log4j.Logger;
-import org.testng.annotations.Test;
 
 
 

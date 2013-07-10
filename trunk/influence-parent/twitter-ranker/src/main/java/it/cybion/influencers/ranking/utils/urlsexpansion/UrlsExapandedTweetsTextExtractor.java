@@ -1,16 +1,13 @@
 package it.cybion.influencers.ranking.utils.urlsexpansion;
 
-
-
+import it.cybion.influencers.ranking.RankingCalculator;
 import it.cybion.influencers.ranking.model.Tweet;
 import it.cybion.influencers.ranking.model.Url;
-import it.cybion.influencers.ranking.RankingCalculator;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
 
 
 

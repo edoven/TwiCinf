@@ -1,15 +1,12 @@
 package it.cybion.influencers.crawler.testframework;
 
+import it.cybion.influencers.cache.TwitterCache;
+import it.cybion.influencers.crawler.Crawler;
+import org.apache.log4j.Logger;
+import twitter4j.TwitterException;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import twitter4j.TwitterException;
-
-import it.cybion.influencers.crawler.Crawler;
-import it.cybion.influencers.cache.TwitterCache;
 
 
 

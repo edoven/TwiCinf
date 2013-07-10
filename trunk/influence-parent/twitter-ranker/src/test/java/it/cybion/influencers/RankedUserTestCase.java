@@ -1,13 +1,12 @@
 package it.cybion.influencers;
 
 import it.cybion.influencers.ranking.RankedUser;
+import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 
 /**
  * @author Matteo Moci ( matteo (dot) moci (at) gmail (dot) com )

@@ -1,19 +1,16 @@
 package it.cybion.influencers.crawler.filtering.topologybased;
 
-
+import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
 import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
-import it.cybion.influencers.cache.TwitterCache;
+import org.apache.log4j.Logger;
+import twitter4j.TwitterException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import twitter4j.TwitterException;
 
 /*
  * 

@@ -1,23 +1,20 @@
 package it.cybion.influencers.graph;
 
-
+import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.Vertex;
 import it.cybion.influencers.crawler.graph.Neo4jGraphFacade;
 import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
 import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
 import it.cybion.influencers.crawler.utils.FilesDeleter;
+import org.apache.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.testng.annotations.Test;
-import org.testng.Assert;
-
-import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.Vertex;
 
 
 

@@ -1,11 +1,10 @@
 package it.cybion.influencers.ranking.utils;
 
+import com.google.gson.Gson;
 import it.cybion.influencers.ranking.model.Tweet;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.Gson;
 
 public class TweetsDeserializer
 {

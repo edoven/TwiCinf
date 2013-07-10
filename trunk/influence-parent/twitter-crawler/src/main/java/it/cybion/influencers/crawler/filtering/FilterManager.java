@@ -1,8 +1,7 @@
 package it.cybion.influencers.crawler.filtering;
 
-
-import it.cybion.influencers.crawler.graph.GraphFacade;
 import it.cybion.influencers.cache.TwitterCache;
+import it.cybion.influencers.crawler.graph.GraphFacade;
 
 import java.util.List;
 

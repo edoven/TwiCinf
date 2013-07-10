@@ -1,21 +1,14 @@
 package it.cybion.influencers.cache.persistance;
 
-
-import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
-
-import java.net.UnknownHostException;
-import java.util.Date;
-import java.util.List;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
+import it.cybion.influencers.cache.persistance.exceptions.*;
+
+import java.net.UnknownHostException;
+import java.util.Date;
+import java.util.List;
 
 
 

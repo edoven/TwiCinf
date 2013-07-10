@@ -2,15 +2,10 @@ package experiments.laperla2800;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.info.utils.ListFileReader;
+import twitter4j.TwitterException;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import twitter4j.TwitterException;
+import java.util.*;
 
 public class LaPerla2800Top40
 {

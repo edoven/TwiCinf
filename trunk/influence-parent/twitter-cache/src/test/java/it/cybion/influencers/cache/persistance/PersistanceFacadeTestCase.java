@@ -1,37 +1,29 @@
 package it.cybion.influencers.cache.persistance;
 
-
-import it.cybion.influencers.cache.persistance.PersistenceFacade;
-import it.cybion.influencers.cache.persistance.exceptions.DataRangeNotCoveredException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotFollowersEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotFriendsEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
-import it.cybion.influencers.cache.persistance.exceptions.UserNotProfileEnrichedException;
-import it.cybion.influencers.cache.persistance.exceptions.UserWithNoTweetsException;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
+import it.cybion.influencers.cache.persistance.exceptions.*;
 import it.cybion.influencers.cache.utils.CalendarManager;
+import org.apache.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
 
-
-public class PersistanceFacadeTEST
+public class PersistanceFacadeTestCase
 {
 
-	private static final Logger logger = Logger.getLogger(PersistanceFacadeTEST.class);
+	private static final Logger logger = Logger.getLogger(PersistanceFacadeTestCase.class);
 
 	private PersistenceFacade persistenceFacade;
 

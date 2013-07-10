@@ -1,22 +1,18 @@
 package it.cybion.influencers.cache.web;
 
-
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.cybion.influencers.cache.model.Tweet;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import org.apache.log4j.Logger;
+import twitter4j.IDs;
+import twitter4j.TwitterException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import twitter4j.IDs;
-import twitter4j.TwitterException;
-
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 
 public class WebFacade

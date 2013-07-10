@@ -1,23 +1,20 @@
 package it.cybion.influencers.crawler.graph;
 
-
+import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
+import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
 import it.cybion.influencers.crawler.graph.indexes.GraphIndex;
 import it.cybion.influencers.crawler.graph.indexes.GraphIndexType;
 import it.cybion.influencers.crawler.graph.indexes.LuceneIndex;
 import it.cybion.influencers.crawler.graph.indexes.TreeMapIndex;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.TransactionalGraph.Conclusion;
-import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph;
 
 
 

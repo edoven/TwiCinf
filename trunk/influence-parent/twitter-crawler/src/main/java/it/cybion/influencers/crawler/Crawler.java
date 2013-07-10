@@ -1,18 +1,16 @@
 package it.cybion.influencers.crawler;
 
-
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.filtering.FilterManagerDescription;
 import it.cybion.influencers.crawler.graph.GraphFacade;
 import it.cybion.influencers.crawler.launcher.parsing.FilterManagerDescriptionInterpreter;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
 
 
 

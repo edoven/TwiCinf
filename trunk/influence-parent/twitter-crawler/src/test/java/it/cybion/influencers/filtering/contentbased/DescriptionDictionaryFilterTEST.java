@@ -1,14 +1,13 @@
 package it.cybion.influencers.filtering.contentbased;
 
-
 import it.cybion.influencers.crawler.filtering.contentbased.DescriptionAndStatusDictionaryFilter;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
 
 

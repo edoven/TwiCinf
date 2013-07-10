@@ -1,37 +1,34 @@
 package it.cybion.influencers.cache;
 
-
-import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.utils.CalendarManager;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import org.apache.log4j.Logger;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import twitter4j.TwitterException;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
-import twitter4j.TwitterException;
 
 
-
-public class TwitterCacheTEST
+public class TwitterCacheTestCase
 {
 
-	private static final Logger logger = Logger.getLogger(TwitterCacheTEST.class);
+	private static final Logger LOGGER = Logger.getLogger(TwitterCacheTestCase.class);
 
 	private TwitterCache twitterFacade;
 
 	@BeforeClass
 	public void init() throws UnknownHostException
 	{
+        //TODO remove absolute paths
 		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.properties");
 		List<Token> userTokens = new ArrayList<Token>();
 		Token userToken0 = new Token("/home/godzy/tokens/token0.properties");
@@ -56,55 +53,55 @@ public class TwitterCacheTEST
 	public void getUserTest() throws TwitterException
 	{
 		String user = twitterFacade.getDescription(14230524l);
-		logger.info("BEGIN_" + user + "_END");
+		LOGGER.info("BEGIN_" + user + "_END");
 		user = twitterFacade.getDescription(14230524l);
-		logger.info("BEGIN_" + user + "_END");
+		LOGGER.info("BEGIN_" + user + "_END");
 	}
 
 	@Test(enabled = false)
 	public void getFriends() throws TwitterException
 	{
 		List<Long> friendIds = twitterFacade.getFriends(253956088L);
-		logger.info(friendIds.size());
+		LOGGER.info(friendIds.size());
 
 		friendIds = twitterFacade.getFriends(253956088L);
-		logger.info("Friends number = " + friendIds.size());
+		LOGGER.info("Friends number = " + friendIds.size());
 	}
 
 	@Test(enabled = false)
 	public void getFollowers() throws TwitterException
 	{
 		List<Long> followersIds = twitterFacade.getFollowers(426724668l);
-		logger.info("Followers number = " + followersIds.size());
+		LOGGER.info("Followers number = " + followersIds.size());
 
 		followersIds = twitterFacade.getFollowers(887469007l);
-		logger.info("Followers number = " + followersIds.size());
+		LOGGER.info("Followers number = " + followersIds.size());
 	}
 
 	@Test(enabled = false)
 	public void testIfTheFollowersAreSavedInTheCache() throws TwitterException
 	{
 		List<Long> followersIds = twitterFacade.getFollowers(426724668l);
-		logger.info("Followers number = " + followersIds.size());
+		LOGGER.info("Followers number = " + followersIds.size());
 
 		followersIds = twitterFacade.getFollowers(426724668l);
-		logger.info("Followers number = " + followersIds.size());
+		LOGGER.info("Followers number = " + followersIds.size());
 
 		followersIds = twitterFacade.getFollowers(426724668l);
-		logger.info("Followers number = " + followersIds.size());
+		LOGGER.info("Followers number = " + followersIds.size());
 	}
 
 	@Test(enabled = false)
 	public void testIfTheFriendsAreSavedInTheCache() throws TwitterException
 	{
 		List<Long> friendIds = twitterFacade.getFriends(426724668l);
-		logger.info("Friends number = " + friendIds.size());
+		LOGGER.info("Friends number = " + friendIds.size());
 
 		friendIds = twitterFacade.getFriends(426724668l);
-		logger.info("Friends number = " + friendIds.size());
+		LOGGER.info("Friends number = " + friendIds.size());
 
 		friendIds = twitterFacade.getFriends(426724668l);
-		logger.info("Friends number = " + friendIds.size());
+		LOGGER.info("Friends number = " + friendIds.size());
 	}
 
 	@Test(enabled = false)
@@ -115,15 +112,15 @@ public class TwitterCacheTEST
 		ids.add(887469007l);
 		ids.add(14230524l);
 		// ids.add(43246534L);
-		logger.info(twitterFacade.getDescriptions(ids));
+		LOGGER.info(twitterFacade.getDescriptions(ids));
 	}
 
 	@Test(enabled = false)
 	public void getUpTo200TweetsTEST() throws TwitterException, ProtectedUserException
 	{
-		logger.info("--start--");
-		logger.info(twitterFacade.getLast200Tweets(887469007l));
-		logger.info("--end--");
+		LOGGER.info("--start--");
+		LOGGER.info(twitterFacade.getLast200Tweets(887469007l));
+		LOGGER.info("--end--");
 	}
 	
 	
@@ -158,7 +155,7 @@ public class TwitterCacheTEST
 			Assert.assertTrue(false);
 		}
 		Assert.assertTrue(true);		
-		logger.info(tweetJsons.size());
+		LOGGER.info(tweetJsons.size());
 		Assert.assertTrue(tweetJsons.size()>20);
 	}
 	

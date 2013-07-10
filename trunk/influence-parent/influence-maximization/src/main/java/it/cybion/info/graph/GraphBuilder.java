@@ -1,21 +1,18 @@
 package it.cybion.info.graph;
 
+import com.google.gson.Gson;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.TwitterFacadeFactory;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 import it.cybion.info.utils.SerializationManager;
+import org.apache.log4j.Logger;
+import twitter4j.TwitterException;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import twitter4j.TwitterException;
-
-import com.google.gson.Gson;
 
 
 public class GraphBuilder
