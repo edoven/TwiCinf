@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 
 public class WebFacade
 {
-	private final Logger logger = Logger.getLogger(WebFacade.class);
+	private static final Logger LOGGER = Logger.getLogger(WebFacade.class);
 	
 	private static WebFacade singletonInstance = null;
 	
@@ -59,7 +59,7 @@ public class WebFacade
 		userHandlers = new ArrayList<UserHandler>();
 		for (Token userToken : userTokens)
 		{
-			logger.info("Creating UserHandler");
+			LOGGER.info("Creating UserHandler");
 			for (int i = 0; i < 3; i++)
 			{ // 3 tries
 				try
@@ -69,19 +69,20 @@ public class WebFacade
 					break;
 				} catch (TwitterException e)
 				{
-					logger.info("Can't create UserHandler for token = " + userToken + ". Let's wait 1 min and then retry.");
+					LOGGER.info("Can't create UserHandler for token = " + userToken +
+                                ". Let's wait 1 min and then retry.");
 					try
 					{
 						Thread.sleep(60 * 1000);
 					} catch (InterruptedException e1)
 					{
-						logger.info("Problem in Thread.sleep");
+						LOGGER.info("Problem in Thread.sleep");
 					}
 				}			
-				logger.info("Can't create UserHandler for token = " + userToken + ". Skipped.");
+				LOGGER.info("Can't create UserHandler for token = " + userToken + ". Skipped.");
 			}
 		}
-		logger.info("UserHandlers created");
+		LOGGER.info("UserHandlers created");
 	}
 	
 	public UserHandler getUserHandlerForRequest(String requestName)
@@ -89,17 +90,18 @@ public class WebFacade
 		for (UserHandler userHandler : userHandlers)
 			if (userHandler.canMakeRequest(requestName))
 			{
-				logger.debug("userHandler.requestType2limit.get("+requestName+")="+userHandler.requestType2limit.get(requestName));
+				LOGGER.debug("userHandler.requestType2limit.get(" + requestName + ")=" +
+                             userHandler.requestType2limit.get(requestName));
 				return userHandler;
 			}
 		try
 		{
-			logger.info("All handlers have reached the limit, let's wait for " + WAIT_TIME + " min");
+			LOGGER.info("All handlers have reached the limit, let's wait for " + WAIT_TIME + " min");
 			Thread.sleep(WAIT_TIME * 60 * 1000);
 			return getUserHandlerForRequest(requestName);
 		} catch (InterruptedException e1)
 		{
-			logger.info("Problem in Thread.sleep().");
+			LOGGER.info("Problem in Thread.sleep().");
 			System.exit(0);
 			return null;
 		}
@@ -229,7 +231,7 @@ public class WebFacade
 	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException 
 	{
 		UserHandler userHandler = getUserHandlerForRequest("/statuses/user_timeline");
-		logger.info("Downloading 200 tweets for user with id:" + userId + " with maxid="+maxId);
+		LOGGER.info("Downloading 200 tweets for user with id:" + userId + " with maxid=" + maxId);
 		List<String> tweets = userHandler.getTweetsWithMaxId(userId, maxId);
 		return tweets;
 	}
@@ -256,7 +258,7 @@ public class WebFacade
 	
 	public List<String> getUsersJsons(List<Long> usersIds) throws TwitterException
 	{
-		logger.info("downloading " + usersIds.size() + " users profiles");
+		LOGGER.info("downloading " + usersIds.size() + " users profiles");
 		List<String> usersJsons = new ArrayList<String>();
 		int listSize = usersIds.size();
 		// logger.info("listSize="+listSize);
@@ -268,7 +270,8 @@ public class WebFacade
 		for (int i = 0; i < chunksCount; i++)
 		{
 			long[] chunk = getChunk(usersIds, 100, i);
-			logger.info("downloading chunk " + i + "/" + chunksCount);
+			LOGGER.info("downloading chunk " + i + "/" + chunksCount);
+            LOGGER.info("chunk contents: '" + chunk + "'");
 			List<String> chunkResult;
 			try
 			{
@@ -277,7 +280,7 @@ public class WebFacade
 			}
 			catch (TwitterException e)
 			{
-				logger.info("ERROR: problem with chuck, skipped!");
+				LOGGER.warn("problem with chunck while calling twitter, skipped!" + e.getMessage());
 			}
 			
 		}
