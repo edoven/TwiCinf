@@ -64,29 +64,33 @@ public class RankingCalculator
 	{
 		int usersCount = 1;
 		for (Long userId : usersToRank)
-		{		
+		{
+            LOGGER.info("INFO!!");
             LOGGER.info("Calculating rank for user "+(usersCount++)+"/"+usersToRank.size()+" with id "+userId);
 			List<String> tweetsJsons = getTweetsJsons(userId, fromDate, toDate);
 			if (tweetsJsons.isEmpty())
 			{
-				LOGGER.info("User has 0 tweets, can't calculate rank!");
+				LOGGER.warn("User has 0 tweets, can't calculate rank!");
 				continue;
 			}		
 			RankedUser rankedUser = calculateRankWithoutUrlsResolution(tweetsJsons);
 
             if (rankedUser != null) {
                 rankedUsers.add(rankedUser);
+                LOGGER.info("user:" + rankedUser.getScreenName() +
+                            " - followers:" + rankedUser.getFollowersCount() +
+                            " - originalTweets:" + rankedUser.getOriginalTweets() +
+                            " - topicTweetsCount:" + rankedUser.getTopicTweetsCount() +
+                            " - topicTweetsRatio:" + rankedUser.getTopicTweetsRatio() +
+                            " - meanRetweetCount:" + rankedUser.getMeanRetweetsCount() +
+                            " - rank:" + rankedUser.getRank());
+            } else {
+                LOGGER.warn("ranked user with userId '"+ userId +"' is null");
             }
 
-			LOGGER.info("user:" + rankedUser.getScreenName() +
-                        " - followers:" + rankedUser.getFollowersCount() +
-                        " - originalTweets:" + rankedUser.getOriginalTweets() +
-                        " - topicTweetsCount:" + rankedUser.getTopicTweetsCount() +
-                        " - topicTweetsRatio:" + rankedUser.getTopicTweetsRatio() +
-                        " - meanRetweetCount:" + rankedUser.getMeanRetweetsCount() +
-                        " - rank:" + rankedUser.getRank());
+
 		}
-		Collections.sort(rankedUsers);
+//		Collections.sort(rankedUsers);
 		return rankedUsers;
 	}
 		
@@ -172,7 +176,7 @@ public class RankingCalculator
 		}
 		catch (ProtectedUserException e)
 		{
-			LOGGER.info("User with id " + userId + " is protected. Skipped!");
+			LOGGER.warn("User with id " + userId + " is protected. Skipped!: " + e.getMessage() + "'");
 			tweetsJsons = Collections.emptyList();
 		}	
 		return tweetsJsons;

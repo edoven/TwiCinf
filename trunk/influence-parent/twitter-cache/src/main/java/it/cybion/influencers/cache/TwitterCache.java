@@ -34,12 +34,12 @@ import com.mongodb.util.JSON;
 
 public class TwitterCache
 {
-	private static final Logger logger = Logger.getLogger(TwitterCache.class);
+	private static final Logger LOGGER = Logger.getLogger(TwitterCache.class);
 	
 	private static TwitterCache singletonInstance = null;
 
 	WebFacade webFacade;
-	PersistanceFacade persistanceFacade;
+	PersistanceFacade persistenceFacade;
 	
 	public static TwitterCache getInstance(WebFacade twitterWebFacade, PersistanceFacade persistanceFacade)
 	{
@@ -48,10 +48,10 @@ public class TwitterCache
 		return singletonInstance;
 	}
 
-	private TwitterCache(WebFacade twitterWebFacade, PersistanceFacade persistanceFacade)
+	private TwitterCache(WebFacade twitterWebFacade, PersistanceFacade persistenceFacade)
 	{
 		this.webFacade = twitterWebFacade;
-		this.persistanceFacade = persistanceFacade;
+		this.persistenceFacade = persistenceFacade;
 	}
 	
 	public void donwloadUsersProfiles(List<Long> userIds) throws TwitterException
@@ -62,7 +62,7 @@ public class TwitterCache
 		{
 			try
 			{
-				persistanceFacade.getDescription(userId);
+				persistenceFacade.getDescription(userId);
 			} catch (UserNotPresentException e)
 			{
 				usersToDownload.add(userId);
@@ -71,30 +71,33 @@ public class TwitterCache
 				usersToDownload.add(userId);
 			}
 		}
-		logger.info("donwloadUsersProfiles - Downloading profiles for " + usersToDownload.size() + " users.");
+		LOGGER.info("donwloadUsersProfiles - Downloading profiles for " + usersToDownload.size() +
+                    " users.");
 		List<String> downloadedUsersJsons = webFacade.getUsersJsons(usersToDownload);
 		for (String userJson : downloadedUsersJsons)
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 	}
 
 	public String getDescription(Long userId) throws TwitterException
 	{
 		try
 		{
-			String description = persistanceFacade.getDescription(userId);
-			logger.debug("User with id " + userId + " is in the cache and has profile informations. Let's fetch it!");
+			String description = persistenceFacade.getDescription(userId);
+			LOGGER.debug("User with id " + userId +
+                         " is in the cache and has profile informations. Let's fetch it!");
 			return description;
 		} catch (UserNotPresentException e)
 		{
-			logger.debug("User with id " + userId + " not cached. Let's donwload it!");
+			LOGGER.debug("User with id " + userId + " not cached. Let's donwload it!");
 			String userJson = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 			return getDescription(userId);
 		} catch (UserNotProfileEnrichedException e)
 		{
-			logger.debug("User with id " + userId + " has no profile informations. Let's donwload it!");
+			LOGGER.debug(
+                    "User with id " + userId + " has no profile informations. Let's donwload it!");
 			String userJson = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 			return getDescription(userId);
 		}
 	}
@@ -107,7 +110,7 @@ public class TwitterCache
 		{
 			try
 			{
-				String description = persistanceFacade.getDescription(userId);
+				String description = persistenceFacade.getDescription(userId);
 				userToDescription.put(userId, description);
 			} catch (UserNotPresentException e)
 			{
@@ -119,7 +122,7 @@ public class TwitterCache
 		}
 		List<String> downloadedUsersJsons = webFacade.getUsersJsons(usersToDownload);
 		for (String userJson : downloadedUsersJsons)
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 		for (String donwloadedUserJson : downloadedUsersJsons)
 		{
 			/*
@@ -130,18 +133,20 @@ public class TwitterCache
 			long userId = new Long((Integer) downloadedUserObject.get("id"));
 			try
 			{
-				String description = persistanceFacade.getDescription(userId);
+				String description = persistenceFacade.getDescription(userId);
 				userToDescription.put(userId, description);
-			} catch (UserNotPresentException e)
-			{
-				logger.info("ERROR! User with id " + userId + " can't be added to caching system.");
-				System.exit(0);
-			} catch (UserNotProfileEnrichedException e)
-			{
-				logger.info("ERROR! User with id " + userId + " can't be added to caching system.");
-				System.exit(0);
-			}
-		}
+			} catch (UserNotPresentException e) {
+                LOGGER.error(
+                        "ERROR! User with id " + userId + " can't be added to caching system: '" +
+                        e.getMessage() + "'");
+                System.exit(0);
+            } catch (UserNotProfileEnrichedException e) {
+                LOGGER.error(
+                        "ERROR! User with id " + userId + " can't be added to caching system: '" +
+                        e.getMessage() + "'");
+                System.exit(0);
+            }
+        }
 		return userToDescription;
 	}
 
@@ -153,7 +158,7 @@ public class TwitterCache
 		{
 			try
 			{
-				String descriptionAndStatus = persistanceFacade.getDescriptionAndStatus(userId);
+				String descriptionAndStatus = persistenceFacade.getDescriptionAndStatus(userId);
 				user2DescriptionAndStatus.put(userId, descriptionAndStatus);
 			} catch (UserNotPresentException e)
 			{
@@ -165,7 +170,7 @@ public class TwitterCache
 		}
 		List<String> downloadedUsersJsons = webFacade.getUsersJsons(usersToDownload);
 		for (String userJson : downloadedUsersJsons)
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 		for (String donwloadedUserJson : downloadedUsersJsons)
 		{
 			/*
@@ -176,15 +181,15 @@ public class TwitterCache
 			long userId = new Long((Integer) downloadedUserObject.get("id"));
 			try
 			{
-				String descriptionAndStatus = persistanceFacade.getDescriptionAndStatus(userId);
+				String descriptionAndStatus = persistenceFacade.getDescriptionAndStatus(userId);
 				user2DescriptionAndStatus.put(userId, descriptionAndStatus);
 			} catch (UserNotPresentException e)
 			{
-				logger.info("ERROR! User with id " + userId + " can't be added to caching system.");
+				LOGGER.info("ERROR! User with id " + userId + " can't be added to caching system.");
 				System.exit(0);
 			} catch (UserNotProfileEnrichedException e)
 			{
-				logger.info("ERROR! User with id " + userId + " can't be added to caching system.");
+				LOGGER.info("ERROR! User with id " + userId + " can't be added to caching system.");
 				System.exit(0);
 			}
 		}
@@ -196,25 +201,28 @@ public class TwitterCache
 		List<Long> followers;
 		try
 		{
-			followers = persistanceFacade.getFollowers(userId);
-			logger.debug("User with id " + userId + " is already followers enriched. Let's fetch it from the cache.");
+			followers = persistenceFacade.getFollowers(userId);
+			LOGGER.debug("User with id " + userId +
+                         " is already followers enriched. Let's fetch it from the cache.");
 			return followers;
 		} catch (UserNotPresentException e)
 		{
-			logger.debug("User with id " + userId + " is not in the cache. It needs to be downloaded.");
+			LOGGER.debug(
+                    "User with id " + userId + " is not in the cache. It needs to be downloaded.");
 			String user = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(user);
+			persistenceFacade.putUser(user);
 			return getFollowers(userId);
 		} catch (UserNotFollowersEnrichedException e)
 		{
-			logger.debug("User with id=" + userId + " is in the cache but not followers-enriched. Followers have to be downloaded.");
+			LOGGER.debug("User with id=" + userId +
+                         " is in the cache but not followers-enriched. Followers have to be downloaded.");
 			followers = webFacade.getFollowersIds(userId);
 			try
 			{
-				persistanceFacade.putFollowers(userId, followers);
+				persistenceFacade.putFollowers(userId, followers);
 			} catch (UserNotPresentException e1)
 			{
-				logger.info("ERROR! User with id " + userId + " can't be added to caching system.");
+				LOGGER.info("ERROR! User with id " + userId + " can't be added to caching system.");
 				System.exit(0);
 			}
 			return getFollowers(userId);
@@ -225,20 +233,22 @@ public class TwitterCache
 	{
 		try
 		{
-			int followersCount = persistanceFacade.getFollowersCount(userId);
-			logger.debug("User with id " + userId + " is in the cache and has profile informations. Let's fetch it!");
+			int followersCount = persistenceFacade.getFollowersCount(userId);
+			LOGGER.debug("User with id " + userId +
+                         " is in the cache and has profile informations. Let's fetch it!");
 			return followersCount;
 		} catch (UserNotPresentException e)
 		{
-			logger.debug("User with id " + userId + " not cached. Let's donwload it!");
+			LOGGER.debug("User with id " + userId + " not cached. Let's donwload it!");
 			String userJson = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 			return getFollowersCount(userId);
 		} catch (UserNotProfileEnrichedException e)
 		{
-			logger.debug("User with id " + userId + " has no profile informations. Let's donwload it!");
+			LOGGER.debug(
+                    "User with id " + userId + " has no profile informations. Let's donwload it!");
 			String userJson = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 			return getFollowersCount(userId);
 		}
 	}
@@ -248,25 +258,28 @@ public class TwitterCache
 		List<Long> friends;
 		try
 		{
-			friends = persistanceFacade.getFriends(userId);
-			logger.debug("User with id " + userId + " is already friends enriched. Let's fetch it from the cache.");
+			friends = persistenceFacade.getFriends(userId);
+			LOGGER.debug("User with id " + userId +
+                         " is already friends enriched. Let's fetch it from the cache.");
 			return friends;
 		} catch (UserNotPresentException e)
 		{
-			logger.debug("User with id=" + userId + " is not in the cache. It has to be downloaded.");
+			LOGGER.debug(
+                    "User with id=" + userId + " is not in the cache. It has to be downloaded.");
 			String user = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(user);
+			persistenceFacade.putUser(user);
 			return getFriends(userId);
 		} catch (UserNotFriendsEnrichedException e)
 		{
-			logger.debug("User with id=" + userId + " is in the cache but not friends-enriched. Friends have to be downloaded.");
+			LOGGER.debug("User with id=" + userId +
+                         " is in the cache but not friends-enriched. Friends have to be downloaded.");
 			friends = webFacade.getFriendsIds(userId);
 			try
 			{
-				persistanceFacade.putFriends(userId, friends);
+				persistenceFacade.putFriends(userId, friends);
 			} catch (UserNotPresentException e1)
 			{
-				logger.debug("ERROR! User with id " + userId + " can't be added to caching system.");
+				LOGGER.debug("ERROR! User with id " + userId + " can't be added to caching system.");
 				System.exit(0);
 			}
 			return getFriends(userId);
@@ -277,20 +290,22 @@ public class TwitterCache
 	{
 		try
 		{
-			int friendsCount = persistanceFacade.getFriendsCount(userId);
-			logger.debug("User with id " + userId + " is in the cache and has profile informations. Let's fetch it!");
+			int friendsCount = persistenceFacade.getFriendsCount(userId);
+			LOGGER.debug("User with id " + userId +
+                         " is in the cache and has profile informations. Let's fetch it!");
 			return friendsCount;
 		} catch (UserNotPresentException e)
 		{
-			logger.debug("User with id " + userId + " not cached. Let's donwload it!");
+			LOGGER.debug("User with id " + userId + " not cached. Let's donwload it!");
 			String userJson = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 			return getFriendsCount(userId);
 		} catch (UserNotProfileEnrichedException e)
 		{
-			logger.debug("User with id " + userId + " has no profile informations. Let's donwload it!");
+			LOGGER.debug(
+                    "User with id " + userId + " has no profile informations. Let's donwload it!");
 			String userJson = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 			return getFriendsCount(userId);
 		}
 	}
@@ -303,8 +318,8 @@ public class TwitterCache
 
 			try
 			{
-				persistanceFacade.getFollowers(userId);
-				persistanceFacade.getFriends(userId);
+				persistenceFacade.getFollowers(userId);
+				persistenceFacade.getFriends(userId);
 			} catch (UserNotPresentException e)
 			{
 				notEnriched.add(userId);
@@ -326,20 +341,22 @@ public class TwitterCache
 	{
 		try
 		{
-			String description = persistanceFacade.getScreenName(userId);
-			logger.debug("User with id " + userId + " is in the cache and has profile informations. Let's fetch it!");
+			String description = persistenceFacade.getScreenName(userId);
+			LOGGER.debug("User with id " + userId +
+                         " is in the cache and has profile informations. Let's fetch it!");
 			return description;
 		} catch (UserNotPresentException e)
 		{
-			logger.debug("User with id " + userId + " not cached. Let's donwload it!");
+			LOGGER.debug("User with id " + userId + " not cached. Let's donwload it!");
 			String userJson = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 			return getDescription(userId);
 		} catch (UserNotProfileEnrichedException e)
 		{
-			logger.debug("User with id " + userId + " has no profile informations. Let's donwload it!");
+			LOGGER.debug(
+                    "User with id " + userId + " has no profile informations. Let's donwload it!");
 			String userJson = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 			return getDescription(userId);
 		}
 	}
@@ -348,11 +365,11 @@ public class TwitterCache
 	{
 		try
 		{
-			return persistanceFacade.getUpTo200Tweets(userId);
+			return persistenceFacade.getUpTo200Tweets(userId);
 		} catch (UserWithNoTweetsException e)
 		{
 			List<String> jsonTweets = webFacade.getTweetsWithMaxId(userId, -1);
-			persistanceFacade.putTweets(jsonTweets);
+			persistenceFacade.putTweets(jsonTweets);
 			return getLast200Tweets(userId);
 		}
 	}
@@ -361,24 +378,24 @@ public class TwitterCache
 	{
 		try
 		{
-			List<String> tweets = persistanceFacade.getTweetsByDate(userId,fromDate,toDate);
-			logger.info("tweets get from mongodb");
+			List<String> tweets = persistenceFacade.getTweetsByDate(userId,fromDate,toDate);
+			LOGGER.info("tweets get from mongodb");
 			return tweets;
 		}
 		catch (UserWithNoTweetsException e)
 		{	
-			logger.info("downloading tweets");
+			LOGGER.info("downloading tweets");
 			SearchedByDateTweetsResultContainer result = webFacade.getTweetsByDate(userId, fromDate,toDate);
-			persistanceFacade.putTweets(result.getBadTweets());
-			persistanceFacade.putTweets(result.getGoodTweets());
+			persistenceFacade.putTweets(result.getBadTweets());
+			persistenceFacade.putTweets(result.getGoodTweets());
 			return result.getGoodTweets();
 		}
 		catch (DataRangeNotCoveredException e)
 		{
-			logger.info("downloading tweets");
+			LOGGER.info("downloading tweets");
 			SearchedByDateTweetsResultContainer result = webFacade.getTweetsByDate(userId, fromDate, toDate);
-			persistanceFacade.putTweets(result.getBadTweets());
-			persistanceFacade.putTweets(result.getGoodTweets());
+			persistenceFacade.putTweets(result.getBadTweets());
+			persistenceFacade.putTweets(result.getGoodTweets());
 			return result.getGoodTweets();
 		}
 	}
@@ -388,14 +405,14 @@ public class TwitterCache
 	{
 		try
 		{
-			String user = persistanceFacade.getUser(userId);
-			logger.debug("User with id " + userId + " is in the cache. Let's fetch it!");
+			String user = persistenceFacade.getUser(userId);
+			LOGGER.debug("User with id " + userId + " is in the cache. Let's fetch it!");
 			return user;
 		} catch (UserNotPresentException e)
 		{
-			logger.debug("User with id " + userId + " not cached. Let's donwload it!");
+			LOGGER.debug("User with id " + userId + " not cached. Let's donwload it!");
 			String userJson = webFacade.getUserJson(userId);
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 			return getUser(userId);
 		}
 	}
@@ -404,19 +421,20 @@ public class TwitterCache
 	{
 		try
 		{
-			return persistanceFacade.getUserId(screenName);
+			return persistenceFacade.getUserId(screenName);
 		}
 		catch (UserNotPresentException e)
 		{
 			String userJson = webFacade.getUserJson(screenName) ;
-			persistanceFacade.putUser(userJson);
+			persistenceFacade.putUser(userJson);
 			try
 			{
-				return persistanceFacade.getUserId(screenName);
+				return persistenceFacade.getUserId(screenName);
 			}
 			catch (UserNotPresentException e1)
 			{
-				logger.info("Error! user with screenName "+screenName+" should have been in the cache but it is not. Check uppercase/lowercase!");
+				LOGGER.info("Error! user with screenName " + screenName +
+                            " should have been in the cache but it is not. Check uppercase/lowercase!");
 				System.exit(0);
 				return -1L;
 			}
@@ -432,26 +450,27 @@ public class TwitterCache
 		{
 			try
 			{
-				userIds.add( persistanceFacade.getUserId(screenName) );
+				userIds.add(persistenceFacade.getUserId(screenName));
 			}
 			catch (UserNotPresentException e)
 			{
 				try
 				{
-					persistanceFacade.putUser( webFacade.getUserJson(screenName) );
+					persistenceFacade.putUser(webFacade.getUserJson(screenName));
 					try
 					{
-						userIds.add( persistanceFacade.getUserId(screenName) );
+						userIds.add(persistenceFacade.getUserId(screenName));
 					}
 					catch (UserNotPresentException e1)
 					{
-						logger.info("Error! user with screenName "+screenName+" should have been in the cache but it is not. Check uppercase/lowercase!");
+						LOGGER.info("Error! user with screenName " + screenName +
+                                    " should have been in the cache but it is not. Check uppercase/lowercase!");
 						System.exit(0);
 					}
 				}
 				catch (TwitterException e2)
 				{
-					logger.info("Can't get id for user with screenName="+screenName);
+					LOGGER.info("Can't get id for user with screenName=" + screenName);
 				}
 				
 			}
