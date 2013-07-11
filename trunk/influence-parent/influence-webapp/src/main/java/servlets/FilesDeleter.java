@@ -16,6 +16,7 @@ public class FilesDeleter extends HttpServlet {
         super();
     }
 
+    @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String filePath = request.getParameter("file");
 		File file = new File(filePath);

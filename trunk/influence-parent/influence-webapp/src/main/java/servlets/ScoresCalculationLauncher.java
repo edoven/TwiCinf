@@ -9,6 +9,7 @@ import it.cybion.influencers.ranking.RankedUser;
 import it.cybion.influencers.ranking.RankingCalculator;
 import it.cybion.influencers.ranking.topic.TopicScorer;
 import it.cybion.influencers.ranking.topic.knn.KnnTopicScorer;
+import org.apache.log4j.Logger;
 import utils.HomePathGetter;
 
 import javax.servlet.ServletException;
@@ -28,136 +29,139 @@ import java.util.Properties;
  * Servlet implementation class ScoresCalculator
  */
 public class ScoresCalculationLauncher extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+
+    private static final long serialVersionUID = 1L;
+
+    private static final Logger LOGGER = Logger.getLogger(ScoresCalculationLauncher.class);
+
     public ScoresCalculationLauncher() {
         super();
     }
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String usersListFilePath = request.getParameter("usersListFilePath");
-		System.out.println("usersListFilePath="+usersListFilePath);		
-		List<Long> usersToRank = getUsersIdsFromFile(usersListFilePath);
-				
-		Date fromDate = getFromDate(request);
-		System.out.println("fromDate="+fromDate);
-		
-		Date toDate = getToDate(request);
-		System.out.println("toDate="+toDate);
-		
-		List<String> topicTweets = getTopicTweets(request);
-		System.out.println("In Topic Tweets:");
-		int count = 0;
-		for (String tweet : topicTweets)
-			System.out.println((count++)+") "+tweet);
-		
-		List<String> outOfTopicTweets = getOutOfTopicTweets(request);
-		System.out.println("Out of Topic Tweets:");
-		count = 0;
-		for (String tweet : outOfTopicTweets)
-			System.out.println((count++)+") "+tweet);
-		
-		int tweetsPerDocument = getTweetsPerDocument(request);
-		System.out.println("tweetsPerDocument="+tweetsPerDocument);
-		
-		int k = getK(request);
-		System.out.println("k="+k);
-		
-		String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
-		String generalConfigFilePath = CRAWNKER_HOME+"general.config";
-		Properties twitterCacheProperties = getPropertiesFromFile(generalConfigFilePath);
-		TwitterCache twitterCache = getTwitterCacheFromProperties(twitterCacheProperties);
-		
-		TopicScorer topicScorer = getKnnTopicScorer(topicTweets,outOfTopicTweets,k);
-		RankingCalculator rankingCalculator = new RankingCalculator(twitterCache, topicScorer);
-		List<RankedUser> rankedUsers = rankingCalculator.getRankedUsersWithoutUrlsResolution(usersToRank, fromDate, toDate);
-		for (RankedUser rankedUser : rankedUsers)
-			System.out.println(rankedUser.toCSV());
-		request.setAttribute("rankedUsers", rankedUsers);
-		request.getRequestDispatcher("ranking-result.jsp").forward(request, response);
-	}
-	
-	private List<String> getOutOfTopicTweets(HttpServletRequest request)
+        String usersListFilePath = request.getParameter("usersListFilePath");
+        LOGGER.info("usersListFilePath=" + usersListFilePath);
+        List<Long> usersToRank = getUsersIdsFromFile(usersListFilePath);
+
+        Date fromDate = getFromDate(request);
+        LOGGER.info("fromDate=" + fromDate);
+
+        Date toDate = getToDate(request);
+        LOGGER.info("toDate=" + toDate);
+
+        List<String> topicTweets = getTopicTweets(request);
+        LOGGER.info("In Topic Tweets:");
+        int count = 0;
+        for (String tweet : topicTweets) {
+            int i = count++;
+            LOGGER.info(i + ") " + tweet);
+        }
+
+        List<String> outOfTopicTweets = getOutOfTopicTweets(request);
+        LOGGER.info("Out of Topic Tweets:");
+        count = 0;
+        for (String tweet : outOfTopicTweets) {
+            int i = count++;
+            LOGGER.info(i + ") " + tweet);
+        }
+
+        int tweetsPerDocument = getTweetsPerDocument(request);
+        LOGGER.info("tweetsPerDocument=" + tweetsPerDocument);
+
+        int k = getK(request);
+        LOGGER.info("k=" + k);
+
+        String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
+        String generalConfigFilePath = CRAWNKER_HOME + "general.config";
+        Properties twitterCacheProperties = getPropertiesFromFile(generalConfigFilePath);
+        TwitterCache twitterCache = getTwitterCacheFromProperties(twitterCacheProperties);
+
+        TopicScorer topicScorer = getKnnTopicScorer(topicTweets, outOfTopicTweets, k);
+        RankingCalculator rankingCalculator = new RankingCalculator(twitterCache, topicScorer);
+        List<RankedUser> rankedUsers = rankingCalculator.getRankedUsersWithoutUrlsResolution(
+                usersToRank, fromDate, toDate);
+        for (RankedUser rankedUser : rankedUsers) {
+            LOGGER.info(rankedUser.toCSV());
+        }
+        request.setAttribute("rankedUsers", rankedUsers);
+        request.getRequestDispatcher("ranking-result.jsp").forward(request, response);
+    }
+
+    private List<String> getOutOfTopicTweets(HttpServletRequest request)
 	{
-		String topicFile = request.getParameter("topicFile");
-//		String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
-		List<String> listFiles = new ArrayList<String>();
-		Properties properties = new Properties();
-		try
-		{
-			properties.load(new FileInputStream(topicFile));
-		}
-		catch (FileNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		for (Entry<Object, Object> propertyEntry : properties.entrySet())
+        String topicFile = request.getParameter("topicFile");
+        //		String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
+        List<String> listFiles = new ArrayList<String>();
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream(topicFile));
+        } catch (FileNotFoundException e) {
+            LOGGER.error("missing file: '" + topicFile + "'" + e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.error("can't read file: '" + topicFile + "'" + e.getMessage());
+            e.printStackTrace();
+        }
+
+        for (Entry<Object, Object> propertyEntry : properties.entrySet())
 		{
 			String key = (String)propertyEntry.getKey();
-			if (key.startsWith("outOfTopic"))
+
+            if (key.startsWith("outOfTopic")) {
 				listFiles.add((String)propertyEntry.getValue());
-		}		
+            }
+		}
+
 		List<String> tweets = new ArrayList<String>();
-		for (String filtFile : listFiles)
-			tweets.addAll(getTweetsFromFile(filtFile));		
+		for (String filtFile : listFiles) {
+			tweets.addAll(getTweetsFromFile(filtFile));
+        }
 		return tweets;
 	}
 
 
 	private List<String> getTopicTweets(HttpServletRequest request)
 	{
-//		String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
-		String topicFile = request.getParameter("topicFile");
-		String fullFilePath =topicFile;
-		List<String> listFiles = new ArrayList<String>();
-		Properties properties = new Properties();
-		try
-		{
-			properties.load(new FileInputStream(fullFilePath));
-		}
-		catch (FileNotFoundException e)
-		{
+        //		String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
+        String topicFile = request.getParameter("topicFile");
+        String fullFilePath = topicFile;
+        List<String> listFiles = new ArrayList<String>();
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream(fullFilePath));
+        } catch (FileNotFoundException e) {
+            LOGGER.error("missing file: '" + fullFilePath + "'" + e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.error("can't read file: '" + fullFilePath + "'" + e.getMessage());
+            e.printStackTrace();
+        }
+        for (Entry<Object, Object> propertyEntry : properties.entrySet()) {
+            String key = (String) propertyEntry.getKey();
+            if (key.startsWith("inTopic")) {
+                listFiles.add((String) propertyEntry.getValue());
+            }
+        }
 
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		for (Entry<Object, Object> propertyEntry : properties.entrySet())
-		{
-			String key = (String)propertyEntry.getKey();
-			if (key.startsWith("inTopic"))
-				listFiles.add((String)propertyEntry.getValue());			
-		}	
-		
-		List<String> tweets = new ArrayList<String>();
-		for (String filtFile : listFiles)
-			tweets.addAll(getTweetsFromFile(filtFile));		
+        List<String> tweets = new ArrayList<String>();
+		for (String filtFile : listFiles) {
+			tweets.addAll(getTweetsFromFile(filtFile));
+        }
 		return tweets;
 	}
 
+    private KnnTopicScorer getKnnTopicScorer(List<String> topicTweets,
+                                             List<String> outOfTopicTweets, int k) {
 
-	private KnnTopicScorer getKnnTopicScorer(List<String> topicTweets,
-																			 List<String> outOfTopicTweets,
-																			 int k)
-	{
-		KnnTopicScorer topicScorer = new KnnTopicScorer(topicTweets, outOfTopicTweets, k);
-		return topicScorer;
-	}
-	
-	
-	private TwitterCache getTwitterCacheFromProperties(Properties properties) throws UnknownHostException
+        KnnTopicScorer topicScorer = new KnnTopicScorer(topicTweets, outOfTopicTweets, k);
+        return topicScorer;
+    }
+
+    private TwitterCache getTwitterCacheFromProperties(Properties properties) throws UnknownHostException
 	{
 		
 		String mongodbHost = properties.getProperty("mongodb_host");
@@ -183,22 +187,19 @@ public class ScoresCalculationLauncher extends HttpServlet {
 	private Properties getPropertiesFromFile(String filePath)
 	{
 		InputStream inputStream;
-		try
-		{
-			inputStream = new FileInputStream(new File(filePath));
-			Properties properties = new Properties();
-			properties.load(inputStream);
-			return properties;
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();		
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
+        try {
+            inputStream = new FileInputStream(new File(filePath));
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            return properties;
+        } catch (FileNotFoundException e) {
+            LOGGER.error("missing file: '" + filePath + "' " + e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.error("can't read file: '" + filePath + "' " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
 	}
 	
 //	private boolean getUrlsResolution(HttpServletRequest request)
@@ -257,7 +258,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
 			String currentLine =  fileReader.readLine();
 			while (currentLine != null) 
 			{
-				System.out.println(currentLine);			
+				LOGGER.debug(currentLine);
 				long id = Long.parseLong(currentLine);
 				ids.add(id);
 				currentLine =  fileReader.readLine();

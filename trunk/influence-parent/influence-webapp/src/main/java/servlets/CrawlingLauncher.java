@@ -15,13 +15,14 @@ import java.util.UUID;
 
 
 public class CrawlingLauncher extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+
+    private static final long serialVersionUID = 1L;
 
     public CrawlingLauncher() {
         super();
     }
 
+    @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();

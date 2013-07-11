@@ -4,6 +4,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.log4j.Logger;
 import utils.FileItemWriter;
 import utils.HomePathGetter;
 
@@ -21,7 +22,9 @@ import java.util.List;
  */
 public class TweetsListUploader extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+
+    private static final Logger LOGGER = Logger.getLogger(TweetsListUploader.class);
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -42,29 +45,25 @@ public class TweetsListUploader extends HttpServlet {
 		File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
 		factory.setRepository(repository);
 
-		// Create a new file upload handler
-		ServletFileUpload upload = new ServletFileUpload(factory);
-		String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
-		// Parse the request
-		try
-		{
-			List<FileItem> fileItems = upload.parseRequest(request);
-			for (FileItem fileItem : fileItems)
-			{
-				System.out.println(fileItem.getName());
-				FileItemWriter.writeFileItem(fileItem, CRAWNKER_HOME+"ranking/topic/lists/"+fileItem.getName() );			}
-		}
-		catch (FileUploadException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+        // Create a new file upload handler
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
+        // Parse the request
+        try {
+            List<FileItem> fileItems = upload.parseRequest(request);
+            for (FileItem fileItem : fileItems) {
+                LOGGER.info(fileItem.getName());
+                FileItemWriter.writeFileItem(fileItem,
+                        CRAWNKER_HOME + "ranking/topic/lists/" + fileItem.getName());
+            }
+        } catch (FileUploadException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 	
 
 }

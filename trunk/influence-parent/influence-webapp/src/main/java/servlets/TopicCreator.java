@@ -1,5 +1,6 @@
 package servlets;
 
+import org.apache.log4j.Logger;
 import utils.HomePathGetter;
 
 import javax.servlet.ServletException;
@@ -17,8 +18,11 @@ import java.util.List;
  * Servlet implementation class TopicCreator
  */
 public class TopicCreator extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+
+    private static final long serialVersionUID = 1L;
+
+    private static final Logger LOGGER = Logger.getLogger(TopicCreator.class);
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -30,9 +34,9 @@ public class TopicCreator extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String topicName = request.getParameter("topicName");
-		System.out.println("topicName="+topicName);
+		LOGGER.info("topicName="+topicName);
 		Integer topicFilesCount = Integer.parseInt(request.getParameter("topicFilesCount"))	;
-		System.out.println("topicFilesCount="+topicFilesCount);
+		LOGGER.info("topicFilesCount="+topicFilesCount);
 		
 		
 		List<String> inTopicFiles = new ArrayList<String>();		

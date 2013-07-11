@@ -4,6 +4,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.log4j.Logger;
 import utils.FileItemWriter;
 import utils.HomePathGetter;
 
@@ -18,13 +19,17 @@ import java.util.List;
 
 
 public class CrawlingConfigFileUploader extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+
+    private static final long serialVersionUID = 1L;
+
+    private static final Logger LOGGER = Logger.getLogger(CrawlingConfigFileUploader.class);
+
     public CrawlingConfigFileUploader() {
         super();
     }
 
 
+    @Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		DiskFileItemFactory factory = new DiskFileItemFactory();
 
@@ -42,7 +47,7 @@ public class CrawlingConfigFileUploader extends HttpServlet {
 			List<FileItem> fileItems = upload.parseRequest(request);
 			for (FileItem fileItem : fileItems)
 			{
-				System.out.println(fileItem.getName());
+				LOGGER.info(fileItem.getName());
 				FileItemWriter.writeFileItem(fileItem, CRAWNKER_HOME+"crawling/config/"+fileItem.getName() );			}
 		}
 		catch (FileUploadException e)
