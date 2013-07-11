@@ -19,8 +19,9 @@
 		<%
 		String filePath = request.getParameter("file");
 		File file = new File(filePath);
-		if (!file.exists())
+		if (!file.exists()) {
 			file.createNewFile();
+	    }
 		List<String> lines = Tail.getLastLines(filePath,100);
 		for (int i=0; i<lines.size(); i++)
 			out.println(lines.get(lines.size()-1-i) + "</br>");

@@ -11,6 +11,14 @@
 	<body>
 
 		<%
+
+        String outputFilePath = (String)request.getAttribute("outputFilePath");
+		out.println("<p>file: " + outputFilePath + "</p>");
+
+        out.println("<a href=\"FileViewer?file="+outputFilePath+"\">"+outputFilePath+"</a>");
+
+		out.println("<p></p>");
+
 		out.println("<p>screenName,followersCount,originalTweets,topicTweetsCount,topicTweetsRatio,AVGTopicRetweetsCount</p>");
 		out.println("<p></p>");
 
@@ -19,13 +27,6 @@
 		for (RankedUser rankedUser : rankedUsers) {
 			out.println("<p>"+rankedUser.toCSV()+"</p>");
         }
-
-        out.println("<br/>");
-        out.println("<br/>");
-        out.println("<br/>");
-
-        String influencersAsJson = request.getAttribute("influencersJson");
-        out.println("<p>"+influencersAsJson+"</p>");
 
 		%>
 	</body>

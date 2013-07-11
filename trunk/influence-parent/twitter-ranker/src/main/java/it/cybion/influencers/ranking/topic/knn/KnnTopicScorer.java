@@ -269,7 +269,7 @@ public class KnnTopicScorer implements TopicScorer
 			searcher.close();
 		} catch (IOException e)
 		{
-			e.printStackTrace();;
+			e.printStackTrace();
 		}
 		return hits;
 	}

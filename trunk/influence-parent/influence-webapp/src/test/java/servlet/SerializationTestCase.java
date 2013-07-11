@@ -15,6 +15,8 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 
@@ -66,5 +68,11 @@ public class SerializationTestCase {
                 InfluenceUser.class);
 
         assertEquals(deSerializedInfluencer, user);
+
+        List<InfluenceUser> influencersList = new ArrayList<InfluenceUser>();
+        influencersList.add(user);
+        influencersList.add(user);
+        String influencersJson = objectMapper.writeValueAsString(influencersList);
+        LOGGER.info("" + influencersJson);
     }
 }

@@ -23,12 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-
 
 /**
  * Servlet implementation class ScoresCalculator
@@ -119,11 +115,40 @@ public class ScoresCalculationLauncher extends HttpServlet {
             influencersList.add(currentInfluencer);
         }
 
-        String influencers = objectMapper.writeValueAsString(influencersList);
+        LOGGER.info("finished loading influencers");
 
+        String influencersJson = objectMapper.writeValueAsString(influencersList);
+
+        LOGGER.info("finished serializing to json");
+
+        LOGGER.info("calculated influencers: " + influencersJson);
+
+        String influencersResultDirectory = HomePathGetter.getInstance().getHomePath() + "results/" ;
+        String resultsFileName = UUID.randomUUID().toString() + ".json";
+        String outputFilePath = influencersResultDirectory + resultsFileName;
+        LOGGER.info("writing string to file " + outputFilePath);
+
+        writeStringToFile(outputFilePath, influencersJson);
+
+        LOGGER.info("wrote file");
+        request.setAttribute("outputFilePath", outputFilePath);
         request.setAttribute("rankedUsers", rankedUsers);
-        request.setAttribute("influencersJson", influencers);
         request.getRequestDispatcher("ranking-result.jsp").forward(request, response);
+    }
+
+    private void writeStringToFile(String outputFilePath, String content) {
+
+        LOGGER.info("writing");
+        try {
+            File outputFile = new File(outputFilePath);
+            BufferedWriter fileWriter = new BufferedWriter(new FileWriter(outputFile));
+            fileWriter.write(content + "\n");
+            fileWriter.close();
+        } catch (IOException e) {
+            LOGGER.error("failed writing " + outputFilePath);
+            e.printStackTrace();
+//            System.exit(-1);
+        }
     }
 
     private Properties getProperties() {

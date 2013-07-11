@@ -18,6 +18,7 @@ public class FileViewer extends HttpServlet {
         super();
     }
 
+    @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String filePath = request.getParameter("file");		
 		BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));		
