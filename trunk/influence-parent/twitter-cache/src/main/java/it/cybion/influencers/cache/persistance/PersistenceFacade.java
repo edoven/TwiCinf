@@ -17,7 +17,7 @@ public class PersistenceFacade
 	private static PersistenceFacade singletonInstance = null;
 	
 	private UsersPersistenceFacade usersMongodbPersistanceFacade;
-	private TweetsPersistenceFacade tweetsMongodbPersistanceFacade;
+	private TweetsPersistenceFacade tweetsMongodbPersistenceFacade;
 	
 	public static PersistenceFacade getInstance(String host, String database) throws UnknownHostException
 	{
@@ -37,7 +37,7 @@ public class PersistenceFacade
 		tweetsCollection.createIndex(new BasicDBObject("user.id", 1));
 		
 		usersMongodbPersistanceFacade = new UsersPersistenceFacade(userCollection);
-		tweetsMongodbPersistanceFacade = new TweetsPersistenceFacade(tweetsCollection);
+		tweetsMongodbPersistenceFacade = new TweetsPersistenceFacade(tweetsCollection);
 	}
 
 
@@ -91,7 +91,7 @@ public class PersistenceFacade
 	
 	public List<String> getUpTo200Tweets(long userId) throws UserWithNoTweetsException
 	{
-		return tweetsMongodbPersistanceFacade.getUpTo200Tweets(userId);
+		return tweetsMongodbPersistenceFacade.getUpTo200Tweets(userId);
 	}
 
 
@@ -126,13 +126,13 @@ public class PersistenceFacade
 
 	public void putTweet(String tweetToInsertJson)
 	{
-		tweetsMongodbPersistanceFacade.putTweet(tweetToInsertJson);
+		tweetsMongodbPersistenceFacade.putTweet(tweetToInsertJson);
 	}
 
 
 	public void putTweets(List<String> tweets)
 	{
-		tweetsMongodbPersistanceFacade.putTweets(tweets);
+		tweetsMongodbPersistenceFacade.putTweets(tweets);
 	}
 
 	/*
@@ -153,12 +153,12 @@ public class PersistenceFacade
 
 	public void removeTweet(Long tweetId)
 	{
-		tweetsMongodbPersistanceFacade.removeTweet(tweetId);
+		tweetsMongodbPersistenceFacade.removeTweet(tweetId);
 	}
 
 
 	public List<String> getTweetsByDate(long userId,Date fromDate, Date toDate) throws UserWithNoTweetsException, DataRangeNotCoveredException
 	{
-		return tweetsMongodbPersistanceFacade.getTweetsByDate(userId, fromDate, toDate );
+		return tweetsMongodbPersistenceFacade.getTweetsByDate(userId, fromDate, toDate );
 	}
 }

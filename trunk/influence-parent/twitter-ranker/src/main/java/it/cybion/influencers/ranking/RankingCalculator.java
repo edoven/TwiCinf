@@ -36,7 +36,7 @@ public class RankingCalculator
 		int usersCount = 1;
 		for (Long userId : usersToRank)
 		{		
-			LOGGER.info("");
+			LOGGER.info("with url resolution");
 			LOGGER.info("Calculating rank for user " + (usersCount++) + "/" + usersToRank.size() +
                         " with id " + userId);
 			List<String> tweetsJsons = getTweetsJsons(userId, fromDate, toDate);

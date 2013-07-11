@@ -130,18 +130,19 @@ public class TweetsPersistenceFacade
 		Collections.sort(tweets);
 		Date oldestTweetDate = tweets.get(0).getCreatedAt();
 		Date mostRecentTweetDate = tweets.get(tweets.size()-1).getCreatedAt();
-		if (fromDate.compareTo(oldestTweetDate)<=0 || toDate.compareTo(mostRecentTweetDate)>=0)
-			throw new DataRangeNotCoveredException();
+		if (fromDate.compareTo(oldestTweetDate)<=0 || toDate.compareTo(mostRecentTweetDate)>=0) {
+			throw new DataRangeNotCoveredException("range specified are external to current cached tweets");
+        }
 		
-		List<String> goodTweets = new ArrayList<String>();	
+		List<String> matchingTweets = new ArrayList<String>();
 		Date tweetDate;
 		for (Tweet tweet : tweets)
 		{
 			tweetDate = tweet.getCreatedAt();
 			if (fromDate.compareTo(tweetDate)<=0 && toDate.compareTo(tweetDate)>0)
-				goodTweets.add(tweet.getOriginalJson());
+				matchingTweets.add(tweet.getOriginalJson());
 		}
-		return goodTweets;
+		return matchingTweets;
 	}
 	
 	private List<Tweet> getTweetsFromJsons(List<String> tweetsJsons)

@@ -57,7 +57,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
         int count = 0;
         for (String tweet : topicTweets) {
             int i = count++;
-            LOGGER.info(i + ") " + tweet);
+            LOGGER.debug(i + ") " + tweet);
         }
 
         List<String> outOfTopicTweets = getOutOfTopicTweets(request);
@@ -65,7 +65,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
         count = 0;
         for (String tweet : outOfTopicTweets) {
             int i = count++;
-            LOGGER.info(i + ") " + tweet);
+            LOGGER.debug(i + ") " + tweet);
         }
 
         int tweetsPerDocument = getTweetsPerDocument(request);
@@ -83,6 +83,8 @@ public class ScoresCalculationLauncher extends HttpServlet {
         RankingCalculator rankingCalculator = new RankingCalculator(twitterCache, topicScorer);
         List<RankedUser> rankedUsers = rankingCalculator.getRankedUsersWithoutUrlsResolution(
                 usersToRank, fromDate, toDate);
+
+        LOGGER.info("found users: " + rankedUsers.size());
         for (RankedUser rankedUser : rankedUsers) {
             LOGGER.info(rankedUser.toCSV());
         }

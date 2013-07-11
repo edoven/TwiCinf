@@ -17,11 +17,13 @@ import java.util.List;
 
 public class WebFacade
 {
-	private static final Logger LOGGER = Logger.getLogger(WebFacade.class);
+
+    private static final Logger LOGGER = Logger.getLogger(WebFacade.class);
+    public static final int ONE_MINUTE = 60 * 1000;
+
+    private static WebFacade singletonInstance = null;
 	
-	private static WebFacade singletonInstance = null;
-	
-	private final int WAIT_TIME = 1;
+	private final int ONE = 1;
 	private List<UserHandler> userHandlers; 	
 	
 	
@@ -29,16 +31,15 @@ public class WebFacade
 	{		
 		private List<String> goodTweets;
 		private List<String> badTweets;
-		
-		public ResultContainer(
-				List<String> goodTweets, List<String> badTweets)
-		{
-			this.goodTweets = goodTweets;
-			this.badTweets = badTweets;
-		}
-		
-		public List<String> getGoodTweets() {return goodTweets;}
-		public List<String> getBadTweets() {return badTweets;}
+
+        public ResultContainer(List<String> goodTweets, List<String> badTweets) {
+
+            this.goodTweets = goodTweets;
+            this.badTweets = badTweets;
+        }
+
+        public List<String> getTweetsInRange() {return goodTweets;}
+		public List<String> getTweetsOutsideRange() {return badTweets;}
 	}
 
 	
@@ -48,16 +49,19 @@ public class WebFacade
 			singletonInstance = new WebFacade(consumerToken, userTokens);
 		return singletonInstance;
 	}
-	
-	
+
+    //TODO pass userHandlers in constructor
 	private WebFacade(Token consumerToken, List<Token> userTokens)
 	{
 		userHandlers = new ArrayList<UserHandler>();
 		for (Token userToken : userTokens)
 		{
 			LOGGER.info("Creating UserHandler");
-			for (int i = 0; i < 3; i++)
-			{ // 3 tries
+            // 3 tries
+            int maxRetries = 3;
+
+            for (int i = 0; i < maxRetries; i++)
+			{
 				try
 				{
 					UserHandler userHandler = new UserHandler(consumerToken, userToken);
@@ -66,13 +70,13 @@ public class WebFacade
 				} catch (TwitterException e)
 				{
 					LOGGER.info("Can't create UserHandler for token = " + userToken +
-                                ". Let's wait 1 min and then retry.");
+                                ". Let's wait 1 min and then retry.: " + e.getMessage());
 					try
 					{
-						Thread.sleep(60 * 1000);
+						Thread.sleep(ONE_MINUTE);
 					} catch (InterruptedException e1)
 					{
-						LOGGER.info("Problem in Thread.sleep");
+						LOGGER.warn("Problem in Thread.sleep: " + e1.getMessage());
 					}
 				}			
 				LOGGER.warn("Can't create UserHandler for token = " + userToken + ". Skipped.");
@@ -80,42 +84,42 @@ public class WebFacade
 		}
 		LOGGER.info("UserHandlers created");
 	}
-	
-	public UserHandler getUserHandlerForRequest(String requestName)
+
+    public UserHandler getUserHandlerForRequest(String requestName) {
+
+        for (UserHandler userHandler : userHandlers) {
+            if (userHandler.canMakeRequest(requestName)) {
+                LOGGER.debug("userHandler.requestType2limit.get(" + requestName + ")=" +
+                             userHandler.requestLimits.get(requestName));
+                return userHandler;
+            }
+        }
+
+        try {
+            LOGGER.info(
+                    "All handlers have reached the limit, let's wait for " + ONE + " min");
+            Thread.sleep(ONE_MINUTE);
+            return getUserHandlerForRequest(requestName);
+        } catch (InterruptedException e1) {
+            LOGGER.error("Problem in Thread.sleep()." + e1.getMessage());
+            System.exit(0);
+            return null;
+        }
+    }
+
+    private ResultContainer filterTweetsByDate(List<Tweet> tweets,Date fromDate, Date toDate)
 	{
-		for (UserHandler userHandler : userHandlers)
-			if (userHandler.canMakeRequest(requestName))
-			{
-				LOGGER.debug("userHandler.requestType2limit.get(" + requestName + ")=" +
-                             userHandler.requestType2limit.get(requestName));
-				return userHandler;
-			}
-		try
-		{
-			LOGGER.info("All handlers have reached the limit, let's wait for " + WAIT_TIME + " min");
-			Thread.sleep(WAIT_TIME * 60 * 1000);
-			return getUserHandlerForRequest(requestName);
-		} catch (InterruptedException e1)
-		{
-			LOGGER.error("Problem in Thread.sleep().");
-			System.exit(0);
-			return null;
-		}
-	}
-	
-	private ResultContainer filterTweetsByDate(List<Tweet> tweets,Date fromDate, Date toDate)	
-	{
-		List<String> goodTweets = new ArrayList<String>();
-		List<String> badTweets = new ArrayList<String>();		
+		List<String> includedInRange = new ArrayList<String>();
+		List<String> outsideRange = new ArrayList<String>();
 		for (Tweet tweet: tweets)
 		{
 			Date tweetDate = tweet.getCreatedAt();
 			if (tweetDate.compareTo(fromDate)>=0 && tweetDate.compareTo(toDate)<0)
-				goodTweets.add(tweet.getOriginalJson());				
+				includedInRange.add(tweet.getOriginalJson());
 			else
-				badTweets.add(tweet.getOriginalJson());
+				outsideRange.add(tweet.getOriginalJson());
 		}
-		return new ResultContainer(goodTweets,badTweets);		
+		return new ResultContainer(includedInRange,outsideRange);
 	}
 	
 	private long[] getChunk(List<Long> list, int chunkSize, int chunkIndex)
@@ -180,34 +184,39 @@ public class WebFacade
 											throws TwitterException, ProtectedUserException
 	{
 		List<String> tweetsJsons = getTweetsWithMaxId(userId, -1);
-		if (tweetsJsons.size()<1)
-			return new SearchedByDateTweetsResultContainer(Collections.<String>emptyList(), Collections.<String>emptyList());
-		List<Tweet> tweets = getTweetsFromJsons(tweetsJsons);				
-		List<String> goodTweets = new ArrayList<String>();
-		List<String> badTweets = new ArrayList<String>();
-		ResultContainer resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
-		goodTweets.addAll(resultContainer.getGoodTweets());
-		badTweets.addAll(resultContainer.getBadTweets());
-		Collections.sort(tweets);
-		Tweet oldestTweet = tweets.get(0);
-		while (fromDate.compareTo( oldestTweet.getCreatedAt() ) <= 0 )
+
+        if (tweetsJsons.size() < 1) {
+			return new SearchedByDateTweetsResultContainer(Collections.<String>emptyList(),
+                    Collections.<String>emptyList());
+        }
+
+		List<Tweet> tweetsInPage = parseToTweets(tweetsJsons);
+		List<String> inRangeTweets = new ArrayList<String>();
+		List<String> outsideRangeTweets = new ArrayList<String>();
+		ResultContainer resultContainer = filterTweetsByDate(tweetsInPage, fromDate, toDate);
+		inRangeTweets.addAll(resultContainer.getTweetsInRange());
+		outsideRangeTweets.addAll(resultContainer.getTweetsOutsideRange());
+		Collections.sort(tweetsInPage);
+		Tweet oldestTweet = tweetsInPage.get(0);
+		while ( fromDate.compareTo( oldestTweet.getCreatedAt() ) <= 0 )
 		{
 			long oldestTweetId = oldestTweet.getId();
-			tweetsJsons = getTweetsWithMaxId(userId,oldestTweetId);
-			if (tweetsJsons.size()<=1)
-				return new SearchedByDateTweetsResultContainer(goodTweets, badTweets);
-			tweets = getTweetsFromJsons(tweetsJsons);
-			resultContainer = filterTweetsByDate(tweets, fromDate, toDate);	
-			goodTweets.addAll(resultContainer.goodTweets);
-			badTweets.addAll(resultContainer.badTweets);
-			Collections.sort(tweets);
-			oldestTweet = tweets.get(0);
+			tweetsJsons = getTweetsWithMaxId(userId, oldestTweetId);
+			if (tweetsJsons.size() <= 1) {
+				return new SearchedByDateTweetsResultContainer(inRangeTweets, outsideRangeTweets);
+            }
+			tweetsInPage = parseToTweets(tweetsJsons);
+			resultContainer = filterTweetsByDate(tweetsInPage, fromDate, toDate);
+			inRangeTweets.addAll(resultContainer.getTweetsInRange());
+			outsideRangeTweets.addAll(resultContainer.getTweetsOutsideRange());
+			Collections.sort(tweetsInPage);
+			oldestTweet = tweetsInPage.get(0);
 		}	
-		return new SearchedByDateTweetsResultContainer(goodTweets, badTweets);
+		return new SearchedByDateTweetsResultContainer(inRangeTweets, outsideRangeTweets);
 	}
 
 
-	private List<Tweet> getTweetsFromJsons(List<String> tweetsJsons)
+	private List<Tweet> parseToTweets(List<String> tweetsJsons)
 	{
 		List<Tweet> tweets = new ArrayList<Tweet>();
 		Gson gson = new GsonBuilder()
@@ -226,7 +235,7 @@ public class WebFacade
 	
 	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException 
 	{
-		UserHandler userHandler = getUserHandlerForRequest("/statuses/user_timeline");
+		UserHandler userHandler = getUserHandlerForRequest(UserHandler.STATUSES_USER_TIMELINE);
 		LOGGER.info("Downloading 200 tweets for user with id:" + userId + " with maxid=" + maxId);
 		List<String> tweets = userHandler.getTweetsWithMaxId(userId, maxId);
 		return tweets;

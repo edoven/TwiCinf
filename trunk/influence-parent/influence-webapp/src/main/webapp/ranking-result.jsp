@@ -10,13 +10,14 @@
 	</head>
 	<body>
 		<%
-		 out.println("<p>screenName,followersCount,originalTweets,topicTweetsCount,topicTweetsRatio,AVGTopicRetweetsCount</p>");
+		out.println("<p>screenName,followersCount,originalTweets,topicTweetsCount,topicTweetsRatio,AVGTopicRetweetsCount</p>");
 		out.println("<p></p>");
-		
-		
+
 		List<RankedUser> rankedUsers = (List<RankedUser>)request.getAttribute("rankedUsers");
-		for (RankedUser rankedUser : rankedUsers)
-			out.println("<p>"+rankedUser.toCSV()+"</p>");	
+
+		for (RankedUser rankedUser : rankedUsers) {
+			out.println("<p>"+rankedUser.toCSV()+"</p>");
+        }
 		%>
 	</body>
 </html>

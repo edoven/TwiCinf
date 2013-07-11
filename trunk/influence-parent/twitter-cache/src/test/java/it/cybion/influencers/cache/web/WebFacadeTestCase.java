@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import it.cybion.influencers.cache.model.Tweet;
 import it.cybion.influencers.cache.utils.CalendarManager;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -18,32 +19,38 @@ import static org.testng.AssertJUnit.assertTrue;
 public class WebFacadeTestCase
 {
 
-//	private static final Logger logger = Logger.getLogger(Twitter4jWebFacadeTEST.class);
+	private static final Logger LOGGER = Logger.getLogger(WebFacadeTestCase.class);
 
 	private WebFacade webFacade;
 
 	@BeforeClass
 	public void init()
 	{
-        //TODO remove absolute paths
-		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.properties");
-		List<Token> userTokens = new ArrayList<Token>();
+        Token appToken = new Token("Bam9RwjprVxWJd8TdhwQOg",
+                "q1wzu5hn9HjYhEvYvPPBSIHWcfHIYJZoGnRlnD14D0");
 
-		Token userToken0 = new Token("/home/godzy/tokens/token0.properties");
-		userTokens.add(userToken0);
-		Token userToken1 = new Token("/home/godzy/tokens/token1.properties");
-		userTokens.add(userToken1);
-		Token userToken2 = new Token("/home/godzy/tokens/token2.properties");
-		userTokens.add(userToken2);
-//		Token userToken3 = new Token("/home/godzy/tokens/token3.properties");
-//		userTokens.add(userToken3);
-//		Token userToken4 = new Token("/home/godzy/tokens/token4.properties");
-//		userTokens.add(userToken4);
-//		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
-//		userTokens.add(userToken5);
-		
-		webFacade = WebFacade.getInstance(applicationToken, userTokens);
-	}
+        List<Token> userTokens = new ArrayList<Token>();
+
+        Token userToken = new Token("962689441-yrFTbTzI3nAQ9sIMLnxLexyLWGAfZzhXCosTwuWp",
+                "elPwBu9NeAoGXunIl1wyPJDsSYgLWlFQXbXR8C2KQc");
+        userTokens.add(userToken);
+
+        //TODO remove absolute paths
+        //		Token userToken0 = new Token("/home/godzy/tokens/token0.properties");
+        //		userTokens.add(userToken0);
+        //		Token userToken1 = new Token("/home/godzy/tokens/token1.properties");
+        //		userTokens.add(userToken1);
+        //		Token userToken2 = new Token("/home/godzy/tokens/token2.properties");
+        //		userTokens.add(userToken2);
+        //		Token userToken3 = new Token("/home/godzy/tokens/token3.properties");
+        //		userTokens.add(userToken3);
+        //		Token userToken4 = new Token("/home/godzy/tokens/token4.properties");
+        //		userTokens.add(userToken4);
+        //		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
+        //		userTokens.add(userToken5);
+
+        webFacade = WebFacade.getInstance(appToken, userTokens);
+    }
 
 	@Test(enabled = true)
 	public void getUserJsonTEST() throws TwitterException
@@ -110,8 +117,17 @@ public class WebFacadeTestCase
 		List<String> tweets = webFacade.getTweetsWithMaxId(887469007L, -1);
 		Assert.assertTrue(tweets.size()>0);
 	}
-	
-	
+
+    @Test(enabled = false)
+    public void getUserTweetsWithMaxIdForever() throws TwitterException, ProtectedUserException
+    {
+        while(true) {
+            List<String> tweets = webFacade.getTweetsWithMaxId(887469007L, -1);
+            assertTrue(tweets.size() > 0);
+            LOGGER.info("got tweets: " + tweets.size());
+        }
+    }
+
 	@Test(enabled = true)
 	public void getTweetsFromDate1() throws TwitterException, ProtectedUserException
 	{

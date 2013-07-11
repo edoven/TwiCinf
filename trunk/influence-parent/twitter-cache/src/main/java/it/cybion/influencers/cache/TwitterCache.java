@@ -158,13 +158,13 @@ public class TwitterCache
 		List<String> downloadedUsersJsons = webFacade.getUsersJsons(usersToDownload);
 		for (String userJson : downloadedUsersJsons)
 			persistenceFacade.putUser(userJson);
-		for (String donwloadedUserJson : downloadedUsersJsons)
+		for (String downloadedUserJson : downloadedUsersJsons)
 		{
 			/*
 			 * It's not good to use mongDb object (DBObject) to extract the id
 			 * from the user json string! TODO: use another way to do this!
 			 */
-			DBObject downloadedUserObject = (DBObject) JSON.parse(donwloadedUserJson);
+			DBObject downloadedUserObject = (DBObject) JSON.parse(downloadedUserJson);
 			long userId = new Long((Integer) downloadedUserObject.get("id"));
 			try
 			{
@@ -172,11 +172,11 @@ public class TwitterCache
 				user2DescriptionAndStatus.put(userId, descriptionAndStatus);
 			} catch (UserNotPresentException e)
 			{
-				LOGGER.info("ERROR! User with id " + userId + " can't be added to caching system.");
+				LOGGER.error("ERROR! User with id " + userId + " can't be added to caching system.");
 				System.exit(0);
 			} catch (UserNotProfileEnrichedException e)
 			{
-				LOGGER.info("ERROR! User with id " + userId + " can't be added to caching system.");
+				LOGGER.error("ERROR! User with id " + userId + " can't be added to caching system.");
 				System.exit(0);
 			}
 		}
@@ -366,12 +366,13 @@ public class TwitterCache
 		try
 		{
 			List<String> tweets = persistenceFacade.getTweetsByDate(userId,fromDate,toDate);
-			LOGGER.info("tweets get from mongodb");
+			LOGGER.info("loaded tweets from mongodb");
 			return tweets;
 		}
 		catch (UserWithNoTweetsException e)
-		{	
-			LOGGER.info("downloading tweets");
+		{
+            LOGGER.warn("user'" + userId + "' has no cached tweets: " + e.getMessage());
+            LOGGER.info("downloading tweets for user " + userId);
 			SearchedByDateTweetsResultContainer result = webFacade.getTweetsByDate(userId, fromDate,toDate);
 			persistenceFacade.putTweets(result.getBadTweets());
 			persistenceFacade.putTweets(result.getGoodTweets());
@@ -379,7 +380,8 @@ public class TwitterCache
 		}
 		catch (DataRangeNotCoveredException e)
 		{
-			LOGGER.info("downloading tweets");
+            LOGGER.warn("date range not covered: " + e.getMessage());
+			LOGGER.info("download tweets for user " + userId);
 			SearchedByDateTweetsResultContainer result = webFacade.getTweetsByDate(userId, fromDate, toDate);
 			persistenceFacade.putTweets(result.getBadTweets());
 			persistenceFacade.putTweets(result.getGoodTweets());
