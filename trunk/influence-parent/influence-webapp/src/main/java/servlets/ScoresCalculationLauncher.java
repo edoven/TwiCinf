@@ -2,6 +2,7 @@ package servlets;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
+import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.cache.utils.CalendarManager;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
@@ -9,8 +10,11 @@ import it.cybion.influencers.ranking.RankedUser;
 import it.cybion.influencers.ranking.RankingCalculator;
 import it.cybion.influencers.ranking.topic.TopicScorer;
 import it.cybion.influencers.ranking.topic.knn.KnnTopicScorer;
+import it.cybion.model.twitter.User;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import servlets.model.InfluenceUser;
 import utils.HomePathGetter;
 
 import javax.servlet.ServletException;
@@ -35,11 +39,27 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(ScoresCalculationLauncher.class);
 
+    private static final User EMPTY_USER = new User.Users(0L).withScreenName("EMPTY").build();
+
     private final ObjectMapper objectMapper;
+
+    private PersistenceFacade persistenceFacade;
 
     public ScoresCalculationLauncher() {
         super();
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+
+        Properties properties = getProperties();
+        String mongodbHost = properties.getProperty("mongodb_host");
+        String mongodbTwitterDb = properties.getProperty("mongodb_db");
+        try {
+            this.persistenceFacade = PersistenceFacade.getInstance(mongodbHost, mongodbTwitterDb);
+        } catch (UnknownHostException e) {
+            LOGGER.error("unknown host: " + mongodbHost + " - " + e.getMessage() + "");
+        }
+        LOGGER.info("created servlet");
     }
 
     @Override
@@ -78,9 +98,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
         int k = getK(request);
         LOGGER.info("k=" + k);
 
-        String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
-        String generalConfigFilePath = CRAWNKER_HOME + "general.config";
-        Properties twitterCacheProperties = getPropertiesFromFile(generalConfigFilePath);
+        Properties twitterCacheProperties = getProperties();
         TwitterCache twitterCache = getTwitterCacheFromProperties(twitterCacheProperties);
 
         TopicScorer topicScorer = getKnnTopicScorer(topicTweets, outOfTopicTweets, k);
@@ -90,19 +108,48 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
         LOGGER.info("found users: " + rankedUsers.size());
 
-        for (RankedUser rankedUser : rankedUsers) {
-            LOGGER.info(rankedUser.toCSV());
-        }
-
         //build json for all RankedUser, loading details from PersistenceFacade
 
-//        fo
+        List<InfluenceUser> influencersList = new ArrayList<InfluenceUser>();
 
-        String rankedUsersJson = objectMapper.writeValueAsString(rankedUsers);
+        for (RankedUser rankedUser : rankedUsers) {
+            LOGGER.info(rankedUser.toCSV());
+            User userFromPersistence = loadUserByScreenName(rankedUser.getScreenName());
+            InfluenceUser currentInfluencer = new InfluenceUser(rankedUser, userFromPersistence);
+            influencersList.add(currentInfluencer);
+        }
+
+        String influencers = objectMapper.writeValueAsString(influencersList);
 
         request.setAttribute("rankedUsers", rankedUsers);
-        request.setAttribute("rankedUsersJson", rankedUsersJson);
+        request.setAttribute("influencersJson", influencers);
         request.getRequestDispatcher("ranking-result.jsp").forward(request, response);
+    }
+
+    private Properties getProperties() {
+
+        String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
+        String generalConfigFilePath = CRAWNKER_HOME + "general.config";
+        return getPropertiesFromFile(generalConfigFilePath);
+    }
+
+    private User loadUserByScreenName(String screenName) {
+
+        String userString = "";
+        try {
+            userString = this.persistenceFacade.getUser(screenName);
+        } catch (UserNotPresentException e) {
+            LOGGER.error("cant find '" + screenName +"' in local persistence");
+        }
+
+        User user = EMPTY_USER;
+        try {
+            user = this.objectMapper.readValue(userString, User.class);
+        } catch (IOException e) {
+            LOGGER.error("cant deserialize json to user: " + userString + "");
+        }
+
+        return user;
     }
 
     private List<String> getOutOfTopicTweets(HttpServletRequest request)

@@ -1,4 +1,4 @@
-package servlet;
+package servlets.model;
 
 import it.cybion.influencers.ranking.RankedUser;
 import it.cybion.model.twitter.User;

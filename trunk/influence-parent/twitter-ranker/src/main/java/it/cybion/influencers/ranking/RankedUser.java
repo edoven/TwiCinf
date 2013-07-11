@@ -37,17 +37,18 @@ public class RankedUser implements Comparable<RankedUser>
 			return -1;
 		if (isNaN(toCompare.rank))
 			return 1;
-		if (this.rank>=toCompare.rank)
+		if (this.rank>toCompare.rank)
 			return 1;
+        if (this.rank < toCompare.rank)
+            return -1;
 		else
-			return -1;
+			return 0;
 	}
 	
 	private boolean isNaN(double x)
 	{
 		return x != x;
 	}
-
 
 	public String getScreenName()
 	{

@@ -9,6 +9,7 @@
 		<title>Insert title here</title>
 	</head>
 	<body>
+
 		<%
 		out.println("<p>screenName,followersCount,originalTweets,topicTweetsCount,topicTweetsRatio,AVGTopicRetweetsCount</p>");
 		out.println("<p></p>");
@@ -18,6 +19,14 @@
 		for (RankedUser rankedUser : rankedUsers) {
 			out.println("<p>"+rankedUser.toCSV()+"</p>");
         }
+
+        out.println("<br/>");
+        out.println("<br/>");
+        out.println("<br/>");
+
+        String influencersAsJson = request.getAttribute("influencersJson");
+        out.println("<p>"+influencersAsJson+"</p>");
+
 		%>
 	</body>
 </html>

@@ -4,12 +4,10 @@ import it.cybion.commons.FileHelper;
 import it.cybion.influencers.ranking.RankedUser;
 import it.cybion.model.twitter.User;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParser;
 
 import org.codehaus.jackson.map.DeserializationConfig;
+import servlets.model.InfluenceUser;
 import twitter4j.TwitterException;
-import twitter4j.internal.json.DataObjectFactoryUtil;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.testng.annotations.BeforeClass;
@@ -18,7 +16,6 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static com.mongodb.util.MyAsserts.assertTrue;
 import static org.testng.Assert.assertEquals;
 
 /**

@@ -88,7 +88,7 @@ public class RankingCalculator
 
 
 		}
-//		Collections.sort(rankedUsers);
+		Collections.sort(rankedUsers);
 		return rankedUsers;
 	}
 		
