@@ -10,6 +10,7 @@ public class RankedUser implements Comparable<RankedUser>
 	double meanRetweetsCount; 
 	double rank;
 
+    public RankedUser() {}
 	
 	public RankedUser(String screenName, 
 					  int followersCount,
@@ -148,6 +149,60 @@ public class RankedUser implements Comparable<RankedUser>
 	{
 		this.topicTweetsCount = topicTweetsCount;
 	}
-	
 
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        RankedUser that = (RankedUser) o;
+
+        if (followersCount != that.followersCount) {
+            return false;
+        }
+        if (Double.compare(that.meanRetweetsCount, meanRetweetsCount) != 0) {
+            return false;
+        }
+        if (originalTweets != that.originalTweets) {
+            return false;
+        }
+        if (Double.compare(that.rank, rank) != 0) {
+            return false;
+        }
+        if (Double.compare(that.topicTweetsCount, topicTweetsCount) != 0) {
+            return false;
+        }
+        if (Double.compare(that.topicTweetsRatio, topicTweetsRatio) != 0) {
+            return false;
+        }
+        if (screenName != null ? !screenName.equals(that.screenName) : that.screenName != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+
+        int result;
+        long temp;
+        result = screenName != null ? screenName.hashCode() : 0;
+        result = 31 * result + followersCount;
+        result = 31 * result + originalTweets;
+        temp = Double.doubleToLongBits(topicTweetsCount);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(topicTweetsRatio);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(meanRetweetsCount);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(rank);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

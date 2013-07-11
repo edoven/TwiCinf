@@ -1,0 +1,104 @@
+{
+    "id": 326359913,
+    "id_str": "326359913",
+    "name": "CHANEL ",
+    "screen_name": "CHANEL ",
+    "location": "",
+    "description": "'CHANEL is above all a style. Fashion passes, style remains.' Gabrielle Chanel",
+    "url": "http://t.co/GBdCztEiwL",
+    "entities": {
+        "url": {
+            "urls": [
+                {
+                    "url": "http://t.co/GBdCztEiwL",
+                    "expanded_url": "http://www.chanel.com",
+                    "display_url": "chanel.com",
+                    "indices": [
+                        0,
+                        22
+                    ]
+                }
+            ]
+        },
+        "description": {
+            "urls": []
+        }
+    },
+    "protected": false,
+    "followers_count": 2027531,
+    "friends_count": 0,
+    "listed_count": 4491,
+    "created_at": "Wed Jun 29 19:57:54 +0000 2011",
+    "favourites_count": 0,
+    "utc_offset": 3600,
+    "time_zone": "Paris",
+    "geo_enabled": true,
+    "verified": true,
+    "statuses_count": 533,
+    "lang": "en",
+    "status": {
+        "created_at": "Fri Jul 05 17:08:35 +0000 2013",
+        "id": 353198736245133300,
+        "id_str": "353198736245133312",
+        "text": "Staging of the Fall-Winter 2013/14 Haute Couture #CHANEL show http://t.co/Sio20qq5pJ",
+        "source": "web",
+        "truncated": false,
+        "in_reply_to_status_id": null,
+        "in_reply_to_status_id_str": null,
+        "in_reply_to_user_id": null,
+        "in_reply_to_user_id_str": null,
+        "in_reply_to_screen_name": null,
+        "geo": null,
+        "coordinates": null,
+        "place": null,
+        "contributors": null,
+        "retweet_count": 212,
+        "favorite_count": 153,
+        "entities": {
+            "hashtags": [
+                {
+                    "text": "CHANEL",
+                    "indices": [
+                        49,
+                        56
+                    ]
+                }
+            ],
+            "symbols": [],
+            "urls": [
+                {
+                    "url": "http://t.co/Sio20qq5pJ",
+                    "expanded_url": "http://www.youtube.com/watch?v=YuaWRmnRZUg",
+                    "display_url": "youtube.com/watch?v=YuaWRm�",
+                    "indices": [
+                        62,
+                        84
+                    ]
+                }
+            ],
+            "user_mentions": []
+        },
+        "favorited": false,
+        "retweeted": false,
+        "possibly_sensitive": false,
+        "lang": "en"
+    },
+    "contributors_enabled": false,
+    "is_translator": false,
+    "profile_background_color": "050505",
+    "profile_background_image_url": "http://a0.twimg.com/profile_background_images/651781455/h97dxgj84tuaap90oj68.jpeg",
+    "profile_background_image_url_https": "https://si0.twimg.com/profile_background_images/651781455/h97dxgj84tuaap90oj68.jpeg",
+    "profile_background_tile": true,
+    "profile_image_url": "http://a0.twimg.com/profile_images/3759781438/bb29c7be54197d82ff585e73ce0fed94_normal.png",
+    "profile_image_url_https": "https://si0.twimg.com/profile_images/3759781438/bb29c7be54197d82ff585e73ce0fed94_normal.png",
+    "profile_link_color": "757575",
+    "profile_sidebar_border_color": "000000",
+    "profile_sidebar_fill_color": "000000",
+    "profile_text_color": "666666",
+    "profile_use_background_image": false,
+    "default_profile": false,
+    "default_profile_image": false,
+    "following": false,
+    "follow_request_sent": false,
+    "notifications": false
+}

@@ -19,6 +19,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>it.cybion.commons.external</groupId>
+            <artifactId>twitter-model</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>it.cybion.commons</groupId>
+            <artifactId>utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>it.cybion.influence</groupId>
             <artifactId>twitter-crawler</artifactId>
             <version>1.0-SNAPSHOT</version>
