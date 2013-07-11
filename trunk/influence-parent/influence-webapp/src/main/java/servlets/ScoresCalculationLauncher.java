@@ -111,11 +111,12 @@ public class ScoresCalculationLauncher extends HttpServlet {
         for (RankedUser rankedUser : rankedUsers) {
             LOGGER.info(rankedUser.toCSV());
             User userFromPersistence = loadUserByScreenName(rankedUser.getScreenName());
+
             InfluenceUser currentInfluencer = new InfluenceUser(rankedUser, userFromPersistence);
             influencersList.add(currentInfluencer);
         }
 
-        LOGGER.info("finished loading influencers");
+        LOGGER.info("finished loading " + rankedUsers.size() + " influencers");
 
         String influencersJson = objectMapper.writeValueAsString(influencersList);
 

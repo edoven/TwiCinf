@@ -70,8 +70,10 @@ public class SerializationTestCase {
         assertEquals(deSerializedInfluencer, user);
 
         List<InfluenceUser> influencersList = new ArrayList<InfluenceUser>();
-        influencersList.add(user);
-        influencersList.add(user);
+        int limit = 270;
+        for (int i = 0; i < limit; i++) {
+            influencersList.add(user);
+        }
         String influencersJson = objectMapper.writeValueAsString(influencersList);
         LOGGER.info("" + influencersJson);
     }
