@@ -164,12 +164,12 @@ public class UsersPersistenceFacade
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		user.put("followers", followersIds);
-		putUser(user.toString());
+		putOrUpdateUser(user.toString());
 		for (Long followerId : followersIds)
 		{
 			DBObject follower = new BasicDBObject();
 			follower.put("id", followerId);
-			putUser(follower.toString());
+			putOrUpdateUser(follower.toString());
 		}
 	}
 
@@ -180,12 +180,12 @@ public class UsersPersistenceFacade
 		String userJson = getUser(userId);
 		DBObject user = (DBObject) JSON.parse(userJson);
 		user.put("friends", friendsIds);
-		putUser(user.toString());
+		putOrUpdateUser(user.toString());
 		for (Long friendId : friendsIds)
 		{
 			DBObject friend = new BasicDBObject();
 			friend.put("id", friendId);
-			putUser(friend.toString());
+			putOrUpdateUser(friend.toString());
 		}
 	}
 	
@@ -198,7 +198,7 @@ public class UsersPersistenceFacade
 		return user;
 	}
 	
-	public void putUser(String userToInsertJson)
+	public void putOrUpdateUser(String userToInsertJson)
 	{
 		DBObject userToInsert = (DBObject) JSON.parse(userToInsertJson);
 		long userId = new Long((Integer) userToInsert.get("id"));

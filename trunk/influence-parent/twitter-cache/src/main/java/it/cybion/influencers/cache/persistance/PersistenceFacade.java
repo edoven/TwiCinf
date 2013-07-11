@@ -141,7 +141,7 @@ public class PersistenceFacade
 	 */
 	public void putUser(String userToInsertJson)
 	{
-		usersMongodbPersistanceFacade.putUser(userToInsertJson);
+		usersMongodbPersistanceFacade.putOrUpdateUser(userToInsertJson);
 	}
 
 

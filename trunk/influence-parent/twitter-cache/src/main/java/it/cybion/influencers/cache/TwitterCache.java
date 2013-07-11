@@ -61,8 +61,9 @@ public class TwitterCache
 		LOGGER.info("donwloadUsersProfiles - Downloading profiles for " + usersToDownload.size() +
                     " users.");
 		List<String> downloadedUsersJsons = webFacade.getUsersJsons(usersToDownload);
-		for (String userJson : downloadedUsersJsons)
+		for (String userJson : downloadedUsersJsons) {
 			persistenceFacade.putUser(userJson);
+        }
 	}
 
 	public String getDescription(Long userId) throws TwitterException

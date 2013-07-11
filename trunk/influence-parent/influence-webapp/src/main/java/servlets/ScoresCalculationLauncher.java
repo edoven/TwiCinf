@@ -10,6 +10,7 @@ import it.cybion.influencers.ranking.RankingCalculator;
 import it.cybion.influencers.ranking.topic.TopicScorer;
 import it.cybion.influencers.ranking.topic.knn.KnnTopicScorer;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import utils.HomePathGetter;
 
 import javax.servlet.ServletException;
@@ -34,8 +35,11 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(ScoresCalculationLauncher.class);
 
+    private final ObjectMapper objectMapper;
+
     public ScoresCalculationLauncher() {
         super();
+        this.objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -85,10 +89,19 @@ public class ScoresCalculationLauncher extends HttpServlet {
                 usersToRank, fromDate, toDate);
 
         LOGGER.info("found users: " + rankedUsers.size());
+
         for (RankedUser rankedUser : rankedUsers) {
             LOGGER.info(rankedUser.toCSV());
         }
+
+        //build json for all RankedUser, loading details from PersistenceFacade
+
+//        fo
+
+        String rankedUsersJson = objectMapper.writeValueAsString(rankedUsers);
+
         request.setAttribute("rankedUsers", rankedUsers);
+        request.setAttribute("rankedUsersJson", rankedUsersJson);
         request.getRequestDispatcher("ranking-result.jsp").forward(request, response);
     }
 
