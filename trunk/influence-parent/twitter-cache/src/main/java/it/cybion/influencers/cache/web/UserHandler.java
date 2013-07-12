@@ -127,6 +127,11 @@ public class UserHandler
 		String requestName = STATUSES_USER_TIMELINE;
 		int limit = getRequestLimit(requestName);
 		LOGGER.debug("limit for getLast200TweetsPostedByUser=" + limit);
+
+//        if () {
+
+//        }
+
 		Paging paging = new Paging();
 		paging.setCount(200);
 //		paging.setPage(1);
@@ -139,6 +144,12 @@ public class UserHandler
             statuses = twitter.getUserTimeline(userId, paging);
         } catch (TwitterException e) {
 
+            if (e.getStatusCode() == 429) {
+                LOGGER.error("got limited by twitter: " + e.getMessage() + " updating requests to 0");
+                updateRequestLimit(requestName, 0);
+            }
+
+            //TODO choose proper way of doing this
             updateRequestLimit(requestName, (limit - 1));
 
             if (e.getStatusCode() == 401) {
@@ -146,6 +157,8 @@ public class UserHandler
             } else {
                 throw e;
             }
+
+
         }
         updateRequestLimit(requestName, (limit - 1));
 

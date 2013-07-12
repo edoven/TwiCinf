@@ -11,7 +11,7 @@ import java.util.Map;
 public class InDegreeFilterManager extends DegreeFilterManager
 {
 
-	private static final Logger logger = Logger.getLogger(InDegreeFilterManager.class);
+	private static final Logger LOGGER = Logger.getLogger(InDegreeFilterManager.class);
 
 	private float inDegreePercentageThreshold;
 	private int inDegreeAbsoluteThreshold;
@@ -35,7 +35,7 @@ public class InDegreeFilterManager extends DegreeFilterManager
 		solveDependencies();
 		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(node2inDegree, inDegreeAbsoluteThreshold);
 		List<Long> inDegreeFiltered = inDegreeFilter.filter();
-		logger.info("inDegreeFiltered.size()=" + inDegreeFiltered.size());
+		LOGGER.info("inDegreeFiltered.size()=" + inDegreeFiltered.size());
 		return inDegreeFiltered;
 	}
 
@@ -47,7 +47,6 @@ public class InDegreeFilterManager extends DegreeFilterManager
 		} catch (UserVertexNotPresentException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
 		}
 	}
 

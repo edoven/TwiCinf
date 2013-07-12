@@ -14,7 +14,7 @@ import java.util.Map;
 public class DescriptionAndStatusDictionaryFilterManager implements FilterManager
 {
 
-	private static final Logger logger = Logger.getLogger(DescriptionAndStatusDictionaryFilterManager.class);
+	private static final Logger LOGGER = Logger.getLogger(DescriptionAndStatusDictionaryFilterManager.class);
 
 	TwitterCache twitterFacade;
 	GraphFacade graphFacade;
@@ -30,11 +30,11 @@ public class DescriptionAndStatusDictionaryFilterManager implements FilterManage
 	@Override
 	public List<Long> filter()
 	{
-		logger.info("seedUsers.size()=" + seedUsers.size());
+		LOGGER.info("seedUsers.size()=" + seedUsers.size());
 
 		solveDependencies();
 		DescriptionAndStatusDictionaryFilter filter = new DescriptionAndStatusDictionaryFilter(dictionary, users2descriptions);
-		logger.info("users2descriptions.size()=" + users2descriptions.size());
+		LOGGER.info("users2descriptions.size()=" + users2descriptions.size());
 
 		// List<Long> goodUsers = filter.filter();
 		// List<Long> badUsers = seedUsers;
@@ -115,9 +115,9 @@ public class DescriptionAndStatusDictionaryFilterManager implements FilterManage
 		}
 		catch (TwitterException e)
 		{
-			logger.info("Problem in twitterFacade.getDescriptionsAndStatuses");
+			LOGGER.info("Problem in twitterFacade.getDescriptionsAndStatuses");
 			e.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 	}
 

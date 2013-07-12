@@ -23,7 +23,7 @@ import java.util.List;
 public abstract class DegreeFilterManager implements FilterManager
 {
 
-	private static final Logger logger = Logger.getLogger(DegreeFilterManager.class);
+	private static final Logger LOGGER = Logger.getLogger(DegreeFilterManager.class);
 
 	protected List<Long> seedUsers;
 	private TwitterCache twitterFacade;
@@ -65,7 +65,7 @@ public abstract class DegreeFilterManager implements FilterManager
 			return (userToCompare.getFollowers().size() + userToCompare.getFriends().size()) - (this.getFollowers().size() + this.getFriends().size());
 		}
 
-	};
+	}
 
 	@Override
 	public void setTwitterFacade(TwitterCache twitterFacade)
@@ -91,20 +91,20 @@ public abstract class DegreeFilterManager implements FilterManager
 		
 		if (seedUsers.size() > 200)
 		{
-			logger.info("seeds are "+seedUsers.size()+" let's cut them to 200");
+			LOGGER.info("seeds are " + seedUsers.size() + " let's cut them to 200");
 			this.seedUsers = get200SeedUsers(seedUsers);
 //			Collections.shuffle(seedUsers);
 //			this.seedUsers = seedUsers.subList(0, 200);
 		}
 		// once seedUsers are set, absolute thresholds can be calculated
 		setAbsoluteThresholds();
-		logger.info("### enriching seed users ###");
+		LOGGER.info("### enriching seed users ###");
 		getAndSetFollowersAndFriendsEnrichedUsers();
-		logger.info("### creating graph ###");
+		LOGGER.info("### creating graph ###");
 		createGraph();
-		logger.info("### populating followers and friends big list###");
+		LOGGER.info("### populating followers and friends big list###");
 		populateFollowersAndFriendsList();
-		logger.info("### calculating node degrees ###");
+		LOGGER.info("### calculating node degrees ###");
 		calculateNodeDegrees();
 	}
 	
@@ -116,17 +116,18 @@ public abstract class DegreeFilterManager implements FilterManager
 		enrichedSeedUsers.addAll(seedUsers);
 		enrichedSeedUsers.removeAll(notEnrichedSeedUsers);
 			
-		logger.info("notEnrichedSeedUsers.size()="+notEnrichedSeedUsers.size());
-		logger.info("enrichedSeedUsers.size()="+enrichedSeedUsers.size());
+		LOGGER.info("notEnrichedSeedUsers.size()=" + notEnrichedSeedUsers.size());
+		LOGGER.info("enrichedSeedUsers.size()=" + enrichedSeedUsers.size());
 		
 		if (enrichedSeedUsers.size()>=200)
 		{
-			logger.info("there alreary are more than 200 enriched users, let's take 200 of them.");
+			LOGGER.info("there alreary are more than 200 enriched users, let's take 200 of them.");
 			Collections.shuffle(enrichedSeedUsers);
 			return enrichedSeedUsers.subList(0, 200);
 		}
 		
-		logger.info("there already are less than 200 enriched users, "+(200-enrichedSeedUsers.size())+"have to be enriched.");
+		LOGGER.info("there already are less than 200 enriched users, " +
+                    (200 - enrichedSeedUsers.size()) + "have to be enriched.");
 		
 		int seedUsersIndex = 0;
 		while (enrichedSeedUsers.size()<200)
@@ -141,7 +142,8 @@ public abstract class DegreeFilterManager implements FilterManager
 
 	private void getAndSetFollowersAndFriendsEnrichedUsers()
 	{
-		logger.info("Not enriched = " + twitterFacade.getNotFollowersAndFriendsEnriched(seedUsers).size());
+		LOGGER.info("Not enriched = " + twitterFacade.getNotFollowersAndFriendsEnriched(seedUsers)
+                .size());
 		enrichedSeedUsers = new ArrayList<User>();
 //		int percentCompleted = 0;
 		int tenPercent = Math.round((float) seedUsers.size() / 10);
@@ -154,9 +156,9 @@ public abstract class DegreeFilterManager implements FilterManager
 		}
 		catch (TwitterException e1)
 		{
-			logger.info("problem in twitterFacade.donwloadUsersProfiles");
+			LOGGER.error("problem in twitterFacade.donwloadUsersProfiles");
 			e1.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 
 		for (int i = 0; i < seedUsers.size(); i++)
@@ -171,7 +173,7 @@ public abstract class DegreeFilterManager implements FilterManager
 				else
 				{
 					followersIds = new ArrayList<Long>();
-					logger.info("User with more than 800000 followers. Followers kipped.");
+					LOGGER.info("User with more than 800000 followers. Followers kipped.");
 				}
 					
 				if (twitterFacade.getFriendsCount(userId) < 800000)
@@ -179,20 +181,20 @@ public abstract class DegreeFilterManager implements FilterManager
 				else 
 				{
 					friendsIds = new ArrayList<Long>();
-					logger.info("User with more than 800000 friends. Friends kipped.");
+					LOGGER.info("User with more than 800000 friends. Friends kipped.");
 				}
 				User user = new User(userId, followersIds, friendsIds);
 				enrichedSeedUsers.add(user);
 					
 			} catch (TwitterException e)
 			{
-				logger.info("Problem with user with id " + userId + ". User skipped.");
+				LOGGER.warn("Problem with user with id " + userId + ". User skipped.");
 			}	
 							
-			logger.info("enriched user " + i + "/" +seedUsers.size());
+			LOGGER.info("enriched user " + i + "/" + seedUsers.size());
 				
 		}
-		logger.info("getFollowersAndFriendsEnrichedUsers completed for 100%");
+		LOGGER.info("getFollowersAndFriendsEnrichedUsers completed for 100%");
 		Collections.sort(enrichedSeedUsers);
 	}
 
@@ -203,19 +205,21 @@ public abstract class DegreeFilterManager implements FilterManager
 		for (int i = 0; i < enrichedSeedUsers.size(); i++)
 		{
 			User user = enrichedSeedUsers.get(i);
-			logger.info("createGraph user " + (i+1) + "/" + seedUsers.size() +
-						" flwrs=" + user.getFollowers().size() +
-						" frnds=" + user.getFriends().size() +
-						" (freeMem= " + Runtime.getRuntime().freeMemory() / (1024 * 1024) + " MB - " +
-						"vertices="	+ graphFacade.getVerticesCount() + ")");
+			LOGGER.info("createGraph user " + (i + 1) + "/" + seedUsers.size() +
+                        " flwrs=" + user.getFollowers().size() +
+                        " frnds=" + user.getFriends().size() +
+                        " (freeMem= " + Runtime.getRuntime().freeMemory() / (1024 * 1024) +
+                        " MB - " +
+                        "vertices=" + graphFacade.getVerticesCount() + ")");
 			try
 			{
 				graphFacade.addFollowers(user.getId(), user.getFollowers());
 				graphFacade.addFriends(user.getId(), user.getFriends());
 			} catch (UserVertexNotPresentException e)
 			{
-				logger.info("Error! User should be in the graph but vertex is not present.");
-				System.exit(0);
+				LOGGER.error("Error! User should be in the graph but vertex is not present.");
+                e.printStackTrace();
+
 			}
 		}
 	}
@@ -241,7 +245,8 @@ public abstract class DegreeFilterManager implements FilterManager
 			}
 			if (i % tenPercent == 0)
 			{
-				logger.info("populateFollowersAndFriendsList completed for " + percentCompleted + "%");
+				LOGGER.info(
+                        "populateFollowersAndFriendsList completed for " + percentCompleted + "%");
 				percentCompleted = percentCompleted + 10;
 			}
 		}

@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class CrawlerFluentBuilder 
 {
-	private static final Logger logger = Logger.getLogger(CrawlerFluentBuilder.class);
+	private static final Logger LOGGER = Logger.getLogger(CrawlerFluentBuilder.class);
 	
 	private Crawler influencersDiscoverer;
 	private List<String> screenNames;
@@ -52,7 +52,7 @@ public class CrawlerFluentBuilder
 	
 	public CrawlerFluentBuilder iteratingFor(int iterations)
 	{
-		influencersDiscoverer.setItarations(iterations);
+		influencersDiscoverer.setIterations(iterations);
 		iterationsSet = true;
 		return this;
 	}
@@ -112,13 +112,14 @@ public class CrawlerFluentBuilder
 	{
 		if (influencersDiscovererCreated==false)
 		{
-			logger.info("Error, you must ask for an InfluenceDiscoverer with giveMeAnInfluenceDiscoverer().");
-			System.exit(0);
+			LOGGER.error(
+                    "Error, you must ask for an InfluenceDiscoverer with giveMeAnInfluenceDiscoverer().");
+			throw new IllegalArgumentException();
 		}
 		if (usersScreenNamesSet==true && usersIdsSet==true)
 		{
-			logger.info("Error, you can't set both seeds as screen-names and ids.");
-			System.exit(0);
+			LOGGER.error("Error, you can't set both seeds as screen-names and ids.");
+            throw new IllegalArgumentException();
 		}
 		if (usersScreenNamesSet==true && graphFacadeSet==true )
 			influencersDiscoverer.setUsersScreenNames(screenNames);
@@ -130,10 +131,10 @@ public class CrawlerFluentBuilder
 			 twitterFacadeSet == false ||
 			 iteratingFiltersSet == false)
 		{
-			logger.info("Error, some parameters are missing. " +
-						"You must set iterations, GraphFacade, TwitterFacade, iteratingFilters" +
-						" ano one betweet seeds screen-names and ids.");
-			System.exit(0);
+			LOGGER.error("Error, some parameters are missing. " +
+                         "You must set iterations, GraphFacade, TwitterFacade, iteratingFilters" +
+                         " ano one betweet seeds screen-names and ids.");
+            throw new IllegalArgumentException();
 		}
 		if (finalizingFiltersSet==false)
 			influencersDiscoverer.setFinalizationFiltersDescriptions(null);

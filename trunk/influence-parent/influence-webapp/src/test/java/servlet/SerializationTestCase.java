@@ -70,7 +70,7 @@ public class SerializationTestCase {
         assertEquals(deSerializedInfluencer, user);
 
         List<InfluenceUser> influencersList = new ArrayList<InfluenceUser>();
-        int limit = 270;
+        int limit = 2700;
         for (int i = 0; i < limit; i++) {
             influencersList.add(user);
         }

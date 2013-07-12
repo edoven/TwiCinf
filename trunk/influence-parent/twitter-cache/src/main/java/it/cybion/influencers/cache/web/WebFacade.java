@@ -102,7 +102,7 @@ public class WebFacade
             return getUserHandlerForRequest(requestName);
         } catch (InterruptedException e1) {
             LOGGER.error("Problem in Thread.sleep()." + e1.getMessage());
-            System.exit(0);
+//            System.exit(0);
             return null;
         }
     }
@@ -111,15 +111,15 @@ public class WebFacade
 	{
 		List<String> includedInRange = new ArrayList<String>();
 		List<String> outsideRange = new ArrayList<String>();
-		for (Tweet tweet: tweets)
-		{
-			Date tweetDate = tweet.getCreatedAt();
-			if (tweetDate.compareTo(fromDate)>=0 && tweetDate.compareTo(toDate)<0)
-				includedInRange.add(tweet.getOriginalJson());
-			else
-				outsideRange.add(tweet.getOriginalJson());
-		}
-		return new ResultContainer(includedInRange,outsideRange);
+        for (Tweet tweet : tweets) {
+            Date tweetDate = tweet.getCreatedAt();
+            if (tweetDate.compareTo(fromDate) >= 0 && tweetDate.compareTo(toDate) <= 0) {
+                includedInRange.add(tweet.getOriginalJson());
+            } else {
+                outsideRange.add(tweet.getOriginalJson());
+            }
+        }
+        return new ResultContainer(includedInRange,outsideRange);
 	}
 	
 	private long[] getChunk(List<Long> list, int chunkSize, int chunkIndex)

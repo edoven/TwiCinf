@@ -49,7 +49,6 @@ public class OutDegreeFilterManager extends DegreeFilterManager
 		} catch (UserVertexNotPresentException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
 		}
 	}
 

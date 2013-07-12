@@ -17,7 +17,7 @@ public class UserHandlerTestCase {
 
     private static final Logger LOGGER = Logger.getLogger(UserHandlerTestCase.class);
 
-    @Test
+    @Test (enabled = false)
     public void shouldBeGreen() throws TwitterException {
 
 

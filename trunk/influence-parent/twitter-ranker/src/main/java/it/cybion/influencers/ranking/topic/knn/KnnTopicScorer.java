@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 public class KnnTopicScorer implements TopicScorer
 {	
-	private static final Logger logger = Logger.getLogger(KnnTopicScorer.class);
+	private static final Logger LOGGER = Logger.getLogger(KnnTopicScorer.class);
 	
 	private static final String LUCENE_ESCAPE_CHARS = "[\\\\+\\-\\!\\(\\)\\:\\^\\]\\{\\}\\~\\*\\?]";
 	private static final Pattern LUCENE_PATTERN = Pattern.compile(LUCENE_ESCAPE_CHARS);
@@ -34,36 +34,29 @@ public class KnnTopicScorer implements TopicScorer
 	
 	private Directory index;
 	private IndexReader indexReader;
-	private StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
+	private StandardAnalyzer analyzer;
 	private int k;
-	
-	public KnnTopicScorer(List<String> topicTweets,
-											 List<String> outOfTopicTweets,
-											 int k)
-	{	
-		index = createIndex(topicTweets, outOfTopicTweets);
-		this.k = k;
-		try
-		{
-			indexReader = IndexReader.open(index);
-		}
-		catch (CorruptIndexException e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
-	}
-	
-	
-	
-	public void printKnn(String tweetText)
+
+    public KnnTopicScorer(List<String> topicTweets, List<String> outOfTopicTweets, int k) {
+
+        this.analyzer = new StandardAnalyzer(Version.LUCENE_36);
+        this.index = createIndex(topicTweets, outOfTopicTweets);
+        this.k = k;
+
+        try {
+            this.indexReader = IndexReader.open(index);
+        } catch (CorruptIndexException e) {
+            e.printStackTrace();
+            //			System.exit(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+            //			System.exit(0);
+        }
+    }
+
+    public void printKnn(String tweetText)
 	{
-//		logger.info("#### printKnn for tweet: "+tweetText);
+//		LOGGER.info("#### printKnn for tweet: "+tweetText);
 		Query query = null;
 		QueryParser queryParser = new QueryParser(Version.LUCENE_36, "content", analyzer);
 		String cleanedTweetText = getCleanedTweetText(tweetText);
@@ -72,7 +65,7 @@ public class KnnTopicScorer implements TopicScorer
 			query = queryParser.parse(cleanedTweetText);
 		} catch (ParseException e1)
 		{
-			logger.info("Parsing error! Can't parse: "+cleanedTweetText);
+			LOGGER.info("Parsing error! Can't parse: " + cleanedTweetText);
 			return;
 		}
 		int hitsPerPage = k;
@@ -84,7 +77,7 @@ public class KnnTopicScorer implements TopicScorer
 		} catch (IOException e)
 		{
 			e.printStackTrace();
-			logger.info("Problem with searcher.search(query, collector). Query=" + query);
+			LOGGER.info("Problem with searcher.search(query, collector). Query=" + query);
 		}
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
 		try
@@ -93,10 +86,10 @@ public class KnnTopicScorer implements TopicScorer
 		} catch (IOException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 		if (hits.length == 0)
-			logger.info("no results for this query");
+			LOGGER.info("no results for this query");
 		else
 		{
 			int inTopicCount = 0,
@@ -111,7 +104,7 @@ public class KnnTopicScorer implements TopicScorer
 				{
 					document = indexReader.document(docId);
 					String inTopicString = document.get("inTopic");
-//					logger.info(inTopicString+" - "+document.get("content"));
+//					LOGGER.info(inTopicString+" - "+document.get("content"));
 					if (inTopicString.equals("true"))
 						inTopicCount++;
 					else
@@ -120,53 +113,49 @@ public class KnnTopicScorer implements TopicScorer
 				catch (CorruptIndexException e)
 				{
 					e.printStackTrace();
-					System.exit(0);
+//					System.exit(0);
 				}
 				catch (IOException e)
 				{
 					e.printStackTrace();
-					System.exit(0);
+//					System.exit(0);
 				}
 			}
-			logger.info("("+inTopicCount+"-"+outOfTopicCount+") "+tweetText);
-//			logger.info("inTopicCount="+inTopicCount);
-//			logger.info("outOfTopicCount="+outOfTopicCount);
+			LOGGER.info("("+inTopicCount+"-"+outOfTopicCount+") "+tweetText);
+//			LOGGER.info("inTopicCount="+inTopicCount);
+//			LOGGER.info("outOfTopicCount="+outOfTopicCount);
 		}
 	}
-	
 
-	
-	private static Directory createIndex(List<String> topicTweets, 
-										 List<String> outOfTopicTweets)
-	{
-		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
-		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
-		Directory index = null;
-		index = new RAMDirectory(); 
-		IndexWriter indexWriter = null;
-		try
-		{
-			indexWriter = new IndexWriter(index, config);
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
-		
-		for (String topicTweet : topicTweets)
-			addInTopicDocument(indexWriter, topicTweet);
-		for (String outOfTopicTweet : outOfTopicTweets)
-			addOutOfTopicDocument(indexWriter, outOfTopicTweet);
-		try
-		{
-			indexWriter.close();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
-		return index;
-	}
+    private Directory createIndex(List<String> topicTweets, List<String> outOfTopicTweets) {
+
+        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
+        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+        Directory index = new RAMDirectory();
+        IndexWriter indexWriter = null;
+
+        try {
+            indexWriter = new IndexWriter(index, config);
+        } catch (IOException e) {
+            e.printStackTrace();
+            //			System.exit(0);
+        }
+
+        for (String topicTweet : topicTweets) {
+            addInTopicDocument(indexWriter, topicTweet);
+        }
+        for (String outOfTopicTweet : outOfTopicTweets) {
+            addOutOfTopicDocument(indexWriter, outOfTopicTweet);
+        }
+
+        try {
+            indexWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            //			System.exit(0);
+        }
+        return index;
+    }
 
 	private static void addInTopicDocument(IndexWriter indexWriter, String tweet)
 	{
@@ -179,7 +168,7 @@ public class KnnTopicScorer implements TopicScorer
 		} catch (IOException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 	}
 	
@@ -194,7 +183,7 @@ public class KnnTopicScorer implements TopicScorer
 		} catch (IOException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 	}
 	
@@ -249,7 +238,7 @@ public class KnnTopicScorer implements TopicScorer
 			query = queryParser.parse(cleanedTweetText);
 		} catch (ParseException e1)
 		{
-			logger.info("Parsing error! Can't parse: "+cleanedTweetText);
+			LOGGER.info("Parsing error! Can't parse: " + cleanedTweetText);
 			return new ScoreDoc[0];
 		}
 		int hitsPerPage = k;
@@ -260,8 +249,8 @@ public class KnnTopicScorer implements TopicScorer
 			searcher.search(query, collector);
 		} catch (IOException e)
 		{
-			e.printStackTrace();
-			logger.info("Problem with searcher.search(query, collector). Query=" + query);
+            LOGGER.error("Problem with searcher.search(query, collector). Query=" + query);
+            e.printStackTrace();
 		}
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
 		try

@@ -52,8 +52,9 @@ public class TweetsPersistenceFacade
 			String tweetJson = retrivedTweet.toString();
 			tweets.add(tweetJson);
 		}			
-		if (tweets.size() == 0)
-			throw new UserWithNoTweetsException();
+		if (tweets.size() == 0) {
+			throw new UserWithNoTweetsException("userId " + userId + " has no tweets in mongodb collection");
+        }
 		return tweets;
 	}
 	
@@ -70,11 +71,11 @@ public class TweetsPersistenceFacade
 			tweets.add(tweetJson);
 		}	
 		if (tweets.size() == 0)
-			throw new UserWithNoTweetsException();
+			throw new UserWithNoTweetsException("userId " + userId + " has no tweets in mongodb collection");
 		return tweets;
 	}
 	
-	public void putTweet(String tweetToInsertJson)
+	public void putTweetIfNotPresent(String tweetToInsertJson)
 	{
 		DBObject tweetToInsert = (DBObject) JSON.parse(tweetToInsertJson);
 		long tweetId = -1;
@@ -89,8 +90,8 @@ public class TweetsPersistenceFacade
                 }
 				else
 				{
-					LOGGER.error("problem with twitter id " + id);
-					System.exit(0);
+					LOGGER.error("can't cast " + id + " to integer or long");
+//					System.exit(0);
 				}
 		} catch (ClassCastException e)
 		{
@@ -107,7 +108,7 @@ public class TweetsPersistenceFacade
 	public void putTweets(List<String> tweets)
 	{
 		for (String tweet : tweets)
-			putTweet(tweet);
+			putTweetIfNotPresent(tweet);
 	}
 	
 	
@@ -139,8 +140,9 @@ public class TweetsPersistenceFacade
 		for (Tweet tweet : tweets)
 		{
 			tweetDate = tweet.getCreatedAt();
-			if (fromDate.compareTo(tweetDate)<=0 && toDate.compareTo(tweetDate)>0)
+			if (fromDate.compareTo(tweetDate)<=0 && toDate.compareTo(tweetDate)>0) {
 				matchingTweets.add(tweet.getOriginalJson());
+            }
 		}
 		return matchingTweets;
 	}

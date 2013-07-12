@@ -35,7 +35,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(ScoresCalculationLauncher.class);
 
-    private static final User EMPTY_USER = new User.Users(0L).withScreenName("EMPTY").build();
+//    private static final User EMPTY_USER = new User.Users(0L).withScreenName("EMPTY").build();
 
     private final ObjectMapper objectMapper;
 
@@ -51,6 +51,9 @@ public class ScoresCalculationLauncher extends HttpServlet {
         Properties properties = getProperties();
         String mongodbHost = properties.getProperty("mongodb_host");
         String mongodbTwitterDb = properties.getProperty("mongodb_db");
+        LOGGER.info("mongodb host " + mongodbHost);
+        LOGGER.info("mongodb db " + mongodbTwitterDb);
+
         try {
             this.persistenceFacade = PersistenceFacade.getInstance(mongodbHost, mongodbTwitterDb);
         } catch (UnknownHostException e) {
@@ -105,37 +108,33 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
         LOGGER.info("found users: " + rankedUsers.size());
 
-        //build json for all RankedUser, loading details from PersistenceFacade
-
-        List<InfluenceUser> influencersList = new ArrayList<InfluenceUser>();
-
-        for (RankedUser rankedUser : rankedUsers) {
-            LOGGER.info(rankedUser.toCSV());
-            User userFromPersistence = loadUserByScreenName(rankedUser.getScreenName());
-
-            InfluenceUser currentInfluencer = new InfluenceUser(rankedUser, userFromPersistence);
-            influencersList.add(currentInfluencer);
-        }
-
-        LOGGER.info("finished loading " + rankedUsers.size() + " influencers");
-
-        String influencersJson = objectMapper.writeValueAsString(influencersList);
-
-        LOGGER.info("finished serializing to json");
-
-        LOGGER.info("calculated influencers: " + influencersJson);
-
         String influencersResultDirectory = HomePathGetter.getInstance().getHomePath() + "results/";
         String resultsFileName = UUID.randomUUID().toString() + ".json";
         String outputFilePath = influencersResultDirectory + resultsFileName;
         LOGGER.info("writing string to file " + outputFilePath);
 
-        writeStringToFile(outputFilePath, influencersJson);
+//        writeStringToFile(outputFilePath, sb.toString());
+//        writeStringToFile(outputFilePath, influencersJson);
 
         LOGGER.info("wrote file");
+
         request.setAttribute("outputFilePath", outputFilePath);
         request.setAttribute("rankedUsers", rankedUsers);
         request.getRequestDispatcher("ranking-result.jsp").forward(request, response);
+    }
+
+    private List<InfluenceUser> loadUsersFromDb(List<RankedUser> rankedUsers) {
+
+        List<InfluenceUser> influencersList = new ArrayList<InfluenceUser>();
+        for (RankedUser rankedUser : rankedUsers) {
+            LOGGER.info(rankedUser.toCSV());
+
+            User userFromPersistence = loadUserByScreenName(rankedUser.getScreenName());
+
+            InfluenceUser currentInfluencer = new InfluenceUser(rankedUser, userFromPersistence);
+            influencersList.add(currentInfluencer);
+        }
+        return influencersList;
     }
 
     private void writeStringToFile(String outputFilePath, String content) {
@@ -149,7 +148,6 @@ public class ScoresCalculationLauncher extends HttpServlet {
         } catch (IOException e) {
             LOGGER.error("failed writing " + outputFilePath);
             e.printStackTrace();
-            //            System.exit(-1);
         }
     }
 
@@ -166,10 +164,11 @@ public class ScoresCalculationLauncher extends HttpServlet {
         try {
             userString = this.persistenceFacade.getUser(screenName);
         } catch (UserNotPresentException e) {
-            LOGGER.error("cant find '" + screenName + "' in local persistence");
+            LOGGER.error("cant find '" + screenName + "' in local persistence: " + e.getMessage());
+            //TODO find reason why we don't have the profile locally. we should have it
         }
 
-        User user = EMPTY_USER;
+        User user = null;
         try {
             user = this.objectMapper.readValue(userString, User.class);
         } catch (IOException e) {
@@ -242,6 +241,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
     private KnnTopicScorer getKnnTopicScorer(List<String> topicTweets,
                                              List<String> outOfTopicTweets, int k) {
 
+        // build a new scorer for each requests
         KnnTopicScorer topicScorer = new KnnTopicScorer(topicTweets, outOfTopicTweets, k);
         return topicScorer;
     }

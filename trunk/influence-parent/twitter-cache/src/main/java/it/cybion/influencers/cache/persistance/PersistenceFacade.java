@@ -10,8 +10,6 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
-
-
 public class PersistenceFacade
 {
 	private static PersistenceFacade singletonInstance = null;
@@ -126,7 +124,7 @@ public class PersistenceFacade
 
 	public void putTweet(String tweetToInsertJson)
 	{
-		tweetsMongodbPersistenceFacade.putTweet(tweetToInsertJson);
+		tweetsMongodbPersistenceFacade.putTweetIfNotPresent(tweetToInsertJson);
 	}
 
 

@@ -16,7 +16,7 @@ import java.util.Map;
 public class LanguageDetectionFilter implements Filter
 {
 
-	private static final Logger logger = Logger.getLogger(LanguageDetectionFilter.class);
+	private static final Logger LOGGER = Logger.getLogger(LanguageDetectionFilter.class);
 
 	private Map<Long, List<String>> user2tweets;
 	private String profilesDir;
@@ -40,13 +40,13 @@ public class LanguageDetectionFilter implements Filter
 			DetectorFactory.loadProfile(profilesDir);
 		} catch (LangDetectException e1)
 		{
-			logger.info("Error with language profile directory. Exiting.");
-			System.exit(0);
+			LOGGER.error("Error with language profile directory. Exiting.");
+			e1.printStackTrace();
 		}
 		int userCount = 1;
 		for (Long userId : user2tweets.keySet())
 		{
-			logger.info("Analyzig language for user " + (userCount++) + "/" + user2tweets.size());
+			LOGGER.info("Analyzig language for user " + (userCount++) + "/" + user2tweets.size());
 			Map<String, Integer> languages2TweetsCount = new HashMap<String, Integer>();
 			List<String> tweets = user2tweets.get(userId);
 			for (String tweet : tweets)
@@ -57,8 +57,9 @@ public class LanguageDetectionFilter implements Filter
 					detector = DetectorFactory.create();
 				} catch (LangDetectException e1)
 				{
-					logger.info("Error with  DetectorFactory.create(). Exiting.");
-					System.exit(0);
+					LOGGER.info("Error with  DetectorFactory.create(). Exiting.");
+                    e1.printStackTrace();
+
 				}
 				detector.append(tweet);
 				String language = "";

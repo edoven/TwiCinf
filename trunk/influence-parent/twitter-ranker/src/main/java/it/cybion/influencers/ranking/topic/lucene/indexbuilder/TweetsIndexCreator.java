@@ -25,7 +25,7 @@ import java.util.List;
 
 public class TweetsIndexCreator
 {
-	private static final Logger logger = Logger.getLogger(TweetsIndexCreator.class);
+	private static final Logger LOGGER = Logger.getLogger(TweetsIndexCreator.class);
 	
 	public static Directory createSingleIndexForUsers(TwitterCache twitterFacade, String indexesRootDirPath, List<Long> usersIds)
 	{
@@ -40,12 +40,13 @@ public class TweetsIndexCreator
 			} catch (TwitterException e)
 			{
 				e.printStackTrace();
-				System.exit(0);
+//				System.exit(0);
 			}
 			catch (ProtectedUserException e)
 			{
-				logger.info("Can't get tweets for user with id "+userId+" because is protected.");
-				System.exit(0);
+				LOGGER.error(
+                        "Can't get tweets for user with id " + userId + " because is protected.");
+//				System.exit(0);
 			}
 		}
 		List<Tweet> tweets = getTweetsObjectsFromJsons(tweetsJsons);
@@ -63,7 +64,7 @@ public class TweetsIndexCreator
 		int indexesCount = 0;
 		for (Long userId : usersIds)
 		{
-			logger.info("creating index "+(indexesCount++)+"/"+usersIds.size());
+			LOGGER.info("creating index " + (indexesCount++) + "/" + usersIds.size());
 			String indexDir = indexesRootDirPath + "/" + userId;
 			try
 			{
@@ -71,7 +72,7 @@ public class TweetsIndexCreator
 			}
 			catch (ProtectedUserException e)
 			{
-				logger.info("User protected. Skipped.");
+				LOGGER.info("User protected. Skipped.");
 			}
 		}
 		return indexes;
@@ -83,11 +84,13 @@ public class TweetsIndexCreator
 		try
 		{
 			tweetsJsons = twitterFacade.getLast200Tweets(userId);
-			logger.info("creating index for user with id "+userId+" with "+tweetsJsons.size()+" tweets");
+			LOGGER.info(
+                    "creating index for user with id " + userId + " with " + tweetsJsons.size() +
+                    " tweets");
 		} catch (TwitterException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 		List<Tweet> tweets = getTweetsObjectsFromJsons(tweetsJsons);
 		tweets = UrlsExapandedTweetsTextExtractor.getUrlsExpandedTextTweets(tweets);
@@ -108,7 +111,7 @@ public class TweetsIndexCreator
 		} catch (IOException e1)
 		{
 			e1.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 		IndexWriter indexWriter = null;
 		try
@@ -117,7 +120,7 @@ public class TweetsIndexCreator
 		} catch (IOException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		for (String tweet : tweets)
@@ -133,7 +136,7 @@ public class TweetsIndexCreator
 		} catch (IOException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 		return index;
 	}
@@ -148,7 +151,7 @@ public class TweetsIndexCreator
 		} catch (IOException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 	}
 	

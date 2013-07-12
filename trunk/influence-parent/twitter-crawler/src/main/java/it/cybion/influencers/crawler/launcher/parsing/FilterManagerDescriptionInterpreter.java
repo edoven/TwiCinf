@@ -67,14 +67,15 @@ public class FilterManagerDescriptionInterpreter
 			}
 			else
 			{
-				logger.info("Sorry, I don't know any filter with this name: "+filterManagerName);
-				System.exit(0);
+                String message =
+                        "Sorry, I don't know any filter with this name: " + filterManagerName;
+                logger.error(message);
+				throw new RuntimeException(message);
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			System.exit(0);
 		}
 		return filterManger;
 	}

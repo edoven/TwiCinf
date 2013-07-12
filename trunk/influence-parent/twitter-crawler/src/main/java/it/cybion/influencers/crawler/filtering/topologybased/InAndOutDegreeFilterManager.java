@@ -46,7 +46,7 @@ public class InAndOutDegreeFilterManager extends DegreeFilterManager
 		{
 			//unexpected error
 			e.printStackTrace();
-			System.exit(0);
+
 		}
 		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(node2inDegree, inDegreeAbsoluteThreshold);
 		node2inDegree = null;
@@ -62,7 +62,6 @@ public class InAndOutDegreeFilterManager extends DegreeFilterManager
 		{
 			//unexpected error
 			e.printStackTrace();
-			System.exit(0);
 		}
 		NodeDegreeFilter outDegreeFilter = new NodeDegreeFilter(node2outDegree, outDegreeAbsoluteThreshold);
 		node2outDegree = null;

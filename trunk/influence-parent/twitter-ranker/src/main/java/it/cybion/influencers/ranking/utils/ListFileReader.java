@@ -32,7 +32,7 @@ public class ListFileReader
 		catch (IOException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
+//			System.exit(0);
 		}
 	    if (scanner!=null)
 	    	scanner.close();

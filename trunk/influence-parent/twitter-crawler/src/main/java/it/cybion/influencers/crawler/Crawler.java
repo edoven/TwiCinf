@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class Crawler
 {	
-	private Logger logger = Logger.getLogger(Crawler.class);
+	private static final Logger LOGGER = Logger.getLogger(Crawler.class);
 	
 
 	private int iterations;
@@ -34,7 +34,7 @@ public class Crawler
 	}
 	
 	
-	public void setItarations(int iterations){this.iterations = iterations;	}
+	public void setIterations(int iterations){this.iterations = iterations;	}
 	public void setGraphFacade(GraphFacade graphFacade){this.graphFacade = graphFacade;}	
 	public void setTwitterFacade(TwitterCache twitterFacade){this.twitterFacade = twitterFacade;}
 	public void setIteratingFiltersDescriptions(List<FilterManagerDescription> iteratingFiltersDescriptions){this.iteratingFiltersDescriptions = iteratingFiltersDescriptions;}
@@ -75,15 +75,15 @@ public class Crawler
 				filterManager.setGraphFacade(graphFacade);
 				filterManager.setTwitterFacade(twitterFacade);
 				filterManager.setSeedUsers(users);
-				logger.info(filterManager.toString());
+				LOGGER.info(filterManager.toString());
 				users = filterManager.filter();
 				printInfoOnResultFromFilter(users);				
 			}
 			resultsFromIterations.addAll(users);
 			
-			logger.info("### ITERATION "+(iterationIndex+1)+" is finished ###");
-			logger.info("users.size()="+users.size());
-			logger.info("resultsFromIterations.size()="+resultsFromIterations.size());
+			LOGGER.info("### ITERATION " + (iterationIndex + 1) + " is finished ###");
+			LOGGER.info("users.size()=" + users.size());
+			LOGGER.info("resultsFromIterations.size()=" + resultsFromIterations.size());
 		}
 		printInfoAfterIterationsAreFinished(resultsFromIterations);
 		
@@ -92,8 +92,8 @@ public class Crawler
 			return new ArrayList<Long>(resultsFromIterations);
 		else
 		{				
-			logger.info("#### FINALIZING FILTERS #####");
-			logger.info("");
+			LOGGER.info("#### FINALIZING FILTERS #####");
+			LOGGER.info("");
 			for (int filterIndex = 0; filterIndex < finalizationFiltersDescriptions.size(); filterIndex++)
 			{
 				FilterManagerDescription filterManagerDescription = finalizationFiltersDescriptions.get(filterIndex);
@@ -105,17 +105,17 @@ public class Crawler
 					filterManager.setSeedUsers(new ArrayList<Long>(resultsFromIterations));
 				else
 					filterManager.setSeedUsers(users);
-				logger.info(filterManager.toString());
+				LOGGER.info(filterManager.toString());
 				users = filterManager.filter();
 				printInfoOnResultFromFilter(users);
 			}
 			
 			
-			logger.info("############################################");
-			logger.info("");
-			logger.info("################# FINISHED #################");
-			logger.info("");
-			logger.info("############################################");
+			LOGGER.info("############################################");
+			LOGGER.info("");
+			LOGGER.info("################# FINISHED #################");
+			LOGGER.info("");
+			LOGGER.info("############################################");
 			return users;		
 		}
 	}
@@ -123,62 +123,62 @@ public class Crawler
 	
 	private void printInitInfo()
 	{
-		logger.info("############################################");
-		logger.info("Iterations =  " + iterations);
-		logger.info("--Iteration Filters--");
+		LOGGER.info("############################################");
+		LOGGER.info("Iterations =  " + iterations);
+		LOGGER.info("--Iteration Filters--");
 		for (int filterIndex = 0; filterIndex < iteratingFiltersDescriptions.size(); filterIndex++)
 		{
 			FilterManagerDescription filterManagerDescription = iteratingFiltersDescriptions.get(filterIndex);
 			FilterManager filterManager = FilterManagerDescriptionInterpreter.getFilterManagerFromDescription(filterManagerDescription);
-			logger.info(filterIndex + ") " + filterManager.toString());
+			LOGGER.info(filterIndex + ") " + filterManager.toString());
 		}
 
 		if (finalizationFiltersDescriptions != null)
 		{
-			logger.info("--Finalization Filters--");
+			LOGGER.info("--Finalization Filters--");
 			for (int filterIndex = 0; filterIndex < finalizationFiltersDescriptions.size(); filterIndex++)
 			{
 				FilterManagerDescription filterManagerDescription = finalizationFiltersDescriptions.get(filterIndex);
 				FilterManager filterManager = FilterManagerDescriptionInterpreter.getFilterManagerFromDescription(filterManagerDescription);
-				logger.info(filterIndex + ") " + filterManager.toString());
+				LOGGER.info(filterIndex + ") " + filterManager.toString());
 			}
 		}
-		logger.info("############################################");
-		logger.info("");
-		logger.info("");
+		LOGGER.info("############################################");
+		LOGGER.info("");
+		LOGGER.info("");
 	}
 	
 	private void printInfoOnIteration(int iterationIndex)
 	{
-		logger.info("");
-		logger.info("");
-		logger.info("");
-		logger.info("#### ITERATION " + (iterationIndex + 1) + " #####");
-		logger.info("");	
+		LOGGER.info("");
+		LOGGER.info("");
+		LOGGER.info("");
+		LOGGER.info("#### ITERATION " + (iterationIndex + 1) + " #####");
+		LOGGER.info("");
 	}
 	
 	private void printInfoOnFilter(int filterIndex, int size)
 	{
-		logger.info("");
-		logger.info("");
-		logger.info("#### filter " + (filterIndex + 1) + "/" + size + " ####");
-		logger.info("");
+		LOGGER.info("");
+		LOGGER.info("");
+		LOGGER.info("#### filter " + (filterIndex + 1) + "/" + size + " ####");
+		LOGGER.info("");
 	}
 	
 	private void printInfoAfterIterationsAreFinished(Set<Long> resultsFromIterations)
 	{
-		logger.info("");
-		logger.info("");
-		logger.info("results of iteration filters = " + resultsFromIterations);
-		logger.info("results of iteration filters size = " + resultsFromIterations.size());
-		logger.info("");
-		logger.info("");	
+		LOGGER.info("");
+		LOGGER.info("");
+		LOGGER.info("results of iteration filters = " + resultsFromIterations);
+		LOGGER.info("results of iteration filters size = " + resultsFromIterations.size());
+		LOGGER.info("");
+		LOGGER.info("");
 	}
 	
 	private void printInfoOnResultFromFilter(List<Long> users)
 	{
-		logger.info("results from filtering = " + users);
-		logger.info("number of results from filtering = " + users.size());
+		LOGGER.info("results from filtering = " + users);
+		LOGGER.info("number of results from filtering = " + users.size());
 	}
 	
 }

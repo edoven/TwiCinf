@@ -168,7 +168,7 @@ public class RankingCalculator
 		}
 		catch (TwitterException e)
 		{
-			e.printStackTrace();
+//			e.printStackTrace();
 			LOGGER.warn("Error with user with id " + userId + ". Skipped!: " + e.getMessage());
 			tweetsJsons = Collections.emptyList();
 		}

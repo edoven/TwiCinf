@@ -127,12 +127,12 @@ public class TwitterCache
                 LOGGER.error(
                         "ERROR! User with id " + userId + " can't be added to caching system: '" +
                         e.getMessage() + "'");
-                System.exit(0);
+                e.printStackTrace();
             } catch (UserNotProfileEnrichedException e) {
                 LOGGER.error(
                         "ERROR! User with id " + userId + " can't be added to caching system: '" +
                         e.getMessage() + "'");
-                System.exit(0);
+                e.printStackTrace();
             }
         }
 		return userToDescription;
@@ -174,11 +174,12 @@ public class TwitterCache
 			} catch (UserNotPresentException e)
 			{
 				LOGGER.error("ERROR! User with id " + userId + " can't be added to caching system.");
-				System.exit(0);
+                e.printStackTrace();
+
 			} catch (UserNotProfileEnrichedException e)
 			{
 				LOGGER.error("ERROR! User with id " + userId + " can't be added to caching system.");
-				System.exit(0);
+                e.printStackTrace();
 			}
 		}
 		return user2DescriptionAndStatus;
@@ -211,7 +212,7 @@ public class TwitterCache
 			} catch (UserNotPresentException e1)
 			{
 				LOGGER.info("ERROR! User with id " + userId + " can't be added to caching system.");
-				System.exit(0);
+                e.printStackTrace();
 			}
 			return getFollowers(userId);
 		}
@@ -268,7 +269,7 @@ public class TwitterCache
 			} catch (UserNotPresentException e1)
 			{
 				LOGGER.debug("ERROR! User with id " + userId + " can't be added to caching system.");
-				System.exit(0);
+                e.printStackTrace();
 			}
 			return getFriends(userId);
 		}
@@ -423,9 +424,9 @@ public class TwitterCache
 			}
 			catch (UserNotPresentException e1)
 			{
-				LOGGER.info("Error! user with screenName " + screenName +
+				LOGGER.warn("Error! user with screenName " + screenName +
                             " should have been in the cache but it is not. Check uppercase/lowercase!");
-				System.exit(0);
+                e.printStackTrace();
 				return -1L;
 			}
 			
@@ -453,9 +454,9 @@ public class TwitterCache
 					}
 					catch (UserNotPresentException e1)
 					{
-						LOGGER.info("Error! user with screenName " + screenName +
+						LOGGER.warn("Error! user with screenName " + screenName +
                                     " should have been in the cache but it is not. Check uppercase/lowercase!");
-						System.exit(0);
+                        e.printStackTrace();
 					}
 				}
 				catch (TwitterException e2)

@@ -107,7 +107,6 @@ public class InOrOutDegreeFilterManager extends DegreeFilterManager
 		} catch (UserVertexNotPresentException e)
 		{
 			e.printStackTrace();
-			System.exit(0);
 		}
 	}
 

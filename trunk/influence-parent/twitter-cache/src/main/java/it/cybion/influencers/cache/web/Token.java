@@ -16,7 +16,7 @@ import java.util.Properties;
 
 public class Token
 {
-	private static final Logger logger = Logger.getLogger(Token.class);
+	private static final Logger LOGGER = Logger.getLogger(Token.class);
 	
 	private String tokenString;
 	private String secretString;
@@ -48,16 +48,14 @@ public class Token
 		}
 		catch (IOException e)
 		{
-			logger.info("Error with file "+filePath);
+			LOGGER.error("can't read token properties from " + filePath);
 			e.printStackTrace();
-			System.exit(0);
 		}
 		String tokenString = properties.getProperty("token_string");
 		String tokenSecret = properties.getProperty("token_secret");
 		if (tokenString==null || tokenSecret==null)
 		{
-			logger.info("Error, token_string or token_secret not present in "+filePath);
-			System.exit(0);
+			LOGGER.error("Error, token_string or token_secret not present in " + filePath);
 		}
 		return new Token(tokenString, tokenSecret);
 		

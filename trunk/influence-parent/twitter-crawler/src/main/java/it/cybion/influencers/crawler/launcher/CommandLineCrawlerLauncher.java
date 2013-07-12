@@ -8,14 +8,14 @@ import java.io.IOException;
 
 public class CommandLineCrawlerLauncher
 {
-	private static final Logger logger = Logger.getLogger(CommandLineCrawlerLauncher.class);
+	private static final Logger LOGGER = Logger.getLogger(CommandLineCrawlerLauncher.class);
 	
 	public static void main(String[] args) throws IOException
 	{
 		if (args.length<1)
 		{
-			logger.info("ERROR! Usage: java -jar <this_jar> <configuration_file>");
-			System.exit(0);
+			LOGGER.error("ERROR! Usage: java -jar <this_jar> <configuration_file>");
+			System.exit(-1);
 		}
 			
 		String configurationFile = args[0];

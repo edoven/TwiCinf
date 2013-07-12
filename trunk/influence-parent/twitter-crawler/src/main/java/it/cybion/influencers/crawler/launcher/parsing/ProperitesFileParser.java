@@ -102,7 +102,7 @@ iterating_filter_1_dictionary=moda,fashion,outfit,street style,cool hunter,scarp
 public class ProperitesFileParser
 {
 
-	private static final Logger logger = Logger.getLogger(ProperitesFileParser.class);
+	private static final Logger LOGGER = Logger.getLogger(ProperitesFileParser.class);
 		
 	private enum filtersManagers
 	{
@@ -134,8 +134,9 @@ public class ProperitesFileParser
 		
 		if (seedUsersIds==null && seedUsersScreenNames==null)
 		{
-			logger.info("Error. You can't set both user ids and screen-names. Chose one.");
-			System.exit(0);
+            String message = "Error. You can't set both user ids and screen-names. Chose one.";
+            LOGGER.warn(message);
+            throw new IllegalArgumentException(message);
 		}
 		else
 		{
@@ -161,8 +162,9 @@ public class ProperitesFileParser
 						.build();
 				else
 				{
-					logger.info("Error. You must set user ids or screen-names.");
-					System.exit(0);
+                    String message = "Error. You must set user ids or screen-names.";
+                    LOGGER.error(message);
+                    throw new IllegalArgumentException(message);
 				}
 					
 			}
@@ -329,10 +331,16 @@ public class ProperitesFileParser
 			}		
 			default: 
 			{
-				logger.info("ERROR: Type of filter unknown:" + filterManagerName);
-				System.exit(0);
+				LOGGER.error(getMessage(filterManagerName));
+//                throw new IllegalArgumentException();
+//				System.exit(0);
 				return null;
 			}
 		}
 	}
+
+    private static String getMessage(String filterManagerName) {
+
+        return "ERROR: Type of filter unknown:" + filterManagerName;
+    }
 }
