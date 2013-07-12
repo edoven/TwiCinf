@@ -21,7 +21,8 @@ import java.util.List;
  * Servlet implementation class FileUploaderServlet
  */
 public class TweetsListUploader extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 1L;
 
     private static final Logger LOGGER = Logger.getLogger(TweetsListUploader.class);
 
@@ -29,21 +30,23 @@ public class TweetsListUploader extends HttpServlet {
      * @see HttpServlet#HttpServlet()
      */
     public TweetsListUploader() {
+
         super();
         // TODO Auto-generated constructor stub
     }
 
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
-		DiskFileItemFactory factory = new DiskFileItemFactory();
+        DiskFileItemFactory factory = new DiskFileItemFactory();
 
-		// Configure a repository (to ensure a secure temp location is used)
-		ServletContext servletContext = this.getServletConfig().getServletContext();
-		File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
-		factory.setRepository(repository);
+        // Configure a repository (to ensure a secure temp location is used)
+        ServletContext servletContext = this.getServletConfig().getServletContext();
+        File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
+        factory.setRepository(repository);
 
         // Create a new file upload handler
         ServletFileUpload upload = new ServletFileUpload(factory);
@@ -64,6 +67,5 @@ public class TweetsListUploader extends HttpServlet {
             e.printStackTrace();
         }
     }
-	
 
 }

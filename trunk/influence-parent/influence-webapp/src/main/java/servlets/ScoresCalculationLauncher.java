@@ -42,6 +42,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
     private PersistenceFacade persistenceFacade;
 
     public ScoresCalculationLauncher() {
+
         super();
         this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -124,7 +125,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
         LOGGER.info("calculated influencers: " + influencersJson);
 
-        String influencersResultDirectory = HomePathGetter.getInstance().getHomePath() + "results/" ;
+        String influencersResultDirectory = HomePathGetter.getInstance().getHomePath() + "results/";
         String resultsFileName = UUID.randomUUID().toString() + ".json";
         String outputFilePath = influencersResultDirectory + resultsFileName;
         LOGGER.info("writing string to file " + outputFilePath);
@@ -148,7 +149,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
         } catch (IOException e) {
             LOGGER.error("failed writing " + outputFilePath);
             e.printStackTrace();
-//            System.exit(-1);
+            //            System.exit(-1);
         }
     }
 
@@ -165,7 +166,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
         try {
             userString = this.persistenceFacade.getUser(screenName);
         } catch (UserNotPresentException e) {
-            LOGGER.error("cant find '" + screenName +"' in local persistence");
+            LOGGER.error("cant find '" + screenName + "' in local persistence");
         }
 
         User user = EMPTY_USER;
@@ -178,8 +179,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
         return user;
     }
 
-    private List<String> getOutOfTopicTweets(HttpServletRequest request)
-	{
+    private List<String> getOutOfTopicTweets(HttpServletRequest request) {
 
         String topicFile = request.getParameter("topicFile");
         //		String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
@@ -195,25 +195,22 @@ public class ScoresCalculationLauncher extends HttpServlet {
             e.printStackTrace();
         }
 
-        for (Entry<Object, Object> propertyEntry : properties.entrySet())
-		{
-			String key = (String)propertyEntry.getKey();
+        for (Entry<Object, Object> propertyEntry : properties.entrySet()) {
+            String key = (String) propertyEntry.getKey();
 
             if (key.startsWith("outOfTopic")) {
-				listFiles.add((String)propertyEntry.getValue());
+                listFiles.add((String) propertyEntry.getValue());
             }
-		}
-
-		List<String> tweets = new ArrayList<String>();
-		for (String filtFile : listFiles) {
-			tweets.addAll(getTweetsFromFile(filtFile));
         }
-		return tweets;
-	}
 
+        List<String> tweets = new ArrayList<String>();
+        for (String filtFile : listFiles) {
+            tweets.addAll(getTweetsFromFile(filtFile));
+        }
+        return tweets;
+    }
 
-	private List<String> getTopicTweets(HttpServletRequest request)
-	{
+    private List<String> getTopicTweets(HttpServletRequest request) {
         //		String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
         String topicFile = request.getParameter("topicFile");
         String fullFilePath = topicFile;
@@ -236,11 +233,11 @@ public class ScoresCalculationLauncher extends HttpServlet {
         }
 
         List<String> tweets = new ArrayList<String>();
-		for (String filtFile : listFiles) {
-			tweets.addAll(getTweetsFromFile(filtFile));
+        for (String filtFile : listFiles) {
+            tweets.addAll(getTweetsFromFile(filtFile));
         }
-		return tweets;
-	}
+        return tweets;
+    }
 
     private KnnTopicScorer getKnnTopicScorer(List<String> topicTweets,
                                              List<String> outOfTopicTweets, int k) {
@@ -249,32 +246,31 @@ public class ScoresCalculationLauncher extends HttpServlet {
         return topicScorer;
     }
 
-    private TwitterCache getTwitterCacheFromProperties(Properties properties) throws UnknownHostException
-	{
-		
-		String mongodbHost = properties.getProperty("mongodb_host");
-		String mongodbTwitterDb = properties.getProperty("mongodb_db");
-		PersistenceFacade persistenceFacade = PersistenceFacade.getInstance(mongodbHost,
+    private TwitterCache getTwitterCacheFromProperties(Properties properties)
+            throws UnknownHostException {
+
+        String mongodbHost = properties.getProperty("mongodb_host");
+        String mongodbTwitterDb = properties.getProperty("mongodb_db");
+        PersistenceFacade persistenceFacade = PersistenceFacade.getInstance(mongodbHost,
                 mongodbTwitterDb);
 
-		String applicationTokenPath = properties.getProperty("application_token_path");
-		Token applicationToken = new Token(applicationTokenPath);	
-		List<Token> userTokens = new ArrayList<Token>();	
-		int i=0;
-		String userTokenPath;
-		while ((userTokenPath =  properties.getProperty("user_token_"+i+"_path")) != null)
-		{
-			userTokens.add(new Token(userTokenPath));
-			i++;
-		}
-		WebFacade webFacade = WebFacade.getInstance(applicationToken, userTokens);
-			
-		return TwitterCache.getInstance(webFacade, persistenceFacade);
-	}
-	
-	private Properties getPropertiesFromFile(String filePath)
-	{
-		InputStream inputStream;
+        String applicationTokenPath = properties.getProperty("application_token_path");
+        Token applicationToken = new Token(applicationTokenPath);
+        List<Token> userTokens = new ArrayList<Token>();
+        int i = 0;
+        String userTokenPath;
+        while ((userTokenPath = properties.getProperty("user_token_" + i + "_path")) != null) {
+            userTokens.add(new Token(userTokenPath));
+            i++;
+        }
+        WebFacade webFacade = WebFacade.getInstance(applicationToken, userTokens);
+
+        return TwitterCache.getInstance(webFacade, persistenceFacade);
+    }
+
+    private Properties getPropertiesFromFile(String filePath) {
+
+        InputStream inputStream;
         try {
             inputStream = new FileInputStream(new File(filePath));
             Properties properties = new Properties();
@@ -288,106 +284,91 @@ public class ScoresCalculationLauncher extends HttpServlet {
             e.printStackTrace();
         }
         return null;
-	}
-	
-//	private boolean getUrlsResolution(HttpServletRequest request)
-//	{
-//		String urlsResolution = request.getParameter("urlsResolution");
-//		if ( urlsResolution.equals("true") )
-//			return true;
-//		else
-//			return false;
-//	}
-	
-	private int getTweetsPerDocument(HttpServletRequest request)
-	{
-		String tweetsPerDocumentString = request.getParameter("tweetsPerDocument");
-		return Integer.parseInt(tweetsPerDocumentString);
-	}
-	
-	private int getK(HttpServletRequest request)
-	{
-		String kString = request.getParameter("k");
-		return Integer.parseInt(kString);
-	}
-	
-	
-	private Date getFromDate(HttpServletRequest request)
-	{
-		String fromDateyearString = request.getParameter("fromDateYear");
-		String fromDateMonthString = request.getParameter("fromDateMonth");
-		String fromDateDayString = request.getParameter("fromDateDay");
-		int year = Integer.parseInt(fromDateyearString);
-		int month = Integer.parseInt(fromDateMonthString);
-		int day = Integer.parseInt(fromDateDayString);		
-		Date fromDate   = CalendarManager.getDate(year, month, day);		
-		return fromDate;
-	}
-	
-	private Date getToDate(HttpServletRequest request)
-	{
-		String toDateYearString = request.getParameter("toDateYear");
-		String toDateMonthString = request.getParameter("toDateMonth");
-		String toDateDayString = request.getParameter("toDateDay");
-		int year = Integer.parseInt(toDateYearString);
-		int month = Integer.parseInt(toDateMonthString);
-		int day = Integer.parseInt(toDateDayString);		
-		Date toDate   = CalendarManager.getDate(year, month, day);
-		return toDate;
-	}
-	
-	
-	private List<Long> getUsersIdsFromFile(String listFilePath)
-	{
-		List<Long> ids = new ArrayList<Long>();
-		try
-		{
-			BufferedReader fileReader = new BufferedReader(new FileReader(listFilePath));
-			String currentLine =  fileReader.readLine();
-			while (currentLine != null) 
-			{
-				LOGGER.debug(currentLine);
-				long id = Long.parseLong(currentLine);
-				ids.add(id);
-				currentLine =  fileReader.readLine();
-			}
-			fileReader.close();
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		return ids;
-	}
-	
-	
-	private List<String> getTweetsFromFile(String listFilePath)
-	{
-		List<String> tweets = new ArrayList<String>();
-		try
-		{
-			BufferedReader fileReader = new BufferedReader(new FileReader(listFilePath));
-			String currentLine =  fileReader.readLine();
-			while (currentLine != null) 
-			{			
-				tweets.add(currentLine);
-				currentLine =  fileReader.readLine();
-			}
-			fileReader.close();
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		return tweets;
-	}
+    }
+
+    //	private boolean getUrlsResolution(HttpServletRequest request)
+    //	{
+    //		String urlsResolution = request.getParameter("urlsResolution");
+    //		if ( urlsResolution.equals("true") )
+    //			return true;
+    //		else
+    //			return false;
+    //	}
+
+    private int getTweetsPerDocument(HttpServletRequest request) {
+
+        String tweetsPerDocumentString = request.getParameter("tweetsPerDocument");
+        return Integer.parseInt(tweetsPerDocumentString);
+    }
+
+    private int getK(HttpServletRequest request) {
+
+        String kString = request.getParameter("k");
+        return Integer.parseInt(kString);
+    }
+
+    private Date getFromDate(HttpServletRequest request) {
+
+        String fromDateyearString = request.getParameter("fromDateYear");
+        String fromDateMonthString = request.getParameter("fromDateMonth");
+        String fromDateDayString = request.getParameter("fromDateDay");
+        int year = Integer.parseInt(fromDateyearString);
+        int month = Integer.parseInt(fromDateMonthString);
+        int day = Integer.parseInt(fromDateDayString);
+        Date fromDate = CalendarManager.getDate(year, month, day);
+        return fromDate;
+    }
+
+    private Date getToDate(HttpServletRequest request) {
+
+        String toDateYearString = request.getParameter("toDateYear");
+        String toDateMonthString = request.getParameter("toDateMonth");
+        String toDateDayString = request.getParameter("toDateDay");
+        int year = Integer.parseInt(toDateYearString);
+        int month = Integer.parseInt(toDateMonthString);
+        int day = Integer.parseInt(toDateDayString);
+        Date toDate = CalendarManager.getDate(year, month, day);
+        return toDate;
+    }
+
+    private List<Long> getUsersIdsFromFile(String listFilePath) {
+
+        List<Long> ids = new ArrayList<Long>();
+        try {
+            BufferedReader fileReader = new BufferedReader(new FileReader(listFilePath));
+            String currentLine = fileReader.readLine();
+            while (currentLine != null) {
+                LOGGER.debug(currentLine);
+                long id = Long.parseLong(currentLine);
+                ids.add(id);
+                currentLine = fileReader.readLine();
+            }
+            fileReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ids;
+    }
+
+    private List<String> getTweetsFromFile(String listFilePath) {
+
+        List<String> tweets = new ArrayList<String>();
+        try {
+            BufferedReader fileReader = new BufferedReader(new FileReader(listFilePath));
+            String currentLine = fileReader.readLine();
+            while (currentLine != null) {
+                tweets.add(currentLine);
+                currentLine = fileReader.readLine();
+            }
+            fileReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return tweets;
+    }
 
 }

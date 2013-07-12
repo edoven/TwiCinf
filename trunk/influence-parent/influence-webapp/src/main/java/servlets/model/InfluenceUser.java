@@ -12,7 +12,9 @@ public class InfluenceUser {
 
     private User twitterUser;
 
-    public InfluenceUser() {}
+    public InfluenceUser() {
+
+    }
 
     public InfluenceUser(RankedUser rankedUser, User twitterUser) {
 
