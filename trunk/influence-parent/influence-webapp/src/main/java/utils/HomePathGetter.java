@@ -8,23 +8,30 @@ import java.util.Properties;
 public class HomePathGetter {
 
     private final String CRAWNKER_HOME_PROPERTY_KEY = "CRAWNKER_HOME";
-    private final String webappRootDir = this.getClass().getResource("/").getPath();
-    private final String CONFIG_FILE_PATH = webappRootDir + "../../config/webapp.config";
+
+    private final String webappRootDir;
+
+    private final String CONFIG_FILE_PATH;
 
     private static HomePathGetter instance = null;
     private String homePath;
 
     private HomePathGetter() {
 
+        this.webappRootDir = this.getClass().getResource("/").getPath();
+        this.CONFIG_FILE_PATH = this.webappRootDir + "../../config/webapp.properties";
+
         Properties properties = new Properties();
         try {
             properties.load(new FileInputStream(CONFIG_FILE_PATH));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            String emsg = "cant find " + CONFIG_FILE_PATH + " file";
+            throw new RuntimeException(emsg, e);
         } catch (IOException e) {
-            e.printStackTrace();
+            String emsg = "cant read " + CONFIG_FILE_PATH + " file";
+            throw new RuntimeException(emsg, e);
         }
-        homePath = properties.getProperty(CRAWNKER_HOME_PROPERTY_KEY);
+        this.homePath = properties.getProperty(CRAWNKER_HOME_PROPERTY_KEY);
     }
 
     public String getHomePath() {

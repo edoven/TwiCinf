@@ -13,10 +13,7 @@
 </head>
 <body>
 
-	
-	
-	
-	<form action="ScoresCalculationLauncher" method="get">
+	<form action="ScoresCalculationLauncher" method="GET">
 		<%
 			String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
 			String usersListsFolderPath = CRAWNKER_HOME+"crawling/output/";
@@ -52,7 +49,7 @@
 			  <option value="6">6</option>
 			  <option value="7">7</option>
 			  <option value="8">8</option>
-			  <option value="9">9</option>
+			  <option value="9" selected="selected">9</option>
 			  <option value="10">10</option>
 			  <option value="11">11</option>
 			  <option value="12">12</option>
@@ -84,7 +81,7 @@
 			  <option value="4">april</option>
 			  <option value="5">may</option>
 			  <option value="6">june</option>
-			  <option value="7">july</option>
+			  <option value="7" selected="selected">july</option>
 			  <option value="8">august</option>
 			  <option value="9">september</option>
 			  <option value="10">october</option>
@@ -113,7 +110,7 @@
 			  <option value="7">7</option>
 			  <option value="8">8</option>
 			  <option value="9">9</option>
-			  <option value="10">10</option>
+			  <option value="10" selected="selected">10</option>
 			  <option value="11">11</option>
 			  <option value="12">12</option>
 			  <option value="13">13</option>
@@ -144,7 +141,7 @@
 			  <option value="4">april</option>
 			  <option value="5">may</option>
 			  <option value="6">june</option>
-			  <option value="7">july</option>
+			  <option value="7" selected="selected">july</option>
 			  <option value="8">august</option>
 			  <option value="9">september</option>
 			  <option value="10">october</option>

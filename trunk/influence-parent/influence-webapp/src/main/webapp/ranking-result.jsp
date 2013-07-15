@@ -17,6 +17,22 @@
 
         out.println("<a href=\"FileViewer?file="+outputFilePath+"\">"+outputFilePath+"</a>");
 
+        %>
+
+        <form action="InfluencersWriter" method="GET">
+
+        <p>
+        What Java primitive type best describes your personality:
+        <select name="fileName">
+          <option value="int">int</option>
+          <option value="long">long</option>
+        </select>
+        <br>
+        <input type="submit" value="Write influencers' full profiles to a json file">
+        </form>
+
+        <%
+
 		out.println("<p></p>");
 
 		out.println("<p>screenName,followersCount,originalTweets,topicTweetsCount,topicTweetsRatio,AVGTopicRetweetsCount</p>");

@@ -19,6 +19,7 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import servlets.model.InfluenceUser;
 import utils.HomePathGetter;
+import utils.PropertiesLoader;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -38,8 +39,6 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(ScoresCalculationLauncher.class);
 
-    private static String CRAWNKER_HOME = "";
-
     private PersistenceFacade persistenceFacade;
 
     private TwitterCache twitterCache;
@@ -48,7 +47,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
     private ObjectMapper objectMapper;
 
-    private String influencersResultDirectory;
+    private PropertiesLoader pl;
 
     public ScoresCalculationLauncher() {
 
@@ -59,9 +58,8 @@ public class ScoresCalculationLauncher extends HttpServlet {
     @Override
     public void init() throws ServletException {
 
-        this.CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
-
-        this.properties = loadProperties();
+        this.pl = new PropertiesLoader();
+        this.properties = this.pl.loadGeneralProperties();
 
         this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -88,8 +86,6 @@ public class ScoresCalculationLauncher extends HttpServlet {
             String emsg = "can't initialise twitter cache";
             throw new ServletException(emsg, e);
         }
-
-        this.influencersResultDirectory = this.CRAWNKER_HOME + "results/";
 
         LOGGER.info("servlet initialized");
     }
@@ -154,7 +150,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
         //write results to file
         final String resultsFileName = UUID.randomUUID().toString() + ".json";
-        final String influencersOutputFilePath = this.influencersResultDirectory + resultsFileName;
+        final String influencersOutputFilePath = this.pl.getResultsDirectory() + resultsFileName;
 
         LOGGER.info(
                 "writing string '" + rankedUsersAsJson + "' to file " + influencersOutputFilePath);
@@ -194,32 +190,6 @@ public class ScoresCalculationLauncher extends HttpServlet {
             influencersList.add(currentInfluencer);
         }
         return influencersList;
-    }
-
-    private Properties loadProperties() throws ServletException {
-
-        String generalConfigFilePath = this.CRAWNKER_HOME + "general.config";
-        return getPropertiesFromFile(generalConfigFilePath);
-    }
-
-    //TODO use FileHelper
-    private Properties getPropertiesFromFile(String filePath) throws ServletException {
-
-        InputStream inputStream;
-        try {
-            inputStream = new FileInputStream(new File(filePath));
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            return properties;
-        } catch (FileNotFoundException e) {
-            final String message = "missing file: '" + filePath + "' " + e.getMessage();
-            LOGGER.error(message);
-            throw new ServletException(message, e);
-        } catch (IOException e) {
-            final String message = "can't read file: '" + filePath + "' " + e.getMessage();
-            LOGGER.error(message);
-            throw new ServletException(message);
-        }
     }
 
     private User loadUserByScreenName(String screenName) {
