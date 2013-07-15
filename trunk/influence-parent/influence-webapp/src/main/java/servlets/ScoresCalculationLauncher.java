@@ -178,40 +178,6 @@ public class ScoresCalculationLauncher extends HttpServlet {
         Files.write(fileContent, destinationFile, Charsets.UTF_8);
     }
 
-    private List<InfluenceUser> loadUsersFromDb(List<RankedUser> rankedUsers) {
-
-        List<InfluenceUser> influencersList = new ArrayList<InfluenceUser>();
-        for (RankedUser rankedUser : rankedUsers) {
-            LOGGER.info(rankedUser.toCSV());
-
-            User userFromPersistence = loadUserByScreenName(rankedUser.getScreenName());
-
-            InfluenceUser currentInfluencer = new InfluenceUser(rankedUser, userFromPersistence);
-            influencersList.add(currentInfluencer);
-        }
-        return influencersList;
-    }
-
-    private User loadUserByScreenName(String screenName) {
-
-        String userString = "";
-        try {
-            userString = this.persistenceFacade.getUser(screenName);
-        } catch (UserNotPresentException e) {
-            LOGGER.error("cant find '" + screenName + "' in local persistence: " + e.getMessage());
-            //TODO find reason why we don't have the profile locally. we should have it
-        }
-
-        User user = null;
-        try {
-            user = this.objectMapper.readValue(userString, User.class);
-        } catch (IOException e) {
-            LOGGER.error("cant deserialize json to user: " + userString + "");
-        }
-
-        return user;
-    }
-
     private List<String> getOutOfTopicTweets(HttpServletRequest request) throws ServletException {
 
         String topicFile = request.getParameter("topicFile");

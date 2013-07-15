@@ -5,6 +5,7 @@ import com.google.common.io.Files;
 import it.cybion.commons.FileHelper;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.PersistenceFacadeException;
+import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentException;
 import it.cybion.influencers.ranking.RankedUser;
 import it.cybion.model.twitter.User;
 import org.apache.log4j.Logger;
@@ -100,8 +101,9 @@ public class InfluencersWriter extends HttpServlet {
         List<InfluenceUser> influenceUsers = new ArrayList<InfluenceUser>();
 
         for (RankedUser currentUser : rankedUserList) {
-            //TODO load user from persistence
-            final User fromPersistence = new User.Users(999L).withScreenName("fakeName").build();
+            final String screenName = currentUser.getScreenName();
+            LOGGER.info("loading user '" + screenName + "'");
+            final User fromPersistence = loadUserByScreenName(screenName);
             final InfluenceUser influencer = new InfluenceUser(currentUser, fromPersistence);
             influenceUsers.add(influencer);
         }
@@ -127,6 +129,26 @@ public class InfluencersWriter extends HttpServlet {
 
         final File destinationFile = new File(filenamePath);
         Files.write(fileContent, destinationFile, Charsets.UTF_8);
+    }
+
+    private User loadUserByScreenName(String screenName) {
+
+        String userString = "";
+        try {
+            userString = this.persistenceFacade.getUser(screenName);
+        } catch (UserNotPresentException e) {
+            LOGGER.error("cant find '" + screenName + "' in local persistence: " + e.getMessage());
+            //TODO find reason why we don't have the profile locally. we should have it
+        }
+
+        User user = null;
+        try {
+            user = this.objectMapper.readValue(userString, User.class);
+        } catch (IOException e) {
+            LOGGER.error("cant deserialize json to user: " + userString + "");
+        }
+
+        return user;
     }
 
 }
