@@ -27,6 +27,8 @@ public class InfluencersWriter extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(InfluencersWriter.class);
 
+    private PropertiesLoader pl;
+
     private PersistenceFacade persistenceFacade;
 
     private Properties properties;
@@ -36,8 +38,8 @@ public class InfluencersWriter extends HttpServlet {
     @Override
     public void init() throws ServletException {
 
-        final PropertiesLoader pl = new PropertiesLoader();
-        this.properties = pl.loadGeneralProperties();
+        this.pl = new PropertiesLoader();
+        this.properties = this.pl.loadGeneralProperties();
 
         this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -71,15 +73,17 @@ public class InfluencersWriter extends HttpServlet {
             throws ServletException, IOException {
 
         LOGGER.info("got request params: " + request.getParameterNames());
-        String fileName = request.getParameter("fileName");
-        LOGGER.info("got parameter value: " + fileName);
+        final String fileName = request.getParameter("rankedUsersFileName");
+
+        LOGGER.info("about to read file: " + fileName);
+        LOGGER.info("and write output to path: '" + this.pl.getInfluencersResultsDirectory() + "'");
+        final String influencersFilePath = this.pl.getInfluencersResultsDirectory() + fileName;
+        LOGGER.info("full influencers filepath: '" + influencersFilePath + "'");
 
         //get input param from params
-
         //get output param
 
-        String outputFilePath = fileName + " fake! TODO";
-        request.setAttribute("outputFilePath", outputFilePath);
+        request.setAttribute("influencersFilePath", influencersFilePath);
         final RequestDispatcher requestDispatcher = request.getRequestDispatcher(
                 "influencers-result.jsp");
         requestDispatcher.forward(request, response);

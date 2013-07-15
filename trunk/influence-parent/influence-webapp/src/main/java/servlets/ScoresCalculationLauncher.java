@@ -144,7 +144,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
         try {
             rankedUsersAsJson = this.objectMapper.writeValueAsString(rankedUsers);
         } catch (IOException e) {
-            throw new ServletException("", e);
+            throw new ServletException("cant serialize rankedUsers to json " + rankedUsers, e);
         }
 
         //write results to file

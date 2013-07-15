@@ -9,8 +9,11 @@
 	</head>
 	<body>
 		<%
-		String outputFilePath = (String)request.getAttribute("outputFilePath");
-		out.print("<p>Ouput written to: "+outputFilePath+"</p>");
+		String influencersFilePath = (String)request.getAttribute("influencersFilePath");
+		%>
+		<p>Wrote json influencers profiles to file: <%=influencersFilePath%></p>
+		<%
+		out.println("<a href=\"FileViewer?file="+influencersFilePath+"\">"+influencersFilePath+"</a>");
 		%>
 	</body>
 </html>

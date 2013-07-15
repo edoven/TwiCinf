@@ -19,11 +19,6 @@ public class PropertiesLoader {
 
     private final String rankedUsersResultsDirectory;
 
-    public String getInfluencersResultsDirectory() {
-
-        return influencersResultsDirectory;
-    }
-
     private final String influencersResultsDirectory;
 
     public PropertiesLoader() {
@@ -66,5 +61,10 @@ public class PropertiesLoader {
     public String getRankedUsersResultsDirectory() {
 
         return rankedUsersResultsDirectory;
+    }
+
+    public String getInfluencersResultsDirectory() {
+
+        return influencersResultsDirectory;
     }
 }

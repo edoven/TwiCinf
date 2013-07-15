@@ -19,10 +19,9 @@
         %>
 
         <form action="InfluencersWriter" method="GET">
-
         <p>
         Click to get Ranked Users full profile:
-        <select name="fileName">
+        <select name="rankedUsersFileName">
           <option value="<%= rankedUsersFilename %>"><%= rankedUsersFilename %></option>
         </select>
         <br/>
@@ -30,6 +29,7 @@
         </form>
 
         <p></p>
+
         <%
 		out.println("<p>screenName,followersCount,originalTweets,topicTweetsCount,topicTweetsRatio,AVGTopicRetweetsCount</p>");
 		%>
