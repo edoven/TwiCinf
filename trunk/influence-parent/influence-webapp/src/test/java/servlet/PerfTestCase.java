@@ -90,7 +90,6 @@ public class PerfTestCase {
                 LOGGER.error("user '" + screenName + "' not present: " + e.getMessage());
             }
         }
-        LOGGER.info("created instances: " + User.instanceCount);
 
         String influencersAsJson = "";
 
@@ -147,13 +146,11 @@ public class PerfTestCase {
             try {
                 User user = objectMapper.readValue(jsonUser, User.class);
                 LOGGER.info(user.getScreenName());
-                LOGGER.info("global count: " + User.instanceCount);
 
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
             }
         }
-        LOGGER.info("final global count: " + User.instanceCount);
     }
 
 }
