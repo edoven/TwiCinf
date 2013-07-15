@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import servlets.model.InfluenceUser;
-import utils.HomePathGetter;
 import utils.PropertiesLoader;
 
 import javax.servlet.RequestDispatcher;
@@ -149,23 +148,24 @@ public class ScoresCalculationLauncher extends HttpServlet {
         }
 
         //write results to file
-        final String resultsFileName = UUID.randomUUID().toString() + ".json";
-        final String influencersOutputFilePath = this.pl.getResultsDirectory() + resultsFileName;
+        final String rankedUsersFilename = UUID.randomUUID().toString() + ".json";
+        final String rankedUsersOutputFilePath = this.pl.getRankedUsersResultsDirectory() + rankedUsersFilename;
 
         LOGGER.info(
-                "writing string '" + rankedUsersAsJson + "' to file " + influencersOutputFilePath);
+                "writing string '" + rankedUsersAsJson + "' to file " + rankedUsersOutputFilePath);
 
         try {
-            writeStringToFile(influencersOutputFilePath, rankedUsersAsJson);
+            writeStringToFile(rankedUsersOutputFilePath, rankedUsersAsJson);
         } catch (IOException e) {
             throw new ServletException(
-                    "cant write to file '" + influencersOutputFilePath + "' these contents: '" +
+                    "cant write to file '" + rankedUsersOutputFilePath + "' these contents: '" +
                     rankedUsersAsJson + "'", e);
         }
 
-        LOGGER.info("wrote file: '" + influencersOutputFilePath + "' - dispatching to view");
+        LOGGER.info("wrote file: '" + rankedUsersOutputFilePath + "' - dispatching to view");
 
-        request.setAttribute("outputFilePath", influencersOutputFilePath);
+        request.setAttribute("rankedUsersOutputFilePath", rankedUsersOutputFilePath);
+        request.setAttribute("rankedUsersFilename", rankedUsersFilename);
         request.setAttribute("rankedUsers", rankedUsers);
         final RequestDispatcher requestDispatcher = request.getRequestDispatcher(
                 "ranking-result.jsp");

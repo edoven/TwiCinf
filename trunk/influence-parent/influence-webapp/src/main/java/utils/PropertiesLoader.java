@@ -17,11 +17,20 @@ public class PropertiesLoader {
 
     private final String crawnkerHome;
 
-    private final String resultsDirectory;
+    private final String rankedUsersResultsDirectory;
+
+    public String getInfluencersResultsDirectory() {
+
+        return influencersResultsDirectory;
+    }
+
+    private final String influencersResultsDirectory;
 
     public PropertiesLoader() {
         this.crawnkerHome = HomePathGetter.getInstance().getHomePath();
-        this.resultsDirectory = this.crawnkerHome + "results/";
+        this.rankedUsersResultsDirectory = this.crawnkerHome + "results/";
+        this.influencersResultsDirectory = this.crawnkerHome + "influencers/";
+
     }
 
     public Properties loadGeneralProperties() throws ServletException {
@@ -54,8 +63,8 @@ public class PropertiesLoader {
         return crawnkerHome;
     }
 
-    public String getResultsDirectory() {
+    public String getRankedUsersResultsDirectory() {
 
-        return resultsDirectory;
+        return rankedUsersResultsDirectory;
     }
 }

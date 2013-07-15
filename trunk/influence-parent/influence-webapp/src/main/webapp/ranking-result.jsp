@@ -11,39 +11,37 @@
 	<body>
 
 		<%
+        String rankedUsersFilename = (String)request.getAttribute("rankedUsersFilename");
+        String rankedUsersOutputFilePath = (String)request.getAttribute("rankedUsersOutputFilePath");
 
-        String outputFilePath = (String)request.getAttribute("outputFilePath");
-		out.println("<p>influencers file results: " + outputFilePath + "</p>");
-
-        out.println("<a href=\"FileViewer?file="+outputFilePath+"\">"+outputFilePath+"</a>");
-
+		out.println("<p>influencers file results: " + rankedUsersOutputFilePath + "</p>");
+        out.println("<a href=\"FileViewer?file="+rankedUsersOutputFilePath+"\">"+rankedUsersOutputFilePath+"</a>");
         %>
 
         <form action="InfluencersWriter" method="GET">
 
         <p>
-        What Java primitive type best describes your personality:
+        Click to get Ranked Users full profile:
         <select name="fileName">
-          <option value="int">int</option>
-          <option value="long">long</option>
+          <option value="<%= rankedUsersFilename %>"><%= rankedUsersFilename %></option>
         </select>
-        <br>
-        <input type="submit" value="Write influencers' full profiles to a json file">
+        <br/>
+        <input type="submit" value="Load full Influencers Profile">
         </form>
 
+        <p></p>
         <%
-
-		out.println("<p></p>");
-
 		out.println("<p>screenName,followersCount,originalTweets,topicTweetsCount,topicTweetsRatio,AVGTopicRetweetsCount</p>");
-		out.println("<p></p>");
+		%>
+		<p></p>
 
+		<%
 		List<RankedUser> rankedUsers = (List<RankedUser>)request.getAttribute("rankedUsers");
 
 		for (RankedUser rankedUser : rankedUsers) {
 			out.println("<p>"+rankedUser.toCSV()+"</p>");
         }
-
 		%>
+
 	</body>
 </html>
