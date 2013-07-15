@@ -17,10 +17,10 @@ import java.util.Map;
 
 
 
-public class Neo4jGraphFacadeDegreeCalculationTEST
+public class Neo4jGraphFacadeDegreeCalculationTestCase
 {
 
-	private static final Logger logger = Logger.getLogger(Neo4jGraphFacadeDegreeCalculationTEST.class);
+	private static final Logger LOGGER = Logger.getLogger(Neo4jGraphFacadeDegreeCalculationTestCase.class);
 
 	@Test(enabled = true)
 	public void calculateInDegreeTEST() throws IOException, UserVertexNotPresentException, InDegreeNotSetException
@@ -92,7 +92,7 @@ public class Neo4jGraphFacadeDegreeCalculationTEST
 			if (file.list().length == 0)
 			{
 				file.delete();
-				logger.info("Directory is deleted : " + file.getAbsolutePath());
+				LOGGER.info("Directory is deleted : " + file.getAbsolutePath());
 			} else
 			{
 				// list all the directory contents
@@ -109,14 +109,14 @@ public class Neo4jGraphFacadeDegreeCalculationTEST
 				if (file.list().length == 0)
 				{
 					file.delete();
-					logger.info("Directory is deleted : " + file.getAbsolutePath());
+					LOGGER.info("Directory is deleted : " + file.getAbsolutePath());
 				}
 			}
 		} else
 		{
 			// if file, then delete it
 			file.delete();
-			logger.info("File is deleted : " + file.getAbsolutePath());
+			LOGGER.info("File is deleted : " + file.getAbsolutePath());
 		}
 	}
 

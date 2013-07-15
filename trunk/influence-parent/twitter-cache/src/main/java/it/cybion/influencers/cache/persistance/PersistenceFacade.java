@@ -17,17 +17,24 @@ public class PersistenceFacade
 	private UsersPersistenceFacade usersMongodbPersistanceFacade;
 	private TweetsPersistenceFacade tweetsMongodbPersistenceFacade;
 	
-	public static PersistenceFacade getInstance(String host, String database) throws UnknownHostException
+	public static PersistenceFacade getInstance(String host, String database) throws PersistenceFacadeException
 	{
 		if (singletonInstance == null)
 			singletonInstance = new PersistenceFacade(host, database);
 		return singletonInstance;
 	}
 	
-	private PersistenceFacade(String host, String database) throws UnknownHostException
+	private PersistenceFacade(String host, String database) throws PersistenceFacadeException
 	{
-		MongoClient mongoClient = new MongoClient(host);
-		DB db = mongoClient.getDB(database);
+
+        MongoClient mongoClient = null;
+        try {
+            mongoClient = new MongoClient(host);
+        } catch (UnknownHostException e) {
+            String emsg = "can't create a mongoClient connected to host: " + host;
+            throw new PersistenceFacadeException(emsg, e);
+        }
+        DB db = mongoClient.getDB(database);
 		DBCollection userCollection = db.getCollection("users");
 		userCollection.createIndex(new BasicDBObject("id", 1));		
 		DBCollection tweetsCollection = db.getCollection("tweets");

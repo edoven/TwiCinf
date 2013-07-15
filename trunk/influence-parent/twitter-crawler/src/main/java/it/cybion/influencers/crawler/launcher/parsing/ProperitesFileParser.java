@@ -2,6 +2,7 @@ package it.cybion.influencers.crawler.launcher.parsing;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
+import it.cybion.influencers.cache.persistance.exceptions.PersistenceFacadeException;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.crawler.Crawler;
@@ -93,8 +94,6 @@ iterating_filter_1_dictionary=moda,fashion,outfit,street style,cool hunter,scarp
 #finalizing_filter_0_language=it
 #finalizing_filter_0_languageProfilesDir=/opt/langDetect/profiles
 
-
-
  * 
  */
 
@@ -123,9 +122,15 @@ public class ProperitesFileParser
 	
 	public static Crawler getCrawlerFromProperties(Properties properties) throws IOException
 	{
-		int iterations = getIterations(properties);		
-		TwitterCache twitterFacade = getTwitterFacade(properties);	
-		GraphFacade graphFacade = getGraphFacade(properties);
+		int iterations = getIterations(properties);
+        TwitterCache twitterFacade = null;
+        try {
+            twitterFacade = getTwitterFacade(properties);
+        } catch (PersistenceFacadeException e) {
+            String emsg = "failed loading twitter facade from properties";
+            throw new IOException(emsg, e);
+        }
+        GraphFacade graphFacade = getGraphFacade(properties);
 		List<Long> seedUsersIds = getSeedUsersIds(properties);
 		List<FilterManagerDescription> iteratingFiltersDescriptions = getIteratingFiltersDescriptions(properties);
 		List<FilterManagerDescription> finalizingFiltersDescriptions = getFinalizingFiltersDescriptions(properties);
@@ -180,8 +185,8 @@ public class ProperitesFileParser
 		return influencersDiscoverer;
 	}
 
-	private static TwitterCache getTwitterFacade(Properties properties) throws UnknownHostException
-	{
+	private static TwitterCache getTwitterFacade(Properties properties)
+            throws PersistenceFacadeException {
 		
 		String mongodbHost = properties.getProperty("mongodb_host");
 		String mongodbTwitterDb = properties.getProperty("mongodb_db");

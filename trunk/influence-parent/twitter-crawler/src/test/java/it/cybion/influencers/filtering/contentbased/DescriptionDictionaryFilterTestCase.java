@@ -12,7 +12,7 @@ import static org.testng.Assert.assertEquals;
 
 
 
-public class DescriptionDictionaryFilterTEST
+public class DescriptionDictionaryFilterTestCase
 {
 
 	@Test

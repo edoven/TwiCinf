@@ -1,6 +1,7 @@
 package it.cybion.influencers.cache;
 
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
+import it.cybion.influencers.cache.persistance.exceptions.PersistenceFacadeException;
 import it.cybion.influencers.cache.utils.CalendarManager;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
@@ -26,28 +27,30 @@ public class TwitterCacheTestCase
 	private TwitterCache twitterFacade;
 
 	@BeforeClass
-	public void init() throws UnknownHostException
-	{
+	public void setUp() throws PersistenceFacadeException {
         //TODO remove absolute paths
-		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.properties");
-		List<Token> userTokens = new ArrayList<Token>();
-		Token userToken0 = new Token("/home/godzy/tokens/token0.properties");
-		userTokens.add(userToken0);
-		Token userToken1 = new Token("/home/godzy/tokens/token1.properties");
-		userTokens.add(userToken1);
-		Token userToken2 = new Token("/home/godzy/tokens/token2.properties");
-		userTokens.add(userToken2);
-		Token userToken3 = new Token("/home/godzy/tokens/token3.properties");
-		userTokens.add(userToken3);
-		Token userToken4 = new Token("/home/godzy/tokens/token4.properties");
-		userTokens.add(userToken4);
-		Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
-		userTokens.add(userToken5);
-		
-		WebFacade twitterWebFacade = WebFacade.getInstance(applicationToken, userTokens);
-		PersistenceFacade persistenceFacade = PersistenceFacade.getInstance("localhost", "testdb");
-		twitterFacade = TwitterCache.getInstance(twitterWebFacade, persistenceFacade);
-	}
+        Token applicationToken = new Token("/home/godzy/tokens/consumerToken.properties");
+        List<Token> userTokens = new ArrayList<Token>();
+        Token userToken0 = new Token("/home/godzy/tokens/token0.properties");
+        userTokens.add(userToken0);
+        Token userToken1 = new Token("/home/godzy/tokens/token1.properties");
+        userTokens.add(userToken1);
+        Token userToken2 = new Token("/home/godzy/tokens/token2.properties");
+        userTokens.add(userToken2);
+        Token userToken3 = new Token("/home/godzy/tokens/token3.properties");
+        userTokens.add(userToken3);
+        Token userToken4 = new Token("/home/godzy/tokens/token4.properties");
+        userTokens.add(userToken4);
+        Token userToken5 = new Token("/home/godzy/tokens/token5.properties");
+        userTokens.add(userToken5);
+
+        WebFacade twitterWebFacade = WebFacade.getInstance(applicationToken, userTokens);
+        PersistenceFacade persistenceFacade = null;
+
+        persistenceFacade = PersistenceFacade.getInstance("localhost", "testdb");
+
+        twitterFacade = TwitterCache.getInstance(twitterWebFacade, persistenceFacade);
+    }
 
 	@Test(enabled = false)
 	public void getUserTest() throws TwitterException

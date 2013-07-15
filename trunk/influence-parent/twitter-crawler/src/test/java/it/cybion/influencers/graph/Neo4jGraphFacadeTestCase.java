@@ -18,10 +18,10 @@ import java.util.List;
 
 
 
-public class Neo4jGraphFacadeTEST
+public class Neo4jGraphFacadeTestCase
 {
 
-	private static final Logger logger = Logger.getLogger(Neo4jGraphFacadeTEST.class);
+	private static final Logger LOGGER = Logger.getLogger(Neo4jGraphFacadeTestCase.class);
 
 	@Test(enabled = false)
 	public void insertAndRetrieveTEST() throws IOException, UserVertexNotPresentException
@@ -91,7 +91,7 @@ public class Neo4jGraphFacadeTEST
 		{
 			Vertex followerVertex = followersIterator.next();
 			Long followerId = (Long) followerVertex.getProperty("userId");
-			logger.info(followerId);
+			LOGGER.info(followerId);
 			Assert.assertTrue(followersIds.contains(followerId));
 		}
 
@@ -124,7 +124,7 @@ public class Neo4jGraphFacadeTEST
 		{
 			Vertex friendVertex = friendsIterator.next();
 			Long friendId = (Long) friendVertex.getProperty("userId");
-			logger.info(friendId);
+			LOGGER.info(friendId);
 			Assert.assertTrue(friendsIds.contains(friendId));
 		}
 

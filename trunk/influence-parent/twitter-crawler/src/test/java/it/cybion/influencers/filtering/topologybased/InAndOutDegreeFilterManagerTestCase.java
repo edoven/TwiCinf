@@ -2,6 +2,7 @@ package it.cybion.influencers.filtering.topologybased;
 
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
+import it.cybion.influencers.cache.persistance.exceptions.PersistenceFacadeException;
 import it.cybion.influencers.cache.web.Token;
 import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.crawler.filtering.topologybased.InAndOutDegreeFilterManager;
@@ -16,21 +17,25 @@ import java.util.List;
 
 
 
-public class InAndOutDegreeFilterManagerTEST
+public class InAndOutDegreeFilterManagerTestCase
 {
 
-	private static final Logger logger = Logger.getLogger(InAndOutDegreeFilterManagerTEST.class);
+	private static final Logger LOGGER = Logger.getLogger(InAndOutDegreeFilterManagerTestCase.class);
 
 	private static TwitterCache twitterFacade;
 	private static GraphFacade graphFacade;
 
 	public static void init() throws IOException
 	{
-		twitterFacade = getTwitterCache();
-	}
+
+        try {
+            twitterFacade = getTwitterCache();
+        } catch (PersistenceFacadeException e) {
+            throw new IOException("cant get twitter facade");
+        }
+    }
 	
-	private static TwitterCache getTwitterCache() throws UnknownHostException
-	{
+	private static TwitterCache getTwitterCache() throws PersistenceFacadeException {
         //TODO remove absolute path
 		Token applicationToken = new Token("/home/godzy/tokens/consumerToken.properties");
 		List<Token> userTokens = new ArrayList<Token>();
@@ -1405,8 +1410,8 @@ public class InAndOutDegreeFilterManagerTEST
 		filterManager.setSeedUsers(usersIds);
 
 		List<Long> result = filterManager.filter();
-		logger.info(result.size());
-		logger.info(result);
+		LOGGER.info(result.size());
+		LOGGER.info(result);
 	}
 
 }

@@ -13,7 +13,7 @@
 		<%
 
         String outputFilePath = (String)request.getAttribute("outputFilePath");
-		out.println("<p>file: " + outputFilePath + "</p>");
+		out.println("<p>influencers file results: " + outputFilePath + "</p>");
 
         out.println("<a href=\"FileViewer?file="+outputFilePath+"\">"+outputFilePath+"</a>");
 

@@ -20,16 +20,15 @@ import static org.testng.Assert.assertTrue;
 
 
 
-public class PersistanceFacadeTestCase
+public class PersistenceFacadeTestCase
 {
 
-	private static final Logger logger = Logger.getLogger(PersistanceFacadeTestCase.class);
+	private static final Logger logger = Logger.getLogger(PersistenceFacadeTestCase.class);
 
 	private PersistenceFacade persistenceFacade;
 
 	@BeforeClass
-	public void init() throws UnknownHostException
-	{
+	public void init() throws PersistenceFacadeException {
 		persistenceFacade = PersistenceFacade.getInstance("localhost", "testdb");
 	}
 
