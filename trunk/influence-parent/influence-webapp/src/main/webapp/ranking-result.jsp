@@ -14,13 +14,15 @@
         String rankedUsersFilename = (String)request.getAttribute("rankedUsersFilename");
         String rankedUsersOutputFilePath = (String)request.getAttribute("rankedUsersOutputFilePath");
 
-		out.println("<p>influencers file results: " + rankedUsersOutputFilePath + "</p>");
+        out.println("<p>");
+		out.println("click to see ranked results file: ");
         out.println("<a href=\"FileViewer?file="+rankedUsersOutputFilePath+"\">"+rankedUsersOutputFilePath+"</a>");
+        out.println("</p>");
         %>
 
         <form action="InfluencersWriter" method="GET">
         <p>
-        Click to get Ranked Users full profile:
+        Click to load Ranked Users full profile from persistence and write to another json:
         <select name="rankedUsersFileName">
           <option value="<%= rankedUsersFilename %>"><%= rankedUsersFilename %></option>
         </select>

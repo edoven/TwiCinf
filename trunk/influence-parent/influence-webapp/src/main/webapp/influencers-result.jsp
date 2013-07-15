@@ -11,7 +11,7 @@
 		<%
 		String influencersFilePath = (String)request.getAttribute("influencersFilePath");
 		%>
-		<p>Wrote json influencers profiles to file: <%=influencersFilePath%></p>
+		<p>Wrote json of full influencers profiles to file: <%=influencersFilePath%></p>
 		<%
 		out.println("<a href=\"FileViewer?file="+influencersFilePath+"\">"+influencersFilePath+"</a>");
 		%>
