@@ -1,10 +1,17 @@
 package servlets;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import it.cybion.commons.FileHelper;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.PersistenceFacadeException;
+import it.cybion.influencers.ranking.RankedUser;
+import it.cybion.model.twitter.User;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import servlets.model.InfluenceUser;
 import utils.PropertiesLoader;
 
 import javax.servlet.RequestDispatcher;
@@ -12,7 +19,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -80,13 +90,43 @@ public class InfluencersWriter extends HttpServlet {
         final String influencersFilePath = this.pl.getInfluencersResultsDirectory() + fileName;
         LOGGER.info("full influencers filepath: '" + influencersFilePath + "'");
 
-        //get input param from params
-        //get output param
+        String rankedUsersInputFile = this.pl.getRankedUsersResultsDirectory() + fileName;
+        File rankedUsers = new File(rankedUsersInputFile);
+        String rankedUsersContentJson = FileHelper.readFile(rankedUsers);
+
+        List<RankedUser> rankedUserList = this.objectMapper.readValue(rankedUsersContentJson,
+                new TypeReference<List<RankedUser>>() {});
+
+        List<InfluenceUser> influenceUsers = new ArrayList<InfluenceUser>();
+
+        for (RankedUser currentUser : rankedUserList) {
+            //TODO load user from persistence
+            final User fromPersistence = new User.Users(999L).withScreenName("fakeName").build();
+            final InfluenceUser influencer = new InfluenceUser(currentUser, fromPersistence);
+            influenceUsers.add(influencer);
+        }
+
+        final String influencersAsJson = this.objectMapper.writeValueAsString(influenceUsers);
+
+        try {
+            writeStringToFile(influencersFilePath, influencersAsJson);
+        } catch (IOException e) {
+            throw new ServletException(
+                    "cant write to file '" + influencersFilePath + "' these contents: '" +
+                    influencersAsJson + "'", e);
+        }
 
         request.setAttribute("influencersFilePath", influencersFilePath);
         final RequestDispatcher requestDispatcher = request.getRequestDispatcher(
                 "influencers-result.jsp");
         requestDispatcher.forward(request, response);
+    }
+
+    //TODO move to commons
+    private void writeStringToFile(String filenamePath, String fileContent) throws IOException {
+
+        final File destinationFile = new File(filenamePath);
+        Files.write(fileContent, destinationFile, Charsets.UTF_8);
     }
 
 }
