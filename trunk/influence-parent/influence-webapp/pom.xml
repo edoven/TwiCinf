@@ -18,6 +18,10 @@
     <url>http://maven.apache.org</url>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
         <!-- should match version used in utils -->
         <dependency>
             <groupId>com.google.guava</groupId>

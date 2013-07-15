@@ -5,44 +5,47 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import it.cybion.influencers.cache.persistance.exceptions.*;
 import it.cybion.influencers.cache.utils.CalendarManager;
+import it.cybion.model.twitter.User;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-
-
 
 public class PersistenceFacadeTestCase
 {
 
-	private static final Logger logger = Logger.getLogger(PersistenceFacadeTestCase.class);
+	private static final Logger LOGGER = Logger.getLogger(PersistenceFacadeTestCase.class);
 
 	private PersistenceFacade persistenceFacade;
 
 	@BeforeClass
 	public void init() throws PersistenceFacadeException {
-		persistenceFacade = PersistenceFacade.getInstance("localhost", "testdb");
+		persistenceFacade = PersistenceFacade.getInstance("localhost", "twitter");
 	}
 
 	@Test(enabled = true)
-	public void insertionAndRetrivalTEST() throws UnknownHostException, UserNotProfileEnrichedException, UserNotPresentException
+	public void shouldCreateRead() throws UnknownHostException, UserNotProfileEnrichedException, UserNotPresentException
 	{
 		String originalUserJson = "{\"id\": 425699035,\"name\": \"PerugiaToday\",\"screenName\": \"PerugiaToday\",\"location\": \"Perugia\",\"description\": \"sono fatto cosi e cosa\",\"isContributorsEnabled\": false,\"profileImageUrl\": \"http://a0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"profileImageUrlHttps\": \"https://si0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"url\": \"http://www.perugiatoday.it/\",\"isProtected\": false,\"followersCount\": 123,\"profileBackgroundColor\": \"C0DEED\",\"profileTextColor\": \"333333\",\"profileLinkColor\": \"0084B4\",\"profileSidebarFillColor\": \"DDEEF6\",\"profileSidebarBorderColor\": \"C0DEED\",\"profileUseBackgroundImage\": true,\"showAllInlineMedia\": false,\"friendsCount\": 93,\"createdAt\": \"Dec 1, 2011 10:49:25 AM\",\"favouritesCount\": 0,\"utcOffset\": -1,\"profileBackgroundImageUrl\": \"http://a0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundImageUrlHttps\": \"https://si0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundTiled\": false,\"lang\": \"it\",\"statusesCount\": 996,\"isGeoEnabled\": false,\"isVerified\": false,\"translator\": false,\"listedCount\": 3,\"isFollowRequestSent\": false}";
 		persistenceFacade.putUser(originalUserJson);
 		String retrievedUserJson = persistenceFacade.getUser(425699035l);
-		persistenceFacade.removeUser(425699035l);
+		persistenceFacade.removeUser(425699035L);
 
 		try
 		{
-			persistenceFacade.getDescription(425699035l);
+			persistenceFacade.getDescription(425699035L);
 		} catch (UserNotPresentException e)
 		{
 			assertEquals(true, true);
@@ -62,39 +65,39 @@ public class PersistenceFacadeTestCase
 	}
 
 	@Test(enabled = true)
-	public void insertionAndUpdatingTEST() throws UnknownHostException, UserNotProfileEnrichedException, UserNotPresentException
+	public void shouldCreateAndUpdate() throws UnknownHostException, UserNotProfileEnrichedException, UserNotPresentException
 	{
 
-		logger.info("==1==");
+		LOGGER.info("==1==");
 		int id = 1;
 		String userJson = "{\"id\": " + id + "}";
 		persistenceFacade.putUser(userJson);
 		String retrievedUserJson = persistenceFacade.getUser(new Long(id));
 		DBObject retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
-		logger.info(retrievedUser);
+		LOGGER.info(retrievedUser);
 		Assert.assertEquals(retrievedUser.get("id"), id);
 
-		logger.info("==2==");
+		LOGGER.info("==2==");
 		userJson = "{\"id\": " + id + " ,\"name\": \"Bob Dole\"}";
 		persistenceFacade.putUser(userJson);
 		retrievedUserJson = persistenceFacade.getUser(new Long(id));
 		retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
-		logger.info(retrievedUser);
-		Assert.assertEquals(retrievedUser.get("id"), id);
-		Assert.assertNotNull(retrievedUser.get("name"));
-		Assert.assertEquals(retrievedUser.get("name"), "Bob Dole");
+		LOGGER.info(retrievedUser);
+		assertEquals(retrievedUser.get("id"), id);
+		assertNotNull(retrievedUser.get("name"));
+		assertEquals(retrievedUser.get("name"), "Bob Dole");
 
-		logger.info("==3==");
+		LOGGER.info("==3==");
 		// now let's check if the field "name" remains untouched
 		userJson = "{\"id\": " + id + "}";
 		persistenceFacade.putUser(userJson);
 		retrievedUserJson = persistenceFacade.getUser(new Long(id));
 		retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
-		logger.info(retrievedUser);
-		Assert.assertEquals(retrievedUser.get("id"), id);
-		Assert.assertNotNull(retrievedUser.get("name"));
-		Assert.assertNotNull(retrievedUser.get("name"));
-		Assert.assertEquals(retrievedUser.get("name"), "Bob Dole");
+		LOGGER.info(retrievedUser);
+		assertEquals(retrievedUser.get("id"), id);
+		assertNotNull(retrievedUser.get("name"));
+		assertNotNull(retrievedUser.get("name"));
+		assertEquals(retrievedUser.get("name"), "Bob Dole");
 
 		persistenceFacade.removeUser((long) id);
 
@@ -145,7 +148,7 @@ public class PersistenceFacadeTestCase
 		assertEquals(retrievedFriendsIds.size(), friendsIds.size());
 		for (long friendId : retrievedFriendsIds)
 		{
-			Assert.assertTrue(friendsIds.contains(friendId));
+			assertTrue(friendsIds.contains(friendId));
 		}
 
 		// getting user (it should have been enriched)
@@ -198,7 +201,7 @@ public class PersistenceFacadeTestCase
 		for (Integer intElement : intList)
 		{
 			long followerId = (long) intElement;
-			Assert.assertTrue(followersIds.contains(followerId));
+			assertTrue(followersIds.contains(followerId));
 		}
 		assertEquals(intList.size(), followersIds.size());
 
@@ -239,10 +242,10 @@ public class PersistenceFacadeTestCase
 		persistenceFacade.putTweet(tweet);
 		try
 		{
-			Assert.assertTrue(persistenceFacade.getUpTo200Tweets(1).size() > 0);
+			assertTrue(persistenceFacade.getUpTo200Tweets(1).size() > 0);
 		} catch (UserWithNoTweetsException e)
 		{
-			Assert.assertTrue(false);
+			assertTrue(false);
 		}
 		persistenceFacade.removeTweet(1L);
 	}
@@ -317,7 +320,7 @@ public class PersistenceFacadeTestCase
 		}
 		catch (DataRangeNotCoveredException e)
 		{
-			Assert.assertTrue(true);
+			assertTrue(true);
 		}
 			
 		persistenceFacade.removeTweet(1L);
@@ -348,15 +351,15 @@ public class PersistenceFacadeTestCase
 		try
 		{
 			List<String> tweets = persistenceFacade.getTweetsByDate(1, fromDate, toDate);
-			Assert.assertTrue(false);
+			assertTrue(false);
 		}
 		catch (UserWithNoTweetsException e)
 		{
-			Assert.assertTrue(false);
+			assertTrue(false);
 		}
 		catch (DataRangeNotCoveredException e)
 		{
-			Assert.assertTrue(true);
+			assertTrue(true);
 		}
 			
 		persistenceFacade.removeTweet(1L);
@@ -364,5 +367,4 @@ public class PersistenceFacadeTestCase
 		persistenceFacade.removeTweet(3L);
 		persistenceFacade.removeTweet(4L);
 	}
-
 }

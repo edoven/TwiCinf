@@ -2,6 +2,9 @@ package servlets;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import it.cybion.commons.FileHelper;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.PersistenceFacadeException;
@@ -9,9 +12,6 @@ import it.cybion.influencers.cache.persistance.exceptions.UserNotPresentExceptio
 import it.cybion.influencers.ranking.RankedUser;
 import it.cybion.model.twitter.User;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import servlets.model.InfluenceUser;
 import utils.PropertiesLoader;
 
@@ -42,9 +42,9 @@ public class InfluencersWriter extends HttpServlet {
 
     private PersistenceFacade persistenceFacade;
 
-    private Properties properties;
+    private Gson gson;
 
-    private ObjectMapper objectMapper;
+    private Properties properties;
 
     @Override
     public void init() throws ServletException {
@@ -52,9 +52,12 @@ public class InfluencersWriter extends HttpServlet {
         this.pl = new PropertiesLoader();
         this.properties = this.pl.loadGeneralProperties();
 
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+//        this.objectMapper = new ObjectMapper();
+//        this.objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
+//                false);
+
+        this.gson = new Gson();
+
 
         initPersistenceFacade();
         LOGGER.info("servlet init");
@@ -95,12 +98,20 @@ public class InfluencersWriter extends HttpServlet {
         File rankedUsers = new File(rankedUsersInputFile);
         String rankedUsersContentJson = FileHelper.readFile(rankedUsers);
 
-        List<RankedUser> rankedUserList = this.objectMapper.readValue(rankedUsersContentJson,
-                new TypeReference<List<RankedUser>>() {});
+        List<RankedUser> rankedUserList = null;
+
+        try {
+            rankedUserList = this.gson.fromJson(rankedUsersContentJson,
+                new TypeToken<List<RankedUser>>() {}.getType());
+        } catch (JsonSyntaxException e) {
+            String emsg = "failed reading json";
+            throw new ServletException(emsg, e);
+        }
 
         List<InfluenceUser> influenceUsers = new ArrayList<InfluenceUser>();
 
         for (RankedUser currentUser : rankedUserList) {
+
             final String screenName = currentUser.getScreenName();
             LOGGER.info("loading user '" + screenName + "'");
             final User fromPersistence = loadUserByScreenName(screenName);
@@ -108,7 +119,7 @@ public class InfluencersWriter extends HttpServlet {
             influenceUsers.add(influencer);
         }
 
-        final String influencersAsJson = this.objectMapper.writeValueAsString(influenceUsers);
+        String influencersAsJson = gson.toJson(influenceUsers);
 
         try {
             writeStringToFile(influencersFilePath, influencersAsJson);
@@ -143,9 +154,9 @@ public class InfluencersWriter extends HttpServlet {
 
         User user = null;
         try {
-            user = this.objectMapper.readValue(userString, User.class);
-        } catch (IOException e) {
-            LOGGER.error("cant deserialize json to user: " + userString + "");
+            user = this.gson.fromJson(userString, User.class);
+        } catch (JsonSyntaxException e) {
+            LOGGER.error("cant deserialize json to user: '" + userString + "'");
         }
 
         return user;

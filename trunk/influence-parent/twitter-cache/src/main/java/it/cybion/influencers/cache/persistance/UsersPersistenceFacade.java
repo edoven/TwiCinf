@@ -19,8 +19,7 @@ import java.util.Map;
 public class UsersPersistenceFacade
 {
 	private static final Logger LOGGER = Logger.getLogger(UsersPersistenceFacade.class);
-	
-	
+
 	private DBCollection userCollection;
 	
 	public UsersPersistenceFacade(DBCollection userCollection)
@@ -151,9 +150,12 @@ public class UsersPersistenceFacade
 	
 	public String getUser(String screenName) throws UserNotPresentException
 	{
-		DBObject user = userCollection.findOne(new BasicDBObject("screen_name", screenName));
-		if (user == null)
+
+        BasicDBObject screen_name = new BasicDBObject("screen_name", screenName);
+        DBObject user = userCollection.findOne(screen_name);
+		if (user == null) {
 			throw new UserNotPresentException("User with screenName " + screenName + " is not in the collection.");
+        }
 		return user.toString();
 	}
 	
