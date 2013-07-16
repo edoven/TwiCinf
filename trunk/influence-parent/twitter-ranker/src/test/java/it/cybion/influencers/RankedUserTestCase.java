@@ -23,8 +23,9 @@ public class RankedUserTestCase {
         RankedUser nullUser = null;
 
         List<RankedUser> unsorted = new ArrayList<RankedUser>();
+        unsorted.add(first);
         unsorted.add(second);
-        unsorted.add(nullUser);
+        //        unsorted.add(nullUser);
         LOGGER.info("unsorted");
 
         for (RankedUser user : unsorted) {
@@ -34,9 +35,6 @@ public class RankedUserTestCase {
         Collections.sort(unsorted);
         List<RankedUser> sorted = unsorted;
         LOGGER.info("sorted");
-
-
-
     }
 
 }

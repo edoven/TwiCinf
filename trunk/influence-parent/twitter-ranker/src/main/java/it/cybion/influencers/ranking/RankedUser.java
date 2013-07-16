@@ -37,10 +37,10 @@ public class RankedUser implements Comparable<RankedUser>
 			return -1;
 		if (isNaN(toCompare.rank))
 			return 1;
-		if (this.rank>toCompare.rank)
-			return 1;
+		if (this.rank > toCompare.rank)
+			return -1;
         if (this.rank < toCompare.rank)
-            return -1;
+            return 1;
 		else
 			return 0;
 	}
