@@ -53,11 +53,13 @@ public class Token
 		}
 		String tokenString = properties.getProperty("token_string");
 		String tokenSecret = properties.getProperty("token_secret");
-		if (tokenString==null || tokenSecret==null)
-		{
-			LOGGER.error("Error, token_string or token_secret not present in " + filePath);
-		}
-		return new Token(tokenString, tokenSecret);
+
+        if (tokenString == null || tokenSecret == null) {
+            String message = "Error, token_string or token_secret not present in " + filePath;
+            LOGGER.error(message);
+            throw new IllegalArgumentException(message);
+        }
+        return new Token(tokenString, tokenSecret);
 		
 	}
 

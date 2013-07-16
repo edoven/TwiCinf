@@ -24,11 +24,14 @@ public class PropertiesLoader {
     private final String rankedUsersResultsDirectory;
 
     private final String influencersResultsDirectory;
+
+    private final String tokensDirectory;
+
     private String crawlingConfigDirectory;
+
     private String crawlingOutputDirectory;
     private String topicDirectory;
     private String rankingTopicListDirectory;
-
     public PropertiesLoader() {
         this.crawnkerHome = HomePathGetter.getInstance().getHomePath();
         this.rankedUsersResultsDirectory = this.crawnkerHome + "results/";
@@ -37,6 +40,7 @@ public class PropertiesLoader {
         this.crawlingOutputDirectory = this.crawnkerHome + CRAWLING_DIRECTORY + "output/";
         this.topicDirectory = this.crawnkerHome + RANKING_DIRECTORY + "topic/";
         this.rankingTopicListDirectory = this.topicDirectory + "lists/";
+        this.tokensDirectory = this.crawnkerHome + "tokens/";
     }
 
     public Properties loadGeneralProperties() throws ServletException {
@@ -97,5 +101,10 @@ public class PropertiesLoader {
     public String getRankingTopicListDirectory() {
 
         return rankingTopicListDirectory;
+    }
+
+    public String getTokensDirectory() {
+
+        return tokensDirectory;
     }
 }

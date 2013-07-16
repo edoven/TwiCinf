@@ -281,17 +281,21 @@ public class ScoresCalculationLauncher extends HttpServlet {
         return topicScorer;
     }
 
+    //it now resolves full paths using propertiesLoader
     private TwitterCache initTwitterCache() throws PersistenceFacadeException {
 
-        String applicationTokenPath = this.properties.getProperty("application_token_path");
+        final String consumerTokenFilename = this.properties.getProperty("application_token_path");
+        final String consumerTokenFullPath = this.pl.getTokensDirectory() + consumerTokenFilename;
 
-        Token applicationToken = new Token(applicationTokenPath);
-        List<Token> userTokens = new ArrayList<Token>();
+        final Token applicationToken = new Token(consumerTokenFullPath);
+        final List<Token> userTokens = new ArrayList<Token>();
 
         int i = 0;
-        String userTokenPath;
-        while ((userTokenPath = this.properties.getProperty("user_token_" + i + "_path")) != null) {
-            userTokens.add(new Token(userTokenPath));
+        String userTokenFilename;
+        while ((userTokenFilename = this.properties.getProperty("user_token_" + i + "_path")) != null) {
+            final String userTokenFullPath = this.pl.getTokensDirectory() + userTokenFilename;
+            LOGGER.info("loading token from " + userTokenFullPath);
+            userTokens.add(new Token(userTokenFullPath));
             i++;
         }
         WebFacade webFacade = WebFacade.getInstance(applicationToken, userTokens);

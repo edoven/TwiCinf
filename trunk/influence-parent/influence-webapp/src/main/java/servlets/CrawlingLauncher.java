@@ -18,6 +18,7 @@ public class CrawlingLauncher extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private PropertiesLoader pl;
+
     private Properties generalProperties;
 
     public CrawlingLauncher() {
