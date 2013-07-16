@@ -13,7 +13,7 @@ import java.util.Map;
 public class InOrOutDegreeFilterManager extends DegreeFilterManager
 {
 
-	private static final Logger logger = Logger.getLogger(InOrOutDegreeFilterManager.class);
+	private static final Logger LOGGER = Logger.getLogger(InOrOutDegreeFilterManager.class);
 
 	// private List<Long> seedUsers;
 	// private TwitterFacade twitterFacade;
@@ -75,12 +75,12 @@ public class InOrOutDegreeFilterManager extends DegreeFilterManager
 		solveDependencies();
 		NodeDegreeFilter inDegreeFilter = new NodeDegreeFilter(node2inDegree, inDegreeAbsoluteThreshold);
 		List<Long> inDegreeFiltered = inDegreeFilter.filter();
-		logger.info("inDegreeFiltered.size()=" + inDegreeFiltered.size());
+		LOGGER.info("inDegreeFiltered.size()=" + inDegreeFiltered.size());
 		NodeDegreeFilter outDegreeFilter = new NodeDegreeFilter(node2outDegree, outDegreeAbsoluteThreshold);
 		List<Long> outDegreeFiltered = outDegreeFilter.filter();
-		logger.info("outDegreeFiltered.size()=" + outDegreeFiltered.size());
+		LOGGER.info("outDegreeFiltered.size()=" + outDegreeFiltered.size());
 		List<Long> inOrOutDegreeFiltered = putListsInOr(inDegreeFiltered, outDegreeFiltered);
-		logger.info("inAndOutDegreeFiltered.size()=" + inOrOutDegreeFiltered.size());
+		LOGGER.info("inAndOutDegreeFiltered.size()=" + inOrOutDegreeFiltered.size());
 		return inOrOutDegreeFiltered;
 	}
 
