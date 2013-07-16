@@ -2,6 +2,7 @@ package servlets;
 
 import org.apache.log4j.Logger;
 import utils.HomePathGetter;
+import utils.PropertiesLoader;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,13 +24,19 @@ public class TopicCreator extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(TopicCreator.class);
 
+    private PropertiesLoader pl;
+
     /**
      * @see HttpServlet#HttpServlet()
      */
     public TopicCreator() {
 
         super();
-        // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public void init() {
+        this.pl = new PropertiesLoader();
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -60,7 +67,8 @@ public class TopicCreator extends HttpServlet {
         }
 
         String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
-        String topicFilePath = CRAWNKER_HOME + "ranking/topic/" + topicName + ".txt";
+//        String topicFilePath = CRAWNKER_HOME + "ranking/topic/" + topicName + ".txt";
+        String topicFilePath = this.pl.getTopicDirectory() + topicName + ".txt";
         createTopicFile(topicFilePath, inTopicFiles, outOfTopicFiles);
     }
 

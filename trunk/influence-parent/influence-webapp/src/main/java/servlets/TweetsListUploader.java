@@ -6,7 +6,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import utils.FileItemWriter;
-import utils.HomePathGetter;
+import utils.PropertiesLoader;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -26,13 +26,20 @@ public class TweetsListUploader extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(TweetsListUploader.class);
 
+    private PropertiesLoader pl;
+
     /**
      * @see HttpServlet#HttpServlet()
      */
     public TweetsListUploader() {
 
         super();
-        // TODO Auto-generated constructor stub
+    }
+
+    @Override
+    public void init() {
+
+        this.pl = new PropertiesLoader();
     }
 
     /**
@@ -50,21 +57,23 @@ public class TweetsListUploader extends HttpServlet {
 
         // Create a new file upload handler
         ServletFileUpload upload = new ServletFileUpload(factory);
-        String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
+        //        String crawnkerHome = HomePathGetter.getInstance().getHomePath();
+
+        final String rankingTopicDirectory = this.pl.getRankingTopicListDirectory();
+
         // Parse the request
         try {
             List<FileItem> fileItems = upload.parseRequest(request);
             for (FileItem fileItem : fileItems) {
                 LOGGER.info(fileItem.getName());
-                FileItemWriter.writeFileItem(fileItem,
-                        CRAWNKER_HOME + "ranking/topic/lists/" + fileItem.getName());
+                FileItemWriter.writeFileItem(fileItem, rankingTopicDirectory + fileItem.getName());
             }
         } catch (FileUploadException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String emsg = "failed uploading file";
+            throw new ServletException(emsg, e);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String emsg = "failed uploading file";
+            throw new ServletException(emsg, e);
         }
     }
 

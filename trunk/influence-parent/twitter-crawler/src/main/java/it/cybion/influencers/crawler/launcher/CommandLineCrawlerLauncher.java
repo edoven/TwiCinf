@@ -21,7 +21,8 @@ public class CommandLineCrawlerLauncher
 		String configurationFile = args[0];
 //		String configurationFile = "/home/godzy/Desktop/trashion_la_perla.properties";
 
-		Crawler influencersDiscoverer = ProperitesFileParser.getCrawlerFromPropertiesFile(configurationFile);
+		Crawler influencersDiscoverer = ProperitesFileParser.buildCrawlerFromPropertiesFile(
+                configurationFile);
 		influencersDiscoverer.getInfluencers();
 	}
 }

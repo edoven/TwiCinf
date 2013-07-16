@@ -14,6 +14,7 @@ public class HomePathGetter {
     private final String CONFIG_FILE_PATH;
 
     private static HomePathGetter instance = null;
+
     private String homePath;
 
     private HomePathGetter() {

@@ -6,7 +6,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import utils.FileItemWriter;
-import utils.HomePathGetter;
+import utils.PropertiesLoader;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -23,39 +23,48 @@ public class CrawlingConfigFileUploader extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(CrawlingConfigFileUploader.class);
 
+    private PropertiesLoader pl;
+
+    private DiskFileItemFactory factory;
+
     public CrawlingConfigFileUploader() {
 
         super();
     }
 
     @Override
+    public void init() {
+        this.pl = new PropertiesLoader();
+        this.factory = new DiskFileItemFactory();
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        DiskFileItemFactory factory = new DiskFileItemFactory();
 
         // Configure a repository (to ensure a secure temp location is used)
         ServletContext servletContext = this.getServletConfig().getServletContext();
         File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
-        factory.setRepository(repository);
+        this.factory.setRepository(repository);
 
         // Create a new file upload handler
         ServletFileUpload upload = new ServletFileUpload(factory);
-        String CRAWNKER_HOME = HomePathGetter.getInstance().getHomePath();
+        String crawlingConfigDirectory = this.pl.getCrawlingConfigDirectory();
         // Parse the request
         try {
             List<FileItem> fileItems = upload.parseRequest(request);
             for (FileItem fileItem : fileItems) {
                 LOGGER.info(fileItem.getName());
                 FileItemWriter.writeFileItem(fileItem,
-                        CRAWNKER_HOME + "crawling/config/" + fileItem.getName());
+                        crawlingConfigDirectory + fileItem.getName());
             }
         } catch (FileUploadException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String emsg = "cant upload file";
+            throw new ServletException(emsg, e);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String emsg = "exception";
+            throw new ServletException(emsg, e);
         }
     }
 

@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.*;
 
 
@@ -113,14 +112,14 @@ public class ProperitesFileParser
 		OutDegreeFilterManager
 	}
 
-	public static Crawler getCrawlerFromPropertiesFile(String configFilePath) throws IOException
+	public static Crawler buildCrawlerFromPropertiesFile(String configFilePath) throws IOException
 	{
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(configFilePath));
-		return getCrawlerFromProperties(properties);
+		return buildCrawlerFromProperties(properties);
 	}
 	
-	public static Crawler getCrawlerFromProperties(Properties properties) throws IOException
+	public static Crawler buildCrawlerFromProperties(Properties properties) throws IOException
 	{
 		int iterations = getIterations(properties);
         TwitterCache twitterFacade = null;
@@ -212,7 +211,8 @@ public class ProperitesFileParser
 	private static GraphFacade getGraphFacade(Properties properties) throws IOException
 	{
 		String graphDirPath = (String) properties.get("graph_dir_path");
-		FilesDeleter.delete(new File(graphDirPath));
+        File graphDirectory = new File(graphDirPath);
+        FilesDeleter.delete(graphDirectory);
 		GraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath,GraphIndexType.TREEMAP);
 		return graphFacade;
 	}

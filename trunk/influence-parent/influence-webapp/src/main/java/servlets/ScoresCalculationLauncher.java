@@ -18,8 +18,6 @@ import it.cybion.influencers.ranking.topic.TopicScorer;
 import it.cybion.influencers.ranking.topic.knn.KnnTopicScorer;
 import it.cybion.model.twitter.User;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
 import servlets.model.InfluenceUser;
 import utils.PropertiesLoader;
 

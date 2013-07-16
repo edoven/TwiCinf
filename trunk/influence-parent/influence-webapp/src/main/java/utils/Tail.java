@@ -10,6 +10,7 @@ public class Tail {
 
     public static void main(String[] args) throws IOException {
 
+        //TODO change absolute paths
         List<String> lines = getLastLines("/home/godzy/Desktop/log4j.properties", 2);
         for (String string : lines) {
             System.out.println(string);

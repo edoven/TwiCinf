@@ -15,26 +15,37 @@ public class PropertiesLoader {
 
     public static final String GENERAL_CONFIG_FILENAME = "general.config";
 
+    public static final String CRAWLING_DIRECTORY = "crawling/";
+
+    public static final String RANKING_DIRECTORY = "ranking/";
+
     private final String crawnkerHome;
 
     private final String rankedUsersResultsDirectory;
 
     private final String influencersResultsDirectory;
+    private String crawlingConfigDirectory;
+    private String crawlingOutputDirectory;
+    private String topicDirectory;
+    private String rankingTopicListDirectory;
 
     public PropertiesLoader() {
         this.crawnkerHome = HomePathGetter.getInstance().getHomePath();
         this.rankedUsersResultsDirectory = this.crawnkerHome + "results/";
         this.influencersResultsDirectory = this.crawnkerHome + "influencers/";
-
+        this.crawlingConfigDirectory = this.crawnkerHome + CRAWLING_DIRECTORY + "config/";
+        this.crawlingOutputDirectory = this.crawnkerHome + CRAWLING_DIRECTORY + "output/";
+        this.topicDirectory = this.crawnkerHome + RANKING_DIRECTORY + "topic/";
+        this.rankingTopicListDirectory = this.topicDirectory + "lists/";
     }
 
     public Properties loadGeneralProperties() throws ServletException {
-        String generalConfigFilePath = this.crawnkerHome + GENERAL_CONFIG_FILENAME;
-        return getPropertiesFromFile(generalConfigFilePath);
+        final String generalConfigFilePath = this.crawnkerHome + GENERAL_CONFIG_FILENAME;
+        return loadPropertiesFromFile(generalConfigFilePath);
     }
 
     //TODO use FileHelper
-    private Properties getPropertiesFromFile(String filePath) throws ServletException {
+    private Properties loadPropertiesFromFile(String filePath) throws ServletException {
 
         InputStream inputStream;
         try {
@@ -66,5 +77,25 @@ public class PropertiesLoader {
     public String getInfluencersResultsDirectory() {
 
         return influencersResultsDirectory;
+    }
+
+    public String getCrawlingConfigDirectory() {
+
+        return crawlingConfigDirectory;
+    }
+
+    public String getCrawlingOutputDirectory() {
+
+        return crawlingOutputDirectory;
+    }
+
+    public String getTopicDirectory() {
+
+        return topicDirectory;
+    }
+
+    public String getRankingTopicListDirectory() {
+
+        return rankingTopicListDirectory;
     }
 }
