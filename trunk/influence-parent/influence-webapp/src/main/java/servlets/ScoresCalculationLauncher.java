@@ -2,6 +2,9 @@ package servlets;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.PersistenceFacadeException;
@@ -42,9 +45,9 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
     private TwitterCache twitterCache;
 
-    private Properties properties;
+    private Gson gson;
 
-    private ObjectMapper objectMapper;
+    private Properties properties;
 
     private PropertiesLoader pl;
 
@@ -60,9 +63,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
         this.pl = new PropertiesLoader();
         this.properties = this.pl.loadGeneralProperties();
 
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        this.gson = new Gson();
 
         final String mongodbHost = this.properties.getProperty("mongodb_host");
         final String mongodbTwitterDb = this.properties.getProperty("mongodb_db");
@@ -139,37 +140,64 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
         LOGGER.info("found users: " + rankedUsers.size());
 
-        //serialize in json
-        String rankedUsersAsJson = null;
-        try {
-            rankedUsersAsJson = this.objectMapper.writeValueAsString(rankedUsers);
-        } catch (IOException e) {
-            throw new ServletException("cant serialize rankedUsers to json " + rankedUsers, e);
+        final List<InfluenceUser> influenceUsers = new LinkedList<InfluenceUser>();
+
+        for (RankedUser currentUser : rankedUsers) {
+
+            final String screenName = currentUser.getScreenName();
+            LOGGER.info("loading user by screen name '" + screenName + "'");
+            final User fromPersistence = loadUserByScreenName(screenName);
+            final InfluenceUser influencer = new InfluenceUser(currentUser, fromPersistence);
+            influenceUsers.add(influencer);
         }
+
+        //serialize in json
+        final String influencersAsJson = this.gson.toJson(influenceUsers,
+                new TypeToken<List<InfluenceUser>>() {
+                }.getType());
 
         //write results to file
-        final String rankedUsersFilename = UUID.randomUUID().toString() + ".json";
-        final String rankedUsersOutputFilePath = this.pl.getRankedUsersResultsDirectory() + rankedUsersFilename;
+        final String influencersFilename = "influencers-" + UUID.randomUUID().toString() + ".json";
+        final String influencersFilePath =
+                this.pl.getInfluencersResultsDirectory() + influencersFilename;
 
         LOGGER.info(
-                "writing string '" + rankedUsersAsJson + "' to file " + rankedUsersOutputFilePath);
+                "writing rankedUsers '" + influencersAsJson + "' to file " + influencersFilePath);
 
         try {
-            writeStringToFile(rankedUsersOutputFilePath, rankedUsersAsJson);
+            writeStringToFile(influencersFilePath, influencersAsJson);
         } catch (IOException e) {
             throw new ServletException(
-                    "cant write to file '" + rankedUsersOutputFilePath + "' these contents: '" +
-                    rankedUsersAsJson + "'", e);
+                    "cant write to file '" + influencersFilePath + "' these contents: '" +
+                    influencersAsJson + "'", e);
         }
 
-        LOGGER.info("wrote file: '" + rankedUsersOutputFilePath + "' - dispatching to view");
+        LOGGER.info("wrote file: '" + influencersFilePath + "' - dispatching to view");
 
-        request.setAttribute("rankedUsersOutputFilePath", rankedUsersOutputFilePath);
-        request.setAttribute("rankedUsersFilename", rankedUsersFilename);
-        request.setAttribute("rankedUsers", rankedUsers);
+        request.setAttribute("influencersFilePath", influencersFilePath);
         final RequestDispatcher requestDispatcher = request.getRequestDispatcher(
-                "ranking-result.jsp");
+                "influencers-result.jsp");
         requestDispatcher.forward(request, response);
+    }
+
+    private User loadUserByScreenName(String screenName) {
+
+        String userString = "";
+        try {
+            userString = this.persistenceFacade.getUser(screenName);
+        } catch (UserNotPresentException e) {
+            LOGGER.error("cant find '" + screenName + "' in local persistence: " + e.getMessage());
+            //TODO find reason why we don't have the profile locally. we should have it
+        }
+
+        User user = null;
+        try {
+            user = this.gson.fromJson(userString, User.class);
+        } catch (JsonSyntaxException e) {
+            LOGGER.error("cant deserialize json to user: '" + userString + "'");
+        }
+
+        return user;
     }
 
     private void writeStringToFile(String filenamePath, String fileContent) throws IOException {
@@ -224,10 +252,12 @@ public class ScoresCalculationLauncher extends HttpServlet {
         try {
             properties.load(new FileInputStream(fullFilePath));
         } catch (FileNotFoundException e) {
-            LOGGER.error("missing file for in topic tweets: '" + fullFilePath + "'" + e.getMessage());
+            LOGGER.error(
+                    "missing file for in topic tweets: '" + fullFilePath + "'" + e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {
-            LOGGER.error("can't read file for in topic tweets: '" + fullFilePath + "'" + e.getMessage());
+            LOGGER.error(
+                    "can't read file for in topic tweets: '" + fullFilePath + "'" + e.getMessage());
             e.printStackTrace();
         }
 

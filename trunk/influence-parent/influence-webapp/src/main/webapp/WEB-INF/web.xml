@@ -99,15 +99,15 @@
         <url-pattern>/FileViewer</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <description></description>
-        <display-name>InfluencersWriter</display-name>
-        <servlet-name>InfluencersWriter</servlet-name>
-        <servlet-class>servlets.InfluencersWriter</servlet-class>
-    </servlet>
+    <!--<servlet>-->
+        <!--<description></description>-->
+        <!--<display-name>InfluencersWriter</display-name>-->
+        <!--<servlet-name>InfluencersWriter</servlet-name>-->
+        <!--<servlet-class>servlets.InfluencersWriter</servlet-class>-->
+    <!--</servlet>-->
 
-    <servlet-mapping>
-        <servlet-name>InfluencersWriter</servlet-name>
-        <url-pattern>/InfluencersWriter</url-pattern>
-    </servlet-mapping>
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>InfluencersWriter</servlet-name>-->
+        <!--<url-pattern>/InfluencersWriter</url-pattern>-->
+    <!--</servlet-mapping>-->
 </web-app>

@@ -34,6 +34,7 @@ import java.util.Properties;
  *
  * @author Matteo Moci ( matteo (dot) moci (at) gmail (dot) com )
  */
+@Deprecated
 public class InfluencersWriter extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(InfluencersWriter.class);
@@ -52,12 +53,7 @@ public class InfluencersWriter extends HttpServlet {
         this.pl = new PropertiesLoader();
         this.properties = this.pl.loadGeneralProperties();
 
-//        this.objectMapper = new ObjectMapper();
-//        this.objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
-//                false);
-
         this.gson = new Gson();
-
 
         initPersistenceFacade();
         LOGGER.info("servlet init");
@@ -94,40 +90,26 @@ public class InfluencersWriter extends HttpServlet {
         final String influencersFilePath = this.pl.getInfluencersResultsDirectory() + fileName;
         LOGGER.info("full influencers filepath: '" + influencersFilePath + "'");
 
-        String rankedUsersInputFile = this.pl.getRankedUsersResultsDirectory() + fileName;
-        File rankedUsers = new File(rankedUsersInputFile);
-        String rankedUsersContentJson = FileHelper.readFile(rankedUsers);
+        final String rankedUsersInputFile = this.pl.getRankedUsersResultsDirectory() + fileName;
+        final File rankedUsers = new File(rankedUsersInputFile);
+        final String rankedUsersContentJson = FileHelper.readFile(rankedUsers);
 
-        List<RankedUser> rankedUserList = null;
+        final List<RankedUser> rankedUserList = deserialise(rankedUsersContentJson);
 
-        try {
-            rankedUserList = this.gson.fromJson(rankedUsersContentJson,
-                new TypeToken<List<RankedUser>>() {}.getType());
-        } catch (JsonSyntaxException e) {
-            String emsg = "failed reading json";
-            throw new ServletException(emsg, e);
-        }
-
-        List<InfluenceUser> influenceUsers = new ArrayList<InfluenceUser>();
+        final List<InfluenceUser> influenceUsers = new ArrayList<InfluenceUser>();
 
         for (RankedUser currentUser : rankedUserList) {
 
             final String screenName = currentUser.getScreenName();
-            LOGGER.info("loading user '" + screenName + "'");
+            LOGGER.info("loading user by screen name '" + screenName + "'");
             final User fromPersistence = loadUserByScreenName(screenName);
             final InfluenceUser influencer = new InfluenceUser(currentUser, fromPersistence);
             influenceUsers.add(influencer);
         }
 
-        String influencersAsJson = gson.toJson(influenceUsers);
+        final String influencersAsJson = serialise(influenceUsers);
 
-        try {
-            writeStringToFile(influencersFilePath, influencersAsJson);
-        } catch (IOException e) {
-            throw new ServletException(
-                    "cant write to file '" + influencersFilePath + "' these contents: '" +
-                    influencersAsJson + "'", e);
-        }
+        writeStringToFile(influencersFilePath, influencersAsJson);
 
         request.setAttribute("influencersFilePath", influencersFilePath);
         final RequestDispatcher requestDispatcher = request.getRequestDispatcher(
@@ -135,11 +117,35 @@ public class InfluencersWriter extends HttpServlet {
         requestDispatcher.forward(request, response);
     }
 
+    private String serialise(List<InfluenceUser> influenceUsers) {
+
+        return this.gson.toJson(influenceUsers, new TypeToken<List<RankedUser>>() {}.getType());
+    }
+
+    private List<RankedUser> deserialise(String rankedUsersContentJson) throws ServletException {
+
+        List<RankedUser> rankedUserList;
+        try {
+            rankedUserList = this.gson.fromJson(rankedUsersContentJson,
+                new TypeToken<List<RankedUser>>() {}.getType());
+        } catch (JsonSyntaxException e) {
+            String emsg = "failed reading json";
+            throw new ServletException(emsg, e);
+        }
+        return rankedUserList;
+    }
+
     //TODO move to commons
-    private void writeStringToFile(String filenamePath, String fileContent) throws IOException {
+    private void writeStringToFile(String filenamePath, String fileContent) throws ServletException {
 
         final File destinationFile = new File(filenamePath);
-        Files.write(fileContent, destinationFile, Charsets.UTF_8);
+        try {
+            Files.write(fileContent, destinationFile, Charsets.UTF_8);
+        } catch (IOException e) {
+            throw new ServletException(
+                    "cant write to file '" + filenamePath + "' these contents: '" +
+                    fileContent + "'", e);
+        }
     }
 
     private User loadUserByScreenName(String screenName) {
