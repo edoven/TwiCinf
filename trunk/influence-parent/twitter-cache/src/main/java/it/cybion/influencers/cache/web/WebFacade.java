@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.cybion.influencers.cache.model.Tweet;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.cache.web.exceptions.WebFacadeException;
 import org.apache.log4j.Logger;
 import twitter4j.IDs;
 import twitter4j.TwitterException;
@@ -259,35 +260,35 @@ public class WebFacade
 		return userHandler.getUserJson(screenName);
 	}
 	
-	public List<String> getUsersJsons(List<Long> usersIds) throws TwitterException
+	public List<String> getUsersJsons(List<Long> usersIds) throws WebFacadeException
 	{
-		LOGGER.info("downloading " + usersIds.size() + " users profiles");
-		List<String> usersJsons = new ArrayList<String>();
-		int listSize = usersIds.size();
-		// logger.info("listSize="+listSize);
-		int chunkSize = 100;
-		int remainder = (listSize % chunkSize);
-		int chunksCount = listSize / chunkSize;
-		if (remainder > 0)
-			chunksCount++;
-		for (int i = 0; i < chunksCount; i++)
-		{
-			long[] chunk = getChunk(usersIds, 100, i);
-			LOGGER.info("downloading chunk " + i + "/" + chunksCount);
+
+        LOGGER.info("downloading " + usersIds.size() + " users profiles");
+        List<String> usersJsons = new ArrayList<String>();
+        int listSize = usersIds.size();
+        // logger.info("listSize="+listSize);
+        int chunkSize = 100;
+        int remainder = (listSize % chunkSize);
+        int chunksCount = listSize / chunkSize;
+        if (remainder > 0) {
+            chunksCount++;
+        }
+        for (int i = 0; i < chunksCount; i++) {
+            long[] chunk = getChunk(usersIds, 100, i);
+            LOGGER.info("downloading chunk " + i + "/" + chunksCount);
             LOGGER.info("chunk contents: '" + chunk + "'");
-			List<String> chunkResult;
-			try
-			{
-				chunkResult = getUpTo100Users(chunk);			
-				usersJsons.addAll(chunkResult);
-			}
-			catch (TwitterException e)
-			{
-				LOGGER.warn("problem with chunck while calling twitter, skipped!" + e.getMessage());
-			}
-			
-		}
-		return usersJsons;
-	}
+            List<String> chunkResult;
+            try {
+                chunkResult = getUpTo100Users(chunk);
+                usersJsons.addAll(chunkResult);
+            } catch (TwitterException e) {
+                String message =
+                        "problem with chunk while calling twitter, skipped!" + e.getMessage();
+                LOGGER.warn(message);
+                throw new WebFacadeException(message);
+            }
+        }
+        return usersJsons;
+    }
 
 }

@@ -1,6 +1,7 @@
 package it.cybion.influencers.ranking;
 
 import it.cybion.influencers.cache.TwitterCache;
+import it.cybion.influencers.cache.exceptions.TwitterCacheException;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
 import it.cybion.influencers.ranking.model.Tweet;
 import it.cybion.influencers.ranking.topic.TopicScorer;
@@ -61,17 +62,25 @@ public class RankingCalculator
 	public List<RankedUser> getRankedUsersWithoutUrlsResolution(List<Long> usersToRank, Date fromDate, Date toDate)
 	{
 		int usersCount = 1;
-		for (Long userId : usersToRank)
+
+        try {
+            this.twitterCache.downloadUsersProfiles(usersToRank);
+        } catch (TwitterCacheException e) {
+            LOGGER.error("failed while updating user profiles");
+        }
+
+        for (Long userId : usersToRank)
 		{
             LOGGER.info("without url resolution");
             LOGGER.info("Calculating rank for user "+(usersCount++)+"/"+usersToRank.size()+" with id "+userId);
-			List<String> tweetsJsons = getTweetsJsons(userId, fromDate, toDate);
-			if (tweetsJsons.isEmpty())
+
+			List<String> tweetsAsJsons = getTweetsJsons(userId, fromDate, toDate);
+			if (tweetsAsJsons.isEmpty())
 			{
 				LOGGER.warn("User has 0 tweets, can't calculate rank!");
 				continue;
 			}		
-			RankedUser rankedUser = calculateRankWithoutUrlsResolution(tweetsJsons);
+			RankedUser rankedUser = calculateRankWithoutUrlsResolution(tweetsAsJsons);
 
             if (rankedUser != null) {
                 rankedUsers.add(rankedUser);

@@ -144,7 +144,7 @@ public class PersistenceFacade
 	 * If a user with the same id (beware: id!=_id) is already present, the new
 	 * fields (if exist) are added.
 	 */
-	public void putUser(String userToInsertJson)
+	public void putOrUpdate(String userToInsertJson)
 	{
 		usersMongodbPersistanceFacade.putOrUpdateUser(userToInsertJson);
 	}

@@ -3,8 +3,7 @@ package servlets;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import it.cybion.influencers.cache.TwitterCache;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.PersistenceFacadeException;
@@ -20,6 +19,7 @@ import it.cybion.model.twitter.User;
 import org.apache.log4j.Logger;
 import servlets.model.InfluenceUser;
 import utils.PropertiesLoader;
+import utils.UserFollowersExclusionStrategyC;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -61,7 +62,12 @@ public class ScoresCalculationLauncher extends HttpServlet {
         this.pl = new PropertiesLoader();
         this.properties = this.pl.loadGeneralProperties();
 
-        this.gson = new Gson();
+        String pattern = "EEE MMM dd hh:mm:ss Z y";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        this.gson = new GsonBuilder().setExclusionStrategies(
+                new UserFollowersExclusionStrategyC()).setFieldNamingPolicy(
+                FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).setDateFormat(
+                simpleDateFormat.toPattern()).create();
 
         final String mongodbHost = this.properties.getProperty("mongodb_host");
         final String mongodbTwitterDb = this.properties.getProperty("mongodb_db");
@@ -149,6 +155,7 @@ public class ScoresCalculationLauncher extends HttpServlet {
             influenceUsers.add(influencer);
         }
 
+
         //serialize in json
         final String influencersAsJson = this.gson.toJson(influenceUsers,
                 new TypeToken<List<InfluenceUser>>() {
@@ -161,6 +168,8 @@ public class ScoresCalculationLauncher extends HttpServlet {
 
         LOGGER.info(
                 "writing rankedUsers '" + influencersAsJson + "' to file " + influencersFilePath);
+
+        LOGGER.info("influencers to be serialized in json " + influenceUsers.size());
 
         try {
             writeStringToFile(influencersFilePath, influencersAsJson);

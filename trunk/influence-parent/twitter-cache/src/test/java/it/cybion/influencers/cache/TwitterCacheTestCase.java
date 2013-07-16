@@ -1,5 +1,6 @@
 package it.cybion.influencers.cache;
 
+import it.cybion.influencers.cache.exceptions.TwitterCacheException;
 import it.cybion.influencers.cache.persistance.PersistenceFacade;
 import it.cybion.influencers.cache.persistance.exceptions.PersistenceFacadeException;
 import it.cybion.influencers.cache.utils.CalendarManager;
@@ -16,8 +17,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-
+import java.util.Map;
 
 public class TwitterCacheTestCase
 {
@@ -108,14 +108,14 @@ public class TwitterCacheTestCase
 	}
 
 	@Test(enabled = false)
-	public void getDescriptionsTEST() throws TwitterException
-	{
+	public void getDescriptionsTEST() throws TwitterCacheException {
 		List<Long> ids = new ArrayList<Long>();
 		ids.add(426724668l);
 		ids.add(887469007l);
 		ids.add(14230524l);
 		// ids.add(43246534L);
-		LOGGER.info(twitterFacade.getDescriptions(ids));
+        Map<Long,String> descriptions = twitterFacade.getDescriptions(ids);
+        LOGGER.info(descriptions);
 	}
 
 	@Test(enabled = false)

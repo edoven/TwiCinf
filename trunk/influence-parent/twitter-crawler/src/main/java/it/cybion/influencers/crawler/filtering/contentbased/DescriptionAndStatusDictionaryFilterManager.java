@@ -1,6 +1,7 @@
 package it.cybion.influencers.crawler.filtering.contentbased;
 
 import it.cybion.influencers.cache.TwitterCache;
+import it.cybion.influencers.cache.exceptions.TwitterCacheException;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
 import org.apache.log4j.Logger;
@@ -113,7 +114,7 @@ public class DescriptionAndStatusDictionaryFilterManager implements FilterManage
 		{
 			users2descriptions = twitterFacade.getDescriptionsAndStatuses(seedUsers);
 		}
-		catch (TwitterException e)
+		catch (TwitterCacheException e)
 		{
 			LOGGER.info("Problem in twitterFacade.getDescriptionsAndStatuses");
 			e.printStackTrace();

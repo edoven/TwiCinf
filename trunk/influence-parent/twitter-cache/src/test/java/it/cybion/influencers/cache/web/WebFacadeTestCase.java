@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import it.cybion.influencers.cache.model.Tweet;
 import it.cybion.influencers.cache.utils.CalendarManager;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.cache.web.exceptions.WebFacadeException;
 import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -103,8 +104,7 @@ public class WebFacadeTestCase
 	}
 
 	@Test(enabled = true)
-	public void getUsersJsonsTEST() throws TwitterException
-	{
+	public void getUsersJsonsTEST() throws WebFacadeException {
 		List<Long> followerIds = new ArrayList<Long>();
 		for (long i = 0; i < 101; i++)
 			followerIds.add(435668609 + i);

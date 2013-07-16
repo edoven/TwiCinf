@@ -1,6 +1,7 @@
 package it.cybion.influencers.crawler.filtering.topologybased;
 
 import it.cybion.influencers.cache.TwitterCache;
+import it.cybion.influencers.cache.exceptions.TwitterCacheException;
 import it.cybion.influencers.crawler.filtering.FilterManager;
 import it.cybion.influencers.crawler.graph.GraphFacade;
 import it.cybion.influencers.crawler.graph.exceptions.UserVertexNotPresentException;
@@ -152,9 +153,9 @@ public abstract class DegreeFilterManager implements FilterManager
 
 		try
 		{
-			twitterFacade.donwloadUsersProfiles(seedUsers);
+			twitterFacade.downloadUsersProfiles(seedUsers);
 		}
-		catch (TwitterException e1)
+		catch (TwitterCacheException e1)
 		{
 			LOGGER.error("problem in twitterFacade.donwloadUsersProfiles");
 			e1.printStackTrace();

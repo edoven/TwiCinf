@@ -5,15 +5,11 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import it.cybion.influencers.cache.persistance.exceptions.*;
 import it.cybion.influencers.cache.utils.CalendarManager;
-import it.cybion.model.twitter.User;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,11 +31,11 @@ public class PersistenceFacadeTestCase
 		persistenceFacade = PersistenceFacade.getInstance("localhost", "twitter");
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void shouldCreateRead() throws UnknownHostException, UserNotProfileEnrichedException, UserNotPresentException
 	{
 		String originalUserJson = "{\"id\": 425699035,\"name\": \"PerugiaToday\",\"screenName\": \"PerugiaToday\",\"location\": \"Perugia\",\"description\": \"sono fatto cosi e cosa\",\"isContributorsEnabled\": false,\"profileImageUrl\": \"http://a0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"profileImageUrlHttps\": \"https://si0.twimg.com/profile_images/1667564455/logoPerugia_normal.jpg\",\"url\": \"http://www.perugiatoday.it/\",\"isProtected\": false,\"followersCount\": 123,\"profileBackgroundColor\": \"C0DEED\",\"profileTextColor\": \"333333\",\"profileLinkColor\": \"0084B4\",\"profileSidebarFillColor\": \"DDEEF6\",\"profileSidebarBorderColor\": \"C0DEED\",\"profileUseBackgroundImage\": true,\"showAllInlineMedia\": false,\"friendsCount\": 93,\"createdAt\": \"Dec 1, 2011 10:49:25 AM\",\"favouritesCount\": 0,\"utcOffset\": -1,\"profileBackgroundImageUrl\": \"http://a0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundImageUrlHttps\": \"https://si0.twimg.com/images/themes/theme1/bg.png\",\"profileBackgroundTiled\": false,\"lang\": \"it\",\"statusesCount\": 996,\"isGeoEnabled\": false,\"isVerified\": false,\"translator\": false,\"listedCount\": 3,\"isFollowRequestSent\": false}";
-		persistenceFacade.putUser(originalUserJson);
+		persistenceFacade.putOrUpdate(originalUserJson);
 		String retrievedUserJson = persistenceFacade.getUser(425699035l);
 		persistenceFacade.removeUser(425699035L);
 
@@ -64,14 +60,14 @@ public class PersistenceFacadeTestCase
 		assertEquals(originalUser.get("profileImageUrlHttps"), retrievedUser.get("profileImageUrlHttps"));
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void shouldCreateAndUpdate() throws UnknownHostException, UserNotProfileEnrichedException, UserNotPresentException
 	{
 
 		LOGGER.info("==1==");
 		int id = 1;
 		String userJson = "{\"id\": " + id + "}";
-		persistenceFacade.putUser(userJson);
+		persistenceFacade.putOrUpdate(userJson);
 		String retrievedUserJson = persistenceFacade.getUser(new Long(id));
 		DBObject retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		LOGGER.info(retrievedUser);
@@ -79,7 +75,7 @@ public class PersistenceFacadeTestCase
 
 		LOGGER.info("==2==");
 		userJson = "{\"id\": " + id + " ,\"name\": \"Bob Dole\"}";
-		persistenceFacade.putUser(userJson);
+		persistenceFacade.putOrUpdate(userJson);
 		retrievedUserJson = persistenceFacade.getUser(new Long(id));
 		retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		LOGGER.info(retrievedUser);
@@ -90,7 +86,7 @@ public class PersistenceFacadeTestCase
 		LOGGER.info("==3==");
 		// now let's check if the field "name" remains untouched
 		userJson = "{\"id\": " + id + "}";
-		persistenceFacade.putUser(userJson);
+		persistenceFacade.putOrUpdate(userJson);
 		retrievedUserJson = persistenceFacade.getUser(new Long(id));
 		retrievedUser = (DBObject) JSON.parse(retrievedUserJson);
 		LOGGER.info(retrievedUser);
@@ -103,7 +99,7 @@ public class PersistenceFacadeTestCase
 
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void addFriendsTEST() throws UnknownHostException, UserNotFriendsEnrichedException, UserNotPresentException
 	{
 		// user creation
@@ -119,7 +115,7 @@ public class PersistenceFacadeTestCase
 		Long friendThreeId = 2222l;
 		friendsIds.add(friendThreeId);
 		// user insertion
-		persistenceFacade.putUser(user.toString());
+		persistenceFacade.putOrUpdate(user.toString());
 		try
 		{
 			persistenceFacade.getUser(userId);
@@ -168,7 +164,7 @@ public class PersistenceFacadeTestCase
 		persistenceFacade.removeUser(friendThreeId);
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void addFollowersTEST() throws UserNotPresentException, UnknownHostException, UserNotFollowersEnrichedException
 	{
 		// MongodbPersistanceManager persistanceManager = new
@@ -186,7 +182,7 @@ public class PersistenceFacadeTestCase
 		Long followerThreeId = 2222l;
 		followersIds.add(followerThreeId);
 		// user insertion
-		persistenceFacade.putUser(user.toString());
+		persistenceFacade.putOrUpdate(user.toString());
 		// friends insertion
 		persistenceFacade.putFollowers(userId, followersIds);
 
@@ -211,12 +207,12 @@ public class PersistenceFacadeTestCase
 		persistenceFacade.removeUser(followerThreeId);
 	}
 
-	@Test(enabled = true)
+	@Test(enabled = false)
 	public void userNotPresentExceptionTEST()
 	{
 		try
 		{
-			persistenceFacade.getUser(534529555443l);
+			persistenceFacade.getUser(534529555443L);
 		} catch (UserNotPresentException e)
 		{
 			assertTrue(true);
@@ -225,17 +221,17 @@ public class PersistenceFacadeTestCase
 		assertTrue(false);
 	}
 
-	@Test
+	@Test (enabled = true)
 	public void getStatus() throws UserNotPresentException, UserNotProfileEnrichedException
 	{
 		String userToInsertJson = "{\"name\": \"Twitter API\", \"id\": 6253282, \"description\":\"my description\", \"status\": {\"text\": \"this is my last status\"}}";
-		persistenceFacade.putUser(userToInsertJson);
+		persistenceFacade.putOrUpdate(userToInsertJson);
 		String retrievedStatus = persistenceFacade.getStatus(6253282L);
-		Assert.assertEquals("this is my last status", retrievedStatus);
+		assertEquals("this is my last status", retrievedStatus);
 		persistenceFacade.removeUser(6253282L);
 	}
 
-	@Test
+	@Test (enabled = false)
 	public void getTweets()
 	{
 		String tweet = "{\"id\": 1, \"user\": {\"id\": 1 }, \"text\": \"text1\" }";
@@ -251,7 +247,7 @@ public class PersistenceFacadeTestCase
 	}
 	
 	
-	@Test
+	@Test (enabled = false)
 	public void getTweetsByDateWithCoveredRange()
 	{
 		persistenceFacade.removeTweet(1L);
@@ -290,7 +286,7 @@ public class PersistenceFacadeTestCase
 		persistenceFacade.removeTweet(4L);
 	}
 	
-	@Test
+	@Test (enabled = false)
 	public void getTweetsByDateWithUncoveredRangeTooEarly()
 	{
 		persistenceFacade.removeTweet(1L);
@@ -329,7 +325,7 @@ public class PersistenceFacadeTestCase
 		persistenceFacade.removeTweet(4L);
 	}
 	
-	@Test
+	@Test (enabled = false)
 	public void getTweetsByDateWithUncoveredRangeTooLate()
 	{
 		persistenceFacade.removeTweet(1L);
@@ -367,4 +363,39 @@ public class PersistenceFacadeTestCase
 		persistenceFacade.removeTweet(3L);
 		persistenceFacade.removeTweet(4L);
 	}
+
+    @Test
+    public void shouldLoadNonExistingUsers() throws UserNotPresentException {
+
+//        Gson gson = new Gson();
+
+        final String mannoiafiorella = "mannoiafiorella";
+
+        try {
+            String mannoiaProfile = this.persistenceFacade.getUser(mannoiafiorella);
+            LOGGER.info(mannoiaProfile);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        final String simoVentura = "Simo_Ventura";
+        String simoVProfile = this.persistenceFacade.getUser(simoVentura);
+        LOGGER.info(simoVProfile);
+
+        final String lucasofri = "lucasofri";
+        try {
+            String lucasofriprofile = this.persistenceFacade.getUser(lucasofri);
+            LOGGER.info(lucasofriprofile);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        final String a_padellaro = "a_padellaro";
+        try {
+            String a_padellaroprofile = this.persistenceFacade.getUser(a_padellaro);
+            LOGGER.info(a_padellaroprofile);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
 }
