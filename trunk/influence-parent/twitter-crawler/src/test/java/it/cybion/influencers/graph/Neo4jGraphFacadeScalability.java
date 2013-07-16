@@ -35,7 +35,7 @@ public class Neo4jGraphFacadeScalability
 				logger.info("completed " + percentCompleted + "%");
 				percentCompleted = percentCompleted + 10;
 			}
-			graphFacade.addUser(i);
+			graphFacade.getOrPutUser(i);
 		}
 		long end = System.currentTimeMillis();
 		long time = end - start;
@@ -58,7 +58,7 @@ public class Neo4jGraphFacadeScalability
 				logger.info("completed " + percentCompleted + "%");
 				percentCompleted = percentCompleted + 10;
 			}
-			graphFacade.addUser(i);
+			graphFacade.getOrPutUser(i);
 		}
 		long end = System.currentTimeMillis();
 		long time = end - start;

@@ -42,13 +42,13 @@ mongodb_db=twitter
 #	TWITTER WEB FACADE CONFIG
 #
 #
-application_token_path=/home/godzy/tokens/consumerToken.properties
-user_token_0_path=/home/godzy/tokens/token0.properties
-user_token_1_path=/home/godzy/tokens/token1.properties
-user_token_2_path=/home/godzy/tokens/token2.properties
-user_token_3_path=/home/godzy/tokens/token3.properties
-user_token_4_path=/home/godzy/tokens/token4.properties
-user_token_5_path=/home/godzy/tokens/token5.properties
+application_token_path=consumerToken.properties
+user_token_0_path=token0.properties
+user_token_1_path=token1.properties
+user_token_2_path=token2.properties
+user_token_3_path=token3.properties
+user_token_4_path=token4.properties
+user_token_5_path=token5.properties
 
 
 #
@@ -114,17 +114,17 @@ public class ProperitesFileParser
 
 	public static Crawler buildCrawlerFromPropertiesFile(String configFilePath) throws IOException
 	{
-		Properties properties = new Properties();
+		final Properties properties = new Properties();
 		properties.load(new FileInputStream(configFilePath));
-		return buildCrawlerFromProperties(properties);
+		return buildCrawlerFromProperties(properties, configFilePath);
 	}
 	
-	public static Crawler buildCrawlerFromProperties(Properties properties) throws IOException
+	public static Crawler buildCrawlerFromProperties(Properties properties, String crawnkerHome) throws IOException
 	{
 		int iterations = getIterations(properties);
         TwitterCache twitterFacade = null;
         try {
-            twitterFacade = getTwitterFacade(properties);
+            twitterFacade = buildTwitterFacade(properties, crawnkerHome);
         } catch (PersistenceFacadeException e) {
             String emsg = "failed loading twitter facade from properties";
             throw new IOException(emsg, e);
@@ -136,10 +136,10 @@ public class ProperitesFileParser
 		List<String> seedUsersScreenNames = getSeedUsersScreenNames(properties);
 		Crawler influencersDiscoverer = null;
 		
-		if (seedUsersIds==null && seedUsersScreenNames==null)
+		if (seedUsersIds == null && seedUsersScreenNames == null)
 		{
             String message = "Error. You can't set both user ids and screen-names. Chose one.";
-            LOGGER.warn(message);
+            LOGGER.error(message);
             throw new IllegalArgumentException(message);
 		}
 		else
@@ -173,47 +173,65 @@ public class ProperitesFileParser
 					
 			}
 		}
-		
-														
-		if (finalizingFiltersDescriptions.size()>0)
+
+		if (finalizingFiltersDescriptions.size() > 0) {
 			influencersDiscoverer.setFinalizationFiltersDescriptions(finalizingFiltersDescriptions);
-		else
+        }
+		else {
 			influencersDiscoverer.setFinalizationFiltersDescriptions(null);
-																				 
-																				 
+        }
+
 		return influencersDiscoverer;
 	}
 
-	private static TwitterCache getTwitterFacade(Properties properties)
+	private static TwitterCache buildTwitterFacade(final Properties properties, String crawnkerHomeDirectory)
             throws PersistenceFacadeException {
-		
-		String mongodbHost = properties.getProperty("mongodb_host");
-		String mongodbTwitterDb = properties.getProperty("mongodb_db");
-		PersistenceFacade persistenceFacade = PersistenceFacade.getInstance(mongodbHost,
-                mongodbTwitterDb);
 
-		String applicationTokenPath = properties.getProperty("application_token_path");
-		Token applicationToken = new Token(applicationTokenPath);	
+        //parse tokens
+		String applicationTokenFilename = properties.getProperty("application_token_path");
+        //TODO fix this, tokens directory name should be in a single place
+        final String tokensDirectory = crawnkerHomeDirectory + "tokens/";
+        final String applicationTokenFullPath = tokensDirectory + applicationTokenFilename;
+        Token applicationToken = new Token(applicationTokenFullPath);
 		List<Token> userTokens = new ArrayList<Token>();	
-		int i=0;
-		String userTokenPath;
-		while ((userTokenPath =  properties.getProperty("user_token_"+i+"_path")) != null)
-		{
-			userTokens.add(new Token(userTokenPath));
-			i++;
-		}
+
+        int i=0;
+
+        String userTokenFilename;
+
+        while ((userTokenFilename = properties.getProperty("user_token_" + i + "_path")) != null) {
+            String tokenFilePath = tokensDirectory + userTokenFilename;
+            Token aToken = new Token(tokenFilePath);
+            userTokens.add(aToken);
+            i++;
+        }
+
+        //build webFacade
 		WebFacade twitterWebFacade = WebFacade.getInstance(applicationToken, userTokens);
-			
+
+        //build persistence facade
+        final PersistenceFacade persistenceFacade = getPersistenceFacade(properties);
+
+        //return twitterCache
 		return TwitterCache.getInstance(twitterWebFacade, persistenceFacade);
 		
 	}
-	
-	private static GraphFacade getGraphFacade(Properties properties) throws IOException
+
+    private static PersistenceFacade getPersistenceFacade(final Properties properties)
+            throws PersistenceFacadeException {
+
+        //persistence facade
+        final String mongodbHost = properties.getProperty("mongodb_host");
+        final String mongodbTwitterDb = properties.getProperty("mongodb_db");
+        return PersistenceFacade.getInstance(mongodbHost, mongodbTwitterDb);
+    }
+
+    private static GraphFacade getGraphFacade(final Properties properties) throws IOException
 	{
-		String graphDirPath = (String) properties.get("graph_dir_path");
-        File graphDirectory = new File(graphDirPath);
+		final String graphDirPath = (String) properties.get("graph_dir_path");
+        final File graphDirectory = new File(graphDirPath);
         FilesDeleter.delete(graphDirectory);
-		GraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath,GraphIndexType.TREEMAP);
+        final GraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath,GraphIndexType.TREEMAP);
 		return graphFacade;
 	}
 	
@@ -225,22 +243,23 @@ public class ProperitesFileParser
 	private static List<Long> getSeedUsersIds(Properties properties)
 	{
 		String usersIdsString = (String) properties.get("seed_users_ids");
-		if (usersIdsString==null)
+		if (usersIdsString==null) {
 			return null;
+        }
 		List<String> usersIdsStringList = Arrays.asList(usersIdsString.split(","));
 		List<Long> usersIds = new ArrayList<Long>();
-		for (String userIdString : usersIdsStringList)
-		{
-			usersIds.add(Long.parseLong(userIdString));
-		}
-		return usersIds;
+        for (String userIdString : usersIdsStringList) {
+            usersIds.add(Long.parseLong(userIdString));
+        }
+        return usersIds;
 	}
 	
 	private static List<String> getSeedUsersScreenNames(Properties properties)
 	{
 		String usersIdsString = (String) properties.get("seed_users_screenNames");
-		if (usersIdsString==null)
+		if (usersIdsString == null) {
 			return null;
+        }
 		List<String> usersScreenNames = Arrays.asList(usersIdsString.split(","));
 		return usersScreenNames;
 	}

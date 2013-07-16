@@ -13,7 +13,7 @@ import java.util.List;
 public class TestFramework
 {
 
-	private static final Logger logger = Logger.getLogger(TestFramework.class);
+	private static final Logger LOGGER = Logger.getLogger(TestFramework.class);
 
 	private Crawler influencersDiscoverer;
 	private List<Long> toBeInUsers;
@@ -33,39 +33,41 @@ public class TestFramework
 		notFoundUsers.removeAll(obtainedUsers);
 		List<Long> foundUsers = new ArrayList<Long>(toBeInUsers);
 		foundUsers.removeAll(notFoundUsers);
-		logger.info("");
-		logger.info("");
-		logger.info("###############################");
-		logger.info("#### TestFramework results ####");
-		logger.info("###############################");
-		logger.info("");
-		logger.info("toBeInUsers.size()=" + toBeInUsers.size());
-		logger.info("obtainedUsers.size()=" + obtainedUsers.size());
-		logger.info("notFoundUsers.size()=" + notFoundUsers.size());
-		logger.info("foundUsers.size()=" + foundUsers.size());
-		logger.info("");
-		logger.info("####### notFoundUsers #########");
-		logger.info("");
+		LOGGER.info("");
+		LOGGER.info("");
+		LOGGER.info("###############################");
+		LOGGER.info("#### TestFramework results ####");
+		LOGGER.info("###############################");
+		LOGGER.info("");
+		LOGGER.info("toBeInUsers.size()=" + toBeInUsers.size());
+		LOGGER.info("obtainedUsers.size()=" + obtainedUsers.size());
+		LOGGER.info("notFoundUsers.size()=" + notFoundUsers.size());
+		LOGGER.info("foundUsers.size()=" + foundUsers.size());
+		LOGGER.info("");
+		LOGGER.info("####### notFoundUsers #########");
+		LOGGER.info("");
 		for (Long userId : notFoundUsers)
 			try
 			{
 				String description = twitterFacade.getDescription(userId).replace('\n', ' ').replace('\r', ' ');
-				logger.info(twitterFacade.getScreenName(userId) + " - " + twitterFacade.getFollowersCount(userId) + " - " + description);
+				LOGGER.info(twitterFacade.getScreenName(userId) + " - " +
+                            twitterFacade.getFollowersCount(userId) + " - " + description);
 			} catch (TwitterException e)
 			{
-				logger.info("Problem with user with id=" + userId);
+				LOGGER.info("Problem with user with id=" + userId);
 			}
-		logger.info("");
-		logger.info("######### foundUsers ##########");
-		logger.info("");
+		LOGGER.info("");
+		LOGGER.info("######### foundUsers ##########");
+		LOGGER.info("");
 		for (Long userId : foundUsers)
 			try
 			{
 				String description = twitterFacade.getDescription(userId).replace('\n', ' ').replace('\r', ' ');
-				logger.info(twitterFacade.getScreenName(userId) + " - " + twitterFacade.getFollowersCount(userId) + " - " + description);
+				LOGGER.info(twitterFacade.getScreenName(userId) + " - " +
+                            twitterFacade.getFollowersCount(userId) + " - " + description);
 			} catch (TwitterException e)
 			{
-				logger.info("Problem with user with id=" + userId);
+				LOGGER.info("Problem with user with id=" + userId);
 			}
 	}
 

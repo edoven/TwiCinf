@@ -68,7 +68,7 @@ public class Neo4jGraphFacade implements GraphFacade
 //		edgeCount = 0;
 //	}
 
-	public Vertex addUser(Long userId)
+	public Vertex getOrPutUser(Long userId)
 	{
 		try
 		{
@@ -96,8 +96,9 @@ public class Neo4jGraphFacade implements GraphFacade
 	@Override
 	public void addUsers(List<Long> usersIds)
 	{
-		for (Long userId : usersIds)
-			addUser(userId);
+		for (Long userId : usersIds) {
+			getOrPutUser(userId);
+        }
 	}
 
 	@Override
@@ -116,7 +117,7 @@ public class Neo4jGraphFacade implements GraphFacade
 				followerVertex = getUserVertex(followerId);
 			} catch (UserVertexNotPresentException e)
 			{
-				followerVertex = addUser(followerId);
+				followerVertex = getOrPutUser(followerId);
 			}
 			addEdge(followerVertex, userVertex);
 		}
@@ -126,25 +127,27 @@ public class Neo4jGraphFacade implements GraphFacade
 	@Override
 	public void addFriends(Long userId, List<Long> friendsIds) throws UserVertexNotPresentException
 	{
-		Vertex userVertex = getUserVertex(userId);
-		if (userVertex == null)
-			throw new UserVertexNotPresentException("Trying to add followers for user with id " + userId + " but user vertex is not in the graph.");
-		if (userVertex.getProperty("isFriendsEnriched")!=null)
-			return;	
-		for (Long friendId : friendsIds)
-		{
-			Vertex friendVertex;
-			try
-			{
-				friendVertex = getUserVertex(friendId);
-			} catch (UserVertexNotPresentException e)
-			{
-				friendVertex = addUser(friendId);
-			}
-			addEdge(userVertex, friendVertex);
-		}
-		userVertex.setProperty("isFriendsEnriched", true);
-	}
+
+        Vertex userVertex = getUserVertex(userId);
+        if (userVertex == null) {
+            throw new UserVertexNotPresentException(
+                    "Trying to add followers for user with id " + userId +
+                    " but user vertex is not in the graph.");
+        }
+        if (userVertex.getProperty("isFriendsEnriched") != null) {
+            return;
+        }
+        for (Long friendId : friendsIds) {
+            Vertex friendVertex;
+            try {
+                friendVertex = getUserVertex(friendId);
+            } catch (UserVertexNotPresentException e) {
+                friendVertex = getOrPutUser(friendId);
+            }
+            addEdge(userVertex, friendVertex);
+        }
+        userVertex.setProperty("isFriendsEnriched", true);
+    }
 
 	public Vertex getUserVertex(Long userId) throws UserVertexNotPresentException
 	{

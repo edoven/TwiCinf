@@ -31,7 +31,7 @@ public class Neo4jGraphFacadeDegreeCalculationTestCase
 		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		long userId = 111;
-		graphFacade.addUser(userId);
+		graphFacade.getOrPutUser(userId);
 		Assert.assertTrue(graphFacade.getUserVertex(userId) != null);
 
 		List<Long> followersIds = new ArrayList<Long>();
@@ -60,7 +60,7 @@ public class Neo4jGraphFacadeDegreeCalculationTestCase
 		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		long userId = 111;
-		graphFacade.addUser(userId);
+		graphFacade.getOrPutUser(userId);
 		Assert.assertTrue(graphFacade.getUserVertex(userId) != null);
 
 		List<Long> followersIds = new ArrayList<Long>();

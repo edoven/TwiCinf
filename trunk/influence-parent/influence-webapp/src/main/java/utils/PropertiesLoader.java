@@ -32,6 +32,7 @@ public class PropertiesLoader {
     private String crawlingOutputDirectory;
     private String topicDirectory;
     private String rankingTopicListDirectory;
+
     public PropertiesLoader() {
         this.crawnkerHome = HomePathGetter.getInstance().getHomePath();
         this.rankedUsersResultsDirectory = this.crawnkerHome + "results/";

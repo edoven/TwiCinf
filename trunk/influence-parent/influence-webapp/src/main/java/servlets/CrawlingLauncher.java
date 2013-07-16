@@ -1,5 +1,6 @@
 package servlets;
 
+import it.cybion.influencers.cache.web.WebFacade;
 import it.cybion.influencers.crawler.Crawler;
 import it.cybion.influencers.crawler.launcher.parsing.ProperitesFileParser;
 import utils.PropertiesLoader;
@@ -50,7 +51,8 @@ public class CrawlingLauncher extends HttpServlet {
         final Properties inputFileProperties = getProperties(configFilePath);
         final Properties merged = merge(this.generalProperties, inputFileProperties);
 
-        final Crawler crawler = ProperitesFileParser.buildCrawlerFromProperties(merged);
+        final Crawler crawler = ProperitesFileParser.buildCrawlerFromProperties(merged, this.pl.getCrawnkerHome());
+
         final List<Long> crawledUsers = crawler.getInfluencers();
 
         //output values

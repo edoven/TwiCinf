@@ -32,7 +32,7 @@ public class Neo4jGraphFacadeTestCase
 		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		Long userId = 1111l;
-		graphFacade.addUser(userId);
+		graphFacade.getOrPutUser(userId);
 		Assert.assertEquals(graphFacade.getVerticesCount(), 1);
 
 		Vertex vertex = graphFacade.getUserVertex(userId);
@@ -74,7 +74,7 @@ public class Neo4jGraphFacadeTestCase
 		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		long userId = 111;
-		graphFacade.addUser(userId);
+		graphFacade.getOrPutUser(userId);
 		Assert.assertTrue(graphFacade.getUserVertex(userId) != null);
 
 		List<Long> followersIds = new ArrayList<Long>();
@@ -107,7 +107,7 @@ public class Neo4jGraphFacadeTestCase
 		Neo4jGraphFacade graphFacade = new Neo4jGraphFacade(graphDirPath, GraphIndexType.TREEMAP);
 
 		long userId = 111;
-		graphFacade.addUser(userId);
+		graphFacade.getOrPutUser(userId);
 		Assert.assertTrue(graphFacade.getUserVertex(userId) != null);
 
 		List<Long> friendsIds = new ArrayList<Long>();
