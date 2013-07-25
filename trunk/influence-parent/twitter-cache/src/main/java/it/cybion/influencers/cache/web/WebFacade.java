@@ -3,18 +3,16 @@ package it.cybion.influencers.cache.web;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import it.cybion.influencers.cache.exceptions.LimitExceededException;
 import it.cybion.influencers.cache.model.Tweet;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.cache.web.exceptions.UserHandlerException;
 import it.cybion.influencers.cache.web.exceptions.WebFacadeException;
 import org.apache.log4j.Logger;
 import twitter4j.IDs;
 import twitter4j.TwitterException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
+import java.util.*;
 
 public class WebFacade
 {
@@ -86,26 +84,37 @@ public class WebFacade
 		LOGGER.info("UserHandlers created");
 	}
 
-    public UserHandler getUserHandlerForRequest(String requestName) {
+    //returns null if all handlers are not available
+    public UserHandler getUserHandlerForRequest(final String requestName) {
 
-        for (UserHandler userHandler : userHandlers) {
-            if (userHandler.canMakeRequest(requestName)) {
+        UserHandler availableForRequest = null;
+
+        Iterator<UserHandler> userHandlerIterator = this.userHandlers.iterator();
+
+        while (availableForRequest == null && userHandlerIterator.hasNext()) {
+
+            final UserHandler currentHandler = userHandlerIterator.next();
+
+            //update user handler limit status
+            long now = System.currentTimeMillis();
+            long secondsPassedFromLastRequest = ( now - currentHandler.getLastGetRateLimitStatusTime() ) / 1000;
+            LOGGER.debug("secondsPassedFromLastRequest=" + secondsPassedFromLastRequest);
+
+            if (secondsPassedFromLastRequest > 5) //5 = (15*60)/180
+            {
+                currentHandler.updateLimitStatuses();
+            }
+
+            boolean handlerCanMakeRequest = currentHandler.canMakeRequest(requestName);
+
+            if (handlerCanMakeRequest) {
                 LOGGER.debug("userHandler.requestType2limit.get(" + requestName + ")=" +
-                             userHandler.requestLimits.get(requestName));
-                return userHandler;
+                             currentHandler.requestLimits.get(requestName));
+                availableForRequest = currentHandler;
             }
         }
 
-        try {
-            LOGGER.info(
-                    "All handlers have reached the limit, let's wait for " + ONE + " min");
-            Thread.sleep(ONE_MINUTE);
-            return getUserHandlerForRequest(requestName);
-        } catch (InterruptedException e1) {
-            LOGGER.error("Problem in Thread.sleep()." + e1.getMessage());
-//            System.exit(0);
-            return null;
-        }
+        return availableForRequest;
     }
 
     private ResultContainer filterTweetsByDate(List<Tweet> tweets,Date fromDate, Date toDate)
@@ -233,16 +242,64 @@ public class WebFacade
 		}
 		return tweets;
 	}
-	
+
+    //returns null list of strings if user is protected, zero sized list if the page is empty
 	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException 
 	{
-		UserHandler userHandler = getUserHandlerForRequest(UserHandler.STATUSES_USER_TIMELINE);
-		LOGGER.info("Downloading 200 tweets for user with id:" + userId + " with maxid=" + maxId);
-		List<String> tweets = userHandler.getTweetsWithMaxId(userId, maxId);
-		return tweets;
+
+        final String statusesUserTimeline = UserHandler.STATUSES_USER_TIMELINE;
+
+        List<String> tweets = null;
+
+        boolean userProtected = false;
+
+        while (tweets == null && !userProtected) {
+            final UserHandler userHandler = acquireUserHandler(statusesUserTimeline);
+            LOGGER.info(
+                    "Downloading 200 tweets for user with id:" + userId + " with maxid=" + maxId);
+            try {
+                tweets = userHandler.getTweetsWithMaxId(userId, maxId);
+            } catch (UserHandlerException e) {
+                LOGGER.warn(
+                        "couldn't get tweets for: " + userId + " maxId " + maxId + e.getMessage());
+                if (e instanceof ProtectedUserException) {
+                    userProtected = true;
+                }
+
+                if (e instanceof LimitExceededException) {
+                    LOGGER.warn("limit exceeded: " + e.getMessage());
+                }
+            }
+        }
+
+        return tweets;
 	}
 
-	private List<String> getUpTo100Users(long[] usersIds) throws TwitterException
+    private UserHandler acquireUserHandler(String requestName) {
+
+        UserHandler userHandler = null;
+
+        long requestTimestamp = System.currentTimeMillis();
+
+        while (userHandler == null) {
+            userHandler = getUserHandlerForRequest(requestName);
+            if (userHandler == null) {
+                LOGGER.info("All handlers have reached the limit, let's wait for " +
+                            ONE + " min");
+                LOGGER.info("still trying request arrived at " + new Date(requestTimestamp).toString());
+
+                try {
+                    Thread.sleep(ONE_MINUTE);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } //while
+
+        return userHandler;
+    }
+
+    private List<String> getUpTo100Users(long[] usersIds) throws TwitterException
 	{
 		UserHandler userHandler = getUserHandlerForRequest("/users/lookup");
 		return (List<String>) userHandler.getUsersJsons(usersIds);

@@ -1,6 +1,8 @@
 package it.cybion.influencers.cache.web;
 
+import it.cybion.influencers.cache.exceptions.LimitExceededException;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.cache.web.exceptions.UserHandlerException;
 import org.apache.log4j.Logger;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -35,7 +37,7 @@ public class UserHandler
 		updateLimitStatuses();
 	}
 	
-	private void updateLimitStatuses()
+	public void updateLimitStatuses()
 	{
 		Map<String, RateLimitStatus> limitStatusesFromTwitter;
         try
@@ -82,22 +84,7 @@ public class UserHandler
 	public boolean canMakeRequest(String requestType)
 	{
 		int requestsLeft = getRequestLimit(requestType);
-		if (requestsLeft > 0) {
-			return true;
-        }
-		else
-		{
-			long now = System.currentTimeMillis();
-			long secondsPassedFromLastRequest = (now-lastGetRateLimitStatusTime)/1000;
-			LOGGER.debug("secondsPassedFromLastRequest=" + secondsPassedFromLastRequest);
-			if (secondsPassedFromLastRequest  > 5 ) //5 = (15*60)/180
-			{
-				updateLimitStatuses();
-				return canMakeRequest(requestType);
-			}
-			else //it's too early to ask the limits again
-				return false;
-		}
+		return requestsLeft > 0;
 	}
 	
 
@@ -122,15 +109,15 @@ public class UserHandler
 		return result;
 	}
 
-	public List<String> getTweetsWithMaxId(long userId, long maxId) throws TwitterException, ProtectedUserException
+	public List<String> getTweetsWithMaxId(long userId, long maxId) throws UserHandlerException
 	{
 		String requestName = STATUSES_USER_TIMELINE;
 		int limit = getRequestLimit(requestName);
 		LOGGER.debug("limit for getLast200TweetsPostedByUser=" + limit);
 
-//        if () {
-
-//        }
+        if (limit <= 0) {
+            throw new LimitExceededException("limit exceeded: " + limit);
+        }
 
 		Paging paging = new Paging();
 		paging.setCount(200);
@@ -142,24 +129,24 @@ public class UserHandler
 		List<Status> statuses;
         try {
             statuses = twitter.getUserTimeline(userId, paging);
+
         } catch (TwitterException e) {
 
             if (e.getStatusCode() == 429) {
-                LOGGER.error("got limited by twitter: " + e.getMessage() + " updating requests to 0");
+                final String message =
+                        "got limited by twitter: " + e.getMessage() + " updating requests to 0";
+                LOGGER.error(message);
                 updateRequestLimit(requestName, 0);
+                throw new LimitExceededException(message);
             }
-
-            //TODO choose proper way of doing this
-            updateRequestLimit(requestName, (limit - 1));
 
             if (e.getStatusCode() == 401) {
-                throw new ProtectedUserException();
-            } else {
-                throw e;
+                throw new ProtectedUserException("user protected: 401 from twitter");
             }
 
-
+            throw new UserHandlerException("generic twitter exception: " + e.getMessage(), e);
         }
+
         updateRequestLimit(requestName, (limit - 1));
 
         //get raw json
@@ -208,4 +195,9 @@ public class UserHandler
 		}
 		return result;
 	}
+
+    public long getLastGetRateLimitStatusTime() {
+
+        return lastGetRateLimitStatusTime;
+    }
 }

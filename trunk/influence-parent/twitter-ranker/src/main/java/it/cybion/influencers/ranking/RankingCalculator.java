@@ -101,33 +101,37 @@ public class RankingCalculator
 		return rankedUsers;
 	}
 		
-	private RankedUser calculateRankWithoutUrlsResolution(List<String> tweetsJsons)
-	{
-		double retweetsAccumulator = 0;
-		double topicTweetsCount = 0;
-		double rank;
-		List<Tweet> tweets = TweetsDeserializer.getTweetsObjectsFromJsons(tweetsJsons);
-		String userScreenName = tweets.get(0).user.screen_name;
-		int followersCount = tweets.get(0).user.followers_count;
-		
-		List<Tweet> originalTweets = getOriginalTweets(tweets);
-		if (originalTweets.isEmpty())
-			return new RankedUser(userScreenName, followersCount, 0, 0, 0, 0, 0);		
-		for (Tweet tweet : originalTweets)
-		{
-			String text = tweet.text;
-//			logger.info(text);
-			double topicProximity = topicDistanceCalculator.getTweetToTopicDistance(text);
-			int retweetCount = tweet.retweet_count;
-			retweetsAccumulator = retweetsAccumulator + (topicProximity*retweetCount);
-			topicTweetsCount = topicTweetsCount + topicProximity;		
-		}
-		double meanRetweetCount = retweetsAccumulator / originalTweets.size();
-		double topicTweetsRatio = topicTweetsCount / originalTweets.size();
-		rank = rankingFunction(topicTweetsCount, meanRetweetCount, followersCount, topicTweetsRatio);
+	private RankedUser calculateRankWithoutUrlsResolution(List<String> tweetsJsons) {
 
-		return new RankedUser(userScreenName, followersCount, originalTweets.size(), topicTweetsCount, topicTweetsRatio, meanRetweetCount, rank);
-	}
+        double inTopicWeightedRetweetsAccumulator = 0;
+        double tweetsTopicProximity = 0;
+        double rank;
+        List<Tweet> tweets = TweetsDeserializer.getTweetsObjectsFromJsons(tweetsJsons);
+        String userScreenName = tweets.get(0).user.screen_name;
+        int followersCount = tweets.get(0).user.followers_count;
+
+        List<Tweet> originalTweets = getOriginalTweets(tweets);
+        if (originalTweets.isEmpty()) {
+            return new RankedUser(userScreenName, followersCount, 0, 0, 0, 0, 0);
+        }
+        for (Tweet tweet : originalTweets) {
+            String text = tweet.text;
+            //			logger.info(text);
+            //between 0.0 and 1.0
+            double tweetTopicProximity = topicDistanceCalculator.getTweetToTopicDistance(text);
+            int retweetCount = tweet.retweet_count;
+            double v = tweetTopicProximity * retweetCount;
+            inTopicWeightedRetweetsAccumulator = inTopicWeightedRetweetsAccumulator + v;
+            tweetsTopicProximity = tweetsTopicProximity + tweetTopicProximity;
+        }
+        double meanRetweetCount = inTopicWeightedRetweetsAccumulator / originalTweets.size();
+        double topicTweetsRatio = tweetsTopicProximity / originalTweets.size();
+        rank = rankingFunction(tweetsTopicProximity, meanRetweetCount, followersCount,
+                topicTweetsRatio);
+
+        return new RankedUser(userScreenName, followersCount, originalTweets.size(),
+                tweetsTopicProximity, topicTweetsRatio, meanRetweetCount, rank);
+    }
 
 	
 	private RankedUser calculateRankWithUrlsResolution(List<String> tweetsJsons)
