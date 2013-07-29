@@ -1,6 +1,8 @@
 package it.cybion.influencers.cache.web;
 
+import it.cybion.influencers.cache.exceptions.LimitExceededException;
 import it.cybion.influencers.cache.web.exceptions.ProtectedUserException;
+import it.cybion.influencers.cache.web.exceptions.UserHandlerException;
 import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
 import twitter4j.TwitterException;
@@ -20,7 +22,6 @@ public class UserHandlerTestCase {
     @Test (enabled = false)
     public void shouldBeGreen() throws TwitterException {
 
-
         Token userToken = new Token("962689441-yrFTbTzI3nAQ9sIMLnxLexyLWGAfZzhXCosTwuWp",
                 "elPwBu9NeAoGXunIl1wyPJDsSYgLWlFQXbXR8C2KQc");
         Token appToken = new Token("Bam9RwjprVxWJd8TdhwQOg",
@@ -35,7 +36,11 @@ public class UserHandlerTestCase {
             try {
                 tweetsWithMaxId = userHandler.getTweetsWithMaxId(8102582L, -1L);
             } catch (ProtectedUserException e) {
-                LOGGER.error("err: " + e.getMessage());
+                LOGGER.error("protected user: " + e.getMessage());
+            } catch (LimitExceededException e) {
+                LOGGER.error("limit exceeded: " + e.getMessage());
+            } catch (UserHandlerException e) {
+                LOGGER.error("user handler exc: " + e.getMessage());
             }
             tweets.addAll(tweetsWithMaxId);
         }

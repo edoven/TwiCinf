@@ -15,6 +15,7 @@ import twitter4j.TwitterException;
 
 import java.util.*;
 
+import static com.mongodb.util.MyAsserts.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
 
 public class WebFacadeTestCase
@@ -57,6 +58,7 @@ public class WebFacadeTestCase
 	public void getUserJsonTEST() throws TwitterException
 	{
 		String user = webFacade.getUserJson(813286l); // BarackObama
+        LOGGER.info(user);
 		assertTrue(user.contains("Barack Obama"));
 		assertTrue(user.contains("followers"));
 		assertTrue(user.contains("friends"));
@@ -136,7 +138,7 @@ public class WebFacadeTestCase
 		Date toDate   = CalendarManager.getDate(2012, 12, 15);
 		SearchedByDateTweetsResultContainer resultContainer = webFacade.getTweetsByDate(userId,fromDate,toDate);
 		List<String> tweets = resultContainer.getGoodTweets();
-		Assert.assertEquals(tweets.size(), 2);
+		assertEquals(tweets.size(), 2);
 	}
 	
 	
