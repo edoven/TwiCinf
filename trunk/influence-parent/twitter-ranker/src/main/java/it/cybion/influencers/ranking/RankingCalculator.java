@@ -157,7 +157,7 @@ public class RankingCalculator
 			retweetsAccumulator = retweetsAccumulator + (topicProximity*retweetCount);
 			topicTweetsCount = topicTweetsCount + topicProximity;		
 		}
-		double meanRetweetCount = retweetsAccumulator / originalTweets.size();
+		double meanRetweetCount = retweetsAccumulator;
 		double topicTweetsRatio = topicTweetsCount / originalTweets.size();
 		rank = rankingFunction(topicTweetsCount, meanRetweetCount, followersCount, topicTweetsRatio);
 		return new RankedUser(userScreenName, followersCount, originalTweets.size(), topicTweetsCount, topicTweetsRatio, meanRetweetCount, rank);
@@ -198,7 +198,8 @@ public class RankingCalculator
 	
 	private double rankingFunction(double topicTweetsCount, double meanRetweetCount, int followersCount, double topicTweetsRatio)
 	{
-		double rank = Math.log10(followersCount) * Math.sqrt(topicTweetsCount) * meanRetweetCount * (topicTweetsRatio*100)*(topicTweetsRatio*100);
+//		double rank = Math.log10(followersCount) * Math.sqrt(topicTweetsCount) * meanRetweetCount * (topicTweetsRatio*100)*(topicTweetsRatio*100);
+		double rank = meanRetweetCount * topicTweetsRatio / Math.log10(followersCount);
 		return rank;
 	}
 	
